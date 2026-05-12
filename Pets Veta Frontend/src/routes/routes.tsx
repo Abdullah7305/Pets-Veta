@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import LandingPageRoutes from "../features/Landing Page/routes";
-import Notfound from "../shared/components/Notfound";
+import Notfound from "../shared/components/Notfound/Notfound";
 
 const Router = createBrowserRouter([
     ...LandingPageRoutes,
