@@ -6,7 +6,9 @@ const LandingLayout = () => {
     return (
         <>
             <Navbar />
-            <Outlet />
+            <main className='pt-28'>
+                <Outlet />
+            </main>
             <Footer />
         </>
     );
