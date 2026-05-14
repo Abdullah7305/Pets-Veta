@@ -9,6 +9,7 @@ CREATE TABLE "User" (
     "phone" TEXT NOT NULL DEFAULT '',
     "profileImageUrl" TEXT NOT NULL DEFAULT 'Enter your Image',
     "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "refreshToken" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
