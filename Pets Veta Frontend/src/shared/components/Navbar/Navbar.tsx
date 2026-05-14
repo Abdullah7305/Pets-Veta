@@ -1,99 +1,39 @@
-import { Link, NavLink } from 'react-router-dom';
-
-import styles from './Navbar.module.css';
-import { NAV_ITEMS } from './navbar.data';
+import { NavLink } from "react-router-dom";
+import logo from "../../../assets/icons/Gemini_Generated_Image_34da4a34da4a34da-removebg-preview.png";
+import { NAVLINKS } from "./navbar.data";
 
 const Navbar = () => {
-  return (
-    <header
-      className={`
-        ${styles.navbar}
-        fixed
-        left-0
-        top-0
-        z-50
-        w-full
-      `}
-    >
-      <div
-        className='
-          mx-auto
-          flex
-          max-w-7xl
-          items-center
-          justify-between
-          px-6
-          py-5
-        '
-      >
-        {/* Logo */}
-        <Link
-          to='/'
-          className={`
-            ${styles.logo}
-            text-3xl
-            font-bold
-            text-[var(--text-dark)]
-          `}
-        >
-          PetVeta
-        </Link>
+    return (
+        <nav className="bg-white text-black shadow-md">
+            <div className="flex items-center justify-between">
+                <div>
+                    <img
+                        src={logo}
+                        alt="LOGO"
+                        className="w-30 h-15 object-contain"
+                    />
+                </div>
+                <ul className="flex items-center gap-6">
+                    {NAVLINKS.map((link) => (
+                        <li key={link.id}>
+                            <NavLink to={link.path}>
+                                {link.title}
+                            </NavLink>
+                        </li>
+                    ))}
+                </ul>
+                <div className="flex items-center gap-3">
+                    <button className="px-4 py-2 border rounded-lg hover:bg-gray-100">
+                        Login
+                    </button>
 
-        {/* Navigation */}
-        <nav>
-          <ul className='flex items-center gap-10'>
-            {NAV_ITEMS.map((item) => {
-              const isAuthButton =
-                item.label === 'Login/Register';
-
-              return (
-                <li key={item.id}>
-                  {isAuthButton ? (
-                    <NavLink
-                      to={item.path}
-                      className={`
-                        ${styles.authButton}
-                        rounded-full
-                        bg-[var(--blue)]
-                        px-6
-                        py-3
-                        text-sm
-                        font-semibold
-                        text-white
-                        shadow-lg
-                        hover:bg-[var(--blue-hover)]
-                      `}
-                    >
-                      {item.label}
-                    </NavLink>
-                  ) : (
-                    <NavLink
-                      to={item.path}
-                      className={({ isActive }) =>
-                        `
-                          ${styles.navLink}
-                          text-sm
-                          font-medium
-                          transition-all
-                          duration-300
-                          ${isActive
-                          ? 'text-[var(--blue)]'
-                          : 'text-[var(--text-dark)]'
-                        }
-                        `
-                      }
-                    >
-                      {item.label}
-                    </NavLink>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
+                    <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                        Sign Up
+                    </button>
+                </div>
+            </div>
         </nav>
-      </div>
-    </header>
-  );
+    );
 };
 
 export default Navbar;

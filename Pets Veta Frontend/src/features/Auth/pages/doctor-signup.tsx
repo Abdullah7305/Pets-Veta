@@ -1,11 +1,17 @@
-import { useState } from 'react';
+import DoctorForm from "../components/doctor-form";
+import styles from "../../../styles/doctor-signup.module.css";
 
-const DoctorSignup = () => {
-    return (
-        <div>
-            <h2>DoctorSignup</h2>
-        </div>
-    );
-};
+export default function DoctorSignup() {
+  return (
+    <div className={styles.container}>
 
-export default DoctorSignup;
+      <div className={styles.left}>
+        <DoctorForm />
+      </div>
+
+      <div className={styles.right}>
+        <img src="/doctor-pet.png" className={styles.image} alt="doctor" />
+      </div>
+    </div>
+  );
+}
