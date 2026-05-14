@@ -11,12 +11,14 @@ datasource db {
 model User {
   id              String    @id @default(uuid())
   fullName        String
-  email           String
+  username        String
+  email           String    @unique
   isEmailVerified Boolean   @default(false)
   password        String
-  phone           String?
+  phone           String    @default("")
   profileImageUrl String    @default("Enter your Image")
   isActive        Boolean   @default(true)
+  refreshToken    String?
   createdAt       DateTime  @default(now())
   userRole        UserRole?
   doctors         Doctor?
@@ -24,17 +26,17 @@ model User {
 }
 
 model Doctor {
-  id             String  @id @default(uuid())
-  userId         String  @unique
-  isAvailable    Boolean @default(false)
-  bio            String
-  education      String
-  specialization String
-  address        String
-  degreeLicense  String
-  experience     Int
-  isVerified     Boolean @default(false)
-  user           User    @relation(fields: [userId], references: [id])
+  id               String  @id @default(uuid())
+  userId           String  @unique
+  isAvailable      Boolean @default(false)
+  bio              String
+  education        String
+  specialization   String
+  address          String
+  degreeLicenseUrl String
+  experience       Int
+  isVerified       Boolean @default(false)
+  user             User    @relation(fields: [userId], references: [id])
 }
 
 model Admin {

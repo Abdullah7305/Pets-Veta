@@ -2,10 +2,11 @@
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
     "fullName" TEXT NOT NULL,
+    "username" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "isEmailVerified" BOOLEAN NOT NULL DEFAULT false,
     "password" TEXT NOT NULL,
-    "phone" TEXT,
+    "phone" TEXT NOT NULL DEFAULT '',
     "profileImageUrl" TEXT NOT NULL DEFAULT 'Enter your Image',
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -22,7 +23,7 @@ CREATE TABLE "Doctor" (
     "education" TEXT NOT NULL,
     "specialization" TEXT NOT NULL,
     "address" TEXT NOT NULL,
-    "degreeLicense" TEXT NOT NULL,
+    "degreeLicenseUrl" TEXT NOT NULL,
     "experience" INTEGER NOT NULL,
     "isVerified" BOOLEAN NOT NULL DEFAULT false,
 
@@ -46,6 +47,9 @@ CREATE TABLE "UserRole" (
 
     CONSTRAINT "UserRole_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Doctor_userId_key" ON "Doctor"("userId");
