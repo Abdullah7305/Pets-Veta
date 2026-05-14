@@ -1,29 +1,28 @@
-import type { NavItem } from './navbar.types.ts';
+interface NavLink {
+    id: number;
+    title: string;
+    path: string
+}
 
-export const NAV_ITEMS: NavItem[] = [
+export const NAVLINKS: NavLink[] = [
     {
         id: 1,
-        label: 'Home',
-        path: '/',
+        title: "Home",
+        path: "/"
     },
     {
         id: 2,
-        label: 'About',
-        path: '/about',
+        title: "Services",
+        path: "/services"
     },
     {
         id: 3,
-        label: 'Services',
-        path: '/services',
+        title: "About",
+        path: "/about"
     },
     {
         id: 4,
-        label: 'Contact',
-        path: '/contact',
-    },
-    {
-        id: 5,
-        label: 'Login/Register',
-        path: '/auth',
-    },
+        title: "Contact Us",
+        path: "/contact"
+    }
 ];
