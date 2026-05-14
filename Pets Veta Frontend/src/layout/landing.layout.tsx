@@ -1,15 +1,18 @@
-import { Outlet } from "react-router-dom";
+// import { Outlet } from "react-router-dom";
 import Navbar from "../shared/components/Navbar/Navbar";
-import Footer from "../shared/components/Footer/Footer";
+// import Footer from "../shared/components/Footer/Footer";
+import Hero from "../features/Landing Page/components/Hero";
+import About from "../features/Landing Page/components/About";
+import Services from "../features/Landing Page/components/Services";
 
 const LandingLayout = () => {
     return (
         <>
             <Navbar />
-            <main className='pt-28'>
-                <Outlet />
-            </main>
-            <Footer />
+            {/* <Footer />/ */}
+            <Hero />
+            <About />
+            <Services />
         </>
     );
 };
