@@ -1,34 +1,5 @@
-import Card from "../../../shared/components/card/Card";
-const images = import.meta.glob(
-    "../../../assets/shared/images/*.{png,jpg,jpeg,svg}",
-    {
-        eager: true,
-        import: "default",
-    }
-) as Record<string, string>;
-
-const getImage = (name: string) =>
-    images[`../../../assets/shared/images/${name}`];
-const servicesData = [
-    {
-        id: 1,
-        title: "Razia Ahmed",
-        description: "It was a very good experience. The service was on time and the staff was very professional.” — Razia Ahmed",
-        image: getImage("testimonial1.jpg")
-    },
-    {
-        id: 2,
-        title: "Farzana Malik",
-        description: "I got very good results here. The treatment was smooth and clearly explained. — Farzana Malik",
-        image: getImage("testimonial2.jpg")
-    },
-    {
-        id: 3,
-        title: "Shabana Khan",
-        description: "The doctor provided excellent care, and the whole process was simple and comfortable.” — Shabana Khan",
-        image: getImage("testimonial3.jpg")
-    }
-];
+import Card from "../../../shared/components/Card/Card";
+import {testimonialData} from "../data/testimonial.data"
 
 const Testimonial = () => {
     return (
@@ -49,7 +20,7 @@ const Testimonial = () => {
 
                 {/* Cards */}
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {servicesData.map((testimonial) => (
+                    {testimonialData.map((testimonial) => (
                         <Card
                             key={testimonial.id}
                             title={testimonial.title}

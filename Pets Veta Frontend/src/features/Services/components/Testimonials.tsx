@@ -1,8 +1,8 @@
 import { Star } from "lucide-react";
 
-import user1 from "../../../assets/shared/images/testimonial1.jpg";
-import user2 from "../../../assets/shared/images/testimonial2.jpg";
-import user3 from "../../../assets/shared/images/testimonial3.jpg";
+import user1 from "../../../assets/shared/images/testimonial1.webp";
+import user2 from "../../../assets/shared/images/testimonial2.webp";
+import user3 from "../../../assets/shared/images/testimonial3.webp";
 
 type Testimonial = {
   id: number;

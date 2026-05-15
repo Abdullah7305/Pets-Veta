@@ -1,54 +1,5 @@
-import Card from "../../../shared/components/card/Card";
-
-const images = import.meta.glob(
-  "../../../assets/shared/images/*.{png,jpg,jpeg,svg}",
-  {
-    eager: true,
-    import: "default",
-  }
-) as Record<string, string>;
-
-const getImage = (name: string) =>
-  images[`../../../assets/shared/images/${name}`];
-
-const servicesData = [
-  {
-    id: 1,
-    title: "General Vet Services",
-    description: "Professional health checkups and routine care for your pets.",
-    image: getImage("petGenralService.jpg"),
-  },
-  {
-    id: 2,
-    title: "Vaccination Services",
-    description: "Protect your pets with safe and timely vaccinations.",
-    image: getImage("petVaccinationService.jpg"),
-  },
-  {
-    id: 3,
-    title: "Grooming Services",
-    description: "Keep your pets clean, fresh, healthy, and happy.",
-    image: getImage("petGroomingService.jpg"),
-  },
-  {
-    id: 4,
-    title: "Diagnostic Services",
-    description: "Accurate testing and diagnosis for better pet treatment.",
-    image: getImage("petDiagnosticService.jpg"),
-  },
-  {
-    id: 5,
-    title: "Surgical Services",
-    description: "Safe surgical care handled by experienced pet doctors.",
-    image: getImage("petSurgicalService.jpg"),
-  },
-  {
-    id: 6,
-    title: "Training & Behavior",
-    description: "Helpful training sessions for better pet behavior.",
-    image: getImage("petTraining&behavior.jpg"),
-  },
-];
+import Card from "../../../shared/components/Card/Card";
+import { servicesData } from "../data/services.data";
 
 const Services = () => {
   return (

@@ -1,11 +1,11 @@
 import { ArrowRight } from "lucide-react";
 
-import dentalImg from "../../../assets/shared/images/petGenralService.jpg";
-import bonesImg from "../../../assets/shared/images/petVaccinationService.jpg";
-import diagnosisImg from "../../../assets/shared/images/petDiagnosticService.jpg";
-import surgeryImg from "../../../assets/shared/images/petSurgicalService.jpg";
-import groomingImg from "../../../assets/shared/images/petTraining&behavior.jpg";
-import eyeImg from "../../../assets/shared/images/petDiagnosticService.jpg";
+import dentalImg from "../../../assets/shared/images/petGenralService.webp";
+import bonesImg from "../../../assets/shared/images/petVaccinationService.webp";
+import diagnosisImg from "../../../assets/shared/images/petDiagnosticService.webp";
+import surgeryImg from "../../../assets/shared/images/petSurgicalService.webp";
+import groomingImg from "../../../assets/shared/images/petTraining&behavior.webp";
+import eyeImg from "../../../assets/shared/images/petDiagnosticService.webp";
 
 type ServiceItem = {
   id: number;

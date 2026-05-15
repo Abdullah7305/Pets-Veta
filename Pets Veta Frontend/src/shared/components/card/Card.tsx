@@ -10,6 +10,7 @@ const Card = ({ title, description, image }: CardProps) => {
             <img
                 src={image}
                 alt={title}
+                loading="lazy"
                 className="w-90 h-80 object-cover  mb-4"
             />
 
