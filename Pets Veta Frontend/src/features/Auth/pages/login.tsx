@@ -1,11 +1,21 @@
-import { useState } from 'react';
+// import LoginComponent from "../features/auth/components/login-component";
+import LoginComponent from "../../Auth/components/login-component";
 
-const Login = () => {
-    return (
-        <div>
-            <h2>Login</h2>
+import styles from "../../../styles/login.module.css";
+
+export default function LoginPage() {
+  return (
+    <div className={styles.container}>
+      <div className={styles.left}>
+        <img src="/login-img.jpg" alt="login" className={styles.image} />
+      </div>
+
+      {/* RIGHT FORM */}
+      <div className={styles.right}>
+        <div className={styles.formBox}>
+          <LoginComponent />
         </div>
-    );
-};
-
-export default Login;
+      </div>
+    </div>
+  );
+}

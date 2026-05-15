@@ -19,6 +19,7 @@ model User {
   profileImageUrl String    @default("Enter your Image")
   isActive        Boolean   @default(true)
   refreshToken    String?
+  otp             String?
   createdAt       DateTime  @default(now())
   userRole        UserRole?
   doctors         Doctor?

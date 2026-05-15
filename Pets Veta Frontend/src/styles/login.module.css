@@ -1,0 +1,83 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+
+  background: linear-gradient(
+    180deg,
+    rgba(249, 197, 168, 1) 0%,
+    rgba(249, 197, 168, 1) 19%,
+    rgba(249, 197, 168, 1) 27%,
+    rgba(212, 226, 224, 1) 100%
+  );
+}
+
+/* LEFT IMAGE SIDE */
+.left {
+  flex: 1;
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  height: 100vh;
+  object-fit: cover;
+  display: block;
+}
+
+/* RIGHT FORM SIDE */
+.right {
+  flex: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 40px;
+}
+
+/* FORM CARD */
+.formBox {
+  width: 100%;
+  max-width: 420px;
+
+  background: rgba(255, 255, 255, 0.9);
+
+  padding: 32px;
+
+  border-radius: 20px;
+
+  backdrop-filter: blur(10px);
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .left {
+    display: none;
+  }
+
+  .right {
+    padding: 20px;
+  }
+
+  .formBox {
+    max-width: 100%;
+    padding: 24px;
+  }
+}
+
+.left {
+  position: relative;
+}
+
+.left::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.15);
+}

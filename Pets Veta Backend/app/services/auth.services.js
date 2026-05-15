@@ -1,5 +1,12 @@
 const { default: prisma, userRole } = require('../config/prisma')
-
+const nodemailer = require('nodemailer');
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_PASSWORD, // app password
+    },
+});
 
 
 
@@ -60,9 +67,10 @@ const createPetOwner = async (petOwnerData) => {
     const newPetOwner = await prisma.user.create({
         data: {
             fullName: petOwnerData.fullName,
+            username: petOwnerData.username,
             email: petOwnerData.email,
             password: petOwnerData.hashedPassword,
-            username: petOwnerData.username,
+
 
             userRole: {
                 create: {
@@ -77,6 +85,36 @@ const createPetOwner = async (petOwnerData) => {
     return newPetOwner;
 }
 
+const createAdmin = async (adminData) => {
+    const isCreated = await prisma.user.findUnique({
+        where: {
+            email: adminData.email,
+            username: adminData.username
+        }
+    })
+    if (isCreated) {
+        return false;
+    }
+    const newAdmin = await prisma.user.create({
+        data: {
+            fullName: adminData.fullName,
+            username: adminData.username,
+            email: adminData.email,
+            password: adminData.hashedPassword,
+
+            userRole: {
+                create: {
+                    role: 'PetOwner'
+                }
+            }
+        },
+        include: {
+            userRole: true
+        }
+    })
+    return newAdmin;
+}
+
 const loginUser = async (userData) => {
     const user = prisma.user.findUnique({
         where: {
@@ -88,9 +126,94 @@ const loginUser = async (userData) => {
             admin: true
         }
     })
+
+    return user;
+}
+
+const refreshUserToken = async (email, refreshToken) => {
+    console.log("email and token is ", email, refreshToken);
+    const updatedUser = await prisma.user.update({
+        where: {
+            email: email
+        },
+        data: {
+            refreshToken: refreshToken
+        }
+    })
+
+    return refreshToken;
+}
+
+
+const verifyEmail = async (email) => {
+    if (!email) {
+        return false;
+    }
+    const validUser = await prisma.user.findUnique({
+        where: {
+            email: email
+        }
+    })
+    return validUser;
+}
+const getUserWithRole = async (email) => {
+    return await prisma.user.findUnique({
+        where: {
+            email
+        },
+        include: {
+            admin: true,
+            doctors: true
+        }
+    });
+};
+
+const saveUserOtp = async (email, userOtp) => {
+    const user = await prisma.user.update({
+        where: {
+            email: email
+        },
+        data: {
+            otp: userOtp
+        }
+    })
+    return user;
+
+}
+
+const updateOtpField = async (email) => {
+    const user = await prisma.user.delete({
+        where: {
+            email: email
+        },
+        data: {
+            otp: ""
+        }
+    })
+    return user;
+}
+
+const updateUserPassword = async (password) => {
+    const user = await prisma.user.update({
+        where: {
+            email: email,
+            data: {
+                password: password
+            }
+        }
+    })
     return user;
 }
 
 
-
-module.exports = { createDoctor, createPetOwner, loginUser };
+module.exports = {
+    createDoctor,
+    createPetOwner,
+    loginUser,
+    refreshUserToken,
+    verifyEmail,
+    saveUserOtp,
+    updateOtpField,
+    getUserWithRole,
+    createAdmin
+};

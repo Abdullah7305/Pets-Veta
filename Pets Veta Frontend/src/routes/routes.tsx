@@ -3,6 +3,7 @@ import LandingPageRoutes from "../features/Landing Page/routes";
 import Notfound from "../shared/components/Notfound/Notfound";
 
 import DoctorSignup from "../features/Auth/pages/doctor-signup";
+import LoginPage from "../features/Auth/pages/login";
 import ForgotPasswordPage from "../features/Auth/pages/forgot-page";
 import OtpVerifyPage from "../features/Auth/pages/otp-verify";
 
@@ -17,6 +18,10 @@ const Router = createBrowserRouter([
     element: <DoctorSignup />,
   },
   {
+    path: "/login",
+    element: <LoginPage />,
+  },
+  {
     path: "/forgot-password",
     element: <ForgotPasswordPage />,
   },
@@ -27,3 +32,4 @@ const Router = createBrowserRouter([
 ]);
 
 export default Router;
+
