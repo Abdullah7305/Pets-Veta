@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import LandingPageRoutes from "../features/Landing Page/routes";
+import { servicesRoutes } from "../features/Services";
 import Notfound from "../shared/components/Notfound/Notfound";
 
 import DoctorSignup from "../features/Auth/pages/doctor-signup";
@@ -14,11 +15,9 @@ import OtpVerifyPage from "../features/Auth/pages/otp-verify";
 >>>>>>> 0d8d88fbfda6d674d57c1ddca8c125b17accd528
 
 const Router = createBrowserRouter([
+  // Added Services feature routes so /services opens the Services folder UI.
+  ...servicesRoutes,
   ...LandingPageRoutes,
-  {
-    path: "*",
-    element: <Notfound />,
-  },
   {
     path: "/doctor-signup",
     element: <DoctorSignup />,
@@ -28,6 +27,7 @@ const Router = createBrowserRouter([
     element: <LoginPage />,
   },
   {
+<<<<<<< HEAD
     path: "/forgot-password",
     element: <ForgotPasswordPage />,
   },
@@ -43,6 +43,10 @@ const Router = createBrowserRouter([
     path: "/otp-verify",
     element: <OtpVerifyPage />,
 >>>>>>> 0d8d88fbfda6d674d57c1ddca8c125b17accd528
+=======
+    path: "*",
+    element: <Notfound />,
+>>>>>>> 91bdbfa7da9b97c2af9b7ba80c35c1c20a65cd72
   },
 ]);
 

@@ -1,87 +1,97 @@
 import Card from "../../../shared/components/card/Card";
+
 const images = import.meta.glob(
-    "../../../assets/shared/images/*.{png,jpg,jpeg,svg}",
-    {
-        eager: true,
-        import: "default",
-    }
+  "../../../assets/shared/images/*.{png,jpg,jpeg,svg}",
+  {
+    eager: true,
+    import: "default",
+  }
 ) as Record<string, string>;
 
 const getImage = (name: string) =>
-    images[`../../../assets/shared/images/${name}`];
+  images[`../../../assets/shared/images/${name}`];
+
 const servicesData = [
-    {
-        id: 1,
-        title: "General Vet Services",
-        description: "Professional health checkups for your pets.",
-        image: getImage("petGenralService.jpg")
-    },
-    {
-        id: 2,
-        title: "Vaccination Services",
-        description: "Keep your pets clean, healthy, and happy.",
-        image: getImage("petVaccinationService.jpg")
-    },
-    {
-        id: 3,
-        title: "Grooming Services",
-        description: "Protect your pets with timely vaccinations.",
-        image: getImage("petGroomingService.jpg")
-    },
-    {
-        id: 4,
-        title: "Diagnostic Services",
-        description: "Training sessions for better pet behavior.",
-        image: getImage("petDiagnosticService.jpg")
-    },
-    {
-        id: 5,
-        title: "Surgical Services",
-        description: "Safe and comfortable stay for your pets.",
-        image: getImage("petSurgicalService.jpg")
-    },
-    {
-        id: 6,
-        title: "Training & Behavior",
-        description: "24/7 emergency support for your pets.",
-        image: getImage("petTraining&behavior.jpg")
-    },
+  {
+    id: 1,
+    title: "General Vet Services",
+    description: "Professional health checkups and routine care for your pets.",
+    image: getImage("petGenralService.jpg"),
+  },
+  {
+    id: 2,
+    title: "Vaccination Services",
+    description: "Protect your pets with safe and timely vaccinations.",
+    image: getImage("petVaccinationService.jpg"),
+  },
+  {
+    id: 3,
+    title: "Grooming Services",
+    description: "Keep your pets clean, fresh, healthy, and happy.",
+    image: getImage("petGroomingService.jpg"),
+  },
+  {
+    id: 4,
+    title: "Diagnostic Services",
+    description: "Accurate testing and diagnosis for better pet treatment.",
+    image: getImage("petDiagnosticService.jpg"),
+  },
+  {
+    id: 5,
+    title: "Surgical Services",
+    description: "Safe surgical care handled by experienced pet doctors.",
+    image: getImage("petSurgicalService.jpg"),
+  },
+  {
+    id: 6,
+    title: "Training & Behavior",
+    description: "Helpful training sessions for better pet behavior.",
+    image: getImage("petTraining&behavior.jpg"),
+  },
 ];
 
 const Services = () => {
-    return (
-        <section className="py-20 px-6 bg-gradient-to-b from-[#F9C5A8] to-[#D4E2E0]">
+  return (
+    <section className="relative overflow-hidden bg-gradient-to-b from-[#F9C5A8] via-[#f7d2bd] to-[#D4E2E0] px-4 py-14 sm:px-6 sm:py-16 md:py-20 lg:py-22">
+      {/* Background decorations */}
+      <div className="absolute left-[-120px] top-10 h-[240px] w-[240px] rounded-full bg-white/25 blur-3xl" />
+      <div className="absolute bottom-[-120px] right-[-100px] h-[280px] w-[280px] rounded-full bg-[#078b91]/20 blur-3xl" />
 
-            <div className="max-w-7xl mx-auto">
+      <div className="relative z-10 mx-auto max-w-[1180px]">
+        {/* Heading */}
+        <div className="mx-auto mb-10 max-w-3xl text-center md:mb-12">
+          <span className="mb-4 inline-block rounded-full bg-white/60 px-5 py-2 text-sm font-bold text-[#078b91] shadow-sm backdrop-blur-md">
+            What We Offer
+          </span>
 
-                {/* Heading */}
-                <div className="text-center mb-14">
-                    <h2 className="text-4xl font-bold mb-4 text-gray-800">
-                        Our Pet Services
-                    </h2>
+          <h2 className="mb-4 text-[30px] font-extrabold leading-tight text-[#20263d] sm:text-[36px] md:text-[42px]">
+            Our Pet Services
+          </h2>
 
-                    <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-                        We provide complete pet care services to keep your
-                        furry friends healthy, happy, and safe.
-                    </p>
-                </div>
+          <p className="mx-auto max-w-2xl text-[15px] leading-[1.8] text-gray-700 sm:text-[16px] md:text-[17px]">
+            We provide complete pet care services to keep your furry friends
+            healthy, happy, and safe.
+          </p>
+        </div>
 
-                {/* Cards */}
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {servicesData.map((service) => (
-                        <Card
-                            key={service.id}
-                            title={service.title}
-                            description={service.description}
-                            image={service.image}
-                        />
-                    ))}
-                </div>
-
+        {/* Cards */}
+        <div className="mx-auto grid max-w-[1080px] grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+          {servicesData.map((service) => (
+            <div
+              key={service.id}
+              className="mx-auto w-full max-w-[330px] transition-all duration-500 ease-out hover:-translate-y-1.5"
+            >
+              <Card
+                title={service.title}
+                description={service.description}
+                image={service.image}
+              />
             </div>
-
-        </section>
-    );
+          ))}
+        </div>
+      </div>
+    </section>
+  );
 };
 
 export default Services;
