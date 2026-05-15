@@ -3,37 +3,67 @@ import logo from "../../../assets/icons/Gemini_Generated_Image_34da4a34da4a34da-
 import { NAVLINKS } from "./navbar.data";
 
 const Navbar = () => {
-    return (
-        <nav className="bg-white text-black shadow-md">
-            <div className="flex items-center justify-between">
-                <div>
-                    <img
-                        src={logo}
-                        alt="LOGO"
-                        className="w-30 h-15 object-contain"
-                    />
-                </div>
-                <ul className="flex items-center gap-6">
-                    {NAVLINKS.map((link) => (
-                        <li key={link.id}>
-                            <NavLink to={link.path}>
-                                {link.title}
-                            </NavLink>
-                        </li>
-                    ))}
-                </ul>
-                <div className="flex items-center gap-3">
-                    <button className="px-4 py-2 border rounded-lg hover:bg-gray-100">
-                        Login
-                    </button>
+  return (
+    <nav className="sticky top-0 z-50 bg-white/90 text-[#20263d] shadow-sm backdrop-blur-xl">
+      <div className="mx-auto flex max-w-[1400px] items-center justify-between px-5 py-3 md:px-8 lg:px-10">
+        {/* Logo */}
+        <div className="flex items-center">
+          <img
+            src={logo}
+            alt="LOGO"
+            className="h-[58px] w-auto object-contain transition-transform duration-300 hover:scale-105"
+          />
+        </div>
 
-                    <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-                        Sign Up
-                    </button>
-                </div>
-            </div>
-        </nav>
-    );
+        {/* Links */}
+        <ul className="hidden items-center gap-8 lg:flex">
+          {NAVLINKS.map((link) => (
+            <li key={link.id}>
+              <NavLink
+                to={link.path}
+                className={({ isActive }) =>
+                  `relative text-[16px] font-semibold transition-all duration-300 
+                  ${
+                    isActive
+                      ? "text-[#078b91]"
+                      : "text-[#20263d] hover:text-[#078b91]"
+                  }
+                  after:absolute after:left-0 after:top-[28px] after:h-[3px] after:rounded-full after:bg-[#078b91] after:transition-all after:duration-300
+                  ${
+                    isActive
+                      ? "after:w-full"
+                      : "after:w-0 hover:after:w-full"
+                  }`
+                }
+              >
+                {link.title}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+
+        {/* Buttons */}
+        <div className="hidden items-center gap-3 md:flex">
+          <button className="rounded-full border border-[#078b91]/30 px-6 py-3 text-[15px] font-bold text-[#078b91] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#078b91]/10">
+            Login
+          </button>
+
+          <button className="rounded-full bg-[#078b91] px-6 py-3 text-[15px] font-bold text-white shadow-lg shadow-[#078b91]/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#06777c]">
+            Sign Up
+          </button>
+        </div>
+
+        {/* Mobile Menu Icon */}
+        <button className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:bg-gray-50 lg:hidden">
+          <span className="space-y-1.5">
+            <span className="block h-[2px] w-5 rounded-full bg-[#20263d]" />
+            <span className="block h-[2px] w-5 rounded-full bg-[#20263d]" />
+            <span className="block h-[2px] w-5 rounded-full bg-[#20263d]" />
+          </span>
+        </button>
+      </div>
+    </nav>
+  );
 };
 
 export default Navbar;

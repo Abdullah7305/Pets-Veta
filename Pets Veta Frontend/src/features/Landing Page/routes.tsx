@@ -1,7 +1,6 @@
 import Home from "./pages/Home"
 import LandingLayout from "../../layout/landing.layout"
 import About from "./pages/About"
-import Services from "./pages/Services"
 import Contact from "./pages/Contact"
 
 const LandingPageRoutes = [
@@ -21,10 +20,7 @@ const LandingPageRoutes = [
                 path: 'about',
                 element: <About />
             },
-            {
-                path: 'services',
-                element: <Services />
-            }
+            // Services route is handled by src/features/Services/ServicesRoute.tsx.
 
         ]
     }
