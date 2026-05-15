@@ -8,7 +8,20 @@ export const doctorSchema = z
 
     email: z.string().email("Invalid email address"),
 
-    phoneNumber: z.string().min(11, "phone number is required "),
+    // phoneNumber: z.string().min(11, "phone number is required "),
+    phoneNumber: z
+      .string()
+      .min(1, "Phone number is required")
+      .refine(
+        (value) => {
+          const phoneRegex = /^(\+92|0)?3[0-9]{9}$/;
+
+          return phoneRegex.test(value);
+        },
+        {
+          message: "Enter valid phone number",
+        },
+      ),
 
     experience: z.string().min(1, "experience is required"),
 
