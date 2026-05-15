@@ -1,0 +1,86 @@
+import { useState } from "react";
+
+import { useForm } from "react-hook-form";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "react-router-dom";
+
+import { ArrowLeft } from "lucide-react";
+
+import Input from "../../../shared/components/Inputs/Input";
+
+import Button from "../../../shared/components/Button/Button";
+import BackButton from "../../../shared/components/Button/BackButton/BackButton";
+
+import {
+  forgotPasswordSchema,
+  type ForgotPasswordFormData,
+} from "../schemas/forgot-password.schema";
+
+const forgotFields = [
+  {
+    name: "emailOrPhone",
+    label: "Email or Phone Number",
+    type: "text",
+    placeholder: "Enter email or phone",
+  },
+] as const;
+
+export default function ForgotPasswordForm() {
+  const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ForgotPasswordFormData>({
+    resolver: zodResolver(forgotPasswordSchema),
+  });
+
+  const onSubmit = async (data: ForgotPasswordFormData) => {
+    try {
+      setLoading(true);
+
+      console.log(data);
+
+      navigate("/verify-otp");
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="w-full max-w-md">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-blue-900">Forgot Password</h1>
+
+        <p className="mt-2 text-gray-500">
+          Enter your registered email or phone number
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        {forgotFields.map((field) => (
+          <Input
+            key={field.name}
+            label={field.label}
+            type={field.type}
+            placeholder={field.placeholder}
+            error={errors[field.name]?.message as string}
+            {...register(field.name)}
+          />
+        ))}
+
+        <Button type="submit" loading={loading}>
+          Next
+        </Button>
+
+        <BackButton href="/login" text="Back " />
+      </form>
+    </div>
+  );
+}

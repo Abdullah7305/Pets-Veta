@@ -27,10 +27,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
     return (
       <div className="flex flex-col gap-2">
-        {/* LABEL */}
         <label className="text-sm font-medium text-gray-700">{label}</label>
 
-        {/* INPUT */}
         <div className="relative">
         
           <input
@@ -84,7 +82,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           )}
         </div>
 
-        {/* ERROR */}
         {error && <p className="text-sm text-red-500">{error}</p>}
       </div>
     );

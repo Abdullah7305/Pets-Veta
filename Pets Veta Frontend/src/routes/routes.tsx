@@ -4,6 +4,9 @@ import Notfound from "../shared/components/Notfound/Notfound";
 
 import DoctorSignup from "../features/Auth/pages/doctor-signup";
 import LoginPage from "../features/Auth/pages/login";
+import ForgotPasswordPage from "../features/Auth/pages/forgot-password";
+import VerifyOtpPage from "../features/Auth/pages/verify-otp";
+import ResetPasswordPage from "../features/Auth/pages/reset-password";
 
 const Router = createBrowserRouter([
   ...LandingPageRoutes,
@@ -19,7 +22,18 @@ const Router = createBrowserRouter([
     path: "/login",
     element: <LoginPage />,
   },
+  {
+    path: "/forgot-password",
+    element: <ForgotPasswordPage />,
+  },
+  {
+    path: "/verify-otp",
+    element: <VerifyOtpPage />,
+  },
+  {
+    path: "/reset-password",
+    element: <ResetPasswordPage />,
+  },
 ]);
 
 export default Router;
-

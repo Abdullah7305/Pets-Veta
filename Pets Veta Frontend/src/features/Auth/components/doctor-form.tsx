@@ -33,7 +33,7 @@ const doctorFields = [
     name: "phoneNumber",
     label: "Phone Number",
     type: "tel",
-    placeholder: "+92 234 567 890",
+    placeholder: "+923001234567",
   },
 
   {
@@ -97,7 +97,6 @@ export default function DoctorForm() {
 
   return (
     <div className="rounded-3xl bg-white/80 p-8 shadow-2xl backdrop-blur-lg">
-      {/* HEADER */}
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-blue-900">
           Doctor Registration
@@ -108,7 +107,6 @@ export default function DoctorForm() {
         </p>
       </div>
 
-      {/* FORM */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           {/* DYNAMIC INPUTS */}
@@ -118,7 +116,9 @@ export default function DoctorForm() {
               label={field.label}
               type={field.type}
               placeholder={field.placeholder || ""}
-              error={errors[field.name as keyof DoctorFormData]?.message as string}
+              error={
+                errors[field.name as keyof DoctorFormData]?.message as string
+              }
               showPassword={showPassword}
               onTogglePassword={() => setShowPassword(!showPassword)}
               {...register(field.name)}
