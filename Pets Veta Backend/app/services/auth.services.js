@@ -103,7 +103,7 @@ const createAdmin = async (adminData) => {
 
             userRole: {
                 create: {
-                    role: 'PetOwner'
+                    role: 'Admin'
                 }
             }
         },
@@ -115,7 +115,7 @@ const createAdmin = async (adminData) => {
 }
 
 const loginUser = async (userData) => {
-    const user = prisma.user.findUnique({
+    const user = await prisma.user.findFirst({
         where: {
             email: userData.email
         },

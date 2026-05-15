@@ -12,8 +12,6 @@ const createDoctorAccount = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 12);
 
-        req.body.password = hashedPassword;
-
         const doctorData = {
             ...req.body,
             degreeLicenseUrl,
@@ -42,7 +40,7 @@ const createDoctorAccount = async (req, res) => {
             sameSite: 'strict',
             maxAge: 10 * 60 * 1000
         }
-        const otpToken = await jwt.sign(
+        const otpToken =  jwt.sign(
             payload,
             process.env.JWT_OTP_SECRET,
             {
@@ -86,7 +84,7 @@ const createPetOwnerAccount = async (req, res) => {
             return res.status(400).json({ message: 'User already Exist' })
         }
         const otpCode = authUtils.otpGenerator();
-        const hashedOtp = await bcrypt.hash(otp, 12);
+        const hashedOtp = await bcrypt.hash(otpCode, 12);
         const saveUserOtp = await authServices.saveUserOtp(email, hashedOtp);
         await authUtils.sendOtp(email, otpCode)
 
@@ -101,7 +99,7 @@ const createPetOwnerAccount = async (req, res) => {
             maxAge: 10 * 60 * 1000
 
         }
-        const otpToken = await jwt.sign(
+        const otpToken =  jwt.sign(
             payload,
             process.env.JWT_OTP_SECRET,
             {
@@ -117,7 +115,7 @@ const createPetOwnerAccount = async (req, res) => {
 
 
 
-        return res.status(201).json({ message: 'Success', user: newPetOwner, token: accessToken })
+        return res.status(201).json({ message: 'Success', user: newPetOwner })
 
     } catch (error) {
         console.log("Error in create PetOwner account controller ", error.message);
@@ -164,13 +162,19 @@ const createAdminAccount = async (req, res) => {
 
         )
 
-        const updatedUser = await authServices.refreshUserToken(newPetOwner.email, refreshToken);
+        const updatedUser = await authServices.refreshUserToken(newAdmin.email, refreshToken);
 
         const cookiesOption = {
             httpOnly: true,
             sameSite: 'strict',
 
         }
+        const safeAdmin = {
+            fullName: newAdmin.fullName,
+            username: newAdmin.username,
+            email: newAdmin.email
+        }
+
 
         res.cookie(
             'accessToken',
@@ -183,7 +187,7 @@ const createAdminAccount = async (req, res) => {
             cookiesOption
         )
 
-        return res.status(201).json({ message: 'Success', adminData: adminData })
+        return res.status(201).json({ message: 'Success', admin: safeAdmin })
 
     } catch (error) {
         console.log("Error in admin in user", error.message);
@@ -223,7 +227,7 @@ const loginUserAccount = async (req, res) => {
             id: user.id,
             username: user.username,
             email: user.email,
-            role: user.role
+            role: user.userRole.role
         }
 
         const expiry = process.env.JWT_ACCESS_EXPIRY;
