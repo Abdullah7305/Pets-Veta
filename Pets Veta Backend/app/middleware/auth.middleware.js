@@ -43,11 +43,12 @@ const protectRefresh = async (req, res, next) => {
 
 const protectOtp = async (req, res, next) => {
     try {
-        const otpToken = res.cookies.otpToken;
+        const otpToken = req.cookies.otpToken;
+
         if (!otpToken) {
             return res.status(400).json({ err: 'Invalid Cookie' })
         }
-        const decoded = jwt.verify(otpToken, JWT.JWT_OTP_SECRET);
+        const decoded = jwt.verify(otpToken, process.env.JWT_OTP_SECRET);
         if (!decoded) {
             return res.status(400).json({ err: 'Invalid Decoding in auth middleware' })
         }

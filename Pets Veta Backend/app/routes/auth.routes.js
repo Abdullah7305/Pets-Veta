@@ -16,9 +16,6 @@ Router
     .post(authController.loginUserAccount)
 
 Router
-    .route('/auth/admin/tokens')
-    .post(authController)
-Router
     .route('/auth/refresh/token')
     .post(authMiddleware.protectRefresh, authController.refreshTokenController)
 
@@ -31,12 +28,12 @@ Router
     .post(authMiddleware.protectOtp, authController.resendUserOtp)
 
 Router
-    .route('/auth/otp-verifications')
+    .route('/auth/otp-verification')
     .post(authMiddleware.protectOtp, authController.verifyOtp)
 
 Router
     .route('/auth/password-resets')
-    .post(authController.resetUserPassword)
+    .post(authMiddleware.protectOtp, authController.resetUserPassword)
 
 
 

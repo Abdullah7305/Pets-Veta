@@ -1,20 +1,16 @@
 const { default: prisma, userRole } = require('../config/prisma')
-const nodemailer = require('nodemailer');
-const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASSWORD, // app password
-    },
-});
+
 
 
 
 const createDoctor = async (doctorData) => {
     console.log("Data is ", doctorData)
-    const isCreated = await prisma.user.findUnique({
+    const isCreated = await prisma.user.findFirst({
         where: {
-            email: doctorData.email
+            OR: [
+                { email: doctorData.email },
+                { username: doctorData.username }
+            ]
         }
     })
     if (isCreated) {
@@ -56,9 +52,12 @@ const createDoctor = async (doctorData) => {
 
 const createPetOwner = async (petOwnerData) => {
 
-    const isCreated = await prisma.user.findUnique({
+    const isCreated = await prisma.user.findFirst({
         where: {
-            email: petOwnerData.email
+            OR: [
+                { email: petOwnerData.email },
+                { username: petOwnerData.username }
+            ]
         }
     })
     if (isCreated) {
@@ -162,8 +161,7 @@ const getUserWithRole = async (email) => {
             email
         },
         include: {
-            admin: true,
-            doctors: true
+            userRole: true
         }
     });
 };
@@ -182,28 +180,30 @@ const saveUserOtp = async (email, userOtp) => {
 }
 
 const updateOtpField = async (email) => {
-    const user = await prisma.user.delete({
+    const user = await prisma.user.update({
         where: {
             email: email
         },
         data: {
-            otp: ""
+            otp: "",
+            isEmailVerified: true
         }
     })
     return user;
 }
 
-const updateUserPassword = async (password) => {
+const updateUserPassword = async (id, password) => {
     const user = await prisma.user.update({
         where: {
-            email: email,
-            data: {
-                password: password
-            }
+            id: id
+        },
+        data: {
+            password: password
         }
     })
     return user;
 }
+
 
 
 module.exports = {
@@ -215,5 +215,6 @@ module.exports = {
     saveUserOtp,
     updateOtpField,
     getUserWithRole,
+    updateUserPassword,
     createAdmin
 };

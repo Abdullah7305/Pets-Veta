@@ -26,49 +26,38 @@ const createDoctorAccount = async (req, res) => {
         if (newDoctor === false) {
             return res.status(400).json({ message: 'User already Exist' })
         }
-        const accessTokenSecretKey = process.env.JWT_ACCESS_SECRET;
-        const refreshTokenSecretKey = process.env.JWT_REFRESH_SECRET;
-        const refreshTokenExpiry = process.env.JWT_REFRESH_EXPIRY
-        const expiry = process.env.JWT_ACCESS_EXPIRY;
+
+        const otpCode = authUtils.otpGenerator();
+        const hashedOtp = await bcrypt.hash(otpCode, 12);
+        const saveUserOtp = await authServices.saveUserOtp(email, hashedOtp);
+        await authUtils.sendOtp(email, otpCode)
+
         const payload = {
             id: newDoctor.id,
-            username: newDoctor.username,
             email: newDoctor.email
-        };
+        }
 
-        const accessToken = jwt.sign(
-            payload,
-            accessTokenSecretKey,
-            {
-                expiresIn: expiry
-            }
-        );
-
-        const refreshToken = jwt.sign(
-            payload,
-            refreshTokenSecretKey,
-            {
-                expiresIn: refreshTokenExpiry
-            }
-
-        )
-        const updatedUser = await authServices.refreshUserToken(email, refreshToken);
         const cookiesOption = {
             httpOnly: true,
             sameSite: 'strict',
-
+            maxAge: 10 * 60 * 1000
         }
+        const otpToken = await jwt.sign(
+            payload,
+            process.env.JWT_OTP_SECRET,
+            {
+                expiresIn: '6min'
+            }
+
+        )
         res.cookie(
-            'accessToken',
-            accessToken,
-            cookiesOption
-        );
-        res.cookie(
-            'refreshToken',
-            refreshToken,
+            'otpToken',
+            otpToken,
             cookiesOption
         )
-        return res.status(201).json({ message: 'Success', user: newDoctor, token: accessToken })
+
+
+        return res.status(201).json({ message: 'OTP Sent' })
 
     } catch (error) {
         console.log("Error in create doctor account controller ", error.message);
@@ -96,54 +85,37 @@ const createPetOwnerAccount = async (req, res) => {
         if (newPetOwner === false) {
             return res.status(400).json({ message: 'User already Exist' })
         }
+        const otpCode = authUtils.otpGenerator();
+        const hashedOtp = await bcrypt.hash(otp, 12);
+        const saveUserOtp = await authServices.saveUserOtp(email, hashedOtp);
+        await authUtils.sendOtp(email, otpCode)
 
         const payload = {
             id: newPetOwner.id,
-            username: newPetOwner.username,
             email: newPetOwner.email
         }
-
-        const expiry = process.env.JWT_ACCESS_EXPIRY;
-        const refreshTokenExpiry = process.env.JWT_REFRESH_EXPIRY
-        const refreshTokenSecretKey = process.env.JWT_REFRESH_SECRET;
-        const accessTokenSecretKey = process.env.JWT_ACCESS_SECRET;
-
-        const accessToken = jwt.sign(
-            payload,
-            accessTokenSecretKey,
-            {
-                expiresIn: expiry
-            }
-        );
-
-        const refreshToken = jwt.sign(
-            payload,
-            refreshTokenSecretKey,
-
-            {
-                expiresIn: refreshTokenExpiry,
-            }
-
-        )
-        console.log("refreshToken is ", refreshToken);
-        const updatedUser = await authServices.refreshUserToken(newPetOwner.email, refreshToken);
 
         const cookiesOption = {
             httpOnly: true,
             sameSite: 'strict',
+            maxAge: 10 * 60 * 1000
 
         }
+        const otpToken = await jwt.sign(
+            payload,
+            process.env.JWT_OTP_SECRET,
+            {
+                expiresIn: '10min'
+            }
 
+        )
         res.cookie(
-            'accessToken',
-            accessToken,
-            cookiesOption
-        );
-        res.cookie(
-            'refreshToken',
-            refreshToken,
+            'otpToken',
+            otpToken,
             cookiesOption
         )
+
+
 
         return res.status(201).json({ message: 'Success', user: newPetOwner, token: accessToken })
 
@@ -224,7 +196,7 @@ const loginUserAccount = async (req, res) => {
     try {
 
         const { email, password } = req.body;
-        console.log("Data", req.body);
+
 
         const user = await authServices.loginUser(req.body);
 
@@ -237,12 +209,13 @@ const loginUserAccount = async (req, res) => {
         if (!isMatched) {
             return res.status(401).json({ error: 'Password or Email do not match' })
         }
+        console.log("Login user is ", user);
 
         const validUser = {
-            name: user.name,
+            name: user.fullName,
             email: user.email,
             username: user.username,
-            role: user.role
+            role: user.userRole.role
 
         }
 
@@ -254,9 +227,9 @@ const loginUserAccount = async (req, res) => {
         }
 
         const expiry = process.env.JWT_ACCESS_EXPIRY;
+        const accessTokenSecretKey = process.env.JWT_ACCESS_SECRET;
         const refreshTokenExpiry = process.env.JWT_REFRESH_EXPIRY;
         const refreshTokenSecretKey = process.env.JWT_REFRESH_SECRET;
-        const accessTokenSecretKey = process.env.JWT_ACCESS_SECRET;
 
         const accessToken = jwt.sign(
             payload,
@@ -274,7 +247,7 @@ const loginUserAccount = async (req, res) => {
                 expiresIn: refreshTokenExpiry
             }
         )
-        const updatedUser = await authServices.refreshUserToken(email, refreshToken);
+        const updatedUserToken = await authServices.refreshUserToken(email, refreshToken);
 
         const cookiesOption = {
             httpOnly: true,
@@ -320,7 +293,15 @@ const refreshTokenController = async (req, res) => {
                 expiresIn: expiry
             }
         );
+        const refreshToken = jwt.sign(
+            payload,
+            refreshTokenSecretKey,
+            {
 
+                expiresIn: refreshTokenExpiry
+            }
+        )
+        const updatedUserToken = await authServices.refreshUserToken(email, refreshToken);
 
         const cookiesOption = {
             httpOnly: true,
@@ -360,7 +341,6 @@ const verifyUserEmail = async (req, res) => {
 
         const payload = {
             id: validUser.id,
-            username: validUser.username,
             email: validUser.email,
 
         }
@@ -374,7 +354,7 @@ const verifyUserEmail = async (req, res) => {
         const cookiesOption = {
             httpOnly: true,
             sameSite: 'strict',
-
+            maxAge: 30 * 60 * 1000
         }
         res.cookie(
             'otpToken',
@@ -391,19 +371,77 @@ const verifyUserEmail = async (req, res) => {
 
 const verifyOtp = async (req, res) => {
     try {
-        const { email, username } = req.user;
+        const { id, email } = req.user;
         const { otpCode } = req.body;
+        console.log("Incming OTP is ", otpCode);
         const validUser = await authServices.verifyEmail(email);
         if (!validUser) {
             return res.status(400).json({ err: 'Invalid User Email' });
         }
+
 
         const isMatched = await bcrypt.compare(otpCode, validUser.otp);
         if (!isMatched) {
             return res.status(400).json({ err: 'Otp code is invalid' });
         }
         const updatedUserSchema = await authServices.updateOtpField(email);
-        return res.status(200).json({ message: 'Success', user: updatedUserSchema });
+        const userData = await authServices.getUserWithRole(email)
+
+        const accessTokenExpiry = process.env.JWT_ACCESS_EXPIRY;
+        const accessTokenSecret = process.env.JWT_ACCESS_SECRET;
+        const refreshTokenExpiry = process.env.JWT_REFRESH_EXPIRY;
+        const refreshTokenSecret = process.env.JWT_REFRESH_SECRET;
+
+        const refreshTokenPayload = {
+            id: validUser.id,
+        }
+
+        const accessTokenPayload = {
+            id: validUser.id,
+            email: validUser.email,
+
+        }
+
+        const cookiesOption = {
+            httpOnly: true,
+            sameSite: 'strict',
+        }
+
+        const refreshToken = jwt.sign(
+            refreshTokenPayload,
+            refreshTokenSecret,
+            {
+                expiresIn: refreshTokenExpiry
+            }
+        )
+        const accessToken = jwt.sign(
+            accessTokenPayload,
+            accessTokenSecret,
+            {
+                expiresIn: accessTokenExpiry
+            }
+        )
+
+        res.cookie(
+            'accessToken',
+            accessToken,
+            cookiesOption
+        )
+        res.cookie(
+            'refreshToken',
+            refreshToken,
+            cookiesOption
+        )
+
+        return res.status(200).json({
+            message: 'Success', user: {
+                id: updatedUserSchema.id,
+                username: updatedUserSchema.username,
+                email: updatedUserSchema.email,
+                role: userData.userRole.role
+
+            }
+        });
 
 
     } catch (error) {
@@ -426,7 +464,6 @@ const resendUserOtp = async (req, res) => {
 
         const payload = {
             id: validUser.id,
-            username: validUser.username,
             email: validUser.email,
 
         }
@@ -434,12 +471,13 @@ const resendUserOtp = async (req, res) => {
             payload,
             process.env.JWT_OTP_SECRET,
             {
-                expiresIn: '3min'
+                expiresIn: '6min'
             }
         )
         const cookiesOption = {
             httpOnly: true,
             sameSite: 'strict',
+            maxAge: 30 * 60 * 1000
 
         }
         res.cookie(
@@ -458,7 +496,7 @@ const resendUserOtp = async (req, res) => {
 
 const resetUserPassword = async (req, res) => {
     try {
-        const { id, email, username } = req.user;
+        const { id, email } = req.user;
         const { password } = req.body;
         const isValidUser = await authServices.verifyEmail(email);
         if (!isValidUser) {
@@ -466,9 +504,9 @@ const resetUserPassword = async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 12);
-        await authServices.resetUserPassword(hashedPassword);
+        await authServices.updateUserPassword(id, hashedPassword);
 
-
+        return res.status(201).json({ message: 'Password Reset Successfully' });
 
     } catch (error) {
         console.log("Error in password resets ", error.message);

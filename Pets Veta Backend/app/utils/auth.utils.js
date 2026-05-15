@@ -1,18 +1,28 @@
+const nodemailer = require('nodemailer');
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASSWORD, // app password
+  },
+});
+
 const otpGenerator = () => {
-    const otp = Math.floor(100000 + Math.random() * 900000);
-    return otp;
+  const otp = Math.floor(100000 + Math.random() * 900000);
+
+  return otp.toString();
 }
 
-const sendOtp = async (email) => {
-    try {
+const sendOtp = async (email,otpCode) => {
+  try {
 
-        const info = await transporter.sendMail({
-            from: 'abdullahsuleman755@gmail.com',
-            to: email,
-            subject: "OTP Code",
-            text: "Your OTP Code", // fallback
+    const info = await transporter.sendMail({
+      from: 'abdullahsuleman755@gmail.com',
+      to: email,
+      subject: "OTP Code",
+      text: "Your OTP Code", // fallback
 
-            html: `
+      html: `
   <body style="margin: 0; padding: 0; background-color: #eaf1ed; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
 
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #eaf1ed; padding: 40px 20px;">
@@ -65,16 +75,16 @@ const sendOtp = async (email) => {
 
   </body>
   `,
-        });
+    });
 
-        console.log("Message sent: %s", info.messageId);
-      
-    } catch (err) {
-        console.error("Error while sending mail:", err);
-    }
+    console.log("Message sent: %s", info.messageId);
+
+  } catch (err) {
+    console.error("Error while sending mail:", err);
+  }
 }
 
 module.exports = {
-    otpGenerator,
-    sendOtp
+  otpGenerator,
+  sendOtp
 }
