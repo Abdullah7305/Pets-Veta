@@ -43,14 +43,14 @@ export default function LoginComponent() {
   };
 
   return (
-    <div className="flex w-full max-w-md flex-col gap-5">
+    <div className="flex w-full max-w-md flex-col gap-4">
       <div>
-        <h1 className="text-3xl font-bold text-blue-900">Doctor Login</h1>
+        <h1 className="text-2xl font-bold text-blue-900">Doctor Login</h1>
 
         <p className="mt-1 text-gray-500">Login to your account</p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {loginFields.map((field) => (
           <Input
             key={field.name}

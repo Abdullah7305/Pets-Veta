@@ -2,25 +2,25 @@ import heroImage from "../../../assets/shared/images/pexels-ten-brinke-photograp
 
 const Hero = () => {
   return (
-    <section className="relative flex min-h-[calc(100vh-82px)] items-center overflow-hidden bg-[linear-gradient(180deg,_rgba(249,197,168,1)_0%,_rgba(249,197,168,1)_28%,_rgba(212,226,224,1)_100%)] px-4 py-14 sm:px-6 sm:py-16 md:px-8 md:py-20 lg:px-10 lg:py-24">
+    <section className="relative flex min-h-[calc(100vh-82px)] items-center overflow-hidden bg-gradient-to-br from-[#F9C5A8] to-[#D4E2E0] px-4 py-12 sm:px-6 sm:py-14 md:px-8 md:py-16 lg:px-10 lg:py-20">
       {/* Background Blur Effects */}
       <div className="absolute left-[-120px] top-[-100px] h-[260px] w-[260px] rounded-full bg-white/35 blur-3xl sm:h-[320px] sm:w-[320px]" />
       <div className="absolute right-[-150px] top-[120px] h-[280px] w-[280px] rounded-full bg-[#078b91]/20 blur-3xl sm:h-[360px] sm:w-[360px]" />
       <div className="absolute bottom-[-120px] left-[30%] h-[240px] w-[240px] rounded-full bg-white/30 blur-3xl sm:h-[280px] sm:w-[280px]" />
 
-      <div className="relative z-10 mx-auto grid w-full max-w-[1240px] grid-cols-1 items-center gap-10 md:grid-cols-2 md:gap-12 lg:gap-16">
+      <div className="relative z-10 mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-9 md:grid-cols-2 md:gap-10 lg:gap-12">
         {/* Left Side */}
         <div className="order-2 text-center md:order-1 md:text-left">
           <span className="mb-4 inline-flex rounded-full border border-white/50 bg-white/30 px-4 py-2 text-xs font-bold text-[#078b91] shadow-sm backdrop-blur-xl sm:mb-5 sm:px-5 sm:text-sm">
             Trusted Pet Care Platform
           </span>
 
-          <h1 className="mx-auto mb-5 max-w-[720px] text-[34px] font-extrabold leading-[1.12] tracking-[-1px] text-[#20263d] sm:text-[44px] md:mx-0 md:text-[52px] lg:text-[64px]">
+          <h1 className="mx-auto mb-5 max-w-[680px] text-[34px] font-extrabold leading-[1.12] tracking-[-1px] text-[#20263d] sm:text-[42px] md:mx-0 md:text-[48px] lg:text-[56px]">
             Caring For Your Pets{" "}
             <span className="text-[#078b91]">Starts Here</span>
           </h1>
 
-          <p className="mx-auto mb-7 max-w-[610px] text-[15px] leading-[1.8] text-gray-700 sm:text-[17px] md:mx-0 md:text-[18px] lg:text-[20px]">
+          <p className="mx-auto mb-7 max-w-[580px] text-[15px] leading-[1.8] text-gray-700 sm:text-[16px] md:mx-0 md:text-[17px] lg:text-[18px]">
             Schedule vet appointments, grooming sessions, and pet checkups
             quickly and easily — all in one place.
           </p>
@@ -74,7 +74,7 @@ const Hero = () => {
             <img
               src={heroImage}
               alt="Pet care hero"
-              className="relative z-10 w-full max-w-[260px] object-contain drop-shadow-2xl transition-transform duration-700 ease-out hover:scale-[1.03] sm:max-w-[340px] md:max-w-[390px] lg:max-w-[480px] xl:max-w-[520px]"
+              className="relative z-10 w-full max-w-[240px] object-contain drop-shadow-2xl transition-transform duration-700 ease-out hover:scale-[1.03] sm:max-w-[320px] md:max-w-[360px] lg:max-w-[420px] xl:max-w-[460px]"
             />
           </div>
         </div>

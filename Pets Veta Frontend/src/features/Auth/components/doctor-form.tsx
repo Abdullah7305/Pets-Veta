@@ -96,9 +96,9 @@ export default function DoctorForm() {
   };
 
   return (
-    <div className="rounded-3xl bg-white/80 p-8 shadow-2xl backdrop-blur-lg">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold text-blue-900">
+    <div className="rounded-3xl bg-white/80 p-6 shadow-2xl backdrop-blur-lg">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-blue-900">
           Doctor Registration
         </h1>
 
@@ -107,8 +107,8 @@ export default function DoctorForm() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {/* DYNAMIC INPUTS */}
           {doctorFields.map((field) => (
             <Input
@@ -134,7 +134,7 @@ export default function DoctorForm() {
             <select
               className="
                 w-full rounded-xl border border-gray-300
-                px-4 py-3 outline-none
+                px-4 py-2.5 outline-none
                 focus:border-blue-600
               "
               {...register("specialization")}
@@ -157,7 +157,7 @@ export default function DoctorForm() {
         </div>
 
         {/* BUTTONS */}
-        <div className="space-y-4 pt-2">
+        <div className="space-y-3 pt-2">
           <Button type="submit">Create Account</Button>
 
           {/* DIVIDER */}

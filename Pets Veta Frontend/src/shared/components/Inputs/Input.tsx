@@ -37,7 +37,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             placeholder={type !== "file" ? placeholder : undefined}
             className={`
     w-full rounded-xl border
-    px-4 py-3
+    px-4 py-2.5
     outline-none transition-all
 
     ${

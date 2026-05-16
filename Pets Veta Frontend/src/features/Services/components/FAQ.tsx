@@ -56,30 +56,30 @@ const faqData: FAQItem[] = [
 
 const FAQ = () => {
   return (
-    <section className="bg-[#eeeeee] px-6 py-24">
-      <div className="text-center mb-24">
-        <h2 className="text-5xl font-extrabold text-[#20263d] mb-6">
+    <section className="bg-[#eeeeee] px-6 py-16">
+      <div className="mb-12 text-center">
+        <h2 className="mb-5 text-3xl font-extrabold text-[#20263d] md:text-[2.4rem]">
           FAQ
         </h2>
 
-        <p className="text-xl text-gray-500 leading-relaxed">
+        <p className="text-base leading-8 text-gray-500 md:text-lg">
           Problems trying to resolve the conflict between
           <br />
           the two major realms of Classical physics: Newtonian mechanics
         </p>
       </div>
 
-      <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {faqData.map((faq) => (
-          <div key={faq.id} className="bg-white rounded-xl p-8 flex gap-5">
-            <ChevronRight className="text-sky-500 mt-1" size={30} />
+          <div key={faq.id} className="flex gap-4 rounded-xl bg-white p-6">
+            <ChevronRight className="mt-1 text-sky-500" size={24} />
 
             <div>
-              <h3 className="text-xl font-bold text-[#20263d] leading-snug mb-3">
+              <h3 className="mb-3 text-lg font-bold leading-snug text-[#20263d]">
                 {faq.title}
               </h3>
 
-              <p className="text-lg text-gray-500 font-semibold leading-relaxed">
+              <p className="text-base font-semibold leading-7 text-gray-500">
                 {faq.description}
               </p>
             </div>

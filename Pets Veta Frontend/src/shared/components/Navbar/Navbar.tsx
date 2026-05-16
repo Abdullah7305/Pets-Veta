@@ -5,25 +5,25 @@ import { NAVLINKS } from "./navbar.data";
 const Navbar = () => {
   return (
     <nav className="sticky top-0 z-50 border-b border-white/30 bg-white/35 text-[#20263d] shadow-[0_8px_30px_rgba(0,0,0,0.06)] backdrop-blur-2xl">
-      <div className="mx-auto flex max-w-[1400px] items-center justify-between px-5 py-3 md:px-8 lg:px-10">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-2.5 md:px-8">
         
         {/* Logo */}
         <div className="flex items-center">
           <img
             src={logo}
             alt="LOGO"
-            className="h-[58px] w-auto object-contain transition-transform duration-300 hover:scale-105"
+            className="h-[52px] w-auto object-contain transition-transform duration-300 hover:scale-105"
           />
         </div>
 
         {/* Links */}
-        <ul className="hidden items-center gap-8 lg:flex">
+        <ul className="hidden items-center gap-7 lg:flex">
           {NAVLINKS.map((link) => (
             <li key={link.id}>
               <NavLink
                 to={link.path}
                 className={({ isActive }) =>
-                  `relative text-[16px] font-semibold transition-all duration-300 
+                  `relative text-[15px] font-semibold transition-all duration-300 
                   ${
                     isActive
                       ? "text-[#078b91]"
@@ -45,11 +45,11 @@ const Navbar = () => {
 
         {/* Buttons */}
         <div className="hidden items-center gap-3 md:flex">
-          <button className="rounded-full border border-[#078b91]/30 bg-white/30 px-6 py-3 text-[15px] font-bold text-[#078b91] backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/60">
+          <button className="rounded-full border border-[#078b91]/30 bg-white/30 px-5 py-2.5 text-sm font-bold text-[#078b91] backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/60">
             Login
           </button>
 
-          <button className="rounded-full bg-[#078b91]/90 px-6 py-3 text-[15px] font-bold text-white shadow-lg shadow-[#078b91]/25 backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#06777c]">
+          <button className="rounded-full bg-[#078b91]/90 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-[#078b91]/25 backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#06777c]">
             Sign Up
           </button>
         </div>

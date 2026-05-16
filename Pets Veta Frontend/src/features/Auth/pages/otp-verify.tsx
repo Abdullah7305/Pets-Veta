@@ -54,20 +54,20 @@ export default function OtpVerifyPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="bg-white rounded-2xl border border-gray-200 p-10 w-full max-w-md">
-        <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center mb-6">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+      <div className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-7">
+        <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50">
           <span className="text-2xl">📱</span>
         </div>
-        <h1 className="text-xl font-semibold text-gray-900 mb-1">
+        <h1 className="mb-1 text-xl font-semibold text-gray-900">
           Enter verification code
         </h1>
-        <p className="text-sm text-gray-500 mb-6">
+        <p className="mb-5 text-sm text-gray-500">
           We sent a 6-digit code to <strong>{email}</strong>
         </p>
 
         {/* 6 OTP boxes */}
-        <div className="flex gap-3 justify-center mb-2">
+        <div className="mb-2 flex justify-center gap-2">
           {otp.map((digit, i) => (
             <input
               key={i}
@@ -79,7 +79,7 @@ export default function OtpVerifyPage() {
               onChange={(e) => handleChange(i, e.target.value)}
               onKeyDown={(e) => handleKeyDown(i, e)}
               className={`
-                w-12 h-14 text-center text-xl font-semibold
+                h-12 w-10 text-center text-lg font-semibold
                 border rounded-xl outline-none
                 transition-all duration-200
                 ${error ? "border-red-400 bg-red-50"
@@ -92,11 +92,11 @@ export default function OtpVerifyPage() {
         </div>
 
         {error && (
-          <p className="text-xs text-red-500 text-center mb-4">{error}</p>
+          <p className="mb-4 text-center text-xs text-red-500">{error}</p>
         )}
 
         {/* Resend timer */}
-        <div className="text-center mb-6 mt-2">
+        <div className="mb-5 mt-2 text-center">
           {canResend ? (
             <button
               onClick={handleResend}

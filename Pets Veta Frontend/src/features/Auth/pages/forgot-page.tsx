@@ -23,15 +23,15 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="bg-white rounded-2xl border border-gray-200 p-10 w-full max-w-md">
-        <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center mb-6">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+      <div className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-7">
+        <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50">
           <span className="text-2xl">✉️</span>
         </div>
-        <h1 className="text-xl font-semibold text-gray-900 mb-1">
+        <h1 className="mb-1 text-xl font-semibold text-gray-900">
           Forgot your password?
         </h1>
-        <p className="text-sm text-gray-500 mb-6">
+        <p className="mb-5 text-sm text-gray-500">
           Enter your email and we'll send a 6-digit OTP to reset your password.
         </p>
 
@@ -44,7 +44,7 @@ export default function ForgotPasswordPage() {
           error={error}
         />
 
-        <div className="flex flex-col gap-3 mt-6">
+        <div className="mt-5 flex flex-col gap-3">
           <Button type="button" variant="primary" onClick={handleSendOtp}>
             Send OTP
           </Button>

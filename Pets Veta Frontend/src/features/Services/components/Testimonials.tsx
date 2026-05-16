@@ -30,38 +30,38 @@ const testimonials: Testimonial[] = [
 
 const Testimonials = () => {
   return (
-    <section className="bg-[#eeeeee] px-6 py-28">
-      <div className="text-center mb-24">
-        <h2 className="text-5xl font-extrabold text-[#078b91] mb-6">
+    <section className="bg-[#eeeeee] px-6 py-16">
+      <div className="mb-12 text-center">
+        <h2 className="mb-5 text-3xl font-extrabold text-[#078b91] md:text-[2.4rem]">
           what our customers say
         </h2>
 
-        <p className="text-2xl text-gray-600 leading-relaxed">
+        <p className="text-base leading-8 text-gray-600 md:text-lg">
           Problems trying to resolve the conflict between the two major realms of
           <br />
           Classical physics: Newtonian mechanics
         </p>
       </div>
 
-      <div className="max-w-[1500px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
+      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-3">
         {testimonials.map((item) => (
-          <div key={item.id} className="bg-white border rounded-md p-12">
-            <div className="flex gap-2 text-yellow-400 mb-8">
-              <Star fill="currentColor" size={28} />
-              <Star fill="currentColor" size={28} />
-              <Star fill="currentColor" size={28} />
-              <Star fill="currentColor" size={28} />
-              <Star size={28} />
+          <div key={item.id} className="rounded-md border bg-white p-7">
+            <div className="mb-6 flex gap-2 text-yellow-400">
+              <Star fill="currentColor" size={22} />
+              <Star fill="currentColor" size={22} />
+              <Star fill="currentColor" size={22} />
+              <Star fill="currentColor" size={22} />
+              <Star size={22} />
             </div>
 
-            <p className="text-xl text-gray-600 font-semibold leading-relaxed mb-8">
+            <p className="mb-6 text-base font-semibold leading-8 text-gray-600">
               {item.text}
             </p>
 
             <img
               src={item.image}
               alt="customer"
-              className="w-20 h-20 rounded-full object-cover"
+              className="h-16 w-16 rounded-full object-cover"
             />
           </div>
         ))}

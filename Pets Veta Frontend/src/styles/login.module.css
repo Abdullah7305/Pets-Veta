@@ -32,17 +32,17 @@
   align-items: center;
   justify-content: center;
 
-  padding: 40px;
+  padding: 32px;
 }
 
 /* FORM CARD */
 .formBox {
   width: 100%;
-  max-width: 420px;
+  max-width: 390px;
 
   background: rgba(255, 255, 255, 0.9);
 
-  padding: 32px;
+  padding: 26px;
 
   border-radius: 20px;
 

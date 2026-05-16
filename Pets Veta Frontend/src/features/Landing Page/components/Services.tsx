@@ -3,19 +3,19 @@ import { servicesData } from "../data/services.data";
 
 const Services = () => {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-[#F9C5A8] via-[#f7d2bd] to-[#D4E2E0] px-4 py-14 sm:px-6 sm:py-16 md:py-20 lg:py-22">
+    <section className="relative overflow-hidden bg-gradient-to-b from-[#F9C5A8] via-[#f7d2bd] to-[#D4E2E0] px-4 py-12 sm:px-6 sm:py-14 md:py-16 lg:py-18">
       {/* Background decorations */}
       <div className="absolute left-[-120px] top-10 h-[240px] w-[240px] rounded-full bg-white/25 blur-3xl" />
       <div className="absolute bottom-[-120px] right-[-100px] h-[280px] w-[280px] rounded-full bg-[#078b91]/20 blur-3xl" />
 
-      <div className="relative z-10 mx-auto max-w-[1180px]">
+      <div className="relative z-10 mx-auto max-w-6xl">
         {/* Heading */}
-        <div className="mx-auto mb-10 max-w-3xl text-center md:mb-12">
+        <div className="mx-auto mb-8 max-w-3xl text-center md:mb-10">
           <span className="mb-4 inline-block rounded-full bg-white/60 px-5 py-2 text-sm font-bold text-[#078b91] shadow-sm backdrop-blur-md">
             What We Offer
           </span>
 
-          <h2 className="mb-4 text-[30px] font-extrabold leading-tight text-[#20263d] sm:text-[36px] md:text-[42px]">
+          <h2 className="mb-4 text-[30px] font-extrabold leading-tight text-[#20263d] sm:text-[34px] md:text-[38px]">
             Our Pet Services
           </h2>
 
@@ -26,7 +26,7 @@ const Services = () => {
         </div>
 
         {/* Cards */}
-        <div className="mx-auto grid max-w-[1080px] grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+        <div className="mx-auto grid max-w-5xl grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
           {servicesData.map((service) => (
             <div
               key={service.id}
