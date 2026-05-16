@@ -40,7 +40,7 @@ const createDoctorAccount = async (req, res) => {
             sameSite: 'strict',
             maxAge: 10 * 60 * 1000
         }
-        const otpToken =  jwt.sign(
+        const otpToken = jwt.sign(
             payload,
             process.env.JWT_OTP_SECRET,
             {
@@ -99,7 +99,7 @@ const createPetOwnerAccount = async (req, res) => {
             maxAge: 10 * 60 * 1000
 
         }
-        const otpToken =  jwt.sign(
+        const otpToken = jwt.sign(
             payload,
             process.env.JWT_OTP_SECRET,
             {
@@ -123,9 +123,9 @@ const createPetOwnerAccount = async (req, res) => {
     }
 }
 
-const createAdminAccount = async (req, res) => {
+const createAdminAccount = async (adminDetails) => {
     try {
-        const { fullName, username, email, password } = req.body;
+        const { fullName, username, email, password } = adminDetails;
         const hashedPassword = await bcrypt.hash(password, 12);
         const adminData = {
             ...req.body,
@@ -139,59 +139,59 @@ const createAdminAccount = async (req, res) => {
             role: newAdmin.role
         }
 
-        const expiry = process.env.JWT_ACCESS_EXPIRY;
-        const refreshTokenExpiry = process.env.JWT_REFRESH_EXPIRY
-        const refreshTokenSecretKey = process.env.JWT_REFRESH_SECRET;
-        const accessTokenSecretKey = process.env.JWT_ACCESS_SECRET;
+        // const expiry = process.env.JWT_ACCESS_EXPIRY;
+        // const refreshTokenExpiry = process.env.JWT_REFRESH_EXPIRY
+        // const refreshTokenSecretKey = process.env.JWT_REFRESH_SECRET;
+        // const accessTokenSecretKey = process.env.JWT_ACCESS_SECRET;
 
-        const accessToken = jwt.sign(
-            payload,
-            accessTokenSecretKey,
-            {
-                expiresIn: expiry
-            }
-        );
+        // const accessToken = jwt.sign(
+        //     payload,
+        //     accessTokenSecretKey,
+        //     {
+        //         expiresIn: expiry
+        //     }
+        // );
 
-        const refreshToken = jwt.sign(
-            payload,
-            refreshTokenSecretKey,
+        // const refreshToken = jwt.sign(
+        //     payload,
+        //     refreshTokenSecretKey,
 
-            {
-                expiresIn: refreshTokenExpiry,
-            }
+        //     {
+        //         expiresIn: refreshTokenExpiry,
+        //     }
 
-        )
+        // )
 
-        const updatedUser = await authServices.refreshUserToken(newAdmin.email, refreshToken);
+        // const updatedUser = await authServices.refreshUserToken(newAdmin.email, refreshToken);
 
-        const cookiesOption = {
-            httpOnly: true,
-            sameSite: 'strict',
+        // const cookiesOption = {
+        //     httpOnly: true,
+        //     sameSite: 'strict',
 
-        }
-        const safeAdmin = {
-            fullName: newAdmin.fullName,
-            username: newAdmin.username,
-            email: newAdmin.email
-        }
+        // }
+        // const safeAdmin = {
+        //     fullName: newAdmin.fullName,
+        //     username: newAdmin.username,
+        //     email: newAdmin.email
+        // }
 
 
-        res.cookie(
-            'accessToken',
-            accessToken,
-            cookiesOption
-        );
-        res.cookie(
-            'refreshToken',
-            refreshToken,
-            cookiesOption
-        )
+        // res.cookie(
+        //     'accessToken',
+        //     accessToken,
+        //     cookiesOption
+        // );
+        // res.cookie(
+        //     'refreshToken',
+        //     refreshToken,
+        //     cookiesOption
+        // )
 
-        return res.status(201).json({ message: 'Success', admin: safeAdmin })
+        // return res.status(201).json({ message: 'Success', admin: safeAdmin })
 
     } catch (error) {
         console.log("Error in admin in user", error.message);
-        return res.status(500).json({ serverErr: error.message })
+        // return res.status(500).json({ serverErr: error.message })
     }
 }
 
