@@ -1,33 +1,21 @@
-import Home from "./pages/Home"
-import LandingLayout from "../../layout/landing.layout"
-import About from "./pages/About"
-import Services from "./pages/Services"
-import Contact from "./pages/Contact"
+import LandingPage from "./pages/LandingPage";
+import LandingLayout from "../../layout/landing.layout";
+import { contactRoutes } from "../Contact/contact.route";
+import { aboutRoutes } from "../About/about.route";
 
 const LandingPageRoutes = [
-    {
-        path: '/',
-        element: <LandingLayout />,
-        children: [
-            {
-                index: true,
-                element: <Home />
-            },
-            {
-                path: 'contact',
-                element: <Contact />
-            },
-            {
-                path: 'about',
-                element: <About />
-            },
-            {
-                path: 'services',
-                element: <Services />
-            }
+  {
+    path: "/",
+    element: <LandingLayout />,
+    children: [
+      {
+        index: true,
+        element: <LandingPage />,
+      },
+      ...aboutRoutes,
+      ...contactRoutes,
+    ],
+  },
+];
 
-        ]
-    }
-]
-
-export default LandingPageRoutes
+export default LandingPageRoutes;
