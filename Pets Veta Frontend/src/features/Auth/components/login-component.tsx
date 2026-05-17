@@ -1,5 +1,6 @@
 import { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
+import { userLogin } from "../api/loginuser.api";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -29,17 +30,32 @@ const loginFields = [
 
 export default function LoginComponent() {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: LoginFormData) => {
+  interface loginResponse {
+    message: string
+  }
+
+  const onSubmit = async (data: LoginFormData) => {
     console.log(data);
+    try {
+      const response = await userLogin(data)
+      console.log(response);
+      reset();
+      navigate('/')
+    } catch (error) {
+      console.log("Error in login", error);
+    }
+
   };
 
   return (

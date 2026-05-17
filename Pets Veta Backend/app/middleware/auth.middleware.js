@@ -44,6 +44,7 @@ const protectRefresh = async (req, res, next) => {
 const protectOtp = async (req, res, next) => {
     try {
         const otpToken = req.cookies.otpToken;
+        console.log("OTP token is ", req.cookies.otpToken);
 
         if (!otpToken) {
             return res.status(400).json({ err: 'Invalid Cookie' })

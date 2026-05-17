@@ -2,17 +2,18 @@ const express = require('express');
 const Router = express.Router();
 const authController = require('../controllers/auth.controller');
 const authMiddleware = require('../middleware/auth.middleware');
+const upload = require('../config/multer.config');
 
 Router
     .route('/auth/register/doctor')
-    .post(authController.createDoctorAccount)
+    .post(upload.single('document'), authController.createDoctorAccount)
 
 Router
     .route('/auth/register/pet-owner')
     .post(authController.createPetOwnerAccount)
 
 Router
-    .route('/auth/user/tokens')
+    .route('/auth/login/user')
     .post(authController.loginUserAccount)
 
 Router
@@ -25,7 +26,7 @@ Router
 
 Router
     .route('/auth/resend/otp')
-    .post(authMiddleware.protectOtp, authController.resendUserOtp)
+    .get(authMiddleware.protectOtp, authController.resendUserOtp)
 
 Router
     .route('/auth/otp-verification')

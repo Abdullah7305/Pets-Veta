@@ -1,9 +1,10 @@
 import { useState } from 'react';
+import PetOwnerForm from '../components/pets-owner';
 
 const PetOwnerSignup = () => {
     return (
         <div>
-            <h2>PetOwnerSignup</h2>
+            <PetOwnerForm />
         </div>
     );
 };

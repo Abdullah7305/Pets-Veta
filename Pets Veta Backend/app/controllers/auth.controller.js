@@ -1,5 +1,6 @@
 const authServices = require('../services/auth.services')
 const authUtils = require('../utils/auth.utils');
+const uploadToCloudinary = require('../utils/cloudinary.utils');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -7,8 +8,16 @@ const jwt = require('jsonwebtoken');
 const createDoctorAccount = async (req, res) => {
     try {
         const { fullName, username, email, password, bio, education, specialization, address, experience } = req.body;
+        console.log("Request hit ");
+        if (!req.file) {
+            return res.status(400).json({ message: "No file uploaded" });
+        }
+        const result = await uploadToCloudinary(
+            req.file.buffer,
+            "pets-veta/doctor-document"
+        );
 
-        const degreeLicenseUrl = "There will be the liscence photo url ";
+        const degreeLicenseUrl = result.secure_url;
 
         const hashedPassword = await bcrypt.hash(password, 12);
 
@@ -28,7 +37,13 @@ const createDoctorAccount = async (req, res) => {
         const otpCode = authUtils.otpGenerator();
         const hashedOtp = await bcrypt.hash(otpCode, 12);
         const saveUserOtp = await authServices.saveUserOtp(email, hashedOtp);
-        await authUtils.sendOtp(email, otpCode)
+        authUtils.sendOtp(email, otpCode)
+            .then((mesg) => {
+                console.log("otp mesg", mesg)
+            })
+            .catch((err) => {
+                console.log("Otp error", err)
+            })
 
         const payload = {
             id: newDoctor.id,
@@ -74,11 +89,18 @@ const createPetOwnerAccount = async (req, res) => {
             ...req.body,
             hashedPassword
         }
-        console.log("new pet owner is ");
 
 
-        const newPetOwner = await authServices.createPetOwner(petOwnerData);
-        console.log("new pet owner is ");
+
+        let newPetOwner = await authServices.createPetOwner(petOwnerData);
+
+        console.log("Data is ", newPetOwner)
+        newPetOwner = {
+            name: newPetOwner.name,
+            username: newPetOwner.username,
+            email: newPetOwner.email,
+            role: newPetOwner.userRole.role
+        }
 
         if (newPetOwner === false) {
             return res.status(400).json({ message: 'User already Exist' })
@@ -86,7 +108,13 @@ const createPetOwnerAccount = async (req, res) => {
         const otpCode = authUtils.otpGenerator();
         const hashedOtp = await bcrypt.hash(otpCode, 12);
         const saveUserOtp = await authServices.saveUserOtp(email, hashedOtp);
-        await authUtils.sendOtp(email, otpCode)
+        authUtils.sendOtp(email, otpCode)
+            .then((mesg) => {
+                console.log("Otp Mesg", mesg)
+            })
+            .catch((err) => {
+                console.log("Error is sending the OTP");
+            })
 
         const payload = {
             id: newPetOwner.id,
@@ -115,7 +143,7 @@ const createPetOwnerAccount = async (req, res) => {
 
 
 
-        return res.status(201).json({ message: 'Success', user: newPetOwner })
+        return res.status(201).json({ message: 'OTP Sent', user: newPetOwner })
 
     } catch (error) {
         console.log("Error in create PetOwner account controller ", error.message);
@@ -375,16 +403,17 @@ const verifyUserEmail = async (req, res) => {
 
 const verifyOtp = async (req, res) => {
     try {
+        console.log("Request cookies is ", req.user);
         const { id, email } = req.user;
-        const { otpCode } = req.body;
-        console.log("Incming OTP is ", otpCode);
+        console.log("Incming OTP is", req.body);
+        const { otp } = req.body;
         const validUser = await authServices.verifyEmail(email);
         if (!validUser) {
             return res.status(400).json({ err: 'Invalid User Email' });
         }
 
 
-        const isMatched = await bcrypt.compare(otpCode, validUser.otp);
+        const isMatched = await bcrypt.compare(otp, validUser.otp);
         if (!isMatched) {
             return res.status(400).json({ err: 'Otp code is invalid' });
         }

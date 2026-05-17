@@ -23,7 +23,7 @@ export const doctorSchema = z
         },
       ),
 
-    experience: z.string().min(1, "experience is required"),
+    experience: z.string().min(1, "experience is required").max(70,"valid experience please"),
 
     medicalLicenseNumber: z.string().min(3, "License number is required"),
 

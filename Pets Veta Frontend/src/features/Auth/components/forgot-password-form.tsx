@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
 import Input from "../../../shared/components/Inputs/Input";
-
+import { veriyUserEmail } from "../api/verifyemail.api";
 import Button from "../../../shared/components/Button/Button";
 import BackButton from "../../../shared/components/Button/BackButton/BackButton";
 
@@ -19,10 +19,9 @@ import {
 
 const forgotFields = [
   {
-    name: "emailOrPhone",
-    label: "Email or Phone Number",
-    type: "text",
-    placeholder: "Enter email or phone",
+    name: "email",
+    type: "email",
+    placeholder: "Enter email ",
   },
 ] as const;
 
@@ -34,6 +33,7 @@ export default function ForgotPasswordForm() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -42,10 +42,11 @@ export default function ForgotPasswordForm() {
   const onSubmit = async (data: ForgotPasswordFormData) => {
     try {
       setLoading(true);
+      const response = await veriyUserEmail(data);
 
-      console.log(data);
-
-      navigate("/verify-otp");
+      console.log(response);
+      reset(),
+        navigate("/verify-otp");
     } catch (error) {
       console.log(error);
     } finally {
@@ -59,7 +60,7 @@ export default function ForgotPasswordForm() {
         <h1 className="text-3xl font-bold text-blue-900">Forgot Password</h1>
 
         <p className="mt-2 text-gray-500">
-          Enter your registered email or phone number
+          Enter your registered email
         </p>
       </div>
 
@@ -67,7 +68,7 @@ export default function ForgotPasswordForm() {
         {forgotFields.map((field) => (
           <Input
             key={field.name}
-            label={field.label}
+            label={""}
             type={field.type}
             placeholder={field.placeholder}
             error={errors[field.name]?.message as string}

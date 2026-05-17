@@ -1,9 +1,12 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
+import { createDoctorAccount } from "../api/doctor.api";
+import { useNavigate } from "react-router-dom";
 
 import Input from "../../../shared/components/Inputs/Input";
 import Button from "../../../shared/components/Button/Button";
+import BioField from "./bio";
 
 import { doctorSchema, type DoctorFormData } from "../schemas/doctor.schema";
 
@@ -79,20 +82,49 @@ const doctorFields = [
 
 const specializations = ["General Veterinary", "Pet Surgeon", "Animal Dentist"];
 
+interface registrationResponse {
+  success: boolean,
+  message: string
+}
 export default function DoctorForm() {
-  const [showPassword, setShowPassword] = useState(false);
 
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<DoctorFormData>({
     resolver: zodResolver(doctorSchema),
   });
 
   //   ------------------------------------------------------------------->>
-  const onSubmit = (data: DoctorFormData) => {
-    console.log(data);
+  const onSubmit = async (data: DoctorFormData) => {
+    try {
+      console.log("data ", data)
+      const formData = new FormData();
+      Object.keys(data).forEach((key) => {
+        if (key !== 'document') {
+          const value = data[key as keyof DoctorFormData];
+          if (value !== undefined && value !== null) {
+            formData.append(key, String(value));
+          }
+        }
+
+      });
+
+      if (data.document && data.document.length > 0) {
+        formData.append("document", data.document[0]);
+      }
+      const response = await createDoctorAccount<registrationResponse>(formData);
+      console.log("Success", response.message);
+
+      reset();
+      navigate('/verify-otp')
+    } catch (error) {
+      console.log("registration failed", error)
+    }
   };
 
   return (
@@ -156,6 +188,8 @@ export default function DoctorForm() {
           </div>
         </div>
 
+        <BioField />
+
         {/* BUTTONS */}
         <div className="space-y-3 pt-2">
           <Button type="submit">Create Account</Button>
@@ -195,7 +229,7 @@ export default function DoctorForm() {
             </a>
           </p>
         </div>
-      </form>
-    </div>
+      </form >
+    </div >
   );
 }
