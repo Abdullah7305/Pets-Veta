@@ -1,8 +1,6 @@
 const { default: prisma, userRole } = require('../config/prisma')
 
 
-
-
 const createDoctor = async (doctorData) => {
     console.log("Data is ", doctorData)
     const isCreated = await prisma.user.findFirst({
@@ -50,6 +48,7 @@ const createDoctor = async (doctorData) => {
     return newDoctor;
 }
 
+
 const createPetOwner = async (petOwnerData) => {
 
     const isCreated = await prisma.user.findFirst({
@@ -78,22 +77,25 @@ const createPetOwner = async (petOwnerData) => {
             }
         },
         include: {
-            userRole: true
+            userRole: true,
+
         }
     });
     return newPetOwner;
 }
 
+
 const createAdmin = async (adminData) => {
     const isCreated = await prisma.user.findUnique({
         where: {
-            email: adminData.email,
-            username: adminData.username
+            email: adminData.email
         }
-    })
+    });
+
     if (isCreated) {
         return false;
     }
+
     const newAdmin = await prisma.user.create({
         data: {
             fullName: adminData.fullName,
@@ -105,14 +107,23 @@ const createAdmin = async (adminData) => {
                 create: {
                     role: 'Admin'
                 }
+            },
+
+            admin: {
+                create: {
+                    assignedCode: adminData.hashedAssignedCode
+                }
             }
         },
+
         include: {
-            userRole: true
+            userRole: true,
+            admin: true
         }
-    })
+    });
+
     return newAdmin;
-}
+};
 
 const loginUser = async (userData) => {
     const user = await prisma.user.findFirst({
@@ -128,6 +139,7 @@ const loginUser = async (userData) => {
 
     return user;
 }
+
 
 const refreshUserToken = async (email, refreshToken) => {
     console.log("email and token is ", email, refreshToken);
@@ -155,16 +167,23 @@ const verifyEmail = async (email) => {
     })
     return validUser;
 }
+
+
 const getUserWithRole = async (email) => {
     return await prisma.user.findUnique({
         where: {
             email
         },
         include: {
-            userRole: true
+            userRole: true,
+            doctors: true,
+            admin: true
         }
     });
 };
+
+
+
 
 const saveUserOtp = async (email, userOtp) => {
     const user = await prisma.user.update({
@@ -179,6 +198,7 @@ const saveUserOtp = async (email, userOtp) => {
 
 }
 
+
 const updateOtpField = async (email) => {
     const user = await prisma.user.update({
         where: {
@@ -191,6 +211,7 @@ const updateOtpField = async (email) => {
     })
     return user;
 }
+
 
 const updateUserPassword = async (id, password) => {
     const user = await prisma.user.update({

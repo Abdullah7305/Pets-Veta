@@ -41,10 +41,11 @@ model Doctor {
 }
 
 model Admin {
-  id        String   @id @default(uuid())
-  userId    String   @unique
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  assignedCode String   @unique
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id])
 }
 
 model UserRole {

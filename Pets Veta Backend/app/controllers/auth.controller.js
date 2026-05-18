@@ -151,15 +151,24 @@ const createPetOwnerAccount = async (req, res) => {
     }
 }
 
-const createAdminAccount = async (adminDetails) => {
+const createAdminAccount = async (req, res) => {
     try {
-        const { fullName, username, email, password } = adminDetails;
+
+        const { fullName, username, email, assignedCode, password } = req.body;
         const hashedPassword = await bcrypt.hash(password, 12);
+        const hashedAssignedCode = await bcrypt.hash(assignedCode, 12);
+
         const adminData = {
             ...req.body,
-            hashedPassword: hashedPassword
+            hashedPassword,
+            hashedAssignedCode
         }
         const newAdmin = await authServices.createAdmin(adminData);
+
+        if (newAdmin === false) {
+            return res.status(400).json({ error: "User already exist" });
+        }
+
         const payload = {
             id: newAdmin.id,
             username: newAdmin.username,
@@ -167,59 +176,139 @@ const createAdminAccount = async (adminDetails) => {
             role: newAdmin.role
         }
 
-        // const expiry = process.env.JWT_ACCESS_EXPIRY;
-        // const refreshTokenExpiry = process.env.JWT_REFRESH_EXPIRY
-        // const refreshTokenSecretKey = process.env.JWT_REFRESH_SECRET;
-        // const accessTokenSecretKey = process.env.JWT_ACCESS_SECRET;
+        const expiry = process.env.JWT_ACCESS_EXPIRY;
+        const refreshTokenExpiry = process.env.JWT_REFRESH_EXPIRY
+        const refreshTokenSecretKey = process.env.JWT_REFRESH_SECRET;
+        const accessTokenSecretKey = process.env.JWT_ACCESS_SECRET;
 
-        // const accessToken = jwt.sign(
-        //     payload,
-        //     accessTokenSecretKey,
-        //     {
-        //         expiresIn: expiry
-        //     }
-        // );
+        const accessToken = jwt.sign(
+            payload,
+            accessTokenSecretKey,
+            {
+                expiresIn: expiry
+            }
+        );
 
-        // const refreshToken = jwt.sign(
-        //     payload,
-        //     refreshTokenSecretKey,
+        const refreshToken = jwt.sign(
+            payload,
+            refreshTokenSecretKey,
 
-        //     {
-        //         expiresIn: refreshTokenExpiry,
-        //     }
+            {
+                expiresIn: refreshTokenExpiry,
+            }
 
-        // )
+        )
 
-        // const updatedUser = await authServices.refreshUserToken(newAdmin.email, refreshToken);
+        const updatedUser = await authServices.refreshUserToken(newAdmin.email, refreshToken);
 
-        // const cookiesOption = {
-        //     httpOnly: true,
-        //     sameSite: 'strict',
+        const cookiesOption = {
+            httpOnly: true,
+            sameSite: 'strict',
 
-        // }
-        // const safeAdmin = {
-        //     fullName: newAdmin.fullName,
-        //     username: newAdmin.username,
-        //     email: newAdmin.email
-        // }
+        }
+        const safeAdmin = {
+            fullName: newAdmin.fullName,
+            username: newAdmin.username,
+            email: newAdmin.email
+        }
 
 
-        // res.cookie(
-        //     'accessToken',
-        //     accessToken,
-        //     cookiesOption
-        // );
-        // res.cookie(
-        //     'refreshToken',
-        //     refreshToken,
-        //     cookiesOption
-        // )
+        res.cookie(
+            'accessToken',
+            accessToken,
+            cookiesOption
+        );
+        res.cookie(
+            'refreshToken',
+            refreshToken,
+            cookiesOption
+        )
 
-        // return res.status(201).json({ message: 'Success', admin: safeAdmin })
+        return res.status(201).json({ message: 'Success', admin: safeAdmin })
 
     } catch (error) {
         console.log("Error in admin in user", error.message);
-        // return res.status(500).json({ serverErr: error.message })
+        return res.status(500).json({ serverErr: error.message })
+    }
+}
+
+const adminLogin = async (req, res) => {
+    try {
+        const { email, password, assignedCode } = req.body;
+        if (!email || !password || !assignedCode) {
+            return res.status(400).json({ error: 'Error in Login' });
+        }
+        const isValidUser = await authServices.getUserWithRole(email);
+        if (!isValidUser) {
+            return res.status(400).json({ error: 'Error in Login' });
+        }
+        console.log("Admin is ", isValidUser);
+        const isCodeMatched = await bcrypt.compare(assignedCode, isValidUser.admin.assignedCode);
+        const isPasswordMatch = await bcrypt.compare(password, isValidUser.password);
+        if (!isCodeMatched || !isPasswordMatch) {
+            return res.status(400).json({ error: 'Error in Login' });
+        }
+
+        const validUser = {
+            name: isValidUser.fullName,
+            email: isValidUser.email,
+            username: isValidUser.username,
+            role: isValidUser.userRole.role
+
+        }
+
+        const payload = {
+            id: isValidUser.id,
+            username: isValidUser.username,
+            email: isValidUser.email,
+            role: isValidUser.userRole.role
+        }
+
+        const expiry = process.env.JWT_ACCESS_EXPIRY;
+        const accessTokenSecretKey = process.env.JWT_ACCESS_SECRET;
+        const refreshTokenExpiry = process.env.JWT_REFRESH_EXPIRY;
+        const refreshTokenSecretKey = process.env.JWT_REFRESH_SECRET;
+
+        const accessToken = jwt.sign(
+            payload,
+            accessTokenSecretKey,
+            {
+                expiresIn: expiry
+            }
+        );
+
+        const refreshToken = jwt.sign(
+            payload,
+            refreshTokenSecretKey,
+            {
+
+                expiresIn: refreshTokenExpiry
+            }
+        )
+        const updatedUserToken = await authServices.refreshUserToken(isValidUser.email, refreshToken);
+
+        const cookiesOption = {
+            httpOnly: true,
+            sameSite: 'strict',
+
+        }
+        res.cookie(
+            'accessToken',
+            accessToken,
+            cookiesOption
+        )
+        res.cookie(
+            'refreshToken',
+            refreshToken,
+            cookiesOption
+        )
+
+        return res.status(200).json({ message: 'Success', user: validUser });
+
+
+    } catch (error) {
+        console.log("Error is loggin Admin is ", error.message);
+        return res.status(500).json({ serverErr: error.message });
     }
 }
 
@@ -297,7 +386,7 @@ const loginUserAccount = async (req, res) => {
             cookiesOption
         )
 
-        return res.status(200).json({ message: 'Success', user: validUser, token: accessToken });
+        return res.status(200).json({ message: 'Success', user: validUser });
 
     } catch (error) {
         console.log("Error in loggin in user", error.message);
@@ -557,5 +646,7 @@ module.exports = {
     verifyUserEmail,
     resetUserPassword,
     verifyOtp,
-    resendUserOtp
+    resendUserOtp,
+    createAdminAccount,
+    adminLogin
 }
