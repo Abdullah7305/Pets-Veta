@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 
 import { useForm } from "react-hook-form";
@@ -21,7 +20,7 @@ export default function VerifyOtpForm() {
 
   const [loading, setLoading] = useState(false);
 
-  const [timer, setTimer] = useState(240);
+  const [timer, setTimer] = useState(360);
 
   const [otpValues, setOtpValues] = useState(["", "", "", "", "", ""]);
 
@@ -84,7 +83,7 @@ export default function VerifyOtpForm() {
   const seconds = timer % 60;
 
   const handleResendOtp = () => {
-    setTimer(240);
+    setTimer(360);
 
     setOtpValues(["", "", "", "", "", ""]);
 
