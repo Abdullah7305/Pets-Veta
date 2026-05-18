@@ -1,21 +1,12 @@
+// forgotPasswordSchema.ts
 import { z } from "zod";
 
 export const forgotPasswordSchema = z.object({
-  emailOrPhone: z
+  email: z
     .string()
-    .min(1, "Email or phone is required")
-    .refine(
-      (value) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        const phoneRegex = /^(\+92|0)?3[0-9]{9}$/;
-
-        return emailRegex.test(value) || phoneRegex.test(value);
-      },
-      {
-        message: "Enter valid email or phone number",
-      },
-    ),
+    .min(1, "Email is required.")
+    .email("Please enter a valid email address."),
 });
 
+// Optional: Export the type generated from the schema
 export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;

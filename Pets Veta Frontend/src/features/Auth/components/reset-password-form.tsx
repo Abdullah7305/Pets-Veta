@@ -11,6 +11,7 @@ import Input from "../../../shared/components/Inputs/Input";
 import Button from "../../../shared/components/Button/Button";
 
 import BackButton from "../../../shared/components/Button/BackButton/BackButton";
+import { resetPasswordRequest } from "../api/resetpassword.api";
 
 import {
   resetPasswordSchema,
@@ -43,25 +44,23 @@ export default function ResetPasswordForm() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
   });
 
   const onSubmit = async (data: ResetPasswordFormData) => {
+    console.log(data);
     try {
-      setLoading(true);
-
-      console.log(data);
-
-      /*
-        RESET PASSWORD API
-      */
-
-      navigate("/login");
+      const response = await resetPasswordRequest(data)
+      console.log(response);
+      reset();
+      navigate('/')
     } catch (error) {
-      console.log(error);
-    } finally {
+      console.log("Error in login", error);
+    }
+    finally {
       setLoading(false);
     }
   };

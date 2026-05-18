@@ -1,16 +1,10 @@
-
 import { useState, useEffect } from "react";
-
 import { useForm } from "react-hook-form";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import { useNavigate } from "react-router-dom";
-
 import Button from "../../../shared/components/Button/Button";
-
 import BackButton from "../../../shared/components/Button/BackButton/BackButton";
-
+import { verifyUserOtp, resendUserOtp } from "../api/verifyotp.api";
 import {
   verifyOtpSchema,
   type VerifyOtpFormData,
@@ -20,10 +14,7 @@ export default function VerifyOtpForm() {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
-
   const [timer, setTimer] = useState(240);
-
-  const [otpValues, setOtpValues] = useState(["", "", "", "", "", ""]);
 
   useEffect(() => {
     if (timer <= 0) return;
@@ -36,40 +27,24 @@ export default function VerifyOtpForm() {
   }, [timer]);
 
   const {
+    register,
     handleSubmit,
     setValue,
     formState: { errors },
   } = useForm<VerifyOtpFormData>({
     resolver: zodResolver(verifyOtpSchema),
+    defaultValues: {
+      otp: "",
+    },
   });
-
-  const handleOtpChange = (value: string, index: number) => {
-    if (!/^\d?$/.test(value)) return;
-
-    const updatedOtp = [...otpValues];
-
-    updatedOtp[index] = value;
-
-    setOtpValues(updatedOtp);
-
-    setValue("otp", updatedOtp.join(""));
-
-    if (value && index < 5) {
-      const nextInput = document.getElementById(`otp-${index + 1}`);
-
-      nextInput?.focus();
-    }
-  };
 
   const onSubmit = async (data: VerifyOtpFormData) => {
     try {
       setLoading(true);
-
       console.log(data);
 
-      /*
-        VERIFY OTP API
-      */
+      const response = await verifyUserOtp(data);
+      console.log(response);
 
       navigate("/reset-password");
     } catch (error) {
@@ -80,17 +55,25 @@ export default function VerifyOtpForm() {
   };
 
   const minutes = Math.floor(timer / 60);
-
   const seconds = timer % 60;
 
-  const handleResendOtp = () => {
+  const handleResendOtp = async () => {
     setTimer(240);
+    setValue("otp", ""); // Reset the form field directly
+    try {
+      setLoading(true);
+  
 
-    setOtpValues(["", "", "", "", "", ""]);
+      const response = await resendUserOtp();
+      console.log(response);
 
-    /*
-      RESEND OTP API
-    */
+      
+    } catch (error) {
+      console.log("==========>>", error);
+    } finally {
+      setLoading(false);
+    }
+
   };
 
   return (
@@ -117,42 +100,32 @@ export default function VerifyOtpForm() {
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div
-          className="
-            flex items-center
-            justify-center gap-3
-          "
-        >
-          {otpValues.map((item, index) => (
-            <input
-              key={index}
-              id={`otp-${index}`}
-              type="text"
-              maxLength={1}
-              value={item}
-              onChange={(e) => handleOtpChange(e.target.value, index)}
-              className="
-                h-14 w-14 rounded-xl
-                border border-gray-300
-                text-center text-xl
-                font-semibold outline-none
-
-                focus:border-blue-900
-              "
-            />
-          ))}
-        </div>
-
-        {errors.otp && (
-          <p
+        <div className="flex flex-col items-center justify-center gap-2">
+          <input
+            type="text"
+            maxLength={6}
+            placeholder="000000"
+            {...register("otp", {
+              onChange: (e) => {
+                // Strip out any non-numeric characters automatically
+                e.target.value = e.target.value.replace(/\D/g, "");
+              },
+            })}
             className="
-              text-center text-sm
-              text-red-500
+              h-14 w-full max-w-[250px] rounded-xl
+              border border-gray-300
+              text-center text-2xl
+              font-semibold tracking-[0.75em] outline-none
+              focus:border-blue-900
             "
-          >
-            {errors.otp.message}
-          </p>
-        )}
+          />
+
+          {errors.otp && (
+            <p className="text-center text-sm text-red-500">
+              {errors.otp.message}
+            </p>
+          )}
+        </div>
 
         <div className="text-center">
           <button
