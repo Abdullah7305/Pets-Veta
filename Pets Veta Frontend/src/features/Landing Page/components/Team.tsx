@@ -1,4 +1,4 @@
-import Card from "../../../shared/components/Card/Card";
+import TeamCard from "../components/TeamCard";
 import { teamData } from "../data/team.data";
 const Team = () => {
     return (
@@ -20,9 +20,10 @@ const Team = () => {
                 {/* Cards */}
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {teamData.map((team) => (
-                        <Card
+                        <TeamCard
                             key={team.id}
-                            title={team.title}
+                            name={team.name}
+                            specialization={team.specialization}
                             description={team.description}
                             image={team.image}
                         />
