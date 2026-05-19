@@ -7,6 +7,8 @@ type ButtonProps = {
 
   loading?: boolean;
 
+  isSubmitting?: boolean;
+
   className?: string;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
@@ -21,6 +23,8 @@ export default function Button({
 
   className = "",
 
+  isSubmitting = false,
+
   ...props
 }: ButtonProps) {
   /* BASE STYLES */
@@ -28,7 +32,9 @@ export default function Button({
     w-full rounded-xl py-3
     text-sm font-semibold
 
-    transition-all duration-300
+    transition-all duration-300 ease-in-out
+
+    cursor-pointer
 
     disabled:opacity-70
     disabled:cursor-not-allowed
@@ -38,20 +44,22 @@ export default function Button({
   const variants = {
     primary: `
       bg-blue-900 text-white
-      hover:bg-blue-800
+      hover:bg-blue-800 hover:shadow-xl hover:-translate-y-0.5
+      active:scale-95 active:shadow-md
     `,
 
     outline: `
       border border-gray-300
       bg-white text-gray-700
-      hover:bg-gray-50
+      hover:bg-gray-50 hover:border-blue-400 hover:shadow-lg hover:-translate-y-0.5
+      active:scale-95 active:shadow-sm
     `,
   };
 
   return (
     <button
       type={type}
-      disabled={loading}
+      disabled={loading || isSubmitting}
       className={`
         ${baseStyles}
         ${variants[variant]}
@@ -59,7 +67,7 @@ export default function Button({
       `}
       {...props}
     >
-      {loading ? "Loading..." : children}
+      {loading || isSubmitting ? "Loading..." : children}
     </button>
   );
 }

@@ -14,7 +14,6 @@ export default function VerifyOtpForm() {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
-
   const [timer, setTimer] = useState(360);
 
   useEffect(() => {
@@ -30,7 +29,7 @@ export default function VerifyOtpForm() {
   const {
     register,
     handleSubmit,
-
+    setValue,
     formState: { errors },
   } = useForm<VerifyOtpFormData>({
     resolver: zodResolver(verifyOtpSchema),
@@ -42,7 +41,6 @@ export default function VerifyOtpForm() {
   const onSubmit = async (data: VerifyOtpFormData) => {
     try {
       setLoading(true);
-      console.log(data);
 
       const response = await verifyUserOtp(data);
       console.log(response);
@@ -55,41 +53,14 @@ export default function VerifyOtpForm() {
     }
   };
 
-  const minutes = Math.floor(timer / 60);
-  const seconds = timer % 60;
-
-<<<<<<< HEAD
-  const handleResendOtp = async () => {
-    setTimer(360);
-    try {
-=======
-  // const handleResendOtp = () => {
-  //   setTimer(360);
-
-  //     const response = await resendUserOtp();
-  //     console.log(response);
-
-  //   } catch (error) {
-  //     console.log("==========>>", error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   const handleResendOtp = async () => {
     try {
       setLoading(true);
-
       setTimer(360);
->>>>>>> 32626ea040f90c60ade6a4abf210ed64fc9596a6
+      setValue("otp", "");
 
       const response = await resendUserOtp();
-
-<<<<<<< HEAD
-
-=======
       console.log(response);
->>>>>>> 32626ea040f90c60ade6a4abf210ed64fc9596a6
     } catch (error) {
       console.log("==========>>", error);
     } finally {
@@ -97,20 +68,17 @@ export default function VerifyOtpForm() {
     }
   };
 
+  const minutes = Math.floor(timer / 60);
+  const seconds = timer % 60;
+
   return (
     <div className="w-full">
       <div className="mb-6 text-center">
         <h1 className="text-3xl font-bold text-blue-900">Verify OTP</h1>
-
         <p className="mt-2 text-gray-500">Enter the 6-digit code</p>
       </div>
 
-      <p
-        className="
-          mb-6 text-center text-sm
-          font-medium text-red-500
-        "
-      >
+      <p className="mb-6 text-center text-sm font-medium text-red-500">
         {timer > 0 ? (
           <>
             OTP expires in: {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
@@ -128,17 +96,10 @@ export default function VerifyOtpForm() {
             placeholder="000000"
             {...register("otp", {
               onChange: (e) => {
-                // Strip out any non-numeric characters automatically
                 e.target.value = e.target.value.replace(/\D/g, "");
               },
             })}
-            className="
-              h-14 w-full max-w-62.5 rounded-xl
-              border border-gray-300
-              text-center text-2xl
-              font-semibold tracking-[0.75em] outline-none
-              focus:border-blue-900
-            "
+            className="h-14 w-full max-w-[250px] rounded-xl border border-gray-300 text-center text-2xl font-semibold tracking-[0.75em] outline-none focus:border-blue-900"
           />
 
           {errors.otp && (
@@ -152,11 +113,8 @@ export default function VerifyOtpForm() {
           <button
             type="button"
             onClick={handleResendOtp}
-            className="
-              cursor-pointer text-sm
-              font-medium text-blue-900
-              hover:underline
-            "
+            disabled={loading || timer > 0} // Optional tweak: disables resend until timer runs out
+            className="cursor-pointer text-sm font-medium text-blue-900 hover:underline disabled:cursor-not-allowed disabled:opacity-60"
           >
             Resend OTP
           </button>

@@ -19,7 +19,7 @@ const doctorFields = [
   },
 
   {
-    name: "userName",
+    name: "username",
     label: "User Name",
     type: "text",
     placeholder: "Enter UserName",
@@ -54,7 +54,14 @@ const doctorFields = [
   },
 
   {
-    name: "clinicAddress",
+    name: "education",
+    label: "Education/Qualifications",
+    type: "text",
+    placeholder: "e.g., DVM, BVSc",
+  },
+
+  {
+    name: "address",
     label: "Clinic Address",
     type: "text",
     placeholder: "Clinic Address",
@@ -88,21 +95,29 @@ interface registrationResponse {
 }
 export default function DoctorForm() {
 
+
   const [showPassword, setShowPassword] = useState(false);
+  const [responseMessage, setResponseMessage] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<DoctorFormData>({
     resolver: zodResolver(doctorSchema),
+    mode: "onChange",
   });
 
   //   ------------------------------------------------------------------->>
   const onSubmit = async (data: DoctorFormData) => {
+    console.log("Form data before submission:", data);
     try {
-      console.log("data ", data)
+      setErrorMessage("");
+      setResponseMessage("");
+      console.log("Form data:", data);
+
       const formData = new FormData();
       Object.keys(data).forEach((key) => {
         if (key !== 'document') {
@@ -111,19 +126,26 @@ export default function DoctorForm() {
             formData.append(key, String(value));
           }
         }
-
       });
 
       if (data.document && data.document.length > 0) {
         formData.append("document", data.document[0]);
       }
-      const response = await createDoctorAccount<registrationResponse>(formData);
-      console.log("Success", response.message);
 
-      reset();
-      navigate('/verify-otp')
-    } catch (error) {
-      console.log("registration failed", error)
+      console.log("Submitting FormData...");
+      const response = await createDoctorAccount<registrationResponse>(formData);
+      console.log("Success response:", response);
+
+      setResponseMessage(response.message);
+
+      setTimeout(() => {
+        reset();
+        navigate('/verify-otp');
+      }, 2000);
+    } catch (error: any) {
+      console.error("Registration failed:", error);
+      const errorMsg = error?.response?.data?.message || error?.message || "Registration failed. Please try again.";
+      setErrorMessage(errorMsg);
     }
   };
 
@@ -140,6 +162,18 @@ export default function DoctorForm() {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        {responseMessage && (
+          <div className="rounded-lg bg-green-50 p-4 border border-green-200">
+            <p className="text-green-800 font-medium text-center">{responseMessage}</p>
+          </div>
+        )}
+
+        {errorMessage && (
+          <div className="rounded-lg bg-red-50 p-4 border border-red-200">
+            <p className="text-red-800 font-medium text-center">{errorMessage}</p>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {/* DYNAMIC INPUTS */}
           {doctorFields.map((field) => (
@@ -192,7 +226,9 @@ export default function DoctorForm() {
 
         {/* BUTTONS */}
         <div className="space-y-3 pt-2">
-          <Button type="submit">Create Account</Button>
+          <button type="submit"  disabled={isSubmitting}  className="flex  cursor-pointer items-center justify-center gap-3">
+            {isSubmitting ? "Creating Account..." : "Create Account"}
+          </button>
 
           {/* DIVIDER */}
           <div className="flex items-center gap-3">
@@ -205,7 +241,7 @@ export default function DoctorForm() {
 
           {/* GOOGLE BUTTON */}
           <Button variant="outline">
-            <div className="flex items-center justify-center gap-3">
+            <div className="flex  cursor-pointer items-center justify-center gap-3">
               <img
                 src="https://www.svgrepo.com/show/355037/google.svg"
                 className="h-5 w-5"

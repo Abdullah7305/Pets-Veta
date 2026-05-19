@@ -4,11 +4,10 @@ export const doctorSchema = z
   .object({
     fullName: z.string().min(3, "Full name is required"),
 
-    userName: z.string().min(3, "Username must be at least 3 characters"),
+    username: z.string().min(3, "Username must be at least 3 characters"),
 
     email: z.string().email("Invalid email address"),
 
-    // phoneNumber: z.string().min(11, "phone number is required "),
     phoneNumber: z
       .string()
       .min(1, "Phone number is required")
@@ -23,11 +22,15 @@ export const doctorSchema = z
         },
       ),
 
-    experience: z.string().min(1, "experience is required").max(70,"valid experience please"),
+    experience: z.string().min(1, "experience is required").max(70, "valid experience please"),
 
     medicalLicenseNumber: z.string().min(3, "License number is required"),
 
-    clinicAddress: z.string().min(5, "Clinic address  is required"),
+    address: z.string().min(5, "Clinic address is required"),
+
+    bio: z.string().min(10, "Bio must be at least 10 characters"),
+
+    education: z.string().min(3, "Education is required"),
 
     document: z
       .any()

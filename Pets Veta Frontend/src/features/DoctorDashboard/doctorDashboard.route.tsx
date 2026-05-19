@@ -3,11 +3,11 @@ import DoctorProfilePage from "./pages/DoctorProfilePage";
 
 export const doctorDashboardRoutes = [
   {
-    path: "/doctor/dashboard",
+    path: "/doctor-dashboard",
     element: <DoctorDashboardPage />,
   },
   {
-    path: "/doctor/profile",
+    path: "/doctor-profile",
     element: <DoctorProfilePage />,
   },
 ];
