@@ -13,6 +13,41 @@ const sendPendingDoctors = async () => {
     return pendingDoctors;
 }
 
+const rejectDoctor = async (doctorId) => {
+
+    const doExist = await prisma.doctor.findUnique({
+        where: {
+            id: doctorId
+        }
+    })
+    const rejectDoctor = await prisma.doctor.delete({
+        where: {
+            id: doctorId
+        }
+    })
+    return rejectDoctor;
+}
+
+const approvedDoctor = async (doctorId) => {
+    const doExist = await prisma.doctor.findUnique({
+        where: {
+            id: doctorId
+        }
+    })
+    const approveDoctor = await prisma.doctor.update({
+        where: {
+            id: doctorId
+        },
+        data: {
+            isVerified: true
+        }
+    })
+    return approveDoctor;
+
+}
+
 module.exports = {
-    sendPendingDoctors
+    sendPendingDoctors,
+    approvedDoctor,
+    rejectDoctor
 }

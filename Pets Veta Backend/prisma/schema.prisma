@@ -37,7 +37,7 @@ model Doctor {
   degreeLicenseUrl String
   experience       Int
   isVerified       Boolean @default(false)
-  user             User    @relation(fields: [userId], references: [id])
+  user             User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Admin {
@@ -52,5 +52,5 @@ model UserRole {
   id     String @id @default(uuid())
   userId String @unique
   role   String
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

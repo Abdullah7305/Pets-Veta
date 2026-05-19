@@ -2,6 +2,7 @@ const { default: prisma, userRole } = require('../config/prisma')
 
 
 const createDoctor = async (doctorData) => {
+
     console.log("Data is ", doctorData)
     const isCreated = await prisma.user.findFirst({
         where: {
@@ -11,9 +12,8 @@ const createDoctor = async (doctorData) => {
             ]
         }
     })
-    if (isCreated) {
-        return false;
-    }
+    if (isCreated) return false;
+    
     const newDoctor = await prisma.user.create({
         data: {
             fullName: doctorData.fullName,

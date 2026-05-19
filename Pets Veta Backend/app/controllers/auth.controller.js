@@ -1,640 +1,428 @@
 const authServices = require('../services/auth.services')
 const authUtils = require('../utils/auth.utils');
+const {
+
+} = require('../services/authToken.services')
+const cookiesOptions = require('../utils/cookiesOption');
+const sendResponse = require('../utils/SendResponse');
 const uploadToCloudinary = require('../utils/cloudinary.utils');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { jwtSign, Token_Types } = require('../utils/jwt');
+const catchAsync = require('../utils/CatchAsync')
+const AppError = require('../utils/AppError');
+const requireFields = require('../utils/validateRequest');
 
 
-const createDoctorAccount = async (req, res) => {
-    try {
-        const { fullName, username, email, password, bio, education, specialization, address, experience } = req.body;
-        console.log("Request hit ");
-        if (!req.file) {
-            return res.status(400).json({ message: "No file uploaded" });
-        }
-        const result = await uploadToCloudinary(
-            req.file.buffer,
-            "pets-veta/doctor-document"
-        );
+const createDoctorAccount = catchAsync(async (req, res) => {
 
-        const degreeLicenseUrl = result.secure_url;
-
-        const hashedPassword = await bcrypt.hash(password, 12);
-
-        const doctorData = {
-            ...req.body,
-            degreeLicenseUrl,
-            hashedPassword
-        }
-
-
-        const newDoctor = await authServices.createDoctor(doctorData);
-
-        if (newDoctor === false) {
-            return res.status(400).json({ message: 'User already Exist' })
-        }
-
-        const otpCode = authUtils.otpGenerator();
-        const hashedOtp = await bcrypt.hash(otpCode, 12);
-        const saveUserOtp = await authServices.saveUserOtp(email, hashedOtp);
-        authUtils.sendOtp(email, otpCode)
-            .then((mesg) => {
-                console.log("otp mesg", mesg)
-            })
-            .catch((err) => {
-                console.log("Otp error", err)
-            })
-
-        const payload = {
-            id: newDoctor.id,
-            email: newDoctor.email
-        }
-
-        const cookiesOption = {
-            httpOnly: true,
-            sameSite: 'strict',
-            maxAge: 10 * 60 * 1000
-        }
-        const otpToken = jwt.sign(
-            payload,
-            process.env.JWT_OTP_SECRET,
-            {
-                expiresIn: '6min'
-            }
-
-        )
-        res.cookie(
-            'otpToken',
-            otpToken,
-            cookiesOption
-        )
-
-
-        return res.status(201).json({ message: 'OTP Sent' })
-
-    } catch (error) {
-        console.log("Error in create doctor account controller ", error.message);
-        return res.status(500).json({ serverErr: error.message })
+    if (!req.file) {
+        throw new AppError("File is missing", 400);
     }
-}
+
+    requireFields(["fullName", "username", "email", "password", "bio", "education", "specialization", "address", "experience"], req.body)
+    const { fullName, username, email, password,
+        bio, education, specialization, address, experience } = req.body;
 
 
-const createPetOwnerAccount = async (req, res) => {
-    try {
-        const { fullName, username, email, password } = req.body;
+    const result = await uploadToCloudinary(
+        req.file.buffer,
+        "pets-veta/doctor-document"
+    );
 
-        const hashedPassword = await bcrypt.hash(password, 12);
+    const degreeLicenseUrl = result.secure_url;
 
-        const petOwnerData = {
-            ...req.body,
-            hashedPassword
-        }
+    const hashedPassword = await bcrypt.hash(password, 12);
 
-
-
-        let newPetOwner = await authServices.createPetOwner(petOwnerData);
-
-        console.log("Data is ", newPetOwner)
-        newPetOwner = {
-            name: newPetOwner.name,
-            username: newPetOwner.username,
-            email: newPetOwner.email,
-            role: newPetOwner.userRole.role
-        }
-
-        if (newPetOwner === false) {
-            return res.status(400).json({ message: 'User already Exist' })
-        }
-        const otpCode = authUtils.otpGenerator();
-        const hashedOtp = await bcrypt.hash(otpCode, 12);
-        const saveUserOtp = await authServices.saveUserOtp(email, hashedOtp);
-        authUtils.sendOtp(email, otpCode)
-            .then((mesg) => {
-                console.log("Otp Mesg", mesg)
-            })
-            .catch((err) => {
-                console.log("Error is sending the OTP");
-            })
-
-        const payload = {
-            id: newPetOwner.id,
-            email: newPetOwner.email
-        }
-
-        const cookiesOption = {
-            httpOnly: true,
-            sameSite: 'strict',
-            maxAge: 10 * 60 * 1000
-
-        }
-        const otpToken = jwt.sign(
-            payload,
-            process.env.JWT_OTP_SECRET,
-            {
-                expiresIn: '10min'
-            }
-
-        )
-        res.cookie(
-            'otpToken',
-            otpToken,
-            cookiesOption
-        )
-
-
-
-        return res.status(201).json({ message: 'OTP Sent', user: newPetOwner })
-
-    } catch (error) {
-        console.log("Error in create PetOwner account controller ", error.message);
-        return res.status(500).json({ serverErr: error.message })
+    const doctorData = {
+        ...req.body,
+        degreeLicenseUrl,
+        hashedPassword
     }
-}
-
-const createAdminAccount = async (req, res) => {
-    try {
-
-        const { fullName, username, email, assignedCode, password } = req.body;
-        const hashedPassword = await bcrypt.hash(password, 12);
-        const hashedAssignedCode = await bcrypt.hash(assignedCode, 12);
-
-        const adminData = {
-            ...req.body,
-            hashedPassword,
-            hashedAssignedCode
-        }
-        const newAdmin = await authServices.createAdmin(adminData);
-
-        if (newAdmin === false) {
-            return res.status(400).json({ error: "User already exist" });
-        }
-
-        const payload = {
-            id: newAdmin.id,
-            username: newAdmin.username,
-            email: newAdmin.email,
-            role: newAdmin.role
-        }
-
-        const expiry = process.env.JWT_ACCESS_EXPIRY;
-        const refreshTokenExpiry = process.env.JWT_REFRESH_EXPIRY
-        const refreshTokenSecretKey = process.env.JWT_REFRESH_SECRET;
-        const accessTokenSecretKey = process.env.JWT_ACCESS_SECRET;
-
-        const accessToken = jwt.sign(
-            payload,
-            accessTokenSecretKey,
-            {
-                expiresIn: expiry
-            }
-        );
-
-        const refreshToken = jwt.sign(
-            payload,
-            refreshTokenSecretKey,
-
-            {
-                expiresIn: refreshTokenExpiry,
-            }
-
-        )
-
-        const updatedUser = await authServices.refreshUserToken(newAdmin.email, refreshToken);
-
-        const cookiesOption = {
-            httpOnly: true,
-            sameSite: 'strict',
-
-        }
-        const safeAdmin = {
-            fullName: newAdmin.fullName,
-            username: newAdmin.username,
-            email: newAdmin.email
-        }
 
 
-        res.cookie(
-            'accessToken',
-            accessToken,
-            cookiesOption
-        );
-        res.cookie(
-            'refreshToken',
-            refreshToken,
-            cookiesOption
-        )
+    let newDoctor = await authServices.createDoctor(doctorData);
 
-        return res.status(201).json({ message: 'Success', admin: safeAdmin })
-
-    } catch (error) {
-        console.log("Error in admin in user", error.message);
-        return res.status(500).json({ serverErr: error.message })
+    if (!newDoctor) {
+        throw new AppError("User already Exist", 400);
     }
-}
 
-const adminLogin = async (req, res) => {
-    try {
-        const { email, password, assignedCode } = req.body;
-        if (!email || !password || !assignedCode) {
-            return res.status(400).json({ error: 'Error in Login' });
-        }
-        const isValidUser = await authServices.getUserWithRole(email);
-        if (!isValidUser) {
-            return res.status(400).json({ error: 'Error in Login' });
-        }
-        console.log("Admin is ", isValidUser);
-        const isCodeMatched = await bcrypt.compare(assignedCode, isValidUser.admin.assignedCode);
-        const isPasswordMatch = await bcrypt.compare(password, isValidUser.password);
-        if (!isCodeMatched || !isPasswordMatch) {
-            return res.status(400).json({ error: 'Error in Login' });
-        }
+    const otpCode = authUtils.otpGenerator();
+    const hashedOtp = await bcrypt.hash(otpCode, 12);
+    await authServices.saveUserOtp(email, hashedOtp);
+    authUtils.sendOtp(email, otpCode)
+        .then((mesg) => {
+            console.log("otp mesg", mesg)
+        })
+        .catch((err) => {
+            console.log("Otp error", err)
+        })
 
-        const validUser = {
-            name: isValidUser.fullName,
-            email: isValidUser.email,
-            username: isValidUser.username,
-            role: isValidUser.userRole.role
+    const payload = {
+        id: newDoctor.id,
+        email: newDoctor.email
+    };
 
-        }
-
-        const payload = {
-            id: isValidUser.id,
-            username: isValidUser.username,
-            email: isValidUser.email,
-            role: isValidUser.userRole.role
-        }
-
-        const expiry = process.env.JWT_ACCESS_EXPIRY;
-        const accessTokenSecretKey = process.env.JWT_ACCESS_SECRET;
-        const refreshTokenExpiry = process.env.JWT_REFRESH_EXPIRY;
-        const refreshTokenSecretKey = process.env.JWT_REFRESH_SECRET;
-
-        const accessToken = jwt.sign(
-            payload,
-            accessTokenSecretKey,
-            {
-                expiresIn: expiry
-            }
-        );
-
-        const refreshToken = jwt.sign(
-            payload,
-            refreshTokenSecretKey,
-            {
-
-                expiresIn: refreshTokenExpiry
-            }
-        )
-        const updatedUserToken = await authServices.refreshUserToken(isValidUser.email, refreshToken);
-
-        const cookiesOption = {
-            httpOnly: true,
-            sameSite: 'strict',
-
-        }
-        res.cookie(
-            'accessToken',
-            accessToken,
-            cookiesOption
-        )
-        res.cookie(
-            'refreshToken',
-            refreshToken,
-            cookiesOption
-        )
-
-        return res.status(200).json({ message: 'Success', user: validUser });
-
-
-    } catch (error) {
-        console.log("Error is loggin Admin is ", error.message);
-        return res.status(500).json({ serverErr: error.message });
+    newDoctor = {
+        id: newDoctor.id,
+        email: newDoctor.email,
+        role: newDoctor.userRole.role
     }
-}
+
+    const otpToken = jwtSign(payload, Token_Types.OTP);
+
+    res.cookie('otpToken', otpToken, cookiesOptions);
+
+    return sendResponse(res, 201, "Success", newDoctor);
 
 
-const loginUserAccount = async (req, res) => {
-    try {
-
-        const { email, password } = req.body;
 
 
-        const user = await authServices.loginUser(req.body);
+})
 
-        if (!user) {
-            return res.status(400).json({ err: 'Email or Password invalid' });
-        }
 
-        const isMatched = await bcrypt.compare(password, user.password);
+const createPetOwnerAccount = catchAsync(async (req, res) => {
 
-        if (!isMatched) {
-            return res.status(401).json({ error: 'Password or Email do not match' })
-        }
-        console.log("Login user is ", user);
+    requireFields(["fullName", "username", "email", "password"], req.body);
 
-        const validUser = {
-            name: user.fullName,
-            email: user.email,
-            username: user.username,
-            role: user.userRole.role
+    const { fullName, username, email, password } = req.body;
 
-        }
+    const hashedPassword = await bcrypt.hash(password, 12);
 
-        const payload = {
-            id: user.id,
-            username: user.username,
-            email: user.email,
-            role: user.userRole.role
-        }
-
-        const expiry = process.env.JWT_ACCESS_EXPIRY;
-        const accessTokenSecretKey = process.env.JWT_ACCESS_SECRET;
-        const refreshTokenExpiry = process.env.JWT_REFRESH_EXPIRY;
-        const refreshTokenSecretKey = process.env.JWT_REFRESH_SECRET;
-
-        const accessToken = jwt.sign(
-            payload,
-            accessTokenSecretKey,
-            {
-                expiresIn: expiry
-            }
-        );
-
-        const refreshToken = jwt.sign(
-            payload,
-            refreshTokenSecretKey,
-            {
-
-                expiresIn: refreshTokenExpiry
-            }
-        )
-        const updatedUserToken = await authServices.refreshUserToken(email, refreshToken);
-
-        const cookiesOption = {
-            httpOnly: true,
-            sameSite: 'strict',
-
-        }
-        res.cookie(
-            'accessToken',
-            accessToken,
-            cookiesOption
-        )
-        res.cookie(
-            'refreshToken',
-            refreshToken,
-            cookiesOption
-        )
-
-        return res.status(200).json({ message: 'Success', user: validUser });
-
-    } catch (error) {
-        console.log("Error in loggin in user", error.message);
-        return res.status(500).json({ serverErr: error.message })
+    const petOwnerData = {
+        ...req.body,
+        hashedPassword
     }
-}
 
-const refreshTokenController = async (req, res) => {
-    try {
-        const { id, email, username } = req.user;
-        const payload = {
-            id: id,
-            email: email,
-            username: username
-        }
-        const expiry = process.env.JWT_ACCESS_EXPIRY;
-        const accessTokenSecretKey = process.env.JWT_ACCESS_SECRET;
-        const refreshTokenExpiry = process.env.JWT_REFRESH_EXPIRY;
-        const refreshTokenSecretKey = process.env.JWT_REFRESH_SECRET;
 
-        const accessToken = jwt.sign(
-            payload,
-            accessTokenSecretKey,
-            {
-                expiresIn: expiry
-            }
-        );
-        const refreshToken = jwt.sign(
-            payload,
-            refreshTokenSecretKey,
-            {
 
-                expiresIn: refreshTokenExpiry
-            }
-        )
-        const updatedUserToken = await authServices.refreshUserToken(email, refreshToken);
-
-        const cookiesOption = {
-            httpOnly: true,
-            sameSite: 'strict',
-            maxAge: 3600000
-        }
-        res.cookie(
-            'accessToken',
-            accessToken,
-            cookiesOption
-        )
-        res.cookie(
-            'refreshToken',
-            refreshToken,
-            cookiesOption
-        )
-
-        return res.status(200).json({ message: 'Success' });
-
-    } catch (error) {
-        console.log("Error in refresh token controller ", error.message);
-        return res.status(500).json({ serverErr: error.message })
+    let newPetOwner = await authServices.createPetOwner(petOwnerData);
+    if (!newPetOwner) {
+        throw new AppError("Account already Created", 400);
     }
-}
 
-const verifyUserEmail = async (req, res) => {
-    try {
-        const { email } = req.body;
-        const validUser = await authServices.verifyEmail(email);
-        if (!validUser) {
-            return res.status(400).json({ err: 'Invalid User' });
-        }
-        const otpCode = authUtils.otpGenerator();
-        const hashedOtp = await bcrypt.hash(otpCode, 12);
-        const storedOtp = await authServices.saveUserOtp(email, hashedOtp);
-        await authUtils.sendOtp(email, otpCode)
-
-        const payload = {
-            id: validUser.id,
-            email: validUser.email,
-
-        }
-        const otpToken = jwt.sign(
-            payload,
-            process.env.JWT_OTP_SECRET,
-            {
-                expiresIn: '3min'
-            }
-        )
-        const cookiesOption = {
-            httpOnly: true,
-            sameSite: 'strict',
-            maxAge: 30 * 60 * 1000
-        }
-        res.cookie(
-            'otpToken',
-            otpToken,
-            cookiesOption
-        )
-        return res.status(201).json({ message: 'OTP sent' });
-
-    } catch (error) {
-        console.log("Error in verifying user mail", error.message);
-        return res.status(500).json({ serverErr: error.message });
+    let validPetOwner = {
+        name: newPetOwner.fullName,
+        username: newPetOwner.username,
+        email: newPetOwner.email,
+        role: newPetOwner.userRole.role
     }
-}
+    const otpCode = authUtils.otpGenerator();
+    const hashedOtp = await bcrypt.hash(otpCode, 12);
+    await authServices.saveUserOtp(email, hashedOtp);
+    authUtils.sendOtp(email, otpCode)
+        .then((mesg) => {
+            console.log("Otp Mesg", mesg)
+        })
+        .catch((err) => {
+            console.log("Error is sending the OTP");
+        })
 
-const verifyOtp = async (req, res) => {
-    try {
-        console.log("Request cookies is ", req.user);
-        const { id, email } = req.user;
-        console.log("Incming OTP is", req.body);
-        const { otp } = req.body;
-        const validUser = await authServices.verifyEmail(email);
-        if (!validUser) {
-            return res.status(400).json({ err: 'Invalid User Email' });
-        }
-
-
-        const isMatched = await bcrypt.compare(otp, validUser.otp);
-        if (!isMatched) {
-            return res.status(400).json({ err: 'Otp code is invalid' });
-        }
-        const updatedUserSchema = await authServices.updateOtpField(email);
-        const userData = await authServices.getUserWithRole(email)
-
-        const accessTokenExpiry = process.env.JWT_ACCESS_EXPIRY;
-        const accessTokenSecret = process.env.JWT_ACCESS_SECRET;
-        const refreshTokenExpiry = process.env.JWT_REFRESH_EXPIRY;
-        const refreshTokenSecret = process.env.JWT_REFRESH_SECRET;
-
-        const refreshTokenPayload = {
-            id: validUser.id,
-        }
-
-        const accessTokenPayload = {
-            id: validUser.id,
-            email: validUser.email,
-
-        }
-
-        const cookiesOption = {
-            httpOnly: true,
-            sameSite: 'strict',
-        }
-
-        const refreshToken = jwt.sign(
-            refreshTokenPayload,
-            refreshTokenSecret,
-            {
-                expiresIn: refreshTokenExpiry
-            }
-        )
-        const accessToken = jwt.sign(
-            accessTokenPayload,
-            accessTokenSecret,
-            {
-                expiresIn: accessTokenExpiry
-            }
-        )
-
-        res.cookie(
-            'accessToken',
-            accessToken,
-            cookiesOption
-        )
-        res.cookie(
-            'refreshToken',
-            refreshToken,
-            cookiesOption
-        )
-
-        return res.status(200).json({
-            message: 'Success', user: {
-                id: updatedUserSchema.id,
-                username: updatedUserSchema.username,
-                email: updatedUserSchema.email,
-                role: userData.userRole.role
-
-            }
-        });
-
-
-    } catch (error) {
-        console.log("Error in verifying  OTP ", error.message);
-        return res.status(500).json({ serverErr: error.message });
+    const payload = {
+        id: newPetOwner.id,
+        email: newPetOwner.email
     }
+
+    const otpToken = jwtSign(payload, Token_Types.OTP);
+
+    res.cookie('otpToken', otpToken, cookiesOptions);
+
+    return sendResponse(res, 201, "Success", validPetOwner);
+
+
 }
+)
 
-const resendUserOtp = async (req, res) => {
-    try {
-        const { email } = req.user;
-        const validUser = await authServices.verifyEmail(email);
-        if (!validUser) {
-            return res.status(400).json({ err: 'Invalid User Email' });
-        }
-        const otpCode = authUtils.otpGenerator();
-        const hashedOtp = await bcrypt.hash(otpCode, 12);
-        const storedOtp = await authServices.saveUserOtp(email, hashedOtp);
-        await authUtils.sendOtp(email, otpCode)
-
-        const payload = {
-            id: validUser.id,
-            email: validUser.email,
-
-        }
-        const otpToken = jwt.sign(
-            payload,
-            process.env.JWT_OTP_SECRET,
-            {
-                expiresIn: '6min'
-            }
-        )
-        const cookiesOption = {
-            httpOnly: true,
-            sameSite: 'strict',
-            maxAge: 30 * 60 * 1000
-
-        }
-        res.cookie(
-            'otpToken',
-            otpToken,
-            cookiesOption
-        )
-        return res.status(201).json({ message: 'OTP sent' });
+const createAdminAccount = catchAsync(async (req, res) => {
 
 
-    } catch (error) {
-        console.log("Error in resending Otp", error.message);
-        return res.status(500).json({ serverErr: error.message });
+    requireFields(["fullName", "username", "email", "assignedCode", "password"], req.body);
+
+    const { fullName, username, email, assignedCode, password } = req.body;
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const hashedAssignedCode = await bcrypt.hash(assignedCode, 12);
+
+    const adminData = {
+        ...req.body,
+        hashedPassword,
+        hashedAssignedCode
     }
-}
 
-const resetUserPassword = async (req, res) => {
-    try {
-        const { id, email } = req.user;
-        const { password } = req.body;
-        const isValidUser = await authServices.verifyEmail(email);
-        if (!isValidUser) {
-            return res.status(400).json({ err: 'Invalid User' });
-        }
+    const newAdmin = await authServices.createAdmin(adminData);
 
-        const hashedPassword = await bcrypt.hash(password, 12);
-        await authServices.updateUserPassword(id, hashedPassword);
+    if (!newAdmin) {
 
-        return res.status(201).json({ message: 'Password Reset Successfully' });
-
-    } catch (error) {
-        console.log("Error in password resets ", error.message);
-        return res.status(500).json({ serverErr: error.message });
+        throw new AppError("Admin already exist", 400);
     }
+
+    const validAdmin = {
+        id: newAdmin.id,
+        role: newAdmin.userRole.role,
+        email: newAdmin.email
+    }
+
+    const payload = {
+        id: newAdmin.id,
+        username: newAdmin.username,
+        email: newAdmin.email,
+        role: newAdmin.role
+    }
+
+
+
+    const { accessToken, refreshToken } = createAuthTokens(payload);
+    await authServices.refreshUserToken(email, refreshToken);
+
+    res.cookie("accessToken", accessToken, cookiesOptions);
+    res.cookie("refreshToken", refreshToken, cookiesOptions);
+
+    return sendResponse(res, 200, "Success", validAdmin);
+
+
+})
+
+
+const adminLogin = catchAsync(async (req, res) => {
+
+    requireFields(["email", "password", "assignedCode"], req.body);
+
+    const { email, password, assignedCode } = req.body;
+
+    const isValidUser = await authServices.getUserWithRole(email);
+
+    if (!isValidUser) {
+        throw new AppError("Invalid User Access", 400);
+    }
+
+    const isCodeMatched = await bcrypt.compare(assignedCode, isValidUser.admin.assignedCode);
+    const isPasswordMatch = await bcrypt.compare(password, isValidUser.password);
+    if (!isCodeMatched || !isPasswordMatch) {
+        throw new AppError("Invalid Code or Password", 400);
+
+    }
+
+    const validUser = {
+        name: isValidUser.fullName,
+        email: isValidUser.email,
+        username: isValidUser.username,
+        role: isValidUser.userRole.role
+
+    }
+
+    const payload = {
+        id: isValidUser.id,
+        username: isValidUser.username,
+        email: isValidUser.email,
+        role: isValidUser.userRole.role
+    }
+
+    const { accessToken, refreshToken } = createAuthTokens.createAuthTokens(payload);
+    await authServices.refreshUserToken(email, refreshToken);
+
+    res.cookie("accessToken", accessToken, cookiesOptions);
+    res.cookie("refreshToken", refreshToken, cookiesOptions);
+
+    return sendResponse(res, 200, "Success", validUser)
+
+})
+
+
+const loginUserAccount = catchAsync(async (req, res) => {
+
+    requireFields(["email", "password"], req.body);
+
+    const { email, password } = req.body;
+
+
+    const user = await authServices.loginUser(req.body);
+
+    if (!user) {
+        throw new AppError("Email or Password invalid", 400);
+    }
+
+    const isMatched = await bcrypt.compare(password, user.password);
+
+    if (!isMatched) {
+        throw new AppError("Email or Password invalid", 400);
+    }
+    console.log("Login user is ", user);
+
+    const validUser = {
+        name: user.fullName,
+        email: user.email,
+        username: user.username,
+        role: user.userRole.role
+
+    }
+
+    const payload = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.userRole.role
+    }
+
+    const { accessToken, refreshToken } = createAuthTokens.createAuthTokens(payload);
+    await authServices.refreshUserToken(email, refreshToken);
+
+    res.cookie("accessToken", accessToken, cookiesOptions);
+    res.cookie("refreshToken", refreshToken, cookiesOptions);
+
+    return sendResponse(res, 200, "Success", validUser)
 }
+)
+
+
+
+const refreshTokenController = catchAsync(async (req, res) => {
+
+    requireFields(["id", "email", "username"], req.user);
+    const { id, email, username } = req.user;
+    const payload = {
+        id: id,
+        email: email,
+        username: username
+    }
+
+    const { accessToken, refreshToken } = createAuthTokens.createAuthTokens(payload);
+
+
+    res.cookie("accessToken", accessToken, cookiesOptions);
+    res.cookie("refreshToken", refreshToken, cookiesOptions);
+
+
+
+    await authServices.refreshUserToken(email, refreshToken);
+
+    const user = {
+        email: email
+    }
+
+    return sendResponse(res, 201, "Token Refreshed", user);
+
+
+})
+
+
+const verifyUserEmail = catchAsync(async (req, res) => {
+
+    requireFields(["email"], req.body);
+
+    const { email } = req.body;
+    const validUser = await authServices.verifyEmail(email);
+    if (!validUser) {
+        throw new AppError("User Invalid", 400);
+    }
+    const otpCode = authUtils.otpGenerator();
+    const hashedOtp = await bcrypt.hash(otpCode, 12);
+    await authServices.saveUserOtp(email, hashedOtp);
+    await authUtils.sendOtp(email, otpCode)
+
+    const payload = {
+        id: validUser.id,
+        email: validUser.email,
+
+    }
+    const otpToken = jwtSign(payload, Token_Types.OTP);
+
+    res.cookie('otpToken', otpToken, cookiesOptions);
+
+    return sendResponse(res, 200, "Otp sent", email);
+
+
+})
+
+
+const verifyOtp = catchAsync(async (req, res) => {
+
+
+    const { id, email } = req.user;
+    const { otp } = req.body;
+
+    requireFields(["id", "email"], req.user);
+    requireFields(["otp"], req.body);
+
+
+    const validUser = await authServices.verifyEmail(email);
+    if (!validUser) {
+        throw new AppError("Invalid user email", 400);
+    }
+
+
+    const isMatched = await bcrypt.compare(otp, validUser.otp);
+    if (!isMatched) {
+        throw new AppError("OTP code invalid", 400);
+    }
+
+    const updatedUserSchema = await authServices.updateOtpField(email);
+    const userData = await authServices.getUserWithRole(email);
+
+    const payload = {
+        id: validUser.id,
+        username: validUser.username,
+        email: validUser.email,
+        role: userData.userRole.role
+    }
+
+    const { accessToken, refreshToken } = createAuthTokens.createAuthTokens(payload);
+
+
+    res.cookie("accessToken", accessToken, cookiesOptions);
+    res.cookie("refreshToken", refreshToken, cookiesOptions);
+    res.clearCookie("otpToken");
+
+    return sendResponse(res, 200, "Success", validUser.email);
+
+
+
+})
+
+const resendUserOtp = catchAsync(async (req, res) => {
+
+    const { email } = req.user;
+    const validUser = await authServices.verifyEmail(email);
+    if (!validUser) {
+        throw new AppError("Invalid User Email", 400);
+    }
+    const otpCode = authUtils.otpGenerator();
+    const hashedOtp = await bcrypt.hash(otpCode, 12);
+    await authServices.saveUserOtp(email, hashedOtp);
+    await authUtils.sendOtp(email, otpCode)
+
+    const payload = {
+        id: validUser.id,
+        email: validUser.email,
+
+    }
+    const otpToken = jwtSign(payload, Token_Types.OTP);
+
+    res.cookie('otpToken', otpToken, cookiesOptions);
+
+    return sendResponse(res, 201, "Success", validUser.email);
+})
+
+
+
+const resetUserPassword = catchAsync(async (req, res) => {
+
+    const { id, email } = req.user;
+    const { password } = req.body;
+    requireFields(["id", "email"], req.user);
+    requireFields(["password"], req.body);
+
+    const isValidUser = await authServices.verifyEmail(email);
+    if (!isValidUser) {
+        throw new AppError("Invalid User", 400)
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+    await authServices.updateUserPassword(id, hashedPassword);
+
+    return sendResponse(res, 201, "Password Reset", isValidUser.email)
+
+
+})
 
 
 
