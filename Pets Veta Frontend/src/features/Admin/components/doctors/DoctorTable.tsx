@@ -5,8 +5,8 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const DoctorTable = () => {
   return (
-    <div className="bg-white rounded-2xl p-6 mt-8 overflow-x-auto">
-      <table className="w-full">
+    <div className="bg-white rounded-2xl p-6 mt-8 ">
+      <table className="w-full min-w-[900px]">
         <thead>
           <tr className="text-left border-b">
             <th className="pb-4">Doctor</th>

@@ -7,7 +7,19 @@ const Sidebar = () => {
   const [active, setActive] = useState("Dashboard");
 
   return (
-    <div className="w-[260px] min-h-screen bg-white  p-6 flex flex-col justify-between">
+    <div
+      className="
+  hidden lg:flex
+  w-[220px]
+  min-h-screen
+  bg-white
+  border-r border-gray-200
+  p-6
+  flex-col
+  justify-between
+  fixed left-0 top-0
+"
+    >
       <div>
         <Logo />
 
@@ -21,20 +33,18 @@ const Sidebar = () => {
                 // className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-cyan-600 hover:text-white cursor-pointer transition-all"
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all
 
-                    ${active === item.title ? "bg-cyan-600 text-white" : "hover:bg-cyan-100"}
-                    `}
+${active === item.title ? "bg-cyan-600 text-white" : "hover:bg-cyan-100"}
+`}
               >
                 <Icon />
-                <span onClick={() => setActive(item.title)}>{item.title}</span>
+                <span>{item.title}</span>
               </div>
             );
           })}
         </div>
       </div>
 
-      <button className="bg-red-100 text-red-600 py-3 rounded-xl font-semibold w-full">
-        Logout
-      </button>
+      <button className="text-red-500 font-semibold">Logout</button>
     </div>
   );
 };

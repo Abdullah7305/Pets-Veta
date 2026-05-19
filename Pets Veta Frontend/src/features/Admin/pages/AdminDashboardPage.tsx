@@ -16,7 +16,7 @@ const AdminDashboardPage = () => {
   return (
     <AdminLayout>
       {/* TOP SECTION */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
         <div>
           <h1 className="text-4xl font-bold text-gray-800">Dashboard</h1>
 
@@ -35,7 +35,7 @@ const AdminDashboardPage = () => {
       </div>
 
       {/* STATS CARDS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
         {statsData.map((item) => (
           <StatsCard
             key={item.id}
@@ -51,7 +51,15 @@ const AdminDashboardPage = () => {
       {/* DOCTOR SECTION */}
       <div className="bg-white rounded-2xl p-6 mt-10 shadow-sm">
         {/* TOP */}
-        <div className="flex items-center justify-between">
+        <div
+          className="
+  flex flex-col xl:flex-row
+  xl:items-center
+  justify-between
+  gap-5
+  mt-8
+"
+        >
           <div>
             <h2 className="text-2xl font-bold text-gray-800">Doctors List</h2>
 

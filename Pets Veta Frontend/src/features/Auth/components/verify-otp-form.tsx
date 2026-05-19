@@ -14,7 +14,8 @@ export default function VerifyOtpForm() {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
-  const [timer, setTimer] = useState(240);
+
+  const [timer, setTimer] = useState(360);
 
   useEffect(() => {
     if (timer <= 0) return;
@@ -57,23 +58,33 @@ export default function VerifyOtpForm() {
   const minutes = Math.floor(timer / 60);
   const seconds = timer % 60;
 
+  // const handleResendOtp = () => {
+  //   setTimer(360);
+
+  //     const response = await resendUserOtp();
+  //     console.log(response);
+
+  //   } catch (error) {
+  //     console.log("==========>>", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleResendOtp = async () => {
-    setTimer(240);
-    setValue("otp", ""); // Reset the form field directly
     try {
       setLoading(true);
-  
+
+      setTimer(360);
 
       const response = await resendUserOtp();
-      console.log(response);
 
-      
+      console.log(response);
     } catch (error) {
       console.log("==========>>", error);
     } finally {
       setLoading(false);
     }
-
   };
 
   return (
