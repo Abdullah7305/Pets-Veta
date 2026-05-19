@@ -14,7 +14,8 @@ export default function VerifyOtpForm() {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
-  const [timer, setTimer] = useState(240);
+
+  const [timer, setTimer] = useState(360);
 
   useEffect(() => {
     if (timer <= 0) return;

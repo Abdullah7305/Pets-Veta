@@ -14,6 +14,7 @@ const Router = createBrowserRouter([
     path: "*",
     element: <Notfound />,
   },
+ 
 ]);
 
 export default Router;
