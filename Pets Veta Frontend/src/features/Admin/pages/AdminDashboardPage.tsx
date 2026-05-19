@@ -68,10 +68,26 @@ const AdminDashboardPage = () => {
         </div>
 
         {/* TABS + SEARCH */}
-        <div className="flex items-center justify-between mt-8">
+        {/* <div className="flex items-center justify-between mt-8"> */}
+        <div
+          className="
+  flex flex-col xl:flex-row
+  xl:items-center
+  justify-between
+  gap-5
+  mt-8
+"
+        >
           <DoctorTabs />
 
-          <div className="flex items-center gap-3">
+          {/* <div className="flex items-center gap-3"> */}
+          <div
+            className="
+  flex flex-col md:flex-row
+  gap-3
+  w-full md:w-auto
+"
+          >
             <SearchBar />
 
             <button className="bg-cyan-600 text-white px-5 py-3 rounded-xl flex items-center gap-2 shadow-sm">

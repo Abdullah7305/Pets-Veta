@@ -3,7 +3,7 @@ import AdminDashboardPage from "./pages/AdminDashboardPage";
 
 const adminRoutes = [
   {
-    path: "admin-dashbaord",
+    path: "admin-dashboard",
     element: <AdminDashboardPage />,
   },
   {

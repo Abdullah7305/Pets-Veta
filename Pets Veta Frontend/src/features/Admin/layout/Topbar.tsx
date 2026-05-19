@@ -2,6 +2,8 @@ import { Bell, Menu } from "lucide-react";
 
 import userImage from "../../../assets/icons/user-profile-1.jpg";
 
+import Logo from "../../../shared/components/Logo/Logo";
+
 interface Props {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -19,16 +21,32 @@ const Topbar = ({ setOpen }: Props) => {
       z-30
     "
     >
-      {/* MOBILE MENU */}
-      <button className="lg:hidden" onClick={() => setOpen(true)}>
-        <Menu size={28} />
-      </button>
+      {/* LEFT SIDE */}
+      <div className="flex items-center gap-3">
+        {/* MOBILE MENU */}
+        <button
+          className="
+          lg:hidden
+          w-11 h-11
+          rounded-xl
+          bg-gray-100
+          flex items-center justify-center
+        "
+          onClick={() => setOpen(true)}
+        >
+          <Menu size={26} />
+        </button>
 
-      {/* DESKTOP EMPTY */}
-      <div className="hidden lg:block" />
+        {/* MOBILE LOGO */}
+        <div className="flex items-center gap-2 lg:hidden">
+          <Logo />
+
+          <h2 className="text-xl font-bold text-cyan-600">PetsVeta</h2>
+        </div>
+      </div>
 
       {/* RIGHT SIDE */}
-      <div className="flex items-center gap-5 ml-auto">
+      <div className="flex items-center gap-5">
         {/* NOTIFICATION */}
         <button
           className="
