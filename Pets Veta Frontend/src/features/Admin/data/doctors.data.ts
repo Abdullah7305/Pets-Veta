@@ -1,0 +1,32 @@
+export const doctorsData = [
+  {
+    id: 1,
+    name: "Dr. Ali Raza",
+    specialist: "Pet Surgery",
+    experience: "8 Years",
+    email: "ali@gmail.com",
+    phone: "+92 300000000",
+    status: "Approved",
+    image: "https://i.pravatar.cc/40?img=1",
+  },
+  {
+    id: 2,
+    name: "Dr. Sara Khan",
+    specialist: "Pet Nutrition",
+    experience: "5 Years",
+    email: "sara@gmail.com",
+    phone: "+92 311111111",
+    status: "Pending",
+    image: "https://i.pravatar.cc/40?img=2",
+  },
+  {
+    id: 3,
+    name: "Dr. Ahmed",
+    specialist: "Dermatology",
+    experience: "4 Years",
+    email: "ahmed@gmail.com",
+    phone: "+92 322222222",
+    status: "Rejected",
+    image: "https://i.pravatar.cc/40?img=3",
+  },
+];

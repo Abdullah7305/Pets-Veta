@@ -1,4 +1,4 @@
-import Card from "../../../shared/components/Card/Card";
+import ServiceCard from "../components/ServiceCard";
 import { servicesData } from "../data/services.data";
 
 const Services = () => {
@@ -32,7 +32,7 @@ const Services = () => {
               key={service.id}
               className="mx-auto w-full max-w-[330px] transition-all duration-500 ease-out hover:-translate-y-1.5"
             >
-              <Card
+              <ServiceCard
                 title={service.title}
                 description={service.description}
                 image={service.image}

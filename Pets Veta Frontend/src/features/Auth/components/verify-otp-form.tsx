@@ -58,20 +58,43 @@ export default function VerifyOtpForm() {
   const minutes = Math.floor(timer / 60);
   const seconds = timer % 60;
 
+<<<<<<< HEAD
   const handleResendOtp = async () => {
     setTimer(360);
     try {
+=======
+  // const handleResendOtp = () => {
+  //   setTimer(360);
+
+  //     const response = await resendUserOtp();
+  //     console.log(response);
+
+  //   } catch (error) {
+  //     console.log("==========>>", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  const handleResendOtp = async () => {
+    try {
+      setLoading(true);
+
+      setTimer(360);
+>>>>>>> 32626ea040f90c60ade6a4abf210ed64fc9596a6
 
       const response = await resendUserOtp();
+
+<<<<<<< HEAD
+
+=======
       console.log(response);
-
-
+>>>>>>> 32626ea040f90c60ade6a4abf210ed64fc9596a6
     } catch (error) {
       console.log("==========>>", error);
     } finally {
       setLoading(false);
     }
-
   };
 
   return (

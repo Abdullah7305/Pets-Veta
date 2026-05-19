@@ -1,8 +1,8 @@
 import DoctorSignup from "./pages/doctor-signup";
 import LoginPage from "./pages/login";
+import ForgotPasswordPage from "./pages/forgot-password";
 import VerifyOtpPage from "./pages/verify-otp";
 import ResetPasswordPage from "./pages/reset-password";
-import ForgotPasswordPage from "./pages/forgot-password";
 import PetOwnerSignup from "./pages/pet-owner-signup";
 
 

@@ -8,38 +8,44 @@ import team6 from ".././../../assets/shared/images/femaleDoctor3.webp";
 export const teamData = [
     {
         id: 1,
-        title: "Dr. Ahmad Khan",
+        name: "Dr. Ahmad Khan",
+        specialization: "Professional health checkups for your pets.",
         description: "Professional health checkups for your pets.",
         image: team1
     },
     {
         id: 2,
-        title: "Dr. Muhammad Hamza",
-        description: "Keep your pets clean, healthy, and happy.",
+        name: "Dr. Ahmad Khan",
+        specialization: "Professional health checkups for your pets.",
+        description: "Professional health checkups for your pets.",
         image: team2
     },
     {
         id: 3,
-        title: "Dr. Ali Raza",
-        description: "Protect your pets with timely vaccinations.",
+        name: "Dr. Ahmad Khan",
+        specialization: "Professional health checkups for your pets.",
+        description: "Professional health checkups for your pets.",
         image: team3
     },
     {
         id: 4,
-        title: "Dr. Ayesha Noor",
-        description: "Training sessions for better pet behavior.",
+        name: "Dr. Ahmad Khan",
+        specialization: "Professional health checkups for your pets.",
+        description: "Professional health checkups for your pets.",
         image: team4
     },
     {
         id: 5,
-        title: "Dr. Fatima Zahra    ",
-        description: "Safe and comfortable stay for your pets.",
+        name: "Dr. Ahmad Khan",
+        specialization: "Professional health checkups for your pets.",
+        description: "Professional health checkups for your pets.",
         image: team5
     },
     {
         id: 6,
-        title: "Dr. Zainab Ali",
-        description: "24/7 emergency support for your pets.",
+        name: "Dr. Ahmad Khan",
+        specialization: "Professional health checkups for your pets.",
+        description: "Professional health checkups for your pets.",
         image: team6
     },
 ];

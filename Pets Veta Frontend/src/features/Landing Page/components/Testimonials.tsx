@@ -1,4 +1,4 @@
-import Card from "../../../shared/components/Card/Card";
+import TestimonialCard from "../components/TestimonialCard";
 import {testimonialData} from "../data/testimonial.data"
 
 const Testimonial = () => {
@@ -21,10 +21,10 @@ const Testimonial = () => {
                 {/* Cards */}
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {testimonialData.map((testimonial) => (
-                        <Card
+                        <TestimonialCard
                             key={testimonial.id}
-                            title={testimonial.title}
-                            description={testimonial.description}
+                            name={testimonial.title}
+                            review={testimonial.description}
                             image={testimonial.image}
                         />
                     ))}
