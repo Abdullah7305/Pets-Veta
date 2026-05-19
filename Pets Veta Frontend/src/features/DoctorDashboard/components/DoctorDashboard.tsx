@@ -288,7 +288,7 @@ const DoctorDashboard = () => {
             </div>
 
             <div className="hidden overflow-x-auto md:block">
-              <table className="w-full min-w-[780px] text-left">
+              <table className="w-full min-w-195 text-left">
                 <thead className="bg-slate-50 text-sm text-slate-500">
                   <tr>
                     <th className="px-6 py-4 font-bold">Time</th>

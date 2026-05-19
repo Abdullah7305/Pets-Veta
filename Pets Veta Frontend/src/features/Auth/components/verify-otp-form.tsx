@@ -74,21 +74,29 @@ export default function VerifyOtpForm() {
   return (
     <div className="w-full">
       <div className="mb-6 text-center">
-        <h1 className="text-3xl font-bold text-blue-900">Verify OTP</h1>
-        <p className="mt-2 text-gray-500">Enter the 6-digit code</p>
+        <h1 className="text-3xl font-bold text-blue-900">
+          Verify OTP
+        </h1>
+        <p className="mt-2 text-gray-500">
+          Enter the 6-digit code
+        </p>
       </div>
 
       <p className="mb-6 text-center text-sm font-medium text-red-500">
         {timer > 0 ? (
           <>
-            OTP expires in: {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+            OTP expires in: {minutes}:
+            {seconds < 10 ? `0${seconds}` : seconds}
           </>
         ) : (
           "OTP Expired"
         )}
       </p>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="space-y-6"
+      >
         <div className="flex flex-col items-center justify-center gap-2">
           <input
             type="text"
@@ -99,7 +107,13 @@ export default function VerifyOtpForm() {
                 e.target.value = e.target.value.replace(/\D/g, "");
               },
             })}
-            className="h-14 w-full max-w-[250px] rounded-xl border border-gray-300 text-center text-2xl font-semibold tracking-[0.75em] outline-none focus:border-blue-900"
+            className="
+              h-14 w-full max-w-62.5 rounded-xl
+              border border-gray-300
+              text-center text-2xl
+              font-semibold tracking-[0.75em] outline-none
+              focus:border-blue-900
+            "
           />
 
           {errors.otp && (
@@ -113,8 +127,14 @@ export default function VerifyOtpForm() {
           <button
             type="button"
             onClick={handleResendOtp}
-            disabled={loading || timer > 0} // Optional tweak: disables resend until timer runs out
-            className="cursor-pointer text-sm font-medium text-blue-900 hover:underline disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={loading}
+            className="
+              cursor-pointer text-sm
+              font-medium text-blue-900
+              hover:underline
+              disabled:cursor-not-allowed
+              disabled:opacity-60
+            "
           >
             Resend OTP
           </button>
@@ -124,7 +144,10 @@ export default function VerifyOtpForm() {
           Verify OTP
         </Button>
 
-        <BackButton href="/forgot-password" text="Back" />
+        <BackButton
+          href="/forgot-password"
+          text="Back"
+        />
       </form>
     </div>
   );
