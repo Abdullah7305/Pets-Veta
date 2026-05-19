@@ -37,19 +37,20 @@ model Doctor {
   degreeLicenseUrl String
   experience       Int
   isVerified       Boolean @default(false)
-  user             User    @relation(fields: [userId], references: [id])
+  user             User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Admin {
-  id        String   @id @default(uuid())
-  userId    String   @unique
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  assignedCode String   @unique
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id])
 }
 
 model UserRole {
   id     String @id @default(uuid())
   userId String @unique
   role   String
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

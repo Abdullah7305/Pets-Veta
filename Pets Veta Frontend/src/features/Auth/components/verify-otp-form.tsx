@@ -30,7 +30,7 @@ export default function VerifyOtpForm() {
   const {
     register,
     handleSubmit,
-    setValue,
+
     formState: { errors },
   } = useForm<VerifyOtpFormData>({
     resolver: zodResolver(verifyOtpSchema),
@@ -58,23 +58,50 @@ export default function VerifyOtpForm() {
   const minutes = Math.floor(timer / 60);
   const seconds = timer % 60;
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
   const handleResendOtp = async () => {
-    setTimer(240);
-    setValue("otp", ""); // Reset the form field directly
+    setTimer(360);
+    try {
+=======
+  // const handleResendOtp = () => {
+  //   setTimer(360);
+
+  //     const response = await resendUserOtp();
+  //     console.log(response);
+
+  //   } catch (error) {
+  //     console.log("==========>>", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+>>>>>>> 79c6b3ee1e549f1a51ba00b502bdcd1b9ecbf85d
+  const handleResendOtp = async () => {
     try {
       setLoading(true);
+<<<<<<< HEAD
   
+=======
+
+      setTimer(360);
+>>>>>>> 32626ea040f90c60ade6a4abf210ed64fc9596a6
+>>>>>>> 79c6b3ee1e549f1a51ba00b502bdcd1b9ecbf85d
 
       const response = await resendUserOtp();
-      console.log(response);
 
-      
+<<<<<<< HEAD
+
+=======
+      console.log(response);
+>>>>>>> 32626ea040f90c60ade6a4abf210ed64fc9596a6
     } catch (error) {
       console.log("==========>>", error);
     } finally {
       setLoading(false);
     }
-
   };
 
   return (
@@ -113,7 +140,7 @@ export default function VerifyOtpForm() {
               },
             })}
             className="
-              h-14 w-full max-w-[250px] rounded-xl
+              h-14 w-full max-w-62.5 rounded-xl
               border border-gray-300
               text-center text-2xl
               font-semibold tracking-[0.75em] outline-none

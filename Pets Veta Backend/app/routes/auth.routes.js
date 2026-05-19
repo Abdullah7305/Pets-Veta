@@ -13,6 +13,14 @@ Router
     .post(authController.createPetOwnerAccount)
 
 Router
+    .route('/auth/register/admin')
+    .post(authController.createAdminAccount)
+
+Router
+    .route('/auth/login/admin')
+    .post(authController.adminLogin)
+
+Router
     .route('/auth/login/user')
     .post(authController.loginUserAccount)
 

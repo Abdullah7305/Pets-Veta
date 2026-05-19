@@ -1,129 +1,141 @@
-import { useState, useRef, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import Button from "@/shared/components/Button/Button";
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "react-router-dom";
+import Button from "../../../shared/components/Button/Button";
+import BackButton from "../../../shared/components/Button/BackButton/BackButton";
+import { verifyUserOtp, resendUserOtp } from "../api/verifyotp.api";
+import {
+  verifyOtpSchema,
+  type VerifyOtpFormData,
+} from "../schemas/verify-otp.schema";
 
-export default function OtpVerifyPage() {
-  const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
-  const [error, setError] = useState("");
-  const [timer, setTimer] = useState(30);
-  const [canResend, setCanResend] = useState(false);
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const location = useLocation();
+export default function VerifyOtpForm() {
   const navigate = useNavigate();
-  const email = location.state?.email || "";
 
-  // Countdown timer
+  const [loading, setLoading] = useState(false);
+  const [timer, setTimer] = useState(360);
+
   useEffect(() => {
-    if (timer <= 0) { setCanResend(true); return; }
-    const t = setTimeout(() => setTimer((p) => p - 1), 1000);
-    return () => clearTimeout(t);
+    if (timer <= 0) return;
+
+    const interval = setInterval(() => {
+      setTimer((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
   }, [timer]);
 
-  const handleChange = (i: number, val: string) => {
-    if (!/^[0-9]?$/.test(val)) return;
-    const updated = [...otp];
-    updated[i] = val;
-    setOtp(updated);
-    if (val && i < 5) inputRefs.current[i + 1]?.focus();
-  };
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<VerifyOtpFormData>({
+    resolver: zodResolver(verifyOtpSchema),
+    defaultValues: {
+      otp: "",
+    },
+  });
 
-  const handleKeyDown = (i: number, e: React.KeyboardEvent) => {
-    if (e.key === "Backspace" && !otp[i] && i > 0) {
-      inputRefs.current[i - 1]?.focus();
+  const onSubmit = async (data: VerifyOtpFormData) => {
+    try {
+      setLoading(true);
+
+      const response = await verifyUserOtp(data);
+      console.log(response);
+
+      navigate("/reset-password");
+    } catch (error) {
+      console.log("==========>>", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleVerify = () => {
-    const code = otp.join("");
-    if (code.length < 6) {
-      setError("Please enter all 6 digits.");
-      return;
+  const handleResendOtp = async () => {
+    try {
+      setLoading(true);
+      setTimer(360);
+      setValue("otp", "");
+
+      const response = await resendUserOtp();
+      console.log(response);
+    } catch (error) {
+      console.log("==========>>", error);
+    } finally {
+      setLoading(false);
     }
-    setError("");
-    // API call: verify OTP
-    navigate("/reset-password", { state: { email, otp: code } });
   };
 
-  const handleResend = () => {
-    setOtp(Array(6).fill(""));
-    setTimer(30);
-    setCanResend(false);
-    setError("");
-    inputRefs.current[0]?.focus();
-    // API call: resend OTP
-  };
+  const minutes = Math.floor(timer / 60);
+  const seconds = timer % 60;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-7">
-        <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50">
-          <span className="text-2xl">📱</span>
-        </div>
-        <h1 className="mb-1 text-xl font-semibold text-gray-900">
-          Enter verification code
-        </h1>
-        <p className="mb-5 text-sm text-gray-500">
-          We sent a 6-digit code to <strong>{email}</strong>
-        </p>
+    <div className="w-full">
+      <div className="mb-6 text-center">
+        <h1 className="text-3xl font-bold text-blue-900">Verify OTP</h1>
+        <p className="mt-2 text-gray-500">Enter the 6-digit code</p>
+      </div>
 
-        {/* 6 OTP boxes */}
-        <div className="mb-2 flex justify-center gap-2">
-          {otp.map((digit, i) => (
-            <input
-              key={i}
-              ref={(el) => (inputRefs.current[i] = el)}
-              type="text"
-              inputMode="numeric"
-              maxLength={1}
-              value={digit}
-              onChange={(e) => handleChange(i, e.target.value)}
-              onKeyDown={(e) => handleKeyDown(i, e)}
-              className={`
-                h-12 w-10 text-center text-lg font-semibold
-                border rounded-xl outline-none
-                transition-all duration-200
-                ${error ? "border-red-400 bg-red-50"
-                  : digit ? "border-blue-900 bg-white"
-                  : "border-gray-200 bg-gray-50"}
-                focus:border-blue-900 focus:shadow-[0_0_0_3px_rgba(30,58,95,0.12)] focus:bg-white
-              `}
-            />
-          ))}
-        </div>
-
-        {error && (
-          <p className="mb-4 text-center text-xs text-red-500">{error}</p>
+      <p className="mb-6 text-center text-sm font-medium text-red-500">
+        {timer > 0 ? (
+          <>
+            OTP expires in: {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+          </>
+        ) : (
+          "OTP Expired"
         )}
+      </p>
 
-        {/* Resend timer */}
-        <div className="mb-5 mt-2 text-center">
-          {canResend ? (
-            <button
-              onClick={handleResend}
-              className="text-sm font-medium text-blue-900 hover:underline"
-            >
-              Resend OTP
-            </button>
-          ) : (
-            <span className="text-xs text-gray-400">
-              Resend OTP in <strong>{timer}s</strong>
-            </span>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <div className="flex flex-col items-center justify-center gap-2">
+          <input
+            type="text"
+            maxLength={6}
+            placeholder="000000"
+            {...register("otp", {
+              onChange: (e) => {
+                e.target.value = e.target.value.replace(/\D/g, "");
+              },
+            })}
+            className="
+              h-14 w-full max-w-[250px] rounded-xl
+              border border-gray-300
+              text-center text-2xl
+              font-semibold tracking-[0.75em] outline-none
+              focus:border-blue-900
+            "
+          />
+
+          {errors.otp && (
+            <p className="text-center text-sm text-red-500">
+              {errors.otp.message}
+            </p>
           )}
         </div>
 
-        <div className="flex flex-col gap-3">
-          <Button type="button" variant="primary" onClick={handleVerify}>
-            Verify OTP
-          </Button>
-          <Button
+        <div className="text-center">
+          <button
             type="button"
-            variant="outline"
-            onClick={() => navigate("/forgot-password")}
+            onClick={handleResendOtp}
+            disabled={loading}
+            className="
+              cursor-pointer text-sm
+              font-medium text-blue-900
+              hover:underline disabled:cursor-not-allowed disabled:opacity-60
+            "
           >
-            Change email
-          </Button>
+            Resend OTP
+          </button>
         </div>
-      </div>
+
+        <Button type="submit" loading={loading}>
+          Verify OTP
+        </Button>
+
+        <BackButton href="/forgot-password" text="Back" />
+      </form>
     </div>
   );
 }

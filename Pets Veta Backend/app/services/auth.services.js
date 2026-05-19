@@ -1,28 +1,26 @@
 const { default: prisma, userRole } = require('../config/prisma')
 
 
-
-
 const createDoctor = async (doctorData) => {
-    console.log("Data is ", doctorData)
-    const isCreated = await prisma.user.findFirst({
+    const existingUser = await prisma.user.findFirst({
         where: {
             OR: [
                 { email: doctorData.email },
                 { username: doctorData.username }
             ]
         }
-    })
-    if (isCreated) {
-        return false;
+    });
+
+    if (existingUser) {
+        throw new AppError("User already exists", 409);
     }
-    const newDoctor = await prisma.user.create({
+
+    return await prisma.user.create({
         data: {
             fullName: doctorData.fullName,
             email: doctorData.email,
             password: doctorData.hashedPassword,
             username: doctorData.username,
-
             doctors: {
                 create: {
                     bio: doctorData.bio,
@@ -33,22 +31,17 @@ const createDoctor = async (doctorData) => {
                     experience: parseInt(doctorData.experience)
                 }
             },
-
             userRole: {
-                create: {
-                    role: 'Doctor'
-                }
+                create: { role: "Doctor" }
             }
         },
         include: {
             doctors: true,
             userRole: true
         }
-
     });
+};
 
-    return newDoctor;
-}
 
 const createPetOwner = async (petOwnerData) => {
 
@@ -78,22 +71,25 @@ const createPetOwner = async (petOwnerData) => {
             }
         },
         include: {
-            userRole: true
+            userRole: true,
+
         }
     });
     return newPetOwner;
 }
 
+
 const createAdmin = async (adminData) => {
     const isCreated = await prisma.user.findUnique({
         where: {
-            email: adminData.email,
-            username: adminData.username
+            email: adminData.email
         }
-    })
+    });
+
     if (isCreated) {
         return false;
     }
+
     const newAdmin = await prisma.user.create({
         data: {
             fullName: adminData.fullName,
@@ -105,29 +101,42 @@ const createAdmin = async (adminData) => {
                 create: {
                     role: 'Admin'
                 }
+            },
+
+            admin: {
+                create: {
+                    assignedCode: adminData.hashedAssignedCode
+                }
             }
         },
+
         include: {
-            userRole: true
+            userRole: true,
+            admin: true
         }
-    })
+    });
+
     return newAdmin;
-}
+};
 
 const loginUser = async (userData) => {
+    console.log("User data is ", userData);
+
     const user = await prisma.user.findFirst({
         where: {
-            email: userData.email
+            email: userData.email,
+            isEmailVerified: true
         },
         include: {
             userRole: true,
             doctors: true,
             admin: true
         }
-    })
+    });
 
     return user;
-}
+};
+
 
 const refreshUserToken = async (email, refreshToken) => {
     console.log("email and token is ", email, refreshToken);
@@ -155,16 +164,23 @@ const verifyEmail = async (email) => {
     })
     return validUser;
 }
+
+
 const getUserWithRole = async (email) => {
     return await prisma.user.findUnique({
         where: {
             email
         },
         include: {
-            userRole: true
+            userRole: true,
+            doctors: true,
+            admin: true
         }
     });
 };
+
+
+
 
 const saveUserOtp = async (email, userOtp) => {
     const user = await prisma.user.update({
@@ -179,6 +195,7 @@ const saveUserOtp = async (email, userOtp) => {
 
 }
 
+
 const updateOtpField = async (email) => {
     const user = await prisma.user.update({
         where: {
@@ -191,6 +208,7 @@ const updateOtpField = async (email) => {
     })
     return user;
 }
+
 
 const updateUserPassword = async (id, password) => {
     const user = await prisma.user.update({

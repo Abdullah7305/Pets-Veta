@@ -1,4 +1,3 @@
-// import LoginComponent from "../features/auth/components/login-component";
 import LoginComponent from "../../Auth/components/login-component";
 
 import styles from "../../../styles/login.module.css";
