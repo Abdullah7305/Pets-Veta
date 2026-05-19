@@ -11,4 +11,4 @@ const sendResponse = (
     });
 };
 
-export default sendResponse;
+module.exports = sendResponse;

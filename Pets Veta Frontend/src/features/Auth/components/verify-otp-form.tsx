@@ -30,7 +30,7 @@ export default function VerifyOtpForm() {
   const {
     register,
     handleSubmit,
-    setValue,
+
     formState: { errors },
   } = useForm<VerifyOtpFormData>({
     resolver: zodResolver(verifyOtpSchema),
@@ -110,7 +110,7 @@ export default function VerifyOtpForm() {
               },
             })}
             className="
-              h-14 w-full max-w-[250px] rounded-xl
+              h-14 w-full max-w-62.5 rounded-xl
               border border-gray-300
               text-center text-2xl
               font-semibold tracking-[0.75em] outline-none

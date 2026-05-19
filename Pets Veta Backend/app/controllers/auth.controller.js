@@ -1,17 +1,15 @@
-const authServices = require('../services/auth.services')
-const authUtils = require('../utils/auth.utils');
-const {
-
-} = require('../services/authToken.services')
-const cookiesOptions = require('../utils/cookiesOption');
-const sendResponse = require('../utils/SendResponse');
+const { createAuthTokens } = require('../services/authToken.services')
 const uploadToCloudinary = require('../utils/cloudinary.utils');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const { jwtSign, Token_Types } = require('../utils/jwt');
+const cookiesOptions = require('../utils/cookiesOption');
+const requireFields = require('../utils/validateRequest');
+const authServices = require('../services/auth.services')
+const sendResponse = require('../utils/SendResponse');
+const authUtils = require('../utils/auth.utils');
 const catchAsync = require('../utils/CatchAsync')
 const AppError = require('../utils/AppError');
-const requireFields = require('../utils/validateRequest');
+const bcrypt = require('bcrypt');
+
 
 
 const createDoctorAccount = catchAsync(async (req, res) => {
@@ -42,7 +40,7 @@ const createDoctorAccount = catchAsync(async (req, res) => {
 
 
     let newDoctor = await authServices.createDoctor(doctorData);
-
+    console.log("Doctor Created ", newDoctor);
     if (!newDoctor) {
         throw new AppError("User already Exist", 400);
     }
@@ -50,6 +48,7 @@ const createDoctorAccount = catchAsync(async (req, res) => {
     const otpCode = authUtils.otpGenerator();
     const hashedOtp = await bcrypt.hash(otpCode, 12);
     await authServices.saveUserOtp(email, hashedOtp);
+
     authUtils.sendOtp(email, otpCode)
         .then((mesg) => {
             console.log("otp mesg", mesg)
@@ -74,9 +73,6 @@ const createDoctorAccount = catchAsync(async (req, res) => {
     res.cookie('otpToken', otpToken, cookiesOptions);
 
     return sendResponse(res, 201, "Success", newDoctor);
-
-
-
 
 })
 
@@ -132,6 +128,7 @@ const createPetOwnerAccount = catchAsync(async (req, res) => {
 
 }
 )
+
 
 const createAdminAccount = catchAsync(async (req, res) => {
 
@@ -192,13 +189,13 @@ const adminLogin = catchAsync(async (req, res) => {
     const isValidUser = await authServices.getUserWithRole(email);
 
     if (!isValidUser) {
-        throw new AppError("Invalid User Access", 400);
+        throw new AppError("Invalid User Access", 401);
     }
 
     const isCodeMatched = await bcrypt.compare(assignedCode, isValidUser.admin.assignedCode);
     const isPasswordMatch = await bcrypt.compare(password, isValidUser.password);
     if (!isCodeMatched || !isPasswordMatch) {
-        throw new AppError("Invalid Code or Password", 400);
+        throw new AppError("Invalid Code or Password", 401);
 
     }
 
@@ -217,7 +214,7 @@ const adminLogin = catchAsync(async (req, res) => {
         role: isValidUser.userRole.role
     }
 
-    const { accessToken, refreshToken } = createAuthTokens.createAuthTokens(payload);
+    const { accessToken, refreshToken } = createAuthTokens(payload);
     await authServices.refreshUserToken(email, refreshToken);
 
     res.cookie("accessToken", accessToken, cookiesOptions);
@@ -231,22 +228,22 @@ const adminLogin = catchAsync(async (req, res) => {
 const loginUserAccount = catchAsync(async (req, res) => {
 
     requireFields(["email", "password"], req.body);
-
+    console.log("Login request body is ", req.body);
     const { email, password } = req.body;
 
 
     const user = await authServices.loginUser(req.body);
-
+    console.log("Login user is ", user);
     if (!user) {
-        throw new AppError("Email or Password invalid", 400);
+        throw new AppError("Email or Password invalid", 401);
     }
 
     const isMatched = await bcrypt.compare(password, user.password);
 
     if (!isMatched) {
-        throw new AppError("Email or Password invalid", 400);
+        throw new AppError("Email or Password invalid", 401);
     }
-    console.log("Login user is ", user);
+
 
     const validUser = {
         name: user.fullName,
@@ -263,7 +260,7 @@ const loginUserAccount = catchAsync(async (req, res) => {
         role: user.userRole.role
     }
 
-    const { accessToken, refreshToken } = createAuthTokens.createAuthTokens(payload);
+    const { accessToken, refreshToken } = createAuthTokens(payload);
     await authServices.refreshUserToken(email, refreshToken);
 
     res.cookie("accessToken", accessToken, cookiesOptions);
@@ -272,7 +269,6 @@ const loginUserAccount = catchAsync(async (req, res) => {
     return sendResponse(res, 200, "Success", validUser)
 }
 )
-
 
 
 const refreshTokenController = catchAsync(async (req, res) => {
@@ -299,7 +295,7 @@ const refreshTokenController = catchAsync(async (req, res) => {
         email: email
     }
 
-    return sendResponse(res, 201, "Token Refreshed", user);
+    return sendResponse(res, 200, "Token Refreshed", user);
 
 
 })
@@ -317,7 +313,13 @@ const verifyUserEmail = catchAsync(async (req, res) => {
     const otpCode = authUtils.otpGenerator();
     const hashedOtp = await bcrypt.hash(otpCode, 12);
     await authServices.saveUserOtp(email, hashedOtp);
-    await authUtils.sendOtp(email, otpCode)
+    authUtils.sendOtp(email, otpCode)
+        .then(() => {
+            console.log("OTP sent");
+        })
+        .catch((err) => {
+            console.log("OTP error", err);
+        });
 
     const payload = {
         id: validUser.id,
@@ -339,7 +341,7 @@ const verifyOtp = catchAsync(async (req, res) => {
 
     const { id, email } = req.user;
     const { otp } = req.body;
-
+    console.log("OTP is ", otp)
     requireFields(["id", "email"], req.user);
     requireFields(["otp"], req.body);
 
@@ -365,18 +367,31 @@ const verifyOtp = catchAsync(async (req, res) => {
         role: userData.userRole.role
     }
 
-    const { accessToken, refreshToken } = createAuthTokens.createAuthTokens(payload);
-
+    const { accessToken, refreshToken } = createAuthTokens(payload);
+    await authServices.refreshUserToken(email, refreshToken);
 
     res.cookie("accessToken", accessToken, cookiesOptions);
     res.cookie("refreshToken", refreshToken, cookiesOptions);
-    res.clearCookie("otpToken");
+    // res.clearCookie("otpToken", cookiesOptions);
 
-    return sendResponse(res, 200, "Success", validUser.email);
+    const safeUser = {
+        id: updatedUserSchema.id,
+        username: updatedUserSchema.username,
+        email: updatedUserSchema.email,
+        role: userData.userRole.role
+    };
+
+    return sendResponse(
+        res,
+        200,
+        "Success",
+        safeUser
+    );
 
 
 
 })
+
 
 const resendUserOtp = catchAsync(async (req, res) => {
 
@@ -388,8 +403,13 @@ const resendUserOtp = catchAsync(async (req, res) => {
     const otpCode = authUtils.otpGenerator();
     const hashedOtp = await bcrypt.hash(otpCode, 12);
     await authServices.saveUserOtp(email, hashedOtp);
-    await authUtils.sendOtp(email, otpCode)
-
+    authUtils.sendOtp(email, otpCode)
+        .then(() => {
+            console.log("OTP sent");
+        })
+        .catch((err) => {
+            console.log("OTP error", err);
+        });
     const payload = {
         id: validUser.id,
         email: validUser.email,
@@ -403,7 +423,6 @@ const resendUserOtp = catchAsync(async (req, res) => {
 })
 
 
-
 const resetUserPassword = catchAsync(async (req, res) => {
 
     const { id, email } = req.user;
@@ -415,10 +434,13 @@ const resetUserPassword = catchAsync(async (req, res) => {
     if (!isValidUser) {
         throw new AppError("Invalid User", 400)
     }
-
+    const isMatched = await bcrypt.compare(password, isValidUser.password);
+    if (isMatched) {
+        throw new AppError("New password cannot be same as old password", 400);
+    }
     const hashedPassword = await bcrypt.hash(password, 12);
     await authServices.updateUserPassword(id, hashedPassword);
-
+    res.clearCookie("otpToken", cookiesOptions);
     return sendResponse(res, 201, "Password Reset", isValidUser.email)
 
 

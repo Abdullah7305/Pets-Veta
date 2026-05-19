@@ -2,25 +2,25 @@ const { default: prisma, userRole } = require('../config/prisma')
 
 
 const createDoctor = async (doctorData) => {
-
-    console.log("Data is ", doctorData)
-    const isCreated = await prisma.user.findFirst({
+    const existingUser = await prisma.user.findFirst({
         where: {
             OR: [
                 { email: doctorData.email },
                 { username: doctorData.username }
             ]
         }
-    })
-    if (isCreated) return false;
-    
-    const newDoctor = await prisma.user.create({
+    });
+
+    if (existingUser) {
+        throw new AppError("User already exists", 409);
+    }
+
+    return await prisma.user.create({
         data: {
             fullName: doctorData.fullName,
             email: doctorData.email,
             password: doctorData.hashedPassword,
             username: doctorData.username,
-
             doctors: {
                 create: {
                     bio: doctorData.bio,
@@ -31,22 +31,16 @@ const createDoctor = async (doctorData) => {
                     experience: parseInt(doctorData.experience)
                 }
             },
-
             userRole: {
-                create: {
-                    role: 'Doctor'
-                }
+                create: { role: "Doctor" }
             }
         },
         include: {
             doctors: true,
             userRole: true
         }
-
     });
-
-    return newDoctor;
-}
+};
 
 
 const createPetOwner = async (petOwnerData) => {
@@ -126,19 +120,22 @@ const createAdmin = async (adminData) => {
 };
 
 const loginUser = async (userData) => {
+    console.log("User data is ", userData);
+
     const user = await prisma.user.findFirst({
         where: {
-            email: userData.email
+            email: userData.email,
+            isEmailVerified: true
         },
         include: {
             userRole: true,
             doctors: true,
             admin: true
         }
-    })
+    });
 
     return user;
-}
+};
 
 
 const refreshUserToken = async (email, refreshToken) => {

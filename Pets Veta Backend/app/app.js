@@ -1,4 +1,4 @@
-const dotenv = require('dotenv/config');
+require('dotenv').config();
 const cors = require('cors');
 const express = require('express');
 const cookieParser = require('cookie-parser')
@@ -15,9 +15,9 @@ app.use(cors({
 }));
 
 app.use(cookieParser());
-app.use(globalErrorHandler);
 
 app.use('/api', authRouter)
 app.use('/api', adminRouter)
 
+app.use(globalErrorHandler);
 module.exports = app;

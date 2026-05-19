@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const acessTokenSecret = process.env.JWT_ACCESS_SECRET;
+const accessTokenSecret = process.env.JWT_ACCESS_SECRET;
 const accessTokenExpiry = process.env.JWT_ACCESS_EXPIRY;
 
 const refreshTokenExpiry = process.env.JWT_REFRESH_EXPIRY;
@@ -18,15 +18,15 @@ const Token_Types = {
 
 
 const jwtSign = (payload, type) => {
-    if (type === TOKEN_TYPES.ACCESS) {
+    if (type === Token_Types.ACCESS) {
         secret = accessTokenSecret;
         expiresIn = accessTokenExpiry;
     }
-    else if (type === TOKEN_TYPES.REFRESH) {
+    else if (type === Token_Types.REFRESH) {
         secret = refreshTokenSecret;
         expiresIn = refreshTokenExpiry;
     }
-    else if (type === TOKEN_TYPES.OTP) {
+    else if (type === Token_Types.OTP) {
         secret = otpSecret;
         expiresIn = otpExpiry;
     }

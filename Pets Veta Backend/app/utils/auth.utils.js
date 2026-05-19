@@ -13,15 +13,13 @@ const otpGenerator = () => {
   return otp.toString();
 }
 
-const sendOtp = async (email,otpCode) => {
+const sendOtp = async (email, otpCode) => {
   try {
-
     const info = await transporter.sendMail({
       from: 'abdullahsuleman755@gmail.com',
       to: email,
       subject: "OTP Code",
       text: "Your OTP Code", // fallback
-
       html: `
   <body style="margin: 0; padding: 0; background-color: #eaf1ed; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
 
@@ -79,11 +77,15 @@ const sendOtp = async (email,otpCode) => {
 
     console.log("Message sent: %s", info.messageId);
 
+
+    return info;
+
   } catch (err) {
     console.error("Error while sending mail:", err);
+    // Optional: Rethrow the error so your main calling function knows it failed
+    throw err;
   }
 }
-
 module.exports = {
   otpGenerator,
   sendOtp
