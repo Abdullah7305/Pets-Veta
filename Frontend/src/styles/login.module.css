@@ -1,14 +1,7 @@
 .container {
   min-height: 100vh;
   display: flex;
-
-  background: linear-gradient(
-    180deg,
-    rgba(249, 197, 168, 1) 0%,
-    rgba(249, 197, 168, 1) 19%,
-    rgba(249, 197, 168, 1) 27%,
-    rgba(212, 226, 224, 1) 100%
-  );
+  background: #f8f9fa;
 }
 
 /* LEFT IMAGE SIDE */

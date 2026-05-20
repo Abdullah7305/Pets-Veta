@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { userLogin } from "../api/loginuser.api";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
+import { getGoogleAuthUrlApi } from "../api/petOwner.api";
 import Input from "../../../shared/components/Inputs/Input";
 import Button from "../../../shared/components/Button/Button";
 
@@ -30,6 +30,7 @@ const loginFields = [
 
 export default function LoginComponent() {
   const [showPassword, setShowPassword] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState<boolean>(false)
   const navigate = useNavigate();
 
   const {
@@ -56,12 +57,31 @@ export default function LoginComponent() {
 
   };
 
+  const handleGoogleLogin = async () => {
+    try {
+      setIsGoogleLoading(true);
+      const result = await getGoogleAuthUrlApi();
+      if (result.success && result.data?.url) {
+        window.location.href = result.data.url
+
+      }
+
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log("Google Auth Error", error.message)
+      }
+    }
+    finally {
+      setIsGoogleLoading(false);
+    }
+  }
+
   return (
     <div className="flex w-full max-w-md flex-col gap-4">
       <div>
-        <h1 className="text-2xl font-bold text-blue-900">Doctor Login</h1>
+        <h1 className="text-2xl font-bold text-[#078b91]">Login</h1>
 
-        <p className="mt-1 text-gray-500">Login to your account</p>
+
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -95,6 +115,17 @@ export default function LoginComponent() {
         </div>
 
         <Button type="submit">Login</Button>
+        {/* OAUTH INTEGRATION */}
+        <Button onClick={handleGoogleLogin} variant="outline" type="button">
+          <div className="flex items-center justify-center gap-3">
+            <img
+              src="https://www.svgrepo.com/show/355037/google.svg"
+              className="h-5 w-5"
+              alt="google logo"
+            />
+            {isGoogleLoading ? "Connecting..." : "Continue with Google"}
+          </div>
+        </Button>
 
         <p className="text-center text-sm text-gray-600">
           Don&apos;t have an account?{" "}

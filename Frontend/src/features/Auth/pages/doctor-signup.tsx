@@ -9,9 +9,9 @@ export default function DoctorSignup() {
         <DoctorForm />
       </div>
 
-      <div className={styles.right}>
+      {/* <div className={styles.right}>
         <img src="/doctor-pet.png" className={styles.image} alt="doctor" />
-      </div>
+      </div> */}
     </div>
   );
 }

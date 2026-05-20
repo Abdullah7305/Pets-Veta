@@ -53,6 +53,7 @@ interface registrationResponse {
 export default function PetOwnerForm() {
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [isGoogleLoading, setIsGoogleLoading] = useState<boolean>(false)
+    const [isError, setIsError] = useState<string>('');
     const navigate = useNavigate();
 
     const {
@@ -76,7 +77,9 @@ export default function PetOwnerForm() {
                 console.log(
                     "Submission processing error:",
                     error.response?.data?.message
+
                 );
+                setIsError(error.response?.data?.message)
             } else {
                 console.log("Unknown error:", error);
             }
@@ -106,7 +109,7 @@ export default function PetOwnerForm() {
     return (
         <div className="rounded-3xl bg-white/80 p-6 shadow-2xl backdrop-blur-lg">
             <div className="mb-6">
-                <h1 className="text-3xl font-bold text-blue-900">
+                <h1 className="text-3xl font-bold text-[#078b91]  ">
                     Pet Owner Registration
                 </h1>
                 <p className="mt-2 text-gray-500">
@@ -131,6 +134,16 @@ export default function PetOwnerForm() {
                             {...register(field.name)}
                         />
                     ))}
+                </div>
+
+                <div>
+                    {isError && <p>
+                        <b className="text-red-500">
+                            {isError}
+                        </b>
+                    </p>
+                    }
+
                 </div>
 
                 {/* SUBMISSION ACTION BUTTONS */}
@@ -163,7 +176,7 @@ export default function PetOwnerForm() {
                         Already have an account?{" "}
                         <a
                             href="/login"
-                            className="font-semibold text-blue-900 hover:underline"
+                            className="font-semibold text-[#078b91]   hover:underline"
                         >
                             Login
                         </a>

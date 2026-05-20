@@ -97,13 +97,13 @@ export default function DoctorForm() {
   };
 
   return (
-    <div className="rounded-3xl bg-white/80 p-6 shadow-2xl backdrop-blur-lg">
+    <div  className=" rounded-3xl bg-white/80 p-6 shadow-sm backdrop-blur-lg">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-blue-900">Doctor Registration</h1>
+        <h1 className="text-3xl font-bold text-[#078b91]">Doctor Registration</h1>
         <p className="mt-2 text-gray-500">Create your professional doctor account</p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-5">
+      <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-5 ">
         {responseMessage && (
           <div className="rounded-lg border border-green-200 bg-green-50 p-4">
             <p className="text-center font-medium text-green-800">{responseMessage}</p>
@@ -169,17 +169,7 @@ export default function DoctorForm() {
             <div className="h-px flex-1 bg-gray-300" />
           </div>
 
-          {/* GOOGLE BUTTON */}
-          <Button variant="outline">
-            <div className="flex cursor-pointer items-center justify-center gap-3">
-              <img
-                src="https://www.svgrepo.com/show/355037/google.svg"
-                className="h-5 w-5"
-                alt="google"
-              />
-              Continue with Google
-            </div>
-          </Button>
+         
 
           {/* LOGIN */}
           <p className="text-center text-sm text-gray-600">
