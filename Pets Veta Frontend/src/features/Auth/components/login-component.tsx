@@ -41,9 +41,7 @@ export default function LoginComponent() {
     resolver: zodResolver(loginSchema),
   });
 
-  interface loginResponse {
-    message: string
-  }
+
 
   const onSubmit = async (data: LoginFormData) => {
     console.log(data);
