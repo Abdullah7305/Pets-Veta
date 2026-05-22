@@ -16,18 +16,12 @@ const pendingDoctorList = catchAsync(async (req, res) => {
 });
 
 const approveDoctor = catchAsync(async (req, res) => {
-    requireFields(['doctorId'], req.body);
 
-    const { doctorId } = req.body;
 
-    const doctorExist = await doctorServices.findDoctorById(doctorId);
-
-    if (!doctorExist) {
-        throw new AppError('Doctor not found', 404);
+    const approvedDoctor = await doctorServices.approvedDoctor();
+    if (!approvedDoctor || approvedDoctor.length === 0) {
+        return sendResponse(res, 200, 'No Approved Doctors Found', []);
     }
-
-    const approvedDoctor = await doctorServices.approvedDoctor(doctorId);
-
     return sendResponse(
         res,
         200,

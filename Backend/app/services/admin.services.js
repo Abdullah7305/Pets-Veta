@@ -1,9 +1,10 @@
 const { default: prisma } = require('../config/prisma');
+const { VerificationStatus } = require('@prisma/client')
 
 const sendPendingDoctors = async () => {
   return await prisma.doctor.findMany({
     where: {
-      isVerified: false
+      isVerified: VerificationStatus.PENDING
     }
   });
 };
@@ -25,12 +26,9 @@ const rejectDoctor = async (doctorId) => {
 };
 
 const approvedDoctor = async (doctorId) => {
-  return await prisma.doctor.update({
+  return await prisma.doctor.findMany({
     where: {
-      id: doctorId
-    },
-    data: {
-      isVerified: true
+      isVerified: VerificationStatus.APPROVED
     }
   });
 };

@@ -30,7 +30,8 @@ const createDoctor = async (doctorData) => {
                     specialization: doctorData.specialization,
                     address: doctorData.address,
                     degreeLicenseUrl: doctorData.degreeLicenseUrl,
-                    experience: parseInt(doctorData.experience)
+                    experience: parseInt(doctorData.experience),
+                    fees:doctorData.fees
                 }
             },
             userRole: {

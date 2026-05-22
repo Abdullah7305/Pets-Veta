@@ -1,4 +1,4 @@
-import DoctorStatusBadge from "./DoctorStatusBadge";
+import DoctorStatusDropdown from "./DoctorStatusBadge";
 
 
 interface Props {
@@ -32,10 +32,10 @@ const DoctorRow = ({ doctor }: Props) => {
 
 
       <td>
-        <DoctorStatusBadge status={doctor.status} />
+        <DoctorStatusDropdown status={"Pending"} />
       </td>
 
-     
+
     </tr>
   );
 };

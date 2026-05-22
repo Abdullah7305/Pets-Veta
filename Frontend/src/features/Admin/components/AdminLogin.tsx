@@ -1,6 +1,7 @@
 import { Eye, EyeOff, Lock, Mail, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { loginAdminAccount, type ApiResponse } from '../apis/adminlogin.api'
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -19,13 +20,23 @@ const AdminLogin = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async (data) => {
+    try {
+      const response: ApiResponse = await loginAdminAccount(data);
+      if (response.success) {
+        navigate('/admin-dashboard')
+        return;
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error("Login failed:", error.message);
+      } else {
+        console.error("An unexpected error occurred:", error);
+      }
+      return;
+    }
 
-    // API connect later
-    // localStorage.setItem("adminToken", data.token);
 
-    navigate("/admin/dashboard");
   };
 
   return (
@@ -106,6 +117,7 @@ const AdminLogin = () => {
                       className="w-full rounded-xl border border-slate-200 bg-[#FFF8F4]/60 py-3 pl-12 pr-4 text-sm outline-none transition focus:border-[#078b91] focus:bg-white focus:ring-4 focus:ring-[#D4E2E0]/60"
                       required
                     />
+
                   </div>
                 </div>
 

@@ -8,6 +8,13 @@ datasource db {
 }
 
 // ==============================================
+
+enum VerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model User {
   id              String    @id @default(uuid())
   fullName        String
@@ -29,17 +36,17 @@ model User {
 }
 
 model Doctor {
-  id               String  @id @default(uuid())
-  userId           String  @unique
-  isAvailable      Boolean @default(false)
+  id               String             @id @default(uuid())
+  userId           String             @unique
+  isAvailable      Boolean            @default(false)
   education        String
   specialization   String
   address          String
   degreeLicenseUrl String
   experience       Int
   fees             Int
-  isVerified       Boolean @default(false)
-  user             User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isVerified       VerificationStatus @default(PENDING)
+  user             User               @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([specialization])
@@ -49,13 +56,11 @@ model Doctor {
 }
 
 model Admin {
-  id           String   @id @default(uuid())
-  userId       String   @unique
-  assignedCode String   @unique
-  createdAt    DateTime @default(now())
-  user         User     @relation(fields: [userId], references: [id])
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 }
-
 
 model UserRole {
   id     String @id @default(uuid())

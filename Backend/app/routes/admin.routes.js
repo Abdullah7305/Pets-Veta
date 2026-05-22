@@ -8,8 +8,8 @@ Router
     .get(authMiddleware.protect, adminController.pendingDoctorList)
 
 Router
-    .route('/approve/doctor')
-    .post(authMiddleware.protect, adminController.approveDoctor)
+    .route('/approved/doctors')
+    .get(authMiddleware.protect, adminController.approveDoctor)
 
 Router
     .route('/reject/doctor')

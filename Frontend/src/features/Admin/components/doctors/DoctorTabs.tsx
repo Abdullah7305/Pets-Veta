@@ -1,10 +1,9 @@
 import { useState, type SetStateAction } from "react";
-import { PendingDoctors } from "../../apis/doctorquery.api";
+import { PendingDoctors, ApprovedDoctors } from "../../apis/doctorquery.api";
 
 const tabs = [
   { name: "Pending", status: 'pending', id: 1, },
-  { name: "Approved", status: 'approved', id: 2 },
-  { name: "Rejected", status: 'rejected', id: 3 }
+  { name: "Approved", status: 'approved', id: 2 }
 ];
 
 const DoctorTabs = () => {
@@ -16,6 +15,10 @@ const DoctorTabs = () => {
     try {
       if (status.toLowerCase() === 'pending') {
         const response = await PendingDoctors();
+        console.log(response);
+      }
+      else if (status.toLowerCase() === 'approve') {
+        const response = await ApprovedDoctors();
         console.log(response);
       }
     } catch (error) {

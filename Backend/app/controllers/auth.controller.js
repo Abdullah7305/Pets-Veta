@@ -60,11 +60,11 @@ const createDoctorAccount = catchAsync(async (req, res) => {
         throw new AppError("File is missing", 400);
     }
 
-    requireFields(["fullName", "username", "email", "password", "education", "specialization", "address", "experience"], req.body)
-    const { fullName, username, email, password,
+    requireFields(["fullName", "username", "fees", "email", "password", "education", "specialization", "address", "experience"], req.body)
+    const { fullName, username, email, password, fees,
         education, specialization, address, experience } = req.body;
 
-
+    req.body.fees = Number(req.body.fees);
 
     const result = await uploadToCloudinary(
         req.file.buffer,
