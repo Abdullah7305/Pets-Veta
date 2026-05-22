@@ -3,7 +3,18 @@ import DoctorRow from "./DoctorRow";
 
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
+type DoctorsDataProps = {
+  name: string,
+  experience: number,
+  fees: number,
+  specialization: string,
+  email: string
+}
+
 const DoctorTable = () => {
+
+
+
   return (
     <div className="bg-white rounded-2xl p-6 w-full overflow-x-auto mt-8 ">
       <table className="w-full min-w-[1000px]">
@@ -17,11 +28,10 @@ const DoctorTable = () => {
 
             <th className="pb-4">Email</th>
 
-            <th className="pb-4">Phone</th>
 
             <th className="pb-4">Status</th>
 
-            <th className="pb-4">Actions</th>
+
           </tr>
         </thead>
 

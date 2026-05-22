@@ -1,6 +1,5 @@
 import DoctorStatusBadge from "./DoctorStatusBadge";
 
-import DoctorActions from "./DoctorActions";
 
 interface Props {
   doctor: any;
@@ -31,15 +30,12 @@ const DoctorRow = ({ doctor }: Props) => {
 
       <td>{doctor.email}</td>
 
-      <td>{doctor.phone}</td>
 
       <td>
         <DoctorStatusBadge status={doctor.status} />
       </td>
 
-      <td>
-        <DoctorActions />
-      </td>
+     
     </tr>
   );
 };

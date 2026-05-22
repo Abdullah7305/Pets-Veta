@@ -1,10 +1,17 @@
 import AdminLoginPage from "./pages/AdminLoginPage";
-import AdminDashboardPage from "./pages/AdminDashboardPage";
+import AdminLayout from "./layout/AdminLayout";
+import AdminDoctorPage from "./pages/AdminDoctorPage";
 
 const adminRoutes = [
   {
     path: "admin-dashboard",
-    element: <AdminDashboardPage />,
+    element: <AdminLayout />,
+    children: [
+      {
+        path: 'doctors',
+        element: <AdminDoctorPage />
+      }
+    ]
   },
   {
     path: "/admin-login",

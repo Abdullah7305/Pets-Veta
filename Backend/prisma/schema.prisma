@@ -24,6 +24,8 @@ model User {
   userRole        UserRole?
   doctors         Doctor?
   admin           Admin?
+
+  @@index([fullName])
 }
 
 model Doctor {
@@ -35,8 +37,15 @@ model Doctor {
   address          String
   degreeLicenseUrl String
   experience       Int
+  fees             Int
   isVerified       Boolean @default(false)
   user             User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([specialization])
+  @@index([fees])
+  @@index([isAvailable])
+  @@index([specialization, fees, isAvailable])
 }
 
 model Admin {

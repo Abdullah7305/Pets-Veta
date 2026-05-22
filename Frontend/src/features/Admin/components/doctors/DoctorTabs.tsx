@@ -1,30 +1,28 @@
-// const tabs = ["All Doctors", "Pending", "Approved", "Rejected"];
+import { useState, type SetStateAction } from "react";
+import { PendingDoctors } from "../../apis/doctorquery.api";
 
-// const DoctorTabs = () => {
-//   return (
-//     <div className="flex items-center gap-3">
-//       {tabs.map((tab, index) => (
-//         <button
-//           key={tab}
-//           className={`px-5 py-3 rounded-xl transition-all font-medium
-
-//           ${
-//             index === 0 ? "bg-cyan-600 text-white" : "bg-gray-100 text-gray-600"
-//           }
-//           `}
-//         >
-//           {tab}
-//         </button>
-//       ))}
-//     </div>
-//   );
-// };
-
-// export default DoctorTabs;
-
-const tabs = ["All Doctor", "Pending", "Approved", "Rejected"];
+const tabs = [
+  { name: "Pending", status: 'pending', id: 1, },
+  { name: "Approved", status: 'approved', id: 2 },
+  { name: "Rejected", status: 'rejected', id: 3 }
+];
 
 const DoctorTabs = () => {
+
+  const [isActive, setActive] = useState<string>('');
+
+  const handlePendingDoctors = async (status: string, name: string) => {
+    setActive(name);
+    try {
+      if (status.toLowerCase() === 'pending') {
+        const response = await PendingDoctors();
+        console.log(response);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <div
       className="
@@ -34,23 +32,24 @@ const DoctorTabs = () => {
       w-full sm:w-auto
     "
     >
-      {tabs.map((tab, index) => (
+      {tabs.map((tab) => (
         <button
-          key={index}
+          key={tab.id}
+          onClick={() => handlePendingDoctors(tab.status, tab.name)}
           className={`
-            px-5 py-3
-            rounded-xl
-            text-sm font-medium
-            transition-all duration-300
+                   px-5 py-3
+                  rounded-xl
+                  text-sm font-medium
+                  transition-all duration-300
+                  cursor-pointer
 
-            ${
-              index === 0
-                ? "bg-cyan-600 text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-cyan-100"
+                ${isActive === tab.name
+              ? "bg-cyan-600 text-white"
+              : "bg-gray-100 text-gray-600 hover:bg-cyan-100"
             }
-          `}
+            `}
         >
-          {tab}
+          {tab.name}
         </button>
       ))}
     </div>

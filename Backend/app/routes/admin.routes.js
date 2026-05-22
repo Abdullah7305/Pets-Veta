@@ -4,15 +4,15 @@ const adminController = require('../controllers/admin.controller');
 const Router = express.Router();
 
 Router
-    .route('/admin/pending/doctors')
+    .route('/pending/doctors')
     .get(authMiddleware.protect, adminController.pendingDoctorList)
 
 Router
-    .route('/admin/approve/doctor')
+    .route('/approve/doctor')
     .post(authMiddleware.protect, adminController.approveDoctor)
 
 Router
-    .route('/admin/reject/doctor')
+    .route('/reject/doctor')
     .post(authMiddleware.protect, adminController.rejectDoctor)
 
 module.exports = Router;

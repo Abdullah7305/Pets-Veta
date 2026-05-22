@@ -8,28 +8,27 @@ import {
 
 export const sidebarItems = [
   {
-    id: 1,
-    title: "Dashboard",
-    icon: FaHome,
-  },
-  {
     id: 2,
     title: "Doctors",
+    address: "doctors",
     icon: FaUserMd,
   },
   {
     id: 3,
     title: "Appointments",
+    address: "appointments",
     icon: FaCalendarAlt,
   },
   {
     id: 4,
     title: "Patients",
+    address: "pateint",
     icon: FaUsers,
   },
   {
     id: 5,
     title: "Settings",
+    address: "settings",
     icon: FaCog,
   },
 ];

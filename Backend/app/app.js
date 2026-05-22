@@ -19,7 +19,7 @@ app.use(cors({
 app.use(cookieParser());
 
 app.use('/api/v1/auth', authRouter)
-app.use('/api/v1', adminRouter)
+app.use('/api/v1/admin', adminRouter)
 
 app.use(globalErrorHandler);
 module.exports = app;
