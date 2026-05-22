@@ -1,53 +1,42 @@
-const { default: prisma, userRole } = require('../config/prisma')
-
+const { default: prisma } = require('../config/prisma');
 
 const sendPendingDoctors = async () => {
-    const pendingDoctors = await prisma.doctor.findMany({
-        where: {
-            isVerified: false
-        }
-    })
-    if (pendingDoctors.length == 0) {
-        return false;
+  return await prisma.doctor.findMany({
+    where: {
+      isVerified: false
     }
-    return pendingDoctors;
-}
+  });
+};
+
+const findDoctorById = async (doctorId) => {
+  return await prisma.doctor.findUnique({
+    where: {
+      id: doctorId
+    }
+  });
+};
 
 const rejectDoctor = async (doctorId) => {
-
-    const doExist = await prisma.doctor.findUnique({
-        where: {
-            id: doctorId
-        }
-    })
-    const rejectDoctor = await prisma.doctor.delete({
-        where: {
-            id: doctorId
-        }
-    })
-    return rejectDoctor;
-}
+  return await prisma.doctor.delete({
+    where: {
+      id: doctorId
+    }
+  });
+};
 
 const approvedDoctor = async (doctorId) => {
-    const doExist = await prisma.doctor.findUnique({
-        where: {
-            id: doctorId
-        }
-    })
-    const approveDoctor = await prisma.doctor.update({
-        where: {
-            id: doctorId
-        },
-        data: {
-            isVerified: true
-        }
-    })
-    return approveDoctor;
-
-}
+  return await prisma.doctor.update({
+    where: {
+      id: doctorId
+    },
+    data: {
+      isVerified: true
+    }
+  });
+};
 
 module.exports = {
-    sendPendingDoctors,
-    approvedDoctor,
-    rejectDoctor
-}
+  sendPendingDoctors,
+  approvedDoctor,
+  rejectDoctor
+};

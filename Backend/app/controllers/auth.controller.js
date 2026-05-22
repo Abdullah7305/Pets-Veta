@@ -48,7 +48,7 @@ const handleGoogleCallbackController = catchAsync(async (req, res) => {
     const { user, accessToken, refreshToken } = await createAccountByGoogleService(code);
 
     res.cookie('accessToken', accessToken, cookiesOptions);
-    res.cookie('refreshToken', refreshToken, refreshToken);
+    res.cookie('refreshToken', refreshToken, cookiesOptions);
     const frontendDashboardUrl = `http://localhost:5173/auth-success`
     return res.redirect(frontendDashboardUrl);
 })
@@ -78,7 +78,7 @@ const createDoctorAccount = catchAsync(async (req, res) => {
     const doctorData = {
         ...req.body,
         degreeLicenseUrl,
-        hashedPassword
+        hashedPassword //password 
     }
 
 
@@ -115,7 +115,7 @@ const createDoctorAccount = catchAsync(async (req, res) => {
 
     res.cookie('otpToken', otpToken, cookiesOptions);
 
-    return sendResponse(res, 201, "Success", newDoctor);
+    return sendResponse(res, 200, "Success", newDoctor);
 
 })
 
@@ -166,7 +166,7 @@ const createPetOwnerAccount = catchAsync(async (req, res) => {
 
     res.cookie('otpToken', otpToken, cookiesOptions);
 
-    return sendResponse(res, 201, "Success", validPetOwner);
+    return sendResponse(res, 20, "Success", validPetOwner);
 
 
 }
@@ -324,7 +324,7 @@ const refreshTokenController = catchAsync(async (req, res) => {
 
     }
 
-    const { accessToken, refreshToken } = createAuthTokens.createAuthTokens(payload);
+    const { accessToken, refreshToken } = createAuthTokens(payload);
 
 
     res.cookie("accessToken", accessToken, cookiesOptions);
