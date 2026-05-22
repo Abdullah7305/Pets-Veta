@@ -1,66 +1,64 @@
 const doctorServices = require('../services/admin.services');
-const authServices = require('../services/auth.services');
+const sendResponse = require('../utils/SendResponse');
+const catchAsync = require('../utils/CatchAsync');
+const AppError = require('../utils/AppError');
+const requireFields = require('../utils/validateRequest');
 
-const pendingDoctorList = async (req, res) => {
-    try {
-        const { id, email } = req.user;
-        const pendingDoctors = await doctorServices.sendPendingDoctors();
 
-        if (pendingDoctors === false) {
-            return res.status(204).json({ message: 'No Pending Doctors Found' });
+const pendingDoctorList = catchAsync(async (req, res) => {
+    const pendingDoctors = await doctorServices.sendPendingDoctors();
 
-        }
-        console.log("Pending Doctors ==>", pendingDoctors);
-        const doctorData = {};
-
-        return res.status(200).json({ message: 'Success', doctors: pendingDoctors });
-
-    } catch (error) {
-        console.log("Error in sending doctor list is ", error.message);
-        return res.status(500).json({ serverErr: error.message })
+    if (!pendingDoctors || pendingDoctors.length === 0) {
+        return sendResponse(res, 200, 'No Pending Doctors Found', []);
     }
-}
 
+    return sendResponse(res, 200, 'Success', pendingDoctors);
+});
 
-const approveDoctor = async (req, res) => {
-    try {
-        const { id, email } = req.user;
-        const { doctorId } = req.body;
+const approveDoctor = catchAsync(async (req, res) => {
+    requireFields(['doctorId'], req.body);
 
-        if (!doctorId) {
-            return res.status(400).json({ err: "No Doctor Id" });
-        }
-        const isApproved = await authServices.approveDoctor(doctorId);
+    const { doctorId } = req.body;
 
+    const doctorExist = await doctorServices.findDoctorById(doctorId);
 
-
-        return res.status(200).json({ message: 'Successfully approved doctor', });
-
-    } catch (error) {
-        console.log("Error in approving doctor list is ", error.message);
-        return res.status(500).json({ serverErr: error.message })
+    if (!doctorExist) {
+        throw new AppError('Doctor not found', 404);
     }
-}
 
-const rejectDoctor = async (req, res) => {
-    try {
-        const { doctorId } = req.body;
-        if (!doctorId) {
-            return res.status(400).json({ err: "No Doctor Id" });
-        }
-        const isRejected = await doctorServices.rejectDoctor(doctorId);
-        return res.status(201).json({ message: 'Successfully Rejected User' });
+    const approvedDoctor = await doctorServices.approvedDoctor(doctorId);
 
-    } catch (error) {
-        console.log("Error in sending rejecting doctor list is ", error.message);
-        return res.status(500).json({ serverErr: error.message })
+    return sendResponse(
+        res,
+        200,
+        'Successfully approved doctor',
+        approvedDoctor
+    );
+});
 
+const rejectDoctor = catchAsync(async (req, res) => {
+    requireFields(['doctorId'], req.body);
+
+    const { doctorId } = req.body;
+
+    const doctorExist = await doctorServices.findDoctorById(doctorId);
+
+    if (!doctorExist) {
+        throw new AppError('Doctor not found', 404);
     }
-}
 
+    const rejectedDoctor = await doctorServices.rejectDoctor(doctorId);
+
+    return sendResponse(
+        res,
+        200,
+        'Successfully rejected doctor',
+        rejectedDoctor
+    );
+});
 
 module.exports = {
     pendingDoctorList,
     approveDoctor,
     rejectDoctor
-}
+};
