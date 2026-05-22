@@ -139,11 +139,7 @@ const createAdmin = async (adminData) => {
                 }
             },
 
-            admin: {
-                create: {
-                    assignedCode: adminData.hashedAssignedCode
-                }
-            }
+           
         },
 
         include: {

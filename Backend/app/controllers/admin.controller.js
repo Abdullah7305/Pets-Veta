@@ -15,7 +15,7 @@ const pendingDoctorList = catchAsync(async (req, res) => {
     return sendResponse(res, 200, 'Success', pendingDoctors);
 });
 
-const approveDoctor = catchAsync(async (req, res) => {
+const approvedDoctor = catchAsync(async (req, res) => {
 
 
     const approvedDoctor = await doctorServices.approvedDoctor();
@@ -29,6 +29,8 @@ const approveDoctor = catchAsync(async (req, res) => {
         approvedDoctor
     );
 });
+
+
 
 const rejectDoctor = catchAsync(async (req, res) => {
     requireFields(['doctorId'], req.body);
@@ -53,6 +55,6 @@ const rejectDoctor = catchAsync(async (req, res) => {
 
 module.exports = {
     pendingDoctorList,
-    approveDoctor,
+    approvedDoctor,
     rejectDoctor
 };

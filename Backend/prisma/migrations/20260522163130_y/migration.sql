@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "VerificationStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
@@ -26,7 +29,8 @@ CREATE TABLE "Doctor" (
     "address" TEXT NOT NULL,
     "degreeLicenseUrl" TEXT NOT NULL,
     "experience" INTEGER NOT NULL,
-    "isVerified" BOOLEAN NOT NULL DEFAULT false,
+    "fees" INTEGER NOT NULL,
+    "isVerified" "VerificationStatus" NOT NULL DEFAULT 'PENDING',
 
     CONSTRAINT "Doctor_pkey" PRIMARY KEY ("id")
 );
@@ -35,7 +39,6 @@ CREATE TABLE "Doctor" (
 CREATE TABLE "Admin" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
-    "assignedCode" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Admin_pkey" PRIMARY KEY ("id")
@@ -54,13 +57,28 @@ CREATE TABLE "UserRole" (
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
+CREATE INDEX "User_fullName_idx" ON "User"("fullName");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Doctor_userId_key" ON "Doctor"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Admin_userId_key" ON "Admin"("userId");
+CREATE INDEX "Doctor_userId_idx" ON "Doctor"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Admin_assignedCode_key" ON "Admin"("assignedCode");
+CREATE INDEX "Doctor_specialization_idx" ON "Doctor"("specialization");
+
+-- CreateIndex
+CREATE INDEX "Doctor_fees_idx" ON "Doctor"("fees");
+
+-- CreateIndex
+CREATE INDEX "Doctor_isAvailable_idx" ON "Doctor"("isAvailable");
+
+-- CreateIndex
+CREATE INDEX "Doctor_specialization_fees_isAvailable_idx" ON "Doctor"("specialization", "fees", "isAvailable");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Admin_userId_key" ON "Admin"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "UserRole_userId_key" ON "UserRole"("userId");
