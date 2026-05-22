@@ -1,18 +1,35 @@
-import { Eye, EyeOff, Lock, Mail, ShieldCheck } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ShieldCheck } from "lucide-react";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { loginAdminAccount, type ApiResponse } from '../apis/adminlogin.api'
 
-const AdminLogin = () => {
-  const navigate = useNavigate();
+import {
+  adminLoginSchema,
+  type AdminLoginFormValues,
+} from "../schema/admin.login.schema";
 
+import Button from "../../../shared/components/Button/Button";
+import Input from "../../../shared/components/Inputs/Input";
+
+const AdminLoginPage = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<AdminLoginFormValues>({
+    resolver: zodResolver(adminLoginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
+<<<<<<< HEAD
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
@@ -37,6 +54,11 @@ const AdminLogin = () => {
     }
 
 
+=======
+  const onSubmit = async (data: AdminLoginFormValues) => {
+    console.log(data);
+    navigate("/admin/dashboard");
+>>>>>>> 7dd80dd2f549f251498075c1259ac7c5ef896aaa
   };
 
   return (
@@ -96,12 +118,16 @@ const AdminLogin = () => {
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div>
-                  <label className="mb-2 block text-sm font-bold text-[#20263D]">
-                    Email Address
-                  </label>
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                <Input
+                  label="Email Address"
+                  type="email"
+                  placeholder="admin@petsveta.com"
+                  error={errors.email?.message}
+                  {...register("email")}
+                />
 
+<<<<<<< HEAD
                   <div className="relative">
                     <Mail
                       size={18}
@@ -152,6 +178,17 @@ const AdminLogin = () => {
                     </button>
                   </div>
                 </div>
+=======
+                <Input
+                  label="Password"
+                  type="password"
+                  placeholder="Enter password"
+                  showPassword={showPassword}
+                  onTogglePassword={() => setShowPassword((prev) => !prev)}
+                  error={errors.password?.message}
+                  {...register("password")}
+                />
+>>>>>>> 7dd80dd2f549f251498075c1259ac7c5ef896aaa
 
                 <div className="flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
                   <label className="flex items-center gap-2 text-slate-500">
@@ -170,12 +207,13 @@ const AdminLogin = () => {
                   </button>
                 </div>
 
-                <button
+                <Button
                   type="submit"
-                  className="w-full rounded-xl bg-[#20263D] px-6 py-3 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-[#111827]"
+                  isSubmitting={isSubmitting}
+                  className="bg-[#20263D] font-black shadow-lg shadow-slate-300 hover:bg-[#111827] hover:text-white hover:border-transparent"
                 >
                   Login as Admin
-                </button>
+                </Button>
               </form>
 
               <div className="mt-8 rounded-2xl bg-[#D4E2E0]/35 p-4">
@@ -192,4 +230,4 @@ const AdminLogin = () => {
   );
 };
 
-export default AdminLogin;
+export default AdminLoginPage;

@@ -4,16 +4,29 @@ const { VerificationStatus } = require('@prisma/client')
 const sendPendingDoctors = async () => {
   return await prisma.doctor.findMany({
     where: {
-      isVerified: VerificationStatus.PENDING
-    }
+      isVerified: false,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      specialization: true,
+    },
   });
 };
 
 const findDoctorById = async (doctorId) => {
   return await prisma.doctor.findUnique({
     where: {
-      id: doctorId
-    }
+      id: doctorId, 
+    },
+    select: {
+      id: true,
+      certificate: true,
+      fee: true,
+      degree: true,
+      education: true,
+    },
   });
 };
 
@@ -28,8 +41,15 @@ const rejectDoctor = async (doctorId) => {
 const approvedDoctor = async (doctorId) => {
   return await prisma.doctor.findMany({
     where: {
-      isVerified: VerificationStatus.APPROVED
-    }
+      isVerified: false,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      specialization: true,
+
+    },
   });
 };
 

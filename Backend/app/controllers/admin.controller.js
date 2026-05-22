@@ -6,7 +6,7 @@ const requireFields = require('../utils/validateRequest');
 
 
 const pendingDoctorList = catchAsync(async (req, res) => {
-    const pendingDoctors = await doctorServices.sendPendingDoctors();
+    const pendingDoctors = await doctorServices.sendPendingDoctors();                                              
 
     if (!pendingDoctors || pendingDoctors.length === 0) {
         return sendResponse(res, 200, 'No Pending Doctors Found', []);
