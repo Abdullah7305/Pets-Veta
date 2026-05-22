@@ -10,7 +10,7 @@ const adminRoutes = [
     element: <AdminLayout />,
     children: [
       {
-        path: 'doctors',
+        index: true,
         element: <AdminDoctorPage />
       }
     ]

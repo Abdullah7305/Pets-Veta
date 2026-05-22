@@ -12,7 +12,8 @@ import {
   XCircle,
 } from "lucide-react";
 import { useState } from "react";
-import AdminSidebar, { type DoctorRequestTab } from "./AdminSidebar";
+import AdminSidebar from "./AdminSidebar";
+import type { DoctorRequestTab } from "./AdminSidebar";
 import DoctorRequestCard, { type DoctorRequest } from "./DoctorRequestCard";
 
 const doctors: DoctorRequest[] = [

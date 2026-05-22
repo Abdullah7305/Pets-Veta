@@ -176,17 +176,16 @@ const createPetOwnerAccount = catchAsync(async (req, res) => {
 const createAdminAccount = catchAsync(async (req, res) => {
 
 
-    requireFields(["fullName", "username", "email", "assignedCode", "password"], req.body);
+    requireFields(["fullName", "username", "email", "password"], req.body);
 
-    const { fullName, username, email, assignedCode, password } = req.body;
+    const { fullName, username, email, password } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 12);
-    const hashedAssignedCode = await bcrypt.hash(assignedCode, 12);
 
     const adminData = {
         ...req.body,
         hashedPassword,
-        hashedAssignedCode
+
     }
 
     const newAdmin = await authServices.createAdmin(adminData);
@@ -225,9 +224,9 @@ const createAdminAccount = catchAsync(async (req, res) => {
 
 const adminLogin = catchAsync(async (req, res) => {
 
-    requireFields(["email", "password", "assignedCode"], req.body);
+    requireFields(["email", "password"], req.body);
 
-    const { email, password, assignedCode } = req.body;
+    const { email, password } = req.body;
 
     const isValidUser = await authServices.getUserWithRole(email);
 
@@ -235,9 +234,9 @@ const adminLogin = catchAsync(async (req, res) => {
         throw new AppError("Invalid User Access", 401);
     }
 
-    const isCodeMatched = await bcrypt.compare(assignedCode, isValidUser.admin.assignedCode);
+
     const isPasswordMatch = await bcrypt.compare(password, isValidUser.password);
-    if (!isCodeMatched || !isPasswordMatch) {
+    if (!isPasswordMatch) {
         throw new AppError("Invalid Code or Password", 401);
 
     }

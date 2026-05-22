@@ -9,7 +9,7 @@ export const sidebarItems = [
   {
     id: 2,
     title: "Doctors",
-    address: "doctors",
+    address: "",
     icon: FaUserMd,
   },
   {

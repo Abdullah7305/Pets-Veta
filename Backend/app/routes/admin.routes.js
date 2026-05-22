@@ -9,7 +9,7 @@ Router
 
 Router
     .route('/approved/doctors')
-    .get(authMiddleware.protect, adminController.approveDoctor)
+    .get(authMiddleware.protect, adminController.approvedDoctor)
 
 Router
     .route('/reject/doctor')

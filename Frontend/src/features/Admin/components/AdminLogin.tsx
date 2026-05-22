@@ -30,7 +30,7 @@ const AdminLoginPage = () => {
   });
 
 
-  const handleadminmlogin = async (data: AdminLoginFormValues) => {
+  const handleadminmlogin = async (data: { email: string; password: string; }) => {
     try {
       const response: ApiResponse = await loginAdminAccount(data);
       if (response.success) {
@@ -149,7 +149,7 @@ const AdminLoginPage = () => {
                 >
                   Login as Admin
                 </Button>
-              </form>
+              </form >
 
               <div className="mt-8 rounded-2xl bg-[#D4E2E0]/35 p-4">
                 <p className="text-sm font-semibold leading-6 text-slate-600">
@@ -157,11 +157,11 @@ const AdminLoginPage = () => {
                   sellers should use their own login portals.
                 </p>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
+            </div >
+          </div >
+        </div >
+      </section >
+    </main >
   );
 };
 
