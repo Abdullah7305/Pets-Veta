@@ -53,8 +53,24 @@ const approvedDoctor = async (doctorId) => {
   });
 };
 
+const approveupdateDoctor = async (doctorId) => {
+  return await prisma.doctor.update({
+    where: {
+      id: doctorId, 
+    },
+    data: {
+      isVerified: true,
+    },
+    select: {
+      id: true,
+      isVerified: true,
+    },
+  });
+};
+
 module.exports = {
   sendPendingDoctors,
   approvedDoctor,
-  rejectDoctor
+  rejectDoctor,
+  approveupdateDoctor
 };

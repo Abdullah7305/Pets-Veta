@@ -29,15 +29,8 @@ const AdminLoginPage = () => {
     },
   });
 
-<<<<<<< HEAD
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
 
-  const handleSubmit = async (data) => {
+  const handleadminmlogin = async (data) => {
     try {
       const response: ApiResponse = await loginAdminAccount(data);
       if (response.success) {
@@ -54,11 +47,6 @@ const AdminLoginPage = () => {
     }
 
 
-=======
-  const onSubmit = async (data: AdminLoginFormValues) => {
-    console.log(data);
-    navigate("/admin/dashboard");
->>>>>>> 7dd80dd2f549f251498075c1259ac7c5ef896aaa
   };
 
   return (
@@ -118,7 +106,7 @@ const AdminLoginPage = () => {
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+              <form onSubmit={handleSubmit(handleadminmlogin)} className="space-y-5">
                 <Input
                   label="Email Address"
                   type="email"
@@ -127,58 +115,6 @@ const AdminLoginPage = () => {
                   {...register("email")}
                 />
 
-<<<<<<< HEAD
-                  <div className="relative">
-                    <Mail
-                      size={18}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-                    />
-
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      placeholder="admin@petsveta.com"
-                      className="w-full rounded-xl border border-slate-200 bg-[#FFF8F4]/60 py-3 pl-12 pr-4 text-sm outline-none transition focus:border-[#078b91] focus:bg-white focus:ring-4 focus:ring-[#D4E2E0]/60"
-                      required
-                    />
-
-                  </div>
-                </div>
-
-                <div>
-                  <label className="mb-2 block text-sm font-bold text-[#20263D]">
-                    Password
-                  </label>
-
-                  <div className="relative">
-                    <Lock
-                      size={18}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-                    />
-
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      placeholder="Enter password"
-                      className="w-full rounded-xl border border-slate-200 bg-[#FFF8F4]/60 py-3 pl-12 pr-12 text-sm outline-none transition focus:border-[#078b91] focus:bg-white focus:ring-4 focus:ring-[#D4E2E0]/60"
-                      required
-                    />
-
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-[#078b91]"
-                      aria-label={showPassword ? "Hide password" : "Show password"}
-                    >
-                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
-                  </div>
-                </div>
-=======
                 <Input
                   label="Password"
                   type="password"
@@ -188,7 +124,6 @@ const AdminLoginPage = () => {
                   error={errors.password?.message}
                   {...register("password")}
                 />
->>>>>>> 7dd80dd2f549f251498075c1259ac7c5ef896aaa
 
                 <div className="flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
                   <label className="flex items-center gap-2 text-slate-500">

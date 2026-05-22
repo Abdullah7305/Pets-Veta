@@ -51,8 +51,24 @@ const rejectDoctor = catchAsync(async (req, res) => {
     );
 });
 
+const approveupdateDoctor = catchAsync(async (req, res) => {
+  const { doctorId } = req.body;
+
+  if (!doctorId) {
+    return sendResponse(res, 400, "No Doctor Id");
+  }
+
+  const approvedDoctor = await doctorServices.approveDoctor(doctorId);
+
+  return sendResponse(res, 200, "Doctor approved successfully", {
+    status: "approved",
+    doctor: approvedDoctor,
+  });
+});
+
 module.exports = {
     pendingDoctorList,
     approveDoctor,
-    rejectDoctor
+    rejectDoctor,
+    approveupdateDoctor
 };
