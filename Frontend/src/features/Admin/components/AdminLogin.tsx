@@ -1,30 +1,35 @@
-import { Eye, EyeOff, Lock, Mail, ShieldCheck } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ShieldCheck } from "lucide-react";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-const AdminLogin = () => {
-  const navigate = useNavigate();
+import {
+  adminLoginSchema,
+  type AdminLoginFormValues,
+} from "../schema/admin.login.schema";
 
+import Button from "../../../shared/components/Button/Button";
+import Input from "../../../shared/components/Inputs/Input";
+
+const AdminLoginPage = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<AdminLoginFormValues>({
+    resolver: zodResolver(adminLoginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    // API connect later
-    // localStorage.setItem("adminToken", data.token);
-
+  const onSubmit = async (data: AdminLoginFormValues) => {
+    console.log(data);
     navigate("/admin/dashboard");
   };
 
@@ -85,61 +90,24 @@ const AdminLogin = () => {
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div>
-                  <label className="mb-2 block text-sm font-bold text-[#20263D]">
-                    Email Address
-                  </label>
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                <Input
+                  label="Email Address"
+                  type="email"
+                  placeholder="admin@petsveta.com"
+                  error={errors.email?.message}
+                  {...register("email")}
+                />
 
-                  <div className="relative">
-                    <Mail
-                      size={18}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-                    />
-
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      placeholder="admin@petsveta.com"
-                      className="w-full rounded-xl border border-slate-200 bg-[#FFF8F4]/60 py-3 pl-12 pr-4 text-sm outline-none transition focus:border-[#078b91] focus:bg-white focus:ring-4 focus:ring-[#D4E2E0]/60"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="mb-2 block text-sm font-bold text-[#20263D]">
-                    Password
-                  </label>
-
-                  <div className="relative">
-                    <Lock
-                      size={18}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-                    />
-
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      placeholder="Enter password"
-                      className="w-full rounded-xl border border-slate-200 bg-[#FFF8F4]/60 py-3 pl-12 pr-12 text-sm outline-none transition focus:border-[#078b91] focus:bg-white focus:ring-4 focus:ring-[#D4E2E0]/60"
-                      required
-                    />
-
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-[#078b91]"
-                      aria-label={showPassword ? "Hide password" : "Show password"}
-                    >
-                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
-                  </div>
-                </div>
+                <Input
+                  label="Password"
+                  type="password"
+                  placeholder="Enter password"
+                  showPassword={showPassword}
+                  onTogglePassword={() => setShowPassword((prev) => !prev)}
+                  error={errors.password?.message}
+                  {...register("password")}
+                />
 
                 <div className="flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
                   <label className="flex items-center gap-2 text-slate-500">
@@ -158,12 +126,13 @@ const AdminLogin = () => {
                   </button>
                 </div>
 
-                <button
+                <Button
                   type="submit"
-                  className="w-full rounded-xl bg-[#20263D] px-6 py-3 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-[#111827]"
+                  isSubmitting={isSubmitting}
+                  className="bg-[#20263D] font-black shadow-lg shadow-slate-300 hover:bg-[#111827] hover:text-white hover:border-transparent"
                 >
                   Login as Admin
-                </button>
+                </Button>
               </form>
 
               <div className="mt-8 rounded-2xl bg-[#D4E2E0]/35 p-4">
@@ -180,4 +149,4 @@ const AdminLogin = () => {
   );
 };
 
-export default AdminLogin;
+export default AdminLoginPage;
