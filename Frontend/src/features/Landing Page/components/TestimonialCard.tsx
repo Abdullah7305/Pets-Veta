@@ -1,6 +1,12 @@
 import BaseCard from "@/shared/components/BaseCard/BaseCard";
 
-const TestimonialCard = ({ name, review, image }: any) => {
+type TestimonialCardProps = {
+    name: string;
+    review: string;
+    image: string;
+};
+
+const TestimonialCard = ({ name, review, image }: TestimonialCardProps) => {
     return (
         <BaseCard>
             <div className="p-5">

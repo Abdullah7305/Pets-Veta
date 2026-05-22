@@ -1,5 +1,4 @@
 import {
-  FaHome,
   FaUserMd,
   FaCalendarAlt,
   FaUsers,

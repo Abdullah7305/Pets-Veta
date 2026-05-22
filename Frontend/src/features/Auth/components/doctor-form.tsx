@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { useForm, type SubmitErrorHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { createDoctorAccount } from "../api/doctor.api";
@@ -8,7 +8,11 @@ import Input from "../../../shared/components/Inputs/Input";
 import Button from "../../../shared/components/Button/Button";
 
 
-import { doctorSchema, type DoctorFormData } from "../schemas/doctor.schema";
+import {
+  doctorSchema,
+  type DoctorFormData,
+  type DoctorFormInput,
+} from "../schemas/doctor.schema";
 
 const doctorFields = [
   { name: "fullName", label: "Full Name", type: "text", placeholder: "Enter Name" },
@@ -42,7 +46,7 @@ export default function DoctorForm() {
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<DoctorFormData>({
+  } = useForm<DoctorFormInput, unknown, DoctorFormData>({
     resolver: zodResolver(doctorSchema),
     mode: "onChange",
   });
@@ -81,18 +85,18 @@ export default function DoctorForm() {
         reset();
         navigate("/verify-otp");
       }, 2000);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Registration failed:", error);
+      const apiError = error as { response?: { data?: { message?: string } }; message?: string };
       const errorMsg =
-        error?.response?.data?.message ||
-        error?.message ||
+        apiError.response?.data?.message ||
+        apiError.message ||
         "Registration failed. Please try again.";
       setErrorMessage(errorMsg);
     }
   };
 
-  // ERROR HANDLER (For debugging silent validation failures)
-  const onError = (formErrors: any) => {
+  const onError: SubmitErrorHandler<DoctorFormInput> = (formErrors) => {
     console.error("Zod Validation Failed! Check these fields:", formErrors);
   };
 
@@ -124,7 +128,7 @@ export default function DoctorForm() {
               label={field.label}
               type={field.type}
               placeholder={field.placeholder || ""}
-              error={errors[field.name as keyof DoctorFormData]?.message as string}
+              error={errors[field.name as keyof DoctorFormInput]?.message as string}
               showPassword={showPassword}
               onTogglePassword={() => setShowPassword(!showPassword)}
               {...register(field.name)}

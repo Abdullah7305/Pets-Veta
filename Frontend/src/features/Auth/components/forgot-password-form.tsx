@@ -5,8 +5,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 
-import { ArrowLeft } from "lucide-react";
-
 import Input from "../../../shared/components/Inputs/Input";
 import { veriyUserEmail } from "../api/verifyemail.api";
 import Button from "../../../shared/components/Button/Button";
@@ -45,8 +43,8 @@ export default function ForgotPasswordForm() {
       const response = await veriyUserEmail(data);
 
       console.log(response);
-      reset(),
-        navigate("/verify-otp");
+      reset();
+      navigate("/verify-otp");
     } catch (error) {
       console.log(error);
     } finally {

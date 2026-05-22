@@ -1,12 +1,9 @@
-import { useState } from "react";
 import Logo from "../../../shared/components/Logo/Logo";
 import { NavLink } from "react-router-dom";
 import { sidebarItems } from "../data/sidebar.data";
 import { LogOut } from 'lucide-react'
 
 const Sidebar = () => {
-  const [active, setActive] = useState("Dashboard");
-
   return (
     <div
       className="
@@ -31,8 +28,6 @@ const Sidebar = () => {
               <NavLink
                 key={item.id}
                 to={item.address}
-                onClick={() => setActive(item.title)}
-                // 1. Move the function arrow to the very front of the prop
                 className={({ isActive }: { isActive: boolean }) => `
                              flex items-center gap-3
                              px-4 py-3
@@ -45,6 +40,7 @@ const Sidebar = () => {
                     : "hover:bg-cyan-100 text-gray-700"}
                               `}
               >
+                <Icon />
                 {item.title}
               </NavLink>
 

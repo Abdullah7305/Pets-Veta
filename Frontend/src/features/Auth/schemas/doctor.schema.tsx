@@ -41,3 +41,4 @@ export const doctorSchema = z.object({
 
 // Exporting the inferred TypeScript type so you can use it in your component
 export type DoctorFormData = z.infer<typeof doctorSchema>;
+export type DoctorFormInput = z.input<typeof doctorSchema>;

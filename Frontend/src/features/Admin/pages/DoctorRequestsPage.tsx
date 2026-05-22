@@ -1,7 +1,7 @@
 import DoctorRequests from "../components/doctors/DoctorRequests";
 
-const AdminDoctorPage = () => {
+const DoctorRequestsPage = () => {
   return <DoctorRequests />;
 };
 
-export default AdminDoctorPage;
+export default DoctorRequestsPage;

@@ -30,7 +30,7 @@ const AdminLoginPage = () => {
   });
 
 
-  const handleadminmlogin = async (data) => {
+  const handleadminmlogin = async (data: AdminLoginFormValues) => {
     try {
       const response: ApiResponse = await loginAdminAccount(data);
       if (response.success) {
