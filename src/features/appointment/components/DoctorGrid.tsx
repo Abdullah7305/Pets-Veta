@@ -1,3 +1,5 @@
+import { SearchX } from "lucide-react";
+
 import type { Doctor } from "../types/appointment.types";
 import DoctorCard from "./DoctorCard";
 
@@ -18,15 +20,22 @@ export default function DoctorGrid({
 }: DoctorGridProps) {
   if (doctors.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-gray-200 bg-white p-10 text-center text-sm text-gray-500">
-        No doctors match your search.
+      <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-white px-6 py-16 text-center">
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-blue-50">
+          <SearchX size={22} className="text-blue-900" />
+        </div>
+        <p className="mt-4 text-sm font-semibold text-gray-700">
+          No doctors found
+        </p>
+        <p className="mt-1 max-w-xs text-xs text-gray-500">
+          Try adjusting your search or filters to find the right doctor for your pet.
+        </p>
       </div>
     );
   }
 
   return (
-    // 2 columns by default, 3 columns on xl+ screens so cards are fully visible
-    <div className="grid grid-cols-2 xl:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
       {doctors.map((doc) => (
         <DoctorCard
           key={doc.id}
