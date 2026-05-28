@@ -37,8 +37,12 @@ Router
     .post(authController.loginUserAccount)
 
 Router
+    .route('/logout/user')
+    .post(authMiddleware.protect, authController.logoutUser)
+
+Router
     .route('/refresh/token')
-    .post(authMiddleware.protectRefresh, authController.refreshTokenController)
+    .get(authMiddleware.protectRefresh, authController.refreshTokenController)
 
 Router
     .route('/verify/email')

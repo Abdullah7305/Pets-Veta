@@ -7,7 +7,7 @@ export const doctorSchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters"),
   username: z.string().min(3, "Username must be at least 3 characters"),
   email: z.string().email("Please enter a valid email address"),
-  phoneNumber: z.string().min(10, "Please enter a valid phone number"),
+  phone: z.string().min(10, "Please enter a valid phone number"),
 
   // z.coerce automatically converts the string from the HTML input into a number
   experience: z.coerce
@@ -18,6 +18,7 @@ export const doctorSchema = z.object({
   education: z.string().min(2, "Education/Qualifications are required"),
   address: z.string().min(5, "Please enter a complete address"),
   specialization: z.string().min(1, "Please select a specialization"),
+  fees: z.string().min(1, "Enter The Checkup Fees"),
 
 
 

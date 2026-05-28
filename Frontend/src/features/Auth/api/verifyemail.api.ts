@@ -1,14 +1,10 @@
 import axios from "axios";
 import type { ForgotPasswordFormData } from "../schemas/forgot-password.schema";
+import { api } from "@/features/api interface/axios.interface";
 
 export const veriyUserEmail = async<T>(data: ForgotPasswordFormData): Promise<T> => {
     try {
-        const response = await axios.post("http://localhost:8000/api/v1/auth/verify/email",
-            data,
-            {
-                withCredentials: true
-            }
-        )
+        const response = await api.post("auth/verify/email", data)
 
         return response.data;
 

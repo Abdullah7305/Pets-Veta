@@ -14,6 +14,7 @@ const ServiceCard = ({ title, description, image }: ServiceCardProps) => {
                 <img
                     src={image}
                     alt={title}
+                    decoding="async"
                     className="h-full w-full object-cover"
                 />
             </div>

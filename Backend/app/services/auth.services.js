@@ -2,21 +2,10 @@ const { default: prisma, userRole } = require('../config/prisma');
 const { getGoogleProfileToken } = require('../utils/googleAuth');
 const { createAuthTokens } = require('../services/authToken.services')
 const jwt = require('jsonwebtoken');
+const AppError = require('../utils/AppError');
 
 
 const createDoctor = async (doctorData) => {
-    const existingUser = await prisma.user.findFirst({
-        where: {
-            OR: [
-                { email: doctorData.email },
-                { username: doctorData.username }
-            ]
-        }
-    });
-
-    if (existingUser) {
-        throw new AppError("User already exists", 409);
-    }
 
     return await prisma.user.create({
         data: {
@@ -24,23 +13,31 @@ const createDoctor = async (doctorData) => {
             email: doctorData.email,
             password: doctorData.hashedPassword,
             username: doctorData.username,
+            phone: doctorData.phone,
             doctors: {
                 create: {
                     education: doctorData.education,
                     specialization: doctorData.specialization,
                     address: doctorData.address,
-                    degreeLicenseUrl: doctorData.degreeLicenseUrl,
                     experience: parseInt(doctorData.experience),
-                    fees:doctorData.fees
+                    fees: parseInt(doctorData.fees)
                 }
             },
+            doctorCertificates: {
+                create: {
+                    publicId: doctorData.publicId,
+                    publicUrl: doctorData.publicUrl
+                }
+            },
+
             userRole: {
                 create: { role: "Doctor" }
             }
         },
         include: {
             doctors: true,
-            userRole: true
+            userRole: true,
+            doctorCertificates: true
         }
     });
 };
@@ -97,6 +94,7 @@ const createAccountByGoogleService = async (code) => {
             username: uniqueUsername,
             email: profile.email,
             hashedPassword: null
+
         })
     }
     const userRole = user.userRole?.role || 'Pet Owner';
@@ -132,14 +130,14 @@ const createAdmin = async (adminData) => {
             username: adminData.username,
             email: adminData.email,
             password: adminData.hashedPassword,
-
+            isEmailVerified: true,
             userRole: {
                 create: {
                     role: 'Admin'
                 }
             },
 
-           
+
         },
 
         include: {
@@ -152,7 +150,7 @@ const createAdmin = async (adminData) => {
 };
 
 const loginUser = async (userData) => {
-    console.log("User data is ", userData);
+
 
     const user = await prisma.user.findFirst({
         where: {
@@ -166,8 +164,20 @@ const loginUser = async (userData) => {
         }
     });
 
+    if (user.userRole.role.toLowerCase() === 'doctor') {
+        console.log("Hitting condition...");
+        if (user.doctors.isVerified === 'PENDING') {
+            throw new AppError("Unverified User is not allowed yet...", 403);
+            return;
+        }
+    }
+
     return user;
 };
+
+
+
+
 
 
 const refreshUserToken = async (email, refreshToken) => {
@@ -185,6 +195,19 @@ const refreshUserToken = async (email, refreshToken) => {
 }
 
 
+const verifyUsername = async (username) => {
+    if (!username) {
+        return false;
+    }
+    const validUser = await prisma.user.findFirst({
+        where: {
+            username: username
+        }
+    })
+    return validUser;
+}
+
+
 const verifyEmail = async (email) => {
     if (!email) {
         return false;
@@ -192,6 +215,9 @@ const verifyEmail = async (email) => {
     const validUser = await prisma.user.findUnique({
         where: {
             email: email
+        },
+        include: {
+            userRole: true
         }
     })
     return validUser;
@@ -265,5 +291,6 @@ module.exports = {
     getUserWithRole,
     updateUserPassword,
     createAdmin,
+    verifyUsername,
     createAccountByGoogleService
 };

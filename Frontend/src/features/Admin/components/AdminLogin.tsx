@@ -12,10 +12,12 @@ import {
 
 import Button from "../../../shared/components/Button/Button";
 import Input from "../../../shared/components/Inputs/Input";
+import { useAuth } from "@/features/Auth/hooks/authhook";
 
 const AdminLoginPage = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const { setUser, setIsAuthenticateUser } = useAuth();
 
   const {
     register,
@@ -34,8 +36,10 @@ const AdminLoginPage = () => {
     try {
       const response: ApiResponse = await loginAdminAccount(data);
       if (response.success) {
+        setUser(response);
+        setIsAuthenticateUser(true);
         navigate('/admin-dashboard')
-        return;
+        // return;
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -134,12 +138,7 @@ const AdminLoginPage = () => {
                     Remember me
                   </label>
 
-                  <button
-                    type="button"
-                    className="text-left font-bold text-[#078b91] hover:text-[#20263D]"
-                  >
-                    Forgot password?
-                  </button>
+
                 </div>
 
                 <Button
@@ -147,7 +146,7 @@ const AdminLoginPage = () => {
                   isSubmitting={isSubmitting}
                   className="bg-[#20263D] font-black shadow-lg shadow-slate-300 hover:bg-[#111827] hover:text-white hover:border-transparent"
                 >
-                  Login as Admin
+                  {isSubmitting ? "Logging In" : " Login as Admin"}
                 </Button>
               </form >
 

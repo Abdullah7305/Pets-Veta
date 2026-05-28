@@ -1,50 +1,41 @@
-interface Props {
+import { Hourglass } from 'lucide-react'
+const toneClasses = {
+  orange: "bg-[#fff0da] text-[#f59e0b]",
+  green: "bg-[#d9f8e5] text-[#16a34a]",
+  red: "bg-[#ffe1e6] text-[#ef4444]",
+  blue: "bg-[#dceeff] text-[#2f8be6]",
+};
+
+
+const StatCard = ({
+  title,
+  value,
+  tone,
+  icon: Icon,
+}: {
   title: string;
-  total: string;
-  subtitle: string;
-  color: string;
-  icon: React.ElementType;
-}
-
-const StatsCard = ({ title, total, subtitle, color, icon: Icon }: Props) => {
+  value: string;
+  tone: keyof typeof toneClasses;
+  icon: typeof Hourglass;
+}) => {
   return (
-    <div
-      className="
-      bg-white
-      rounded-2xl
-      p-5
-      border border-gray-100
-      hover:border-cyan-500
-      hover:shadow-lg 
-      transition-all duration-300
-      flex items-center gap-4
-      w-full
-    "
-    >
-
-      <div
-        className={`
-        w-13 h-13
-        rounded-2xl
-        flex items-center justify-center
-        text-white
-        text-3xl
-        ${color}
-      `}
-      >
-        <Icon size={30} />
-      </div>
-
-
-      <div className="flex-1">
-        <p className="text-gray-500 text-sm">{title}</p>
-
-        <h2 className="text-3xl font-bold text-gray-800 mt-1">{total}</h2>
-
-        <p className="text-sm text-gray-400 mt-1">{subtitle}</p>
+    <div className="border-b border-slate-200 bg-white p-6 last:border-b-0 md:odd:border-r xl:border-b-0 xl:border-r xl:last:border-r-0">
+      <div className="flex items-center gap-5">
+        <div
+          className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-full ${toneClasses[tone]}`}
+        >
+          <Icon size={34} strokeWidth={2.8} />
+        </div>
+        <div>
+          <p className="font-semibold text-[#12213a]">{title}</p>
+          <h2 className="mt-1 text-3xl font-black leading-none text-[#0f1b2f]">
+            {value}
+          </h2>
+          <p className="mt-2 text-sm text-[#405169]">Doctors</p>
+        </div>
       </div>
     </div>
   );
 };
 
-export default StatsCard;
+export default StatCard

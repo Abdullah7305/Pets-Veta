@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Sidebar from "./Sidebar";
-import Topbar from "./Topbar";
-import MobileSidebar from "./MobileSidebar";
+import AdminNavbar from "../components/AdminNavbar";
+// import MobileSidebar from "./MobileSidebar";
 import { Outlet } from "react-router-dom";
 
 
@@ -11,16 +11,17 @@ const AdminLayout = () => {
   return (
     <div className="bg-gray-50 min-h-screen ">
       {/* DESKTOP SIDEBAR */}
+
       <Sidebar />
 
-      {/* MOBILE SIDEBAR */}
-      <MobileSidebar open={open} setOpen={setOpen} />
+    
+      {/* <MobileSidebar open={open} setOpen={setOpen} /> */}
 
-      {/* RIGHT SIDE */}
-      <div className="lg:ml-[220px]">
-        {/* TOPBAR */}
-        <Topbar setOpen={setOpen} />
 
+      <div className="lg:ml-[210px]">
+  
+
+        <AdminNavbar />
         <Outlet />
       </div>
     </div>

@@ -16,21 +16,22 @@ enum VerificationStatus {
 }
 
 model User {
-  id              String    @id @default(uuid())
-  fullName        String
-  username        String
-  email           String    @unique
-  isEmailVerified Boolean   @default(false)
-  password        String?
-  phone           String    @default("")
-  profileImageUrl String    @default("Enter your Image")
-  isActive        Boolean   @default(true)
-  refreshToken    String?
-  otp             String?
-  createdAt       DateTime  @default(now())
-  userRole        UserRole?
-  doctors         Doctor?
-  admin           Admin?
+  id                 String              @id @default(uuid())
+  fullName           String
+  username           String
+  email              String              @unique
+  isEmailVerified    Boolean             @default(false)
+  password           String?
+  phone              String              @default("")
+  profileImageUrl    String              @default("Enter your Image")
+  isActive           Boolean             @default(true)
+  refreshToken       String?
+  otp                String?
+  createdAt          DateTime            @default(now())
+  userRole           UserRole?
+  doctors            Doctor?
+  admin              Admin?
+  doctorCertificates DoctorCertificate[]
 
   @@index([fullName])
 }
@@ -42,7 +43,6 @@ model Doctor {
   education        String
   specialization   String
   address          String
-  degreeLicenseUrl String
   experience       Int
   fees             Int
   isVerified       VerificationStatus @default(PENDING)
@@ -53,6 +53,14 @@ model Doctor {
   @@index([fees])
   @@index([isAvailable])
   @@index([specialization, fees, isAvailable])
+}
+
+model DoctorCertificate {
+  id        String @id @default(uuid())
+  userId    String @unique
+  publicUrl String
+  publicId  String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Admin {

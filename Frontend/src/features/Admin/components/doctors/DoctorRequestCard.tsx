@@ -9,34 +9,30 @@ import {
   Stethoscope,
   X,
 } from "lucide-react";
-
-export type DoctorRequest = {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  specialization: string;
-  experience: string;
-  qualification: string;
-  certificateUrl: string;
-  certificateName: string;
-  certificateSize: string;
-  image: string;
-  status: "pending" | "approved";
-};
+import doctorLogo from '../../../../assets/icons/doctor.png'
+import { InfoPill } from "./InfoPill";
+import { ContactRow } from "./ContactRow";
+import { type DoctorData } from "../../apis/doctorquery.api";
 
 type DoctorRequestCardProps = {
-  doctor: DoctorRequest;
+  doctor: DoctorData;
   onApprove: (doctorId: string) => void;
   onReject: (doctorId: string) => void;
+
+  doctorRequestProceed: boolean
 };
 
 const DoctorRequestCard = ({
   doctor,
   onApprove,
   onReject,
+
+  doctorRequestProceed
 }: DoctorRequestCardProps) => {
-  const isPending = doctor.status === "pending";
+
+  // Create explicit helper booleans to make the JSX clean
+  const isPending = doctor.isVerified === "PENDING";
+  const isApproved = doctor.isVerified === "APPROVED";
 
   return (
     <article className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_16px_40px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(15,23,42,0.12)]">
@@ -45,8 +41,8 @@ const DoctorRequestCard = ({
       <div className="p-5 sm:p-6">
         <div className="flex flex-col gap-5 sm:flex-row">
           <img
-            src={doctor.image}
-            alt={doctor.name}
+            src={doctorLogo}
+            alt={doctor.user.fullName}
             className="h-28 w-28 shrink-0 rounded-2xl bg-[#e7f4f2] object-cover object-top"
           />
 
@@ -54,37 +50,34 @@ const DoctorRequestCard = ({
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
                 <h2 className="truncate text-2xl font-black text-[#0f1b2f]">
-                  {doctor.name}
+                  {doctor.user.fullName}
                 </h2>
                 <p className="mt-1 font-semibold text-[#078b91]">
                   {doctor.specialization}
                 </p>
               </div>
 
+              {/* 🎨 1. Top Right Badge Condition Fixed */}
               <span
-                className={`rounded-full px-3 py-1 text-xs font-black uppercase tracking-wide ${
-                  isPending
-                    ? "bg-orange-100 text-orange-600"
-                    : "bg-green-100 text-green-700"
-                }`}
+                className={`rounded-full px-3 py-1 text-xs font-black uppercase tracking-wide ${isPending
+                  ? "bg-orange-100 text-orange-600"
+                  : "bg-green-100 text-green-700"
+                  }`}
               >
-                {doctor.status}
+                {isPending ? "Pending" : "Approved"}
               </span>
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2">
-              <span className="rounded-full bg-[#eefaf8] px-3 py-1 text-sm font-black text-[#078b91]">
-                {doctor.id}
-              </span>
-              <InfoPill icon={<BriefcaseMedical size={16} />} text={doctor.experience} />
-              <InfoPill icon={<Award size={16} />} text={doctor.qualification} />
+              <InfoPill icon={<BriefcaseMedical size={16} />} text={`${doctor.experience} Yrs Experience`} />
+              <InfoPill icon={<Award size={16} />} text={doctor.education} />
             </div>
           </div>
         </div>
 
         <div className="mt-6 grid gap-3 text-sm text-[#26364f] sm:grid-cols-2">
-          <ContactRow icon={<Mail size={18} />} text={doctor.email} />
-          <ContactRow icon={<Phone size={18} />} text={doctor.phone} />
+          <ContactRow icon={<Mail size={18} />} text={doctor.user.email} />
+          <ContactRow icon={<Phone size={18} />} text={doctor.user.phone || "No phone provided"} />
           <ContactRow
             icon={<Stethoscope size={18} />}
             text={doctor.specialization}
@@ -99,16 +92,13 @@ const DoctorRequestCard = ({
             </div>
 
             <div className="min-w-0 flex-1">
-              <p className="truncate font-black text-[#0f1b2f]">
-                {doctor.certificateName}
-              </p>
               <p className="mt-1 text-sm font-medium text-[#587087]">
-                PDF - {doctor.certificateSize}
+                Degree Certificate
               </p>
             </div>
 
             <a
-              href={doctor.certificateUrl}
+              href={doctor.degreeLicenseUrl}
               target="_blank"
               rel="noreferrer"
               className="hidden h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-sm font-black text-[#078b91] transition hover:border-[#078b91] hover:bg-[#eefaf8] sm:flex"
@@ -119,7 +109,7 @@ const DoctorRequestCard = ({
           </div>
 
           <a
-            href={doctor.certificateUrl}
+            href={doctor.degreeLicenseUrl}
             target="_blank"
             rel="noreferrer"
             className="mt-4 flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white text-sm font-black text-[#078b91] transition hover:border-[#078b91] hover:bg-[#eefaf8] sm:hidden"
@@ -129,24 +119,27 @@ const DoctorRequestCard = ({
           </a>
         </div>
 
+        {/* 🛠️ 2. Bottom Button Logic Fixed */}
         {isPending ? (
           <div className="mt-5 grid grid-cols-2 gap-3">
             <button
+              disabled={doctorRequestProceed ? true : false}
               type="button"
               onClick={() => onReject(doctor.id)}
-              className="flex h-11 items-center justify-center gap-2 rounded-xl border border-red-200 bg-white font-black text-red-500 transition hover:bg-red-50"
+              className={`flex h-11 items-center cursor-pointer justify-center gap-2 rounded-xl border border-red-200 bg-white font-black ${doctorRequestProceed ? 'text-red-400 transition' : 'text-red-500 transition'} hover:bg-red-50`}
             >
               <X size={19} />
-              Reject
+              {!doctorRequestProceed ? 'Rejecting' : 'Reject'}
             </button>
 
             <button
               type="button"
+              disabled={doctorRequestProceed ? true : false}
               onClick={() => onApprove(doctor.id)}
-              className="flex h-11 items-center justify-center gap-2 rounded-xl bg-[#078b91] font-black text-white shadow-lg shadow-cyan-100 transition hover:bg-[#06777d]"
+              className={`flex h-11 items-center cursor-pointer justify-center gap-2 rounded-xl ${doctorRequestProceed ? 'bg-[#0aa082] ' : 'bg-[#078b91] '} font-black text-white shadow-lg shadow-cyan-100 transition hover:bg-[#06777d]`}
             >
               <Check size={19} />
-              Approve
+              {doctorRequestProceed ? 'Approving' : 'Approve'}
             </button>
           </div>
         ) : (
@@ -160,32 +153,8 @@ const DoctorRequestCard = ({
   );
 };
 
-const InfoPill = ({ icon, text }: { icon: React.ReactNode; text: string }) => {
-  return (
-    <span className="inline-flex max-w-full items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-[#405169]">
-      <span className="shrink-0 text-[#718198]">{icon}</span>
-      <span className="truncate">{text}</span>
-    </span>
-  );
-};
 
-const ContactRow = ({
-  icon,
-  text,
-  className = "",
-}: {
-  icon: React.ReactNode;
-  text: string;
-  className?: string;
-}) => {
-  return (
-    <div
-      className={`flex min-w-0 items-center gap-3 rounded-xl bg-slate-50 px-4 py-3 ${className}`}
-    >
-      <span className="shrink-0 text-[#718198]">{icon}</span>
-      <span className="min-w-0 truncate font-semibold">{text}</span>
-    </div>
-  );
-};
+
+
 
 export default DoctorRequestCard;

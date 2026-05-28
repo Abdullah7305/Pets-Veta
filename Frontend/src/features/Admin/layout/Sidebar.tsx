@@ -1,14 +1,24 @@
 import Logo from "../../../shared/components/Logo/Logo";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { sidebarItems } from "../data/sidebar.data";
 import { LogOut } from 'lucide-react'
+import { logoutAdmin } from '../apis/adminlogin.api'
 
 const Sidebar = () => {
+
+  const navigate = useNavigate();
+  const logOutUser = async () => {
+    const response = await logoutAdmin();
+    console.log(response);
+    if (response.success) {
+      navigate('/admin-login')
+    }
+  }
   return (
     <div
       className="
               hidden lg:flex
-              w-[220px]
+            
               min-h-screen
             bg-white
               border-r border-gray-200
@@ -36,7 +46,7 @@ const Sidebar = () => {
                               transition-all duration-300
 
                              ${isActive
-                    ? "bg-cyan-600 text-white shadow-lg"
+                    ? "bg-[#06777D] text-white shadow-lg"
                     : "hover:bg-cyan-100 text-gray-700"}
                               `}
               >
@@ -50,7 +60,9 @@ const Sidebar = () => {
       </div>
 
       <div className="flex gap-1.5 items-center justify-start ">
-        <button className="text-red-500 font-semibold cursor-pointer">Logout </button>
+        <button className="text-red-500 font-semibold cursor-pointer"
+          onClick={logOutUser}
+        >Logout </button>
         <LogOut className="size-4 text-red-500 hover:scale-75 cursor-pointer" />
       </div>
     </div >

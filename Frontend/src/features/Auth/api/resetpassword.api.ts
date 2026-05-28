@@ -1,14 +1,10 @@
 import axios from "axios";
 import type { ResetPasswordFormData } from "../schemas/reset-password.schema";
+import { api } from "@/features/api interface/axios.interface";
 
 export const resetPasswordRequest = async<T>(data: ResetPasswordFormData): Promise<T> => {
     try {
-        const response = await axios.post("http://localhost:8000/api/v1/auth/password-resets",
-            data,
-            {
-                withCredentials: true
-            }
-        )
+        const response = await api.post("auth/password-resets", data)
 
         return response.data;
 

@@ -1,14 +1,13 @@
 import axios from "axios";
 import type { VerifyOtpFormData } from "../schemas/verify-otp.schema";
+import { api } from "@/features/api interface/axios.interface";
 
 export const verifyUserOtp = async<T>(data: VerifyOtpFormData): Promise<T> => {
     try {
         console.log("OTP code inside the function is ", data)
-        const response = await axios.post("http://localhost:8000/api/v1/auth/otp-verification",
+        const response = await api.post("auth/otp-verification",
             data,
-            {
-                withCredentials: true
-            }
+
         );
 
 
@@ -28,11 +27,7 @@ export const verifyUserOtp = async<T>(data: VerifyOtpFormData): Promise<T> => {
 
 export const resendUserOtp = async<T>(): Promise<T> => {
     try {
-        const response = await axios.get("http://localhost:8000/api/auth/resend/otp",
-            {
-                withCredentials: true
-            }
-        );
+        const response = await api.get("auth/resend/otp");
 
 
         return response.data;

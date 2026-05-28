@@ -14,6 +14,7 @@ const TestimonialCard = ({ name, review, image }: TestimonialCardProps) => {
                     <img
                         src={image}
                         alt=""
+                        decoding="async"
                         className="h-[80px] w-[80px] rounded-full object-cover object-[center_35%]"
                     />
                 </div>

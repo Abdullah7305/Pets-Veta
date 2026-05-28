@@ -18,8 +18,9 @@ const doctorFields = [
   { name: "fullName", label: "Full Name", type: "text", placeholder: "Enter Name" },
   { name: "username", label: "User Name", type: "text", placeholder: "Enter UserName" },
   { name: "email", label: "Email Address", type: "email", placeholder: "example@gmail.com" },
-  { name: "phoneNumber", label: "Phone Number", type: "tel", placeholder: "+923001234567" },
+  { name: "phone", label: "Phone Number", type: "tel", placeholder: "+923001234567" },
   { name: "experience", label: "Years of Experience", type: "number", placeholder: "5" },
+  { name: "fees", label: "fees", type: "number", placeholder: "Enter Checkup Fees" },
   { name: "medicalLicenseNumber", label: "Medical License Number", type: "text", placeholder: "LIC-123456" },
   { name: "education", label: "Education/Qualifications", type: "text", placeholder: "e.g., DVM, BVSc" },
   { name: "address", label: "Clinic Address", type: "text", placeholder: "Clinic Address" },
@@ -51,49 +52,40 @@ export default function DoctorForm() {
     mode: "onChange",
   });
 
-  // SUCCESS HANDLER
   const onSubmit = async (data: DoctorFormData) => {
-    try {
-      setErrorMessage("");
-      setResponseMessage("");
-      console.log("Form data validated:", data);
 
-      const formData = new FormData();
+    setErrorMessage("");
+    setResponseMessage("");
 
-      // Append all text fields
-      Object.keys(data).forEach((key) => {
-        if (key !== "document") {
-          const value = data[key as keyof DoctorFormData];
-          if (value !== undefined && value !== null) {
-            formData.append(key, String(value));
-          }
+
+    const formData = new FormData();
+
+    Object.keys(data).forEach((key) => {
+      if (key !== "document") {
+        const value = data[key as keyof DoctorFormData];
+        if (value !== undefined && value !== null) {
+          formData.append(key, String(value));
         }
-      });
-
-      // Append the file (React Hook Form returns a FileList)
-      if (data.document && data.document.length > 0) {
-        formData.append("document", data.document[0]);
       }
+    });
 
-      console.log("Submitting FormData...");
-      const response = await createDoctorAccount<registrationResponse>(formData);
-      console.log("Success response:", response);
 
+    if (data.document && data.document.length > 0) {
+      formData.append("document", data.document[0]);
+    }
+
+    console.log("Submitting FormData...");
+    const response = await createDoctorAccount<registrationResponse>(formData);
+    if (response.success) {
       setResponseMessage(response.message || "Account created successfully!");
 
       setTimeout(() => {
         reset();
         navigate("/verify-otp");
       }, 2000);
-    } catch (error: unknown) {
-      console.error("Registration failed:", error);
-      const apiError = error as { response?: { data?: { message?: string } }; message?: string };
-      const errorMsg =
-        apiError.response?.data?.message ||
-        apiError.message ||
-        "Registration failed. Please try again.";
-      setErrorMessage(errorMsg);
     }
+    console.log("Success response:", response);
+
   };
 
   const onError: SubmitErrorHandler<DoctorFormInput> = (formErrors) => {
@@ -101,7 +93,7 @@ export default function DoctorForm() {
   };
 
   return (
-    <div  className=" rounded-3xl bg-white/80 p-6 shadow-sm backdrop-blur-lg">
+    <div className=" rounded-3xl bg-white/80 p-6 shadow-sm backdrop-blur-lg">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-[#078b91]">Doctor Registration</h1>
         <p className="mt-2 text-gray-500">Create your professional doctor account</p>
@@ -121,7 +113,7 @@ export default function DoctorForm() {
         )}
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {/* DYNAMIC INPUTS */}
+
           {doctorFields.map((field) => (
             <Input
               key={field.name}
@@ -173,7 +165,7 @@ export default function DoctorForm() {
             <div className="h-px flex-1 bg-gray-300" />
           </div>
 
-         
+
 
           {/* LOGIN */}
           <p className="text-center text-sm text-gray-600">

@@ -1,28 +1,23 @@
 import axios from "axios";
 import type { PetOwnerFormData } from "../schemas/petowner.schema";
+import { api } from "@/features/api interface/axios.interface";
 
 export const createPetOwnerAccount = async <T>(data: PetOwnerFormData): Promise<T> => {
     try {
-        const response = await axios.post(
-            "http://localhost:8000/api/v1/auth/register/pet-owner",
-            data,
-            {
-                withCredentials: true
-            }
-        );
+        const response = await api.post("auth/register/pet-owner", data);
 
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            // Safely check if a response was actually returned from the server
+
             if (error.response) {
-                console.log("Status Code:", error.response.status); // Correct way to get status
+                console.log("Status Code:", error.response.status);
                 console.error("Response Data:", error.response.data);
             } else if (error.request) {
-                // The request was made but no response was received
+
                 console.error("No response received from server:", error.request);
             } else {
-                // Something happened in setting up the request
+
                 console.error("Axios setup error:", error.message);
             }
         } else {
@@ -33,10 +28,26 @@ export const createPetOwnerAccount = async <T>(data: PetOwnerFormData): Promise<
 }
 
 export const getGoogleAuthUrlApi = async () => {
-    const response = await axios.get("http://localhost:8000/api/v1/auth/google/url",
-        {
-            withCredentials: true
+    try {
+        const response = await api.get("http://localhost:8000/api/v1/auth/google/url");
+        return response.data
+    }
+    catch (error) {
+        if (axios.isAxiosError(error)) {
+
+            if (error.response) {
+                console.log("Status Code:", error.response.status);
+                console.error("Response Data:", error.response.data);
+            } else if (error.request) {
+
+                console.error("No response received from server:", error.request);
+            } else {
+
+                console.error("Axios setup error:", error.message);
+            }
+        } else {
+            console.error("Non-Axios Error:", error);
         }
-    );
-    return response.data
+        throw error;
+    }
 }

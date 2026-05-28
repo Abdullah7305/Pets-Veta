@@ -1,5 +1,5 @@
 const { createAuthTokens } = require('../services/authToken.services')
-const uploadToCloudinary = require('../utils/cloudinary.utils');
+const { uploadToCloudinary } = require('../utils/cloudinary.utils');
 const { getGoogleAuthUrl } = require('../utils/googleAuth');
 const { createAccountByGoogleService } = require('../services/auth.services');
 const { jwtSign, Token_Types } = require('../utils/jwt');
@@ -22,7 +22,9 @@ const verifyUser = catchAsync(async (req, res) => {
     }
     const user = {
         id: userData.id,
-        email: userData.email
+        email: userData.email,
+        username: userData.username,
+        role: userData.userRole.role
     }
     return sendResponse(res, 200, "Success", user);
 
@@ -60,30 +62,48 @@ const createDoctorAccount = catchAsync(async (req, res) => {
         throw new AppError("File is missing", 400);
     }
 
-    requireFields(["fullName", "username", "fees", "email", "password", "education", "specialization", "address", "experience"], req.body)
-    const { fullName, username, email, password, fees,
+    requireFields(["fullName", "username", "fees", "email", "password", "phone", "education", "specialization", "address", "experience"], req.body)
+    const { fullName, username, email, password, fees, phone,
         education, specialization, address, experience } = req.body;
 
     req.body.fees = Number(req.body.fees);
+
+    const isDoctorExist = await authServices.verifyEmail(email);
+    const isUsernameExist = await authServices.verifyUsername(username);
+
+    if (isDoctorExist || isUsernameExist) {
+        throw new AppError("User already exists", 409);
+    }
 
     const result = await uploadToCloudinary(
         req.file.buffer,
         "pets-veta/doctor-document"
     );
 
-    const degreeLicenseUrl = result.secure_url;
+
+    const publicUrl = result.secure_url;
+    const publicId = result.public_id;
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
     const doctorData = {
-        ...req.body,
-        degreeLicenseUrl,
-        hashedPassword //password 
+        fullName: fullName,
+        username: username,
+        email: email,
+        phone: phone,
+        password: hashedPassword,
+        education: education,
+        specialization: specialization,
+        address: address,
+        experience: experience,
+        fees: fees,
+        publicId: publicId,
+        publicUrl: publicUrl
     }
 
 
     let newDoctor = await authServices.createDoctor(doctorData);
-    console.log("Doctor Created ", newDoctor);
+
     if (!newDoctor) {
         throw new AppError("User already Exist", 400);
     }
@@ -159,14 +179,15 @@ const createPetOwnerAccount = catchAsync(async (req, res) => {
 
     const payload = {
         id: newPetOwner.id,
-        email: newPetOwner.email
+        email: newPetOwner.email,
+        role: newPetOwner.userRole.role
     }
 
     const otpToken = jwtSign(payload, Token_Types.OTP);
 
     res.cookie('otpToken', otpToken, cookiesOptions);
 
-    return sendResponse(res, 20, "Success", validPetOwner);
+    return sendResponse(res, 200, "Success", validPetOwner);
 
 
 }
@@ -205,7 +226,7 @@ const createAdminAccount = catchAsync(async (req, res) => {
         id: newAdmin.id,
         username: newAdmin.username,
         email: newAdmin.email,
-        role: newAdmin.role
+        role: newAdmin.userRole.role,
     }
 
 
@@ -227,9 +248,10 @@ const adminLogin = catchAsync(async (req, res) => {
     requireFields(["email", "password"], req.body);
 
     const { email, password } = req.body;
+    console.log("Admin Login Controller Hit....");
 
     const isValidUser = await authServices.getUserWithRole(email);
-
+    console.log("Valid Admn is ", isValidUser)
     if (!isValidUser) {
         throw new AppError("Invalid User Access", 401);
     }
@@ -270,12 +292,12 @@ const adminLogin = catchAsync(async (req, res) => {
 const loginUserAccount = catchAsync(async (req, res) => {
 
     requireFields(["email", "password"], req.body);
-    console.log("Login request body is ", req.body);
+
     const { email, password } = req.body;
 
 
     const user = await authServices.loginUser(req.body);
-    console.log("Login user is ", user);
+
     if (!user) {
         throw new AppError("Email or Password invalid", 401);
     }
@@ -314,13 +336,13 @@ const loginUserAccount = catchAsync(async (req, res) => {
 
 
 const refreshTokenController = catchAsync(async (req, res) => {
-
+    console.log("I hit.....");
     requireFields(["id", "email",], req.user);
-    const { id, email } = req.user;
+    const { id, email, role } = req.user;
     const payload = {
         id: id,
         email: email,
-
+        role: role
     }
 
     const { accessToken, refreshToken } = createAuthTokens(payload);
@@ -488,6 +510,22 @@ const resetUserPassword = catchAsync(async (req, res) => {
 
 })
 
+const logoutUser = catchAsync(async (req, res) => {
+    const { user } = req.user;
+    if (!req.user) {
+        throw new AppError("Not Valid User Session", 400)
+    }
+    const userData = await authServices.verifyEmail(req.user.email);
+    if (!user) {
+        return sendResponse(res, 200, "Invalid user ", false);
+    }
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
+    res.clearCookie('otpToken');
+
+    return sendResponse(res, 200, "User Logout", userData);
+})
+
 
 
 module.exports = {
@@ -503,5 +541,6 @@ module.exports = {
     adminLogin,
     handleGoogleCallbackController,
     getGoogleUrlController,
-    verifyUser
+    verifyUser,
+    logoutUser
 }

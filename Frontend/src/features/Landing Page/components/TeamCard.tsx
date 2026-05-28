@@ -15,6 +15,7 @@ const TeamCard = ({ name, specialization, description, image }: TeamCardProps) =
                 <img 
                 src={image} 
                 alt={name} 
+                decoding="async"
                 className="h-full w-full object-cover object-[center_10%] rounded-2xl" />
             </div>
 

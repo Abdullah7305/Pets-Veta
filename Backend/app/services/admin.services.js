@@ -1,76 +1,249 @@
 const { default: prisma } = require('../config/prisma');
-const { VerificationStatus } = require('@prisma/client')
+const { VerificationStatus, Prisma } = require('@prisma/client');
+const AppError = require('../utils/AppError');
 
-const sendPendingDoctors = async () => {
-  return await prisma.doctor.findMany({
-    where: {
-      isVerified: false,
-    },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      specialization: true,
-    },
-  });
+const allDoctors = async (limit, page) => {
+
+  const skip = (page - 1) * limit;
+  const [doctors, totalCount] = await prisma.$transaction([
+    prisma.doctor.findMany({
+      skip: skip,
+      take: limit,
+      select: {
+        id: true,
+        specialization: true,
+        education: true,
+        experience: true,
+        isVerified: true,
+        user: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+            phone: true,
+            doctorCertificates: {
+              select: {
+                publicUrl: true,
+                publicId: true
+              }
+            }
+          }
+        }
+
+      },
+      orderBy: {
+        id: 'asc'
+      }
+    }),
+    prisma.doctor.count()
+  ])
+  return { doctors, totalCount };
+}
+
+const sendPendingDoctors = async (limit, page) => {
+  const skip = (page - 1) * limit;
+  const [doctors, totalCount] = await prisma.$transaction([
+    prisma.doctor.findMany({
+      skip: skip,
+      take: limit,
+      where: {
+        isVerified: VerificationStatus.PENDING,
+      },
+      select: {
+        id: true,
+        specialization: true,
+        education: true,
+        experience: true,
+        isVerified: true,
+        user: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+            phone: true,
+            doctorCertificates: {
+              select: {
+                publicUrl: true
+              }
+            }
+          },
+
+        }
+      },
+    }),
+    prisma.doctor.count({
+      where: {
+        isVerified: VerificationStatus.PENDING
+      }
+    })
+  ])
+  return { doctors, totalCount };
+
 };
 
 const findDoctorById = async (doctorId) => {
   return await prisma.doctor.findUnique({
     where: {
-      id: doctorId, 
+      id: doctorId,
     },
     select: {
       id: true,
-      certificate: true,
-      fee: true,
-      degree: true,
+      specialization: true,
       education: true,
+      degreeLicenseUrl: true,
+      experience: true,
+      isVerified: true,
+      user: {
+        select: {
+          id: true,
+          fullName: true,
+          email: true,
+          phone: true
+        }
+      }
     },
   });
 };
 
 const rejectDoctor = async (doctorId) => {
-  return await prisma.doctor.delete({
+  let doctor = await prisma.doctor.findUnique({
+    where: {
+      id: doctorId
+    },
+    select: {
+      userId: true,
+      user: {
+        select: {
+          email: true
+        }
+      }
+    }
+  });
+
+  if (!doctor) {
+    throw new AppError("No Doctor with Id found", 400)
+    return;
+  }
+  const deletedDoctor = await prisma.user.delete({
+    where: {
+      id: doctor.userId
+    },
+    include: {
+      doctors: true
+    }
+  })
+  return doctor;
+};
+
+const approvedDoctor = async (limit, page) => {
+  const skip = (page - 1) * limit;
+  const [doctors, totalCount] = await prisma.$transaction([
+    prisma.doctor.findMany({
+      skip: skip,
+      take: limit,
+      where: {
+        isVerified: VerificationStatus.APPROVED,
+      },
+      select: {
+        id: true,
+        specialization: true,
+        education: true,
+        experience: true,
+        isVerified: true,
+        user: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+            phone: true,
+            doctorCertificates: {
+              select: {
+                publicUrl: true
+              }
+            }
+          }
+        }
+      },
+    }),
+    prisma.doctor.count({
+      where: {
+        isVerified: VerificationStatus.APPROVED
+      }
+    })
+  ])
+  return { doctors, totalCount };
+};
+
+const approveupdateDoctor = async (doctorId) => {
+
+  const isDoctor = await prisma.doctor.findUnique({
     where: {
       id: doctorId
     }
   });
-};
 
-const approvedDoctor = async (doctorId) => {
-  return await prisma.doctor.findMany({
-    where: {
-      isVerified: false,
-    },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      specialization: true,
+  if (!isDoctor) {
+    throw new AppError("Doctor Not Available", 400);
+    return;
+  }
 
-    },
-  });
-};
-
-const approveupdateDoctor = async (doctorId) => {
   return await prisma.doctor.update({
     where: {
-      id: doctorId, 
+      id: doctorId,
     },
     data: {
-      isVerified: true,
+      isVerified: VerificationStatus.APPROVED,
     },
     select: {
       id: true,
-      isVerified: true,
+      user: {
+        select: {
+          email: true
+        }
+      }
     },
   });
 };
+
+
+
+const giveDoctorState = async () => {
+  const stats = await prisma.$transaction([
+    prisma.doctor.count({ where: { isVerified: VerificationStatus.PENDING } }),
+    prisma.doctor.count({ where: { isVerified: VerificationStatus.APPROVED } }),
+    prisma.doctor.count()
+  ])
+  return stats;
+}
+const getDoctorWithCertificate = async (doctorId) => {
+  if (!doctorId) {
+    throw new AppError("Doctor Id not provided...", 400);
+  }
+  const doctor = await prisma.doctor.findUnique({
+    where: {
+      id: doctorId
+    }
+  })
+  if (!doctor) {
+    throw new AppError("Doctor Donot exist to delete...", 400)
+  }
+  const certificate = await prisma.doctorCertificate.findUnique({
+    where: {
+      userId: doctor.userId
+    }
+
+  })
+
+  return certificate;
+}
 
 module.exports = {
   sendPendingDoctors,
   approvedDoctor,
   rejectDoctor,
-  approveupdateDoctor
+  approveupdateDoctor,
+  findDoctorById,
+  allDoctors,
+  giveDoctorState,
+  getDoctorWithCertificate
 };
