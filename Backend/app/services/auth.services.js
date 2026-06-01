@@ -164,7 +164,7 @@ const loginUser = async (userData) => {
         }
     });
 
-    if (user.userRole.role.toLowerCase() === 'doctor') {
+    if (user?.userRole.role.toLowerCase() === 'doctor') {
         console.log("Hitting condition...");
         if (user.doctors.isVerified === 'PENDING') {
             throw new AppError("Unverified User is not allowed yet...", 403);

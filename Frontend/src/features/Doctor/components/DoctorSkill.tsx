@@ -1,11 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Plus, CheckCircle, Edit2, Trash2, Search } from "lucide-react";
+import { submitDoctorSkills } from "../api/addSkills.api";
 
-type Skill = {
-    id: string;
-    name: string;
-    price: string;
-};
 
 
 const VETERINARY_SKILLS = [
@@ -34,243 +30,113 @@ const VETERINARY_SKILLS = [
     "Microchipping & Identification",
 ];
 
-const SkillForm = () => {
-    const [skillName, setSkillName] = useState("");
-    const [pricing, setPricing] = useState("");
-    const [skills, setSkills] = useState<Skill[]>([]);
-    const [showSuccess, setShowSuccess] = useState(false);
-    const [showDropdown, setShowDropdown] = useState(false);
-    const [filteredSkills, setFilteredSkills] = useState<string[]>([]);
-    const [editingId, setEditingId] = useState<string | null>(null);
-    const [editingPrice, setEditingPrice] = useState("");
 
+const SkillForm = () => {
+
+    const [skill, setSkill] = useState<string | null>(null);
+    const [price, setPrice] = useState<string | null>(null);
+    const [skillList, setSkillList] = useState<String[]>([])
+    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [error, setError] = useState<string>('');
+    const dropDownRef = useRef<HTMLDivElement>(null);
+
+    const filterSkills = VETERINARY_SKILLS.filter((s) => s.toLowerCase().includes(skill?.toLowerCase()))
+
+    const handleDoctorSkill = async () => {
+        if (!skill || !price) {
+            setError("Please Complete Both Inputs")
+            return;
+
+        }
+        setError('');
+        const doctorSkill = {
+            skill: skill,
+            price: price
+        }
+        // api call 
+        const response = await submitDoctorSkills(doctorSkill);
+        console.log("Response is ", response);
+        if (response.success) {
+            setSkill('')
+            setPrice('')
+        }
+    }
 
     useEffect(() => {
-        if (skillName.trim()) {
-            const filtered = VETERINARY_SKILLS.filter((skill) =>
-                skill.toLowerCase().includes(skillName.toLowerCase())
-            );
-            setFilteredSkills(filtered);
-        } else {
-            setFilteredSkills(VETERINARY_SKILLS);
-        }
-    }, [skillName]);
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropDownRef.current && !dropDownRef.current) {
+                setIsOpen(false);
+            }
+        };
 
-
-    const handleSkillSelect = (selectedSkill: string) => {
-        setSkillName(selectedSkill);
-        setShowDropdown(false);
-    };
-
-
-    const handleAddSkill = () => {
-        if (skillName.trim() && pricing.trim()) {
-            const newSkill: Skill = {
-                id: Date.now().toString(),
-                name: skillName,
-                price: pricing,
-            };
-
-            console.log("New Skill Added:", {
-                skillName: newSkill.name,
-                pricing: newSkill.price,
-                timestamp: new Date().toLocaleString(),
-            });
-
-            setSkills([...skills, newSkill]);
-            setSkillName("");
-            setPricing("");
-            setFilteredSkills(VETERINARY_SKILLS);
-
-            // Show success message
-            setShowSuccess(true);
-            setTimeout(() => setShowSuccess(false), 2000);
-        }
-    };
-
-    const handleEditSkill = (id: string, currentPrice: string) => {
-        setEditingId(id);
-        setEditingPrice(currentPrice);
-    };
-
-    const handleSaveEdit = (id: string) => {
-        setSkills(
-            skills.map((skill) =>
-                skill.id === id ? { ...skill, price: editingPrice } : skill
-            )
-        );
-        console.log("Skill Updated:", { id, newPrice: editingPrice });
-        setEditingId(null);
-        setEditingPrice("");
-        setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 2000);
-    };
-
-    const handleRemoveSkill = (id: string) => {
-        setSkills(skills.filter((skill) => skill.id !== id));
-        console.log("Skill Removed:", id);
-    };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside)
+    }, [])
 
     return (
-        <div className="space-y-6">
+        <section className="border border-emerald-100 bg-emerald-50/30 p-6 rounded-xl max-w-xl mx-auto shadow-sm">
+            <h3 className="text-emerald-900 font-semibold text-lg mb-4 flex items-center gap-2">
+                <Plus className="w-5 h-5 text-emerald-600" />
+                Add Professional Medical Skills & Pricing
+            </h3>
 
-            <div
-                className="rounded-2xl shadow-sm p-12 hover:shadow-md transition relative overflow-hidden bg-white"
-                style={{
-                    minHeight: "450px",
-                }}
-            >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-teal-100 rounded-full opacity-30 blur-3xl"></div>
+            <div className="flex flex-col sm:flex-row gap-4 items-center mb-6">
+                <div ref={dropDownRef} className="w-full relative">
+                    <input
+                        value={skill || undefined}
+                        type="text" // Native 'dropdown' is not valid HTML, use text
+                        onFocus={() => setIsOpen(true)} // Open list when focused/clicked
+                        onChange={(e) => {
+                            setSkill(e.target.value);
+                            setIsOpen(true); // Keep open while typing
+                        }}
+                        className="w-full border border-emerald-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none p-2.5 pl-3 rounded-lg text-sm transition-all bg-white text-slate-700 placeholder:text-slate-400"
+                        placeholder="Search or enter skill (e.g., General Practice)"
+                    />
 
-                <div className="relative z-10">
-                    <div className="flex items-center gap-2 mb-6">
-                        <h2 className="text-2xl font-semibold text-slate-700">
-                            Add New Skill
-                        </h2>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-                        {/* Skill Name Input with Dropdown */}
-                        <div className="flex flex-col relative">
-                            <label className="text-slate-600 font-medium mb-2">
-                                Select Skill
-                            </label>
-                            <div className="relative">
-                                <div className="absolute left-3 top-3 text-slate-400">
-                                    <Search size={18} />
-                                </div>
-                                <input
-                                    type="text"
-                                    placeholder="Search or type skill name..."
-                                    value={skillName}
-                                    onChange={(e) => setSkillName(e.target.value)}
-                                    onFocus={() => setShowDropdown(true)}
-                                    className="w-full pl-10 pr-4 py-3 border-2 border-slate-200 rounded-xl focus:border-teal-500 focus:outline-none transition placeholder-slate-400 text-slate-800 bg-white"
-                                />
-                                {/* Dropdown Suggestions */}
-                                {showDropdown && filteredSkills.length > 0 && (
-                                    <div className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-slate-200 rounded-xl shadow-lg z-50 max-h-60 overflow-y-auto">
-                                        {filteredSkills.map((skill, idx) => (
-                                            <button
-                                                key={idx}
-                                                onClick={() => handleSkillSelect(skill)}
-                                                className="w-full text-left px-4 py-3 hover:bg-slate-50 border-b border-slate-100 last:border-b-0 text-slate-800 font-medium hover:text-teal-600 transition"
-                                            >
-                                                {skill}
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Pricing Input */}
-                        <div className="flex flex-col">
-                            <label className="text-slate-600 font-medium mb-2">
-                                Pricing ($)
-                            </label>
-                            <input
-                                type="number"
-                                placeholder="e.g., 150"
-                                value={pricing}
-                                onChange={(e) => setPricing(e.target.value)}
-                                className="px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-teal-500 focus:outline-none transition placeholder-slate-400 text-slate-800 bg-white"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Save Button */}
-                    <button
-                        onClick={handleAddSkill}
-                        className="w-full md:w-auto bg-gradient-to-r from-teal-600 to-teal-700 text-white font-bold py-3 px-8 rounded-xl hover:from-teal-700 hover:to-teal-800 transition flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
-                    >
-                        <Plus size={20} />
-                        Add Skill
-                    </button>
-
-                    {/* Success Message */}
-                    {showSuccess && (
-                        <div className="mt-4 flex items-center gap-2 p-3 bg-emerald-50 border-l-4 border-emerald-500 text-emerald-700 rounded-lg font-medium">
-                            <CheckCircle size={20} />
-                            <span>Skill updated successfully!</span>
-                        </div>
+                    {/* ABSOLUTE DROPDOWN RENDER */}
+                    {isOpen && filterSkills.length > 0 && (
+                        <ul className="absolute z-50 left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-white border border-slate-200 rounded-lg shadow-lg text-sm text-slate-700">
+                            {filterSkills.map((item, index) => (
+                                <li
+                                    key={index}
+                                    onClick={() => {
+                                        setSkill(item); // Populate value
+                                        setIsOpen(false); // Close dropdown menu
+                                    }}
+                                    className="p-2.5 hover:bg-emerald-50 hover:text-emerald-900 cursor-pointer transition-colors"
+                                >
+                                    {item}
+                                </li>
+                            ))}
+                        </ul>
                     )}
                 </div>
-            </div>
-
-            {/* SKILLS LIST SECTION */}
-            {skills.length > 0 && (
-                <div
-                    className="rounded-2xl shadow-sm p-12 hover:shadow-md transition relative overflow-hidden bg-white"
-                    style={{
-                        minHeight: "400px",
-                    }}
-                >
-                    <div className="absolute top-0 left-0 w-40 h-40 bg-teal-100 rounded-full opacity-20 blur-3xl"></div>
-
-                    <div className="relative z-10">
-                        <h2 className="text-2xl font-semibold text-slate-700 mb-6 flex items-center gap-2">
-                            <span className="bg-teal-600 text-white px-4 py-1 rounded-full text-lg">
-                                {skills.length}
-                            </span>
-                            Active Skills
-                        </h2>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {skills.map((skill) => (
-                                <div
-                                    key={skill.id}
-                                    className="bg-gradient-to-br from-slate-50 to-slate-100 p-8 rounded-xl border-2 border-slate-200 hover:border-teal-300 hover:shadow-lg transition min-h-64"
-                                >
-                                    <div className="mb-4">
-                                        <h3 className="text-base font-semibold text-slate-700 mb-2">
-                                            {skill.name}
-                                        </h3>
-                                        {editingId === skill.id ? (
-                                            <div className="flex gap-2">
-                                                <input
-                                                    type="number"
-                                                    value={editingPrice}
-                                                    onChange={(e) => setEditingPrice(e.target.value)}
-                                                    className="flex-1 px-2 py-1 border-2 border-slate-300 rounded-lg focus:border-teal-500 focus:outline-none text-slate-800"
-                                                />
-                                                <button
-                                                    onClick={() => handleSaveEdit(skill.id)}
-                                                    className="px-3 py-1 bg-emerald-500 text-white rounded-lg font-semibold hover:bg-emerald-600 transition"
-                                                >
-                                                    ✓
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <p className="text-3xl font-bold text-teal-600">
-                                                ${skill.price}
-                                            </p>
-                                        )}
-                                    </div>
-
-                                    <div className="flex gap-2">
-                                        <button
-                                            onClick={() => handleEditSkill(skill.id, skill.price)}
-                                            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 font-semibold rounded-lg hover:bg-blue-100 transition border border-blue-200"
-                                        >
-                                            <Edit2 size={16} />
-                                            Edit
-                                        </button>
-                                        <button
-                                            onClick={() => handleRemoveSkill(skill.id)}
-                                            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-50 text-red-700 font-semibold rounded-lg hover:bg-red-100 transition border border-red-200"
-                                        >
-                                            <Trash2 size={16} />
-                                            Remove
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                <div className="w-full sm:w-48 relative">
+                    <input
+                        value={price || ''}
+                        type="number"
+                        onChange={(e) => setPrice(e.target.value)}
+                        className="w-full border border-emerald-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none p-2.5 rounded-lg text-sm transition-all bg-white text-slate-700 placeholder:text-slate-400"
+                        placeholder="Price (PKR)"
+                    />
                 </div>
-            )}
-        </div>
+            </div>
+            {
+                error && <div className="text-sm text-red-500">Error: {error}</div>
+            }
+
+            <div className="flex justify-end">
+                <button
+                    className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-medium px-5 py-2.5 rounded-lg text-sm transition-colors shadow-sm shadow-emerald-600/10 active:scale-[0.98]"
+                    onClick={handleDoctorSkill}
+                >
+
+                    <Plus className="w-4 h-4" />
+                    Add Skill
+                </button>
+            </div>
+        </section>
     );
 };
 

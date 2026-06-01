@@ -61,6 +61,7 @@ model User {
   doctorCertificate DoctorCertificate?
   pets              Pet[]
   petIssueReports   PetIssueReport[]
+  doctorSkills      DoctorSkills[]
 
   @@index([fullName])
 }
@@ -92,6 +93,14 @@ model DoctorCertificate {
   publicUrl String
   publicId  String
   user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model DoctorSkills {
+  id     String @id @default(uuid())
+  userId String
+  skill  String
+  price  String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Admin {
