@@ -5,6 +5,8 @@ import { servicesRoutes } from "../features/Services";
 import Notfound from "../shared/components/Notfound/Notfound";
 import { doctorDashboardRoutes } from "../features/Doctor/doctor.route";
 import adminRoutes from "../features/Admin/admin.route";
+import { doctorAppointmentRoutes } from "../features/Doctorcart/doctorAppointment.route";
+
 
 const Router = createBrowserRouter([
   ...servicesRoutes,
@@ -12,6 +14,7 @@ const Router = createBrowserRouter([
   ...AuthRouter,
   ...doctorDashboardRoutes,
   ...adminRoutes,
+  ...doctorAppointmentRoutes,
   {
     path: "*",
     element: <Notfound />,
