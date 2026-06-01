@@ -1,34 +1,66 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-const getCurrentDayName = () => {
-  return new Date().toLocaleDateString("en-US", {
+const dayMap = {
+  Sunday: "SUNDAY",
+  Monday: "MONDAY",
+  Tuesday: "TUESDAY",
+  Wednesday: "WEDNESDAY",
+  Thursday: "THURSDAY",
+  Friday: "FRIDAY",
+  Saturday: "SATURDAY",
+};
+
+const getTodayEnumDay = () => {
+  const todayName = new Date().toLocaleDateString("en-US", {
     weekday: "long",
+  });
+
+  return dayMap[todayName];
+};
+
+const getMinutesFromDate = (date) => {
+  const parsedDate = new Date(date);
+  return parsedDate.getHours() * 60 + parsedDate.getMinutes();
+};
+
+const getCurrentMinutes = () => {
+  const now = new Date();
+  return now.getHours() * 60 + now.getMinutes();
+};
+
+const isCurrentTimeBetween = (startTime, endTime) => {
+  const currentMinutes = getCurrentMinutes();
+  const startMinutes = getMinutesFromDate(startTime);
+  const endMinutes = getMinutesFromDate(endTime);
+
+  return currentMinutes >= startMinutes && currentMinutes <= endMinutes;
+};
+
+const formatTime = (date) => {
+  return new Date(date).toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
   });
 };
 
-const getCurrentTime = () => {
-  return new Date().toTimeString().slice(0, 5); // HH:mm
-};
-
-const isTimeBetween = (currentTime, startTime, endTime) => {
-  return currentTime >= startTime && currentTime <= endTime;
-};
-
-const getApprovedDoctorsForUsers = async ({ page = 1, limit = 5, search = "" }) => {
+const getApprovedDoctorsForUsers = async ({
+  page = 1,
+  limit = 5,
+  search = "",
+}) => {
   const skip = (page - 1) * limit;
-  const today = getCurrentDayName();
-  const currentTime = getCurrentTime();
+  const today = getTodayEnumDay();
 
-  const whereCondition = {
-    status: "approved",
-    isVerified: true,
-    OR: search
-      ? [
+  const searchCondition = search
+    ? {
+        OR: [
           {
-            name: {
-              contains: search,
-              mode: "insensitive",
+            user: {
+              fullName: {
+                contains: search,
+                mode: "insensitive",
+              },
             },
           },
           {
@@ -38,13 +70,24 @@ const getApprovedDoctorsForUsers = async ({ page = 1, limit = 5, search = "" }) 
             },
           },
           {
-            qualification: {
+            education: {
               contains: search,
               mode: "insensitive",
             },
           },
-        ]
-      : undefined,
+          {
+            address: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+        ],
+      }
+    : {};
+
+  const whereCondition = {
+    isVerified: "APPROVED",
+    ...searchCondition,
   };
 
   const [total, doctors] = await Promise.all([
@@ -57,30 +100,22 @@ const getApprovedDoctorsForUsers = async ({ page = 1, limit = 5, search = "" }) 
       skip,
       take: limit,
       orderBy: {
-        createdAt: "desc",
+        user: {
+          fullName: "asc",
+        },
       },
-      select: {
-        id: true,
-        name: true,
-        phone: true,
-        specialization: true,
-        qualification: true,
-        experience: true,
-        profileImage: true,
-
+      include: {
         user: {
           select: {
+            fullName: true,
             email: true,
+            phone: true,
+            profileImageUrl: true,
           },
         },
-
-        availability: {
-          select: {
-            id: true,
-            day: true,
-            startTime: true,
-            endTime: true,
-            isAvailable: true,
+        doctorSchedules: {
+          orderBy: {
+            startTime: "asc",
           },
         },
       },
@@ -88,46 +123,63 @@ const getApprovedDoctorsForUsers = async ({ page = 1, limit = 5, search = "" }) 
   ]);
 
   const formattedDoctors = doctors.map((doctor) => {
-    const todaySlots = doctor.availability.filter(
-      (slot) => slot.day === today && slot.isAvailable
+    const todaySlots = doctor.doctorSchedules.filter(
+      (schedule) => schedule.day === today
     );
 
-    const isActive = todaySlots.some((slot) =>
-      isTimeBetween(currentTime, slot.startTime, slot.endTime)
+    const isActiveBySchedule = todaySlots.some((slot) =>
+      isCurrentTimeBetween(slot.startTime, slot.endTime)
     );
 
     const availableDays = [
-      ...new Set(
-        doctor.availability
-          .filter((slot) => slot.isAvailable)
-          .map((slot) => slot.day)
-      ),
+      ...new Set(doctor.doctorSchedules.map((schedule) => schedule.day)),
     ];
 
-    const nextAvailableSlot = doctor.availability.find(
-      (slot) =>
-        slot.isAvailable &&
-        (slot.day !== today || slot.startTime > currentTime)
-    );
+    const nextAvailableSlot = doctor.doctorSchedules.find((schedule) => {
+      if (schedule.day !== today) return true;
+
+      const currentMinutes = getCurrentMinutes();
+      const startMinutes = getMinutesFromDate(schedule.startTime);
+
+      return startMinutes > currentMinutes;
+    });
 
     return {
       id: doctor.id,
-      name: doctor.name,
-      email: doctor.user?.email,
-      phone: doctor.phone,
-      specialization: doctor.specialization,
-      qualification: doctor.qualification,
-      experience: doctor.experience,
-      profileImage: doctor.profileImage,
+      userId: doctor.userId,
 
-      status: isActive ? "active" : "inactive",
+      name: doctor.user.fullName,
+      email: doctor.user.email,
+      phone: doctor.user.phone || doctor.phone,
+      profileImage:
+        doctor.user.profileImageUrl !== "Enter your Image"
+          ? doctor.user.profileImageUrl
+          : null,
+
+      specialization: doctor.specialization,
+      qualification: doctor.education,
+      experience: `${doctor.experience} Years`,
+      fees: doctor.fees,
+      address: doctor.address,
+
+      status: doctor.isAvailable && isActiveBySchedule ? "active" : "inactive",
+
       availableDays,
-      todaySlots,
+
+      todaySlots: todaySlots.map((slot) => ({
+        id: slot.id,
+        day: slot.day,
+        startTime: formatTime(slot.startTime),
+        endTime: formatTime(slot.endTime),
+        isEmergency: slot.isEmergency,
+      })),
+
       nextAvailable: nextAvailableSlot
         ? {
             day: nextAvailableSlot.day,
-            startTime: nextAvailableSlot.startTime,
-            endTime: nextAvailableSlot.endTime,
+            startTime: formatTime(nextAvailableSlot.startTime),
+            endTime: formatTime(nextAvailableSlot.endTime),
+            isEmergency: nextAvailableSlot.isEmergency,
           }
         : null,
     };
