@@ -24,5 +24,10 @@ export const NAVLINKS: NavLink[] = [
         id: 4,
         title: "Contact Us",
         path: "/contact"
+    },
+    {
+        id: 5,
+        title: "Doctors",
+        path: '/doctors'
     }
 ];

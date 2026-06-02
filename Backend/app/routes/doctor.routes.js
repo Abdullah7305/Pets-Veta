@@ -8,7 +8,21 @@ const Router = express.Router();
 
 Router
     .route("/add/service")
-    .post(authMiddlware.protect, authenticateRole.authenticateUserRole('Doctor'), doctorController.doctorServicePricing)
+    .post(authMiddlware.protect, authenticateRole.authenticateUserRole('Doctor'), doctorController.createDoctorServicePricing);
+
+Router
+    .route('/get/services')
+    .get(authMiddlware.protect, authenticateRole.authenticateUserRole('Doctor'), doctorController.fetchDoctorServices);
+
+Router
+    .route('/edit/service')
+    .patch(authMiddlware.protect, authenticateRole.authenticateUserRole('Doctor'), doctorController.updateDoctorService);
+
+
+Router
+    .route('/delete/service')
+    .delete(authMiddlware.protect, authenticateRole.authenticateUserRole('Doctor'), doctorController.deleteDoctorService);
+
 
 
 module.exports = Router;

@@ -223,6 +223,19 @@ const verifyEmail = async (email) => {
     return validUser;
 }
 
+const getUserById = async (id) => {
+    if (!id) {
+        return false;
+    }
+    const user = await prisma.user.findUnique({
+        where: {
+            id: id
+        }
+    })
+    return user;
+
+}
+
 
 const getUserWithRole = async (email) => {
     return await prisma.user.findUnique({
@@ -291,6 +304,7 @@ module.exports = {
     getUserWithRole,
     updateUserPassword,
     createAdmin,
+    getUserById,
     verifyUsername,
     createAccountByGoogleService
 };

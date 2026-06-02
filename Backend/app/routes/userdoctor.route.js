@@ -1,8 +1,8 @@
 const express = require("express");
-const doctorController = require("../controllers/userdoctor.controller");
+const userDoctorController = require("../controllers/userdoctor.controller");
 
 const router = express.Router();
 
-router.get("/approved", doctorController.getApprovedDoctorsForUsers);
+router.get("/approved-doctors", userDoctorController.getApprovedDoctorsForUsers);
 
 module.exports = router;

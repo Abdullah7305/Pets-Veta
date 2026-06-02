@@ -9,7 +9,8 @@ const authRouter = require('./routes/auth.routes')
 const adminRouter = require('./routes/admin.routes');
 const doctorRouter = require('./routes/doctor.routes');
 const globalErrorHandler = require('./middleware/globalErrorHandler');
-const userdoctorRoutes = require("./routes/userdoctor.route");
+const userRoutes = require("./routes/userdoctor.route");
+const petOwnerRoutes = require('./routes/petOwner.routes');
 
 
 app.use(express.json());
@@ -24,7 +25,8 @@ app.use(cookieParser());
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/admin', adminRouter)
 app.use('/api/v1/doctor', doctorRouter)
-app.use("/api/doctors", userdoctorRoutes);
+app.use('/api/v1/user', userRoutes)
+app.use('/api/v1/petOwner', petOwnerRoutes)
 
 app.use(globalErrorHandler);
 module.exports = app;

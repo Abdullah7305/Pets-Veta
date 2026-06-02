@@ -41,12 +41,13 @@ export const getApprovedDoctors = async (
   search: string
 ): Promise<DoctorApiResponse> => {
   const response = await fetch(
-    `http://localhost:5000/api/doctors/approved?page=${page}&limit=${limit}&search=${search}`
+    `http://localhost:8000/api/v1/user/approved-doctors?page=${page}&limit=${limit}&search=${search}`
   );
 
   if (!response.ok) {
     throw new Error("Failed to fetch doctors");
   }
+  console.log("DOctor Fetching Error is ", response);
 
   return response.json();
 };

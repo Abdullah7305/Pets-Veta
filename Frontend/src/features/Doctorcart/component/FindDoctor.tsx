@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 import Button from "../../../shared/components/Button/Button";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
-import { getApprovedDoctors, type Doctor } from "../getDoctors.api";
+import { getApprovedDoctors, type Doctor } from "../apis/getDoctors.api";
 
 const LIMIT = 5;
 

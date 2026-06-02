@@ -21,7 +21,7 @@ const allDoctors = async (limit, page) => {
             fullName: true,
             email: true,
             phone: true,
-            doctorCertificates: {
+            doctorCertificate: {
               select: {
                 publicUrl: true,
                 publicId: true
@@ -61,7 +61,7 @@ const sendPendingDoctors = async (limit, page) => {
             fullName: true,
             email: true,
             phone: true,
-            doctorCertificates: {
+            doctorCertificate: {
               select: {
                 publicUrl: true
               }
@@ -156,7 +156,7 @@ const approvedDoctor = async (limit, page) => {
             fullName: true,
             email: true,
             phone: true,
-            doctorCertificates: {
+            doctorCertificate: {
               select: {
                 publicUrl: true
               }

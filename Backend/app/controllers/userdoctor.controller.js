@@ -1,4 +1,4 @@
-const doctorService = require("../services/userdoctor.service");
+const doctorService = require("../services/userdoctor.services");
 const sendResponse = require("../utils/sendResponse");
 
 const getApprovedDoctorsForUsers = async (req, res) => {
