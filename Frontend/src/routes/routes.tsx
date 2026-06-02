@@ -16,6 +16,7 @@ const Router = createBrowserRouter([
   ...adminRoutes,
   ...doctorAppointmentRoutes,
   ...petsRoutes,
+  ...doctorDashboardRoutes,
   {
     path: "*",
     element: <Notfound />,
