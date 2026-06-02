@@ -2,24 +2,23 @@ import {
   CalendarDays,
   Clock3,
   Copy,
+  Loader2,
   Info,
   Plus,
   TimerReset,
   Trash2,
   X,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import Button from "../../../shared/components/Button/Button";
-
-type WeekDay =
-  | "MONDAY"
-  | "TUESDAY"
-  | "WEDNESDAY"
-  | "THURSDAY"
-  | "FRIDAY"
-  | "SATURDAY"
-  | "SUNDAY";
+import {
+  createDoctorAvailabilitySlot,
+  deleteDoctorAvailabilitySlot,
+  getDoctorAvailability,
+  type DoctorSchedule,
+  type WeekDay,
+} from "../../api/doctorAvailabilityServices";
+import Button from "../../../../shared/components/Button/Button";
 
 type TimeSlot = {
   id: string;
@@ -48,48 +47,13 @@ const weekDays: { value: WeekDay; label: string }[] = [
   { value: "SUNDAY", label: "Sunday" },
 ];
 
-const initialSlots: TimeSlot[] = [
-  {
-    id: "1",
-    date: "2026-06-03",
-    day: "MONDAY",
-    label: "Monday",
-    startTime: "10:00",
-    endTime: "11:00",
-    isAvailable: true,
-  },
-  {
-    id: "2",
-    date: "2026-06-03",
-    day: "MONDAY",
-    label: "Monday",
-    startTime: "12:00",
-    endTime: "13:00",
-    isAvailable: true,
-  },
-  {
-    id: "3",
-    date: "2026-06-04",
-    day: "TUESDAY",
-    label: "Tuesday",
-    startTime: "11:00",
-    endTime: "12:00",
-    isAvailable: true,
-  },
-  {
-    id: "4",
-    date: "2026-06-05",
-    day: "WEDNESDAY",
-    label: "Wednesday",
-    startTime: "14:00",
-    endTime: "15:00",
-    isAvailable: true,
-  },
-];
-
 const DoctorAvailability = () => {
-  const [slots, setSlots] = useState<TimeSlot[]>(initialSlots);
+  const [slots, setSlots] = useState<TimeSlot[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [slotForm, setSlotForm] = useState<SlotForm>({
     date: "",
@@ -112,6 +76,65 @@ const DoctorAvailability = () => {
     });
   }, [slots]);
 
+  const getDayLabel = (day: WeekDay) => {
+    return weekDays.find((item) => item.value === day)?.label || day;
+  };
+
+  const toDateInputValue = (value: string) => {
+    const date = new Date(value);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+
+  const toTimeInputValue = (value: string) => {
+    const date = new Date(value);
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    return `${hours}:${minutes}`;
+  };
+
+  const buildDateTime = (date: string, time: string) => {
+    return new Date(`${date}T${time}:00`).toISOString();
+  };
+
+  const mapScheduleToSlot = (schedule: DoctorSchedule): TimeSlot => {
+    return {
+      id: schedule.id,
+      date: toDateInputValue(schedule.startTime),
+      day: schedule.day,
+      label: getDayLabel(schedule.day),
+      startTime: toTimeInputValue(schedule.startTime),
+      endTime: toTimeInputValue(schedule.endTime),
+      isAvailable: true,
+    };
+  };
+
+  const loadDoctorAvailability = async () => {
+    try {
+      setIsLoading(true);
+      setErrorMessage("");
+
+      const response = await getDoctorAvailability();
+      setSlots((response?.data || []).map(mapScheduleToSlot));
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Unable to load doctor availability.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadDoctorAvailability();
+  }, []);
+
   const formatTime = (time: string) => {
     if (!time) return "";
 
@@ -126,15 +149,11 @@ const DoctorAvailability = () => {
   const formatDate = (date: string) => {
     if (!date) return "";
 
-    return new Date(date).toLocaleDateString("en-US", {
+    return new Date(`${date}T00:00:00`).toLocaleDateString("en-US", {
       day: "2-digit",
       month: "short",
       year: "numeric",
     });
-  };
-
-  const getDayLabel = (day: WeekDay) => {
-    return weekDays.find((item) => item.value === day)?.label || day;
   };
 
   const resetSlotForm = () => {
@@ -146,7 +165,7 @@ const DoctorAvailability = () => {
     });
   };
 
-  const handleAddSlot = () => {
+  const handleAddSlot = async () => {
     if (
       !slotForm.date ||
       !slotForm.day ||
@@ -162,19 +181,31 @@ const DoctorAvailability = () => {
       return;
     }
 
-    const newSlot: TimeSlot = {
-      id: crypto.randomUUID(),
-      date: slotForm.date,
-      day: slotForm.day,
-      label: getDayLabel(slotForm.day),
-      startTime: slotForm.startTime,
-      endTime: slotForm.endTime,
-      isAvailable: true,
-    };
+    try {
+      setIsSaving(true);
+      setErrorMessage("");
 
-    setSlots((prev) => [...prev, newSlot]);
-    resetSlotForm();
-    setIsModalOpen(false);
+      const response = await createDoctorAvailabilitySlot({
+        day: slotForm.day,
+        startTime: buildDateTime(slotForm.date, slotForm.startTime),
+        endTime: buildDateTime(slotForm.date, slotForm.endTime),
+      });
+
+      if (response?.data) {
+        setSlots((prev) => [...prev, mapScheduleToSlot(response.data)]);
+      }
+
+      resetSlotForm();
+      setIsModalOpen(false);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Unable to add availability slot.",
+      );
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const toggleAvailability = (slotId: string) => {
@@ -190,23 +221,22 @@ const DoctorAvailability = () => {
     );
   };
 
-  const deleteSlot = (slotId: string) => {
-    setSlots((prev) => prev.filter((slot) => slot.id !== slotId));
-  };
+  const deleteSlot = async (slotId: string) => {
+    try {
+      setIsDeletingId(slotId);
+      setErrorMessage("");
 
-  const handleSaveChanges = async () => {
-    const payload = slots.map((slot) => ({
-      date: slot.date,
-      day: slot.day,
-      startTime: slot.startTime,
-      endTime: slot.endTime,
-      isAvailable: slot.isAvailable,
-    }));
-
-    console.log("Backend payload:", payload);
-
-    // Later API call:
-    // await saveDoctorAvailability(payload);
+      await deleteDoctorAvailabilitySlot(slotId);
+      setSlots((prev) => prev.filter((slot) => slot.id !== slotId));
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Unable to delete availability slot.",
+      );
+    } finally {
+      setIsDeletingId(null);
+    }
   };
 
   return (
@@ -241,12 +271,19 @@ const DoctorAvailability = () => {
             <Button
               type="button"
               className="h-12 w-auto px-6"
-              onClick={handleSaveChanges}
+              onClick={loadDoctorAvailability}
+              disabled={isLoading}
             >
-              Save Changes
+              {isLoading ? "Loading..." : "Refresh"}
             </Button>
           </div>
         </div>
+
+        {errorMessage && (
+          <div className="mb-5 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">
+            {errorMessage}
+          </div>
+        )}
 
         <section className="mb-6 grid gap-4 md:grid-cols-3">
           <StatsCard title="Total Slots" value={totalSlots.toString()} />
@@ -296,7 +333,19 @@ const DoctorAvailability = () => {
               </thead>
 
               <tbody className="divide-y divide-slate-100">
-                {sortedSlots.length > 0 ? (
+                {isLoading ? (
+                  <tr>
+                    <td
+                      colSpan={6}
+                      className="px-6 py-14 text-center text-sm font-semibold text-slate-500"
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <Loader2 size={17} className="animate-spin" />
+                        Loading availability slots...
+                      </span>
+                    </td>
+                  </tr>
+                ) : sortedSlots.length > 0 ? (
                   sortedSlots.map((slot) => (
                     <tr key={slot.id} className="transition hover:bg-slate-50">
                       <td className="px-4 py-5 align-middle">
@@ -361,10 +410,15 @@ const DoctorAvailability = () => {
                           variant="outline"
                           className="ml-auto w-auto border-red-200 px-3 py-2 text-xs text-red-500 hover:border-red-400 hover:bg-red-50"
                           onClick={() => deleteSlot(slot.id)}
+                          disabled={isDeletingId === slot.id}
                         >
                           <span className="flex items-center justify-center gap-1">
-                            <Trash2 size={14} />
-                            Delete
+                            {isDeletingId === slot.id ? (
+                              <Loader2 size={14} className="animate-spin" />
+                            ) : (
+                              <Trash2 size={14} />
+                            )}
+                            {isDeletingId === slot.id ? "Deleting" : "Delete"}
                           </span>
                         </Button>
                       </td>
@@ -569,8 +623,8 @@ const DoctorAvailability = () => {
                   Cancel
                 </Button>
 
-                <Button type="button" onClick={handleAddSlot}>
-                  Add Slot
+                <Button type="button" onClick={handleAddSlot} disabled={isSaving}>
+                  {isSaving ? "Adding..." : "Add Slot"}
                 </Button>
               </div>
             </div>
