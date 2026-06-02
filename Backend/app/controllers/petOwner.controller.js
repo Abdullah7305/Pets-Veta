@@ -13,7 +13,7 @@ const registerPet = catchAsync(async (req, res) => {
     const pet = {
         petOwnerId: petOwnerId,
         name: name,
-        age: age,
+        age: parseFloat(age),
         category: category,
         breed: breed
     }
@@ -28,7 +28,7 @@ const registerPetIssue = catchAsync(async (req, res) => {
     requireFields(["petOwnerId", "petId", "issue", "appointmentType"], req.body);
     const { petOwnerId, petId, issue, appointmentType } = req.body;
 
-    let appointment = appointmentType.toLowerCase() === 'emergency' ? PatientAppointmentType.EMERGENCY : PatientAppointmentType.NORMAL_CHECKUP;
+    let appointment = String(appointmentType || '').toLowerCase() === 'emergency' ? PatientAppointmentType.EMERGENCY : PatientAppointmentType.NORMAL_CHECKUP;
 
     const petIssue = {
         petOwnerId: petOwnerId,

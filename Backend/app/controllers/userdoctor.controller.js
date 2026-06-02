@@ -1,7 +1,7 @@
 const doctorService = require("../services/userdoctor.services");
 const catchAsync = require("../utils/CatchAsync");
 const AppError = require("../utils/AppError");
-const sendResponse = require("../utils/sendResponse");
+const sendResponse = require("../utils/SendResponse");
 
 const getApprovedDoctorsForUsers = catchAsync(async (req, res, next) => {
   const page = Number(req.query.page) || 1;

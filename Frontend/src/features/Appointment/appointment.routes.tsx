@@ -1,5 +1,6 @@
 import DoctorProfilePage from "./pages/DoctorProfilePage";
 import BookAppointmentPage from "./pages/BookAppointmentPage";
+import { ProtectedRoutes } from "../../ProtectedRoutes/ProtectedRoutes";
 
 export const doctorRoutes = [
     {
@@ -8,6 +9,10 @@ export const doctorRoutes = [
     },
     {
         path: '/book-appointment/:id',
-        element: <BookAppointmentPage />
+        element: (
+            <ProtectedRoutes>
+                <BookAppointmentPage />
+            </ProtectedRoutes>
+        )
     }
 ]

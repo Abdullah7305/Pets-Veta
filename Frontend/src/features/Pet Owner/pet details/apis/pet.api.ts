@@ -16,6 +16,7 @@ export const submitPetData = async (data: PetFormData & { petOwnerId: string }):
     return response.data?.data;
   } catch (error) {
     handleAxiosError(error);
+    throw error;
   }
 };
 
@@ -25,6 +26,7 @@ export const submitPetIssue = async (data: PetIssueReportFormData & { petOwnerId
     return response.data;
   } catch (error) {
     handleAxiosError(error);
+    throw error;
   }
 };
 
@@ -34,5 +36,6 @@ export const getPetsData = async (): Promise<PetResponse[] | undefined> => {
     return response.data?.data;
   } catch (error) {
     handleAxiosError(error);
+    throw error;
   }
 };

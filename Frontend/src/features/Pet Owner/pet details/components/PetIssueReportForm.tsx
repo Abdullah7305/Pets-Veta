@@ -36,6 +36,8 @@ const PetIssueReportForm = ({
   const { user } = useAuth();
   const [pets, setPets] = useState<PetResponse[]>([]);
   const [loadingPets, setLoadingPets] = useState(false);
+  const [loadPetsError, setLoadPetsError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const {
     register,
@@ -53,15 +55,22 @@ const PetIssueReportForm = ({
     },
   });
 
-  useEffect(() => {
-    const fetchPets = async () => {
-      setLoadingPets(true);
+  const fetchPets = async () => {
+    setLoadingPets(true);
+    setLoadPetsError(null);
+    try {
       const data = await getPetsData();
       if (data) {
         setPets(data);
       }
+    } catch (err: any) {
+      setLoadPetsError("Failed to load your pets. Please retry.");
+    } finally {
       setLoadingPets(false);
-    };
+    }
+  };
+
+  useEffect(() => {
     fetchPets();
   }, []);
 
@@ -75,23 +84,30 @@ const PetIssueReportForm = ({
   const appointmentType = watch("appointmentType");
 
   const onSubmit = async (data: PetIssueReportFormData) => {
+    setSubmitError(null);
     console.log("Pet issue report:", data);
     const petOwnerId = user?.data?.id;
     if (!petOwnerId) {
-      console.error("No authenticated pet owner found");
+      setSubmitError("You must be logged in to report a pet issue.");
       return;
     }
 
-    const result = await submitPetIssue({
-      ...data,
-      petOwnerId,
-    });
+    try {
+      const result = await submitPetIssue({
+        ...data,
+        petOwnerId,
+      });
 
-    if (result) {
-      reset();
-      if (onSubmitSuccess) {
-        onSubmitSuccess(result);
+      if (result) {
+        reset();
+        if (onSubmitSuccess) {
+          onSubmitSuccess(result);
+        }
+      } else {
+        setSubmitError("Failed to submit issue report.");
       }
+    } catch (err: any) {
+      setSubmitError(err?.response?.data?.message || "An error occurred while submitting the issue report.");
     }
   };
 
@@ -127,6 +143,19 @@ const PetIssueReportForm = ({
             <label className="mb-2 block text-sm font-black">
               Select Pet <span className="text-red-500">*</span>
             </label>
+
+            {loadPetsError && (
+              <div className="mb-2 flex items-center justify-between rounded-xl bg-red-55 text-red-600 p-2 text-xs font-semibold border border-red-100">
+                <span>{loadPetsError}</span>
+                <button
+                  type="button"
+                  onClick={fetchPets}
+                  className="rounded-lg bg-red-100 px-2 py-1 text-xs font-bold text-red-700 hover:bg-red-200 transition"
+                >
+                  Retry
+                </button>
+              </div>
+            )}
 
             <div className="flex h-14 items-center rounded-xl border border-slate-200 bg-white px-4 transition focus-within:border-[#0B8F5A] focus-within:ring-4 focus-within:ring-emerald-100">
               <span className="mr-3 flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-50 text-[#0B8F5A]">
