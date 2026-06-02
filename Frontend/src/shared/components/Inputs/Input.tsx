@@ -6,7 +6,13 @@ type InputProps = {
   type?: string;
   placeholder?: string;
   error?: string;
+
+  icon?: React.ReactNode;
+
+  rightText?: string;
+
   showPassword?: boolean;
+
   onTogglePassword?: () => void;
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
@@ -17,6 +23,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       type = "text",
       placeholder,
       error,
+      icon,
+      rightText,
       showPassword,
       onTogglePassword,
       ...props
@@ -27,43 +35,84 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
     return (
       <div className="flex flex-col gap-2">
-        <label className="text-sm font-medium text-gray-700">{label}</label>
+        <label className="text-sm font-black text-[#1F1F2E]">
+          {label}
+        </label>
 
         <div className="relative">
-        
+          {/* LEFT ICON */}
+          {icon && (
+            <div
+              className="
+                absolute left-4 top-1/2
+                flex h-9 w-9
+                -translate-y-1/2
+                items-center justify-center
+                rounded-lg
+                bg-purple-50
+                text-[#6D3DD9]
+              "
+            >
+              {icon}
+            </div>
+          )}
+
           <input
             ref={ref}
             type={isPassword ? (showPassword ? "text" : "password") : type}
             placeholder={type !== "file" ? placeholder : undefined}
             className={`
-    w-full rounded-xl border
-    px-4 py-2.5
-    outline-none transition-all
+              w-full rounded-xl border
+              bg-white
+              py-3
+              outline-none
+              transition-all duration-300
 
-    ${
-      type === "file"
-        ? `
-          file:mr-4
-          file:rounded-lg
-          file:border-0
-          file:bg-blue-100
-          file:px-4
-          file:py-2
-          file:text-sm
-          file:font-medium
-          file:text-blue-900
-        `
-        : "pr-12"
-    }
+              ${icon ? "pl-16" : "pl-4"}
 
-    ${
-      error
-        ? "border-red-500 focus:border-red-500"
-        : "border-gray-300 focus:border-blue-600"
-    }
-  `}
+              ${rightText || isPassword ? "pr-16" : "pr-4"}
+
+              ${
+                type === "file"
+                  ? `
+                  file:mr-4
+                  file:rounded-lg
+                  file:border-0
+                  file:bg-blue-100
+                  file:px-4
+                  file:py-2
+                  file:text-sm
+                  file:font-medium
+                  file:text-blue-900
+                `
+                  : ""
+              }
+
+              ${
+                error
+                  ? "border-red-500 focus:border-red-500"
+                  : "border-slate-200 focus:border-[#6D3DD9]"
+              }
+
+              focus:ring-4
+              focus:ring-purple-100
+            `}
             {...props}
           />
+
+          {/* RIGHT TEXT */}
+          {rightText && !isPassword && (
+            <div
+              className="
+                absolute right-4 top-1/2
+                -translate-y-1/2
+                text-sm font-semibold
+                text-slate-400
+              "
+            >
+              {rightText}
+            </div>
+          )}
 
           {/* PASSWORD ICON */}
           {isPassword && (
@@ -74,7 +123,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                 absolute right-4 top-1/2
                 -translate-y-1/2
                 text-gray-500
-                hover:text-blue-700
+                hover:text-[#6D3DD9]
               "
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -82,7 +131,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           )}
         </div>
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && (
+          <p className="text-xs font-semibold text-red-500">
+            {error}
+          </p>
+        )}
       </div>
     );
   },

@@ -1,10 +1,38 @@
 import { Calendar, List, PawPrint, Shield, User } from "lucide-react";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-type PetCategory = "DOG" | "CAT" | "REPTILE" | "OTHER";
-
+import Input from "../../../../shared/components/Inputs/Input";
+import Button from "../../../../shared/components/Button/Button";
+import {
+  petSchema,
+  type PetFormInput,
+  type PetFormData,
+} from "../schemas/pet.schema";
 const PetForm = () => {
-  const [category, setCategory] = useState<PetCategory | "">("");
+  const {
+  register,
+  handleSubmit,
+  reset,
+  formState: { errors, isSubmitting },
+} = useForm<PetFormInput, unknown, PetFormData>({
+  resolver: zodResolver(petSchema),
+  defaultValues: {
+    name: "",
+    age: "",
+    breed: "",
+    category: undefined,
+  },
+});
+
+  const onSubmit = async (data: PetFormData) => {
+    console.log("Pet Form Data:", data);
+
+    // API connect later
+    // await createPet(data)
+
+    reset();
+  };
 
   return (
     <main className="min-h-screen bg-[#F7F3FF] px-4 py-8 text-[#1F1F2E]">
@@ -28,10 +56,34 @@ const PetForm = () => {
           />
         </div>
 
-        <form className="space-y-5 px-5 py-6">
-          <InputField label="Pet Name" placeholder="Enter pet name" icon={<User size={18} />} required />
-          <InputField label="Age" placeholder="Enter age" icon={<Calendar size={18} />} rightText="Years" required />
-          <InputField label="Breed" placeholder="Enter breed" icon={<Shield size={18} />} required />
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 px-5 py-6">
+          <Input
+            label="Pet Name"
+            type="text"
+            placeholder="Enter pet name"
+            error={errors.name?.message}
+            icon={<User size={18} />}
+            {...register("name")}
+          />
+
+          <Input
+            label="Age"
+            type="number"
+            placeholder="Enter age"
+            error={errors.age?.message}
+            icon={<Calendar size={18} />}
+            rightText="Years"
+            {...register("age")}
+          />
+
+          <Input
+            label="Breed"
+            type="text"
+            placeholder="Enter breed"
+            error={errors.breed?.message}
+            icon={<Shield size={18} />}
+            {...register("breed")}
+          />
 
           <div>
             <label className="mb-2 block text-sm font-black">
@@ -42,8 +94,7 @@ const PetForm = () => {
               <List size={18} className="mr-3 text-[#6D3DD9]" />
 
               <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value as PetCategory)}
+                {...register("category")}
                 className="h-full w-full bg-transparent text-sm font-semibold text-slate-600 outline-none"
               >
                 <option value="">Select category</option>
@@ -53,6 +104,12 @@ const PetForm = () => {
                 <option value="OTHER">Other</option>
               </select>
             </div>
+
+            {errors.category && (
+              <p className="mt-1 text-xs font-semibold text-red-500">
+                {errors.category.message}
+              </p>
+            )}
           </div>
 
           <div className="rounded-2xl border border-purple-100 bg-[#F6F0FF] p-4">
@@ -60,67 +117,32 @@ const PetForm = () => {
               About Pet Categories
             </h3>
             <p className="mt-1 text-xs leading-5 text-slate-600">
-              Choose the correct category to help us provide better care for your pet.
+              Choose the correct category to help us provide better care for your
+              pet.
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-3 pt-2">
-            <button
+            <Button
               type="button"
-              className="h-12 rounded-xl border border-[#6D3DD9]/35 text-sm font-black text-[#6D3DD9]"
+              variant="outline"
+              className="border-[#6D3DD9]/35 text-[#6D3DD9]"
+              onClick={() => reset()}
             >
               Cancel
-            </button>
+            </Button>
 
-            <button
+            <Button
               type="submit"
-              className="flex h-12 items-center justify-center gap-2 rounded-xl bg-[#6D3DD9] text-sm font-black text-white shadow-lg shadow-purple-300"
+              isSubmitting={isSubmitting}
+              className="bg-[#6D3DD9] hover:bg-[#5630B2] hover:text-white"
             >
-              <PawPrint size={17} />
               Save Pet
-            </button>
+            </Button>
           </div>
         </form>
       </section>
     </main>
-  );
-};
-
-const InputField = ({
-  label,
-  placeholder,
-  icon,
-  rightText,
-  required,
-}: {
-  label: string;
-  placeholder: string;
-  icon: React.ReactNode;
-  rightText?: string;
-  required?: boolean;
-}) => {
-  return (
-    <div>
-      <label className="mb-2 block text-sm font-black">
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
-
-      <div className="flex h-14 items-center rounded-xl border border-slate-200 bg-white px-4 transition focus-within:border-[#6D3DD9] focus-within:ring-4 focus-within:ring-purple-100">
-        <span className="mr-3 text-[#6D3DD9]">{icon}</span>
-
-        <input
-          type="text"
-          placeholder={placeholder}
-          className="h-full w-full bg-transparent text-sm font-semibold text-slate-600 outline-none placeholder:text-slate-400"
-        />
-
-        {rightText && (
-          <span className="rounded-lg bg-slate-50 px-3 py-1 text-xs font-bold text-slate-500">
-            {rightText}
-          </span>
-        )}
-      </div>
-    </div>
   );
 };
 
