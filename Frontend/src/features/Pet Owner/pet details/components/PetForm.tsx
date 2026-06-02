@@ -9,29 +9,51 @@ import {
   type PetFormInput,
   type PetFormData,
 } from "../schemas/pet.schema";
-const PetForm = () => {
+import { useAuth } from "@/features/Auth/hooks/authhook";
+import { submitPetData } from "../apis/pet.api";
+
+interface PetFormProps {
+  onSubmitSuccess?: (newPet: any) => void;
+  onCancel?: () => void;
+}
+
+const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
+  const { user } = useAuth();
+  
   const {
-  register,
-  handleSubmit,
-  reset,
-  formState: { errors, isSubmitting },
-} = useForm<PetFormInput, unknown, PetFormData>({
-  resolver: zodResolver(petSchema),
-  defaultValues: {
-    name: "",
-    age: "",
-    breed: "",
-    category: undefined,
-  },
-});
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<PetFormInput, unknown, PetFormData>({
+    resolver: zodResolver(petSchema),
+    defaultValues: {
+      name: "",
+      age: "",
+      breed: "",
+      category: undefined,
+    },
+  });
 
   const onSubmit = async (data: PetFormData) => {
     console.log("Pet Form Data:", data);
+    const petOwnerId = user?.data?.id;
+    if (!petOwnerId) {
+      console.error("No authenticated pet owner found");
+      return;
+    }
 
-    // API connect later
-    // await createPet(data)
+    const newPet = await submitPetData({
+      ...data,
+      petOwnerId,
+    });
 
-    reset();
+    if (newPet) {
+      reset();
+      if (onSubmitSuccess) {
+        onSubmitSuccess(newPet);
+      }
+    }
   };
 
   return (
@@ -42,10 +64,10 @@ const PetForm = () => {
             <PawPrint size={22} />
           </div>
 
-          <div className="relative z-10 mt-5">
-            <h1 className="text-2xl font-black">Add New Pet</h1>
+          <div className="relative z-10 mt-5 flex flex-col">
+            <h1 className="text-2xl font-black">Add Pet For Appointments</h1>
             <p className="mt-2 max-w-[230px] text-sm leading-5 text-slate-600">
-              Add your pet details to manage their health and appointments
+              
             </p>
           </div>
 
@@ -127,7 +149,10 @@ const PetForm = () => {
               type="button"
               variant="outline"
               className="border-[#6D3DD9]/35 text-[#6D3DD9]"
-              onClick={() => reset()}
+              onClick={() => {
+                reset();
+                if (onCancel) onCancel();
+              }}
             >
               Cancel
             </Button>

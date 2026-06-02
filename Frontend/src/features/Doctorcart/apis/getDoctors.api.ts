@@ -1,12 +1,14 @@
 export type DoctorApiResponse = {
   success: boolean;
   message: string;
-  data: Doctor[];
-  meta?: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
+  data: {
+    data: Doctor[];
+    meta: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
   };
 };
 
@@ -16,17 +18,15 @@ export type Doctor = {
   email: string;
   phone: string;
   specialization: string;
-  qualification: string;
-  experience: string;
+  education: string;
+  experience: number;
   profileImage?: string;
   status: "active" | "inactive";
   availableDays: string[];
   todaySlots: {
-    id: string;
     day: string;
     startTime: string;
     endTime: string;
-    isAvailable: boolean;
   }[];
   nextAvailable: {
     day: string;

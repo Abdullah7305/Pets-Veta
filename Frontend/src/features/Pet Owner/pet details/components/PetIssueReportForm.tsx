@@ -10,14 +10,33 @@ import {
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
 
 import Button from "../../../../shared/components/Button/Button";
 import {
   petIssueReportSchema,
   type PetIssueReportFormData,
 } from "../schemas/petIssueReport.schema";
+import { useAuth } from "@/features/Auth/hooks/authhook";
+import { getPetsData, submitPetIssue, type PetResponse } from "../apis/pet.api";
 
-const PetIssueReportForm = () => {
+interface PetIssueReportFormProps {
+  preselectedPetId?: string;
+  doctorId: string;
+  onSubmitSuccess?: (data: any) => void;
+  onCancel?: () => void;
+}
+
+const PetIssueReportForm = ({
+  preselectedPetId = "",
+  doctorId,
+  onSubmitSuccess,
+  onCancel,
+}: PetIssueReportFormProps) => {
+  const { user } = useAuth();
+  const [pets, setPets] = useState<PetResponse[]>([]);
+  const [loadingPets, setLoadingPets] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -28,22 +47,52 @@ const PetIssueReportForm = () => {
   } = useForm<PetIssueReportFormData>({
     resolver: zodResolver(petIssueReportSchema),
     defaultValues: {
-      petId: "",
+      petId: preselectedPetId,
       issue: "",
       appointmentType: "NORMAL_CHECKUP",
     },
   });
+
+  useEffect(() => {
+    const fetchPets = async () => {
+      setLoadingPets(true);
+      const data = await getPetsData();
+      if (data) {
+        setPets(data);
+      }
+      setLoadingPets(false);
+    };
+    fetchPets();
+  }, []);
+
+  useEffect(() => {
+    if (preselectedPetId) {
+      setValue("petId", preselectedPetId);
+    }
+  }, [preselectedPetId, setValue]);
 
   const issue = watch("issue") || "";
   const appointmentType = watch("appointmentType");
 
   const onSubmit = async (data: PetIssueReportFormData) => {
     console.log("Pet issue report:", data);
+    const petOwnerId = user?.data?.id;
+    if (!petOwnerId) {
+      console.error("No authenticated pet owner found");
+      return;
+    }
 
-    // API connect later
-    // await createPetIssueReport(data);
+    const result = await submitPetIssue({
+      ...data,
+      petOwnerId,
+    });
 
-    reset();
+    if (result) {
+      reset();
+      if (onSubmitSuccess) {
+        onSubmitSuccess(result);
+      }
+    }
   };
 
   return (
@@ -88,9 +137,12 @@ const PetIssueReportForm = () => {
                 {...register("petId")}
                 className="h-full w-full bg-transparent text-sm font-semibold text-slate-500 outline-none"
               >
-                <option value="">Choose your pet</option>
-                <option value="pet-id-1">Buddy - Dog</option>
-                <option value="pet-id-2">Milo - Cat</option>
+                <option value="">{loadingPets ? "Loading pets..." : "Choose your pet"}</option>
+                {pets.map((pet) => (
+                  <option key={pet.id} value={pet.id}>
+                    {pet.name} - {pet.category} ({pet.breed})
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -195,7 +247,14 @@ const PetIssueReportForm = () => {
           </div>
 
           <div className="grid grid-cols-2 gap-3 pt-1">
-            <Button type="button" variant="outline" onClick={() => reset()}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                reset();
+                if (onCancel) onCancel();
+              }}
+            >
               Cancel
             </Button>
 

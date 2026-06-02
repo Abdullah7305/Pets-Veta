@@ -1,8 +1,14 @@
 const express = require("express");
 const userDoctorController = require("../controllers/userdoctor.controller");
 
-const router = express.Router();
+const Router = express.Router();
 
-router.get("/approved-doctors", userDoctorController.getApprovedDoctorsForUsers);
+Router
+    .route("/approved-doctors")
+    .get(userDoctorController.getApprovedDoctorsForUsers);
 
-module.exports = router;
+Router
+    .route('/doctor-profile')
+    .get(userDoctorController.getDoctorById)
+
+module.exports = Router;

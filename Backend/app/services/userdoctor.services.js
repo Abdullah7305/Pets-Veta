@@ -1,4 +1,4 @@
-const { PrismaClient, VerificationStatus } = require("@prisma/client");
+const { PrismaClient, VerificationStatus, doctorSkills } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const getCurrentDayName = () => {
@@ -138,6 +138,47 @@ const getApprovedDoctorsForUsers = async ({ page = 1, limit = 5, search = "" }) 
   };
 };
 
+const getSpecificDoctor = async (doctorId) => {
+  const doctor = await prisma.doctor.findUnique({
+    where: {
+      id: doctorId
+    },
+    select: {
+      education: true,
+      fees: true,
+      specialization: true,
+      experience: true,
+      user: {
+        select: {
+          profileImageUrl: true,
+          fullName: true,
+          doctorSkills: {
+            select: {
+              price: true,
+              skill: true
+            }
+          }
+        }
+      },
+      doctorSchedules: {
+        select: {
+          id: true,
+          day: true,       
+          startTime: true,
+          endTime: true,
+          isEmergency: true
+        },
+        orderBy: {
+          date: 'asc'
+        }
+      }
+    }
+  });
+
+  return doctor;
+};
+
 module.exports = {
   getApprovedDoctorsForUsers,
+  getSpecificDoctor
 };

@@ -5,6 +5,8 @@ const petOwnerController = require('../controllers/petOwner.controller');
 
 const Router = express.Router();
 
+
+
 Router
     .route('/submit/pet-data')
     .post(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.registerPet)

@@ -5,7 +5,7 @@ const addDoctorService = async (skills, userId) => {
     console.log("Skills are ", skills, userId);
     let isExisting = false;
 
-    const doSkillExist = await prisma.doctorSkills.findFirst({
+    const doSkillExist = await prisma.doctorSkill.findFirst({
         where: {
             userId: userId,
             skill: {
@@ -19,7 +19,7 @@ const addDoctorService = async (skills, userId) => {
         return isExisting;
     }
 
-    const newSkills = await prisma.doctorSkills.create({
+    const newSkills = await prisma.doctorSkill.create({
         data: {
             skill: skills.skill,
             price: skills.price,
@@ -30,7 +30,7 @@ const addDoctorService = async (skills, userId) => {
 }
 
 const deleteDoctorService = async (serviceId) => {
-    const deletedSkill = await prisma.doctorSkills.delete({
+    const deletedSkill = await prisma.doctorSkill.delete({
         where: {
             id: serviceId
         }
@@ -39,17 +39,21 @@ const deleteDoctorService = async (serviceId) => {
 }
 
 const getDoctorServices = async (userId) => {
-    const services = await prisma.doctorSkills.findMany({
+
+    const services = await prisma.doctorSkill?.findMany({
         where: {
             userId: userId
         }
     })
+    if (!services) {
+        return false;
+    }
     return services;
 }
 
 
 const updateDoctorServices = async (serviceId, skill, price) => {
-    const updatedService = await prisma.doctorSkills.update({
+    const updatedService = await prisma.doctorSkill.update({
         where: {
             id: serviceId
         },

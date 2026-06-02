@@ -4,6 +4,7 @@ import LandingPageRoutes from "../features/Landing Page/routes";
 import { servicesRoutes } from "../features/Services";
 import Notfound from "../shared/components/Notfound/Notfound";
 import { doctorDashboardRoutes } from "../features/Doctor/doctor.route";
+import { doctorRoutes } from "@/features/Appointment/appointment.routes";
 import adminRoutes from "../features/Admin/admin.route";
 import { doctorAppointmentRoutes } from "../features/Doctorcart/doctorAppointment.route";
 import { petsRoutes } from "../features/Pet Owner/pet details/pets.route";
@@ -16,6 +17,7 @@ const Router = createBrowserRouter([
   ...adminRoutes,
   ...doctorAppointmentRoutes,
   ...petsRoutes,
+  ...doctorRoutes,
   {
     path: "*",
     element: <Notfound />,

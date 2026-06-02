@@ -7,7 +7,8 @@ const saveUserPet = async (pet) => {
             petOwnerId: pet.petOwnerId,
             name: pet.name,
             age: pet.age,
-            breed: pet.breed
+            breed: pet.breed,
+            category: pet.category
         }
     });
     return newPet;
@@ -32,11 +33,12 @@ const getUserPets = async (userId) => {
     if (!userId) {
         return false;
     }
-    const pets = await prisma.pet.findUnique({
+    const pets = await prisma.pet.findMany({
         where: {
             petOwnerId: userId
         },
         select: {
+            id: true,
             name: true,
             age: true,
             breed: true,
@@ -47,6 +49,8 @@ const getUserPets = async (userId) => {
 
     return pets;
 }
+
+
 module.exports = {
     saveUserPet,
     registerPetIssue, getUserPets
