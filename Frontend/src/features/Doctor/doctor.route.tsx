@@ -3,10 +3,10 @@ import DoctorProfilePage from "./pages/DoctorProfilePage";
 import { DoctorProtectedRoute } from "@/ProtectedRoutes/DoctorProtectedRoutes";
 import DoctorSkill from "./pages/SkillPricing";
 import { DoctorLayout } from "./Layout/doctor.layout";
+import DoctorAvailabilityPage from "./pages/DoctorAvailabilityPage";
 
 export const doctorDashboardRoutes = [
   {
-
     path: "/",
     element: (
       <DoctorProtectedRoute>
@@ -16,16 +16,20 @@ export const doctorDashboardRoutes = [
     children: [
       {
         path: "doctor-dashboard",
-        element: <DoctorDashboardPage />
+        element: <DoctorDashboardPage />,
       },
       {
         path: "doctor-profile",
-        element: <DoctorProfilePage />
+        element: <DoctorProfilePage />,
       },
       {
-        path: 'doctor-pricing',
-        element: <DoctorSkill />
-      }
-    ]
-  }
+        path: "doctor-pricing",
+        element: <DoctorSkill />,
+      },
+      {
+        path: "doctor-availability",
+        element: <DoctorAvailabilityPage />,
+      },
+    ],
+  },
 ];

@@ -21,7 +21,7 @@ interface PetFormProps {
 const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
   const { user } = useAuth();
   const [submitError, setSubmitError] = useState<string | null>(null);
-  
+
   const {
     register,
     handleSubmit,

@@ -32,7 +32,6 @@ const verifyUser = catchAsync(async (req, res) => {
 
 )
 
-
 const getGoogleUrlController = catchAsync(async (req, res) => {
     const url = getGoogleAuthUrl();
     console.log("URL is ", url);
