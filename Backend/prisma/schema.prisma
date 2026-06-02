@@ -25,11 +25,6 @@ enum WeekDays {
   SUNDAY
 }
 
-enum PatientAppointmentType {
-  EMERGENCY
-  NORMAL_CHECKUP
-}
-
 enum PetCategory {
   DOG
   CAT
@@ -123,7 +118,6 @@ model DoctorSchedule {
   day         WeekDays
   startTime   DateTime
   endTime     DateTime
-  isEmergency Boolean  @default(false)
   doctor      Doctor   @relation(fields: [doctorId], references: [id])
 }
 
@@ -143,7 +137,6 @@ model PetIssueReport {
   petOwnerId      String
   petId           String
   issue           String
-  appointmentType PatientAppointmentType
   pet             Pet                    @relation(fields: [petId], references: [id])
   user            User                   @relation(fields: [petOwnerId], references: [id])
   appointments    Appointment[]
