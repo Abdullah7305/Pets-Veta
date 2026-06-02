@@ -9,9 +9,9 @@ export const doctorDashboardRoutes = [
   {
     path: "/",
     element: (
-      <DoctorProtectedRoute>
+      // <DoctorProtectedRoute>
         <DoctorLayout />
-      </DoctorProtectedRoute>
+      // </DoctorProtectedRoute>
     ),
     children: [
       {
