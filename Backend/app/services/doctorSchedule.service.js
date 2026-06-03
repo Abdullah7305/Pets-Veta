@@ -34,12 +34,16 @@ const createDoctorScheduleService = async (req) => {
         throw new Error("Start time must be before end time");
     }
 
+    const startTimeDate = new Date(startTime);
+    const endTimeDate = new Date(endTime);
+
     const schedule = await prisma.doctorSchedule.create({
         data: {
             doctorId: doctor.id,
+            date: startTimeDate,
             day,
-            startTime: new Date(startTime),
-            endTime: new Date(endTime),
+            startTime: startTimeDate,
+            endTime: endTimeDate,
         },
     });
 
@@ -84,13 +88,20 @@ const updateDoctorScheduleService = async (req) => {
         }
     }
 
+    const updatedData = {
+        day: day || undefined,
+        startTime: startTime ? new Date(startTime) : undefined,
+        endTime: endTime ? new Date(endTime) : undefined,
+    };
+
+    // If startTime is updated, also update the date field
+    if (startTime) {
+        updatedData.date = new Date(startTime);
+    }
+
     const updatedSchedule = await prisma.doctorSchedule.update({
         where: { id },
-        data: {
-            day: day || undefined,
-            startTime: startTime ? new Date(startTime) : undefined,
-            endTime: endTime ? new Date(endTime) : undefined,
-        },
+        data: updatedData,
     });
 
     return updatedSchedule;
