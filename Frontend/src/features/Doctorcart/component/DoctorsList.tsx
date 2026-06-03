@@ -4,7 +4,7 @@ import DoctorCard from "./DoctorCard";
 interface DoctorsListProps {
     doctors: Doctor[];
     loading: boolean;
-    onBookAppointment: (doctorId: string) => void;
+    onBookAppointment: (doctorId: string, checkupTime?: string) => void;
 }
 
 const DoctorsList = ({

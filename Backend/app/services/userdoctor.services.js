@@ -1,18 +1,60 @@
-const { PrismaClient, VerificationStatus, doctorSkills } = require("@prisma/client");
+const { PrismaClient, VerificationStatus } = require("@prisma/client");
 const prisma = new PrismaClient();
+
+const SLOT_DURATION_IN_MINUTES = 60;
 
 const getCurrentDayName = () => {
   return new Date().toLocaleDateString("en-US", {
     weekday: "long",
+  }).toUpperCase();
+};
+
+const formatTime = (date) => {
+  return new Date(date).toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
   });
 };
 
-const getCurrentTime = () => {
-  return new Date().toTimeString().slice(0, 5); // HH:mm
+const isDateBetween = (currentDate, startTime, endTime) => {
+  return currentDate >= new Date(startTime) && currentDate < new Date(endTime);
 };
 
-const isTimeBetween = (currentTime, startTime, endTime) => {
-  return currentTime >= startTime && currentTime <= endTime;
+const buildBookedAppointmentSet = (appointments = []) => {
+  return new Set(
+    appointments.map((appointment) =>
+      new Date(appointment.checkupTime).getTime()
+    )
+  );
+};
+
+const buildHourlySlots = (schedule, bookedAppointments) => {
+  const slots = [];
+  const slotDuration = SLOT_DURATION_IN_MINUTES * 60 * 1000;
+  let slotStart = new Date(schedule.startTime);
+  const scheduleEnd = new Date(schedule.endTime);
+
+  while (slotStart.getTime() + slotDuration <= scheduleEnd.getTime()) {
+    const slotEnd = new Date(slotStart.getTime() + slotDuration);
+    const isBooked = bookedAppointments.has(slotStart.getTime());
+
+    if (!isBooked) {
+      slots.push({
+        scheduleId: schedule.id,
+        date: schedule.date,
+        day: schedule.day,
+        startTime: formatTime(slotStart),
+        endTime: formatTime(slotEnd),
+        startDateTime: slotStart.toISOString(),
+        endDateTime: slotEnd.toISOString(),
+      });
+    }
+
+    slotStart = slotEnd;
+  }
+
+  return slots;
 };
 
 const buildSearchCondition = (search) => {
@@ -25,49 +67,55 @@ const buildSearchCondition = (search) => {
   ];
 };
 
-const getScheduleInfo = (schedules, today, currentTime) => {
-  const availableSchedules = schedules.filter((slot) => slot.isEmergency);
+const getScheduleInfo = (schedules, appointments, today, currentDate) => {
+  const bookedAppointments = buildBookedAppointmentSet(appointments);
+  const availableSlots = schedules.flatMap((schedule) =>
+    buildHourlySlots(schedule, bookedAppointments)
+  );
+  const bookableSlots = availableSlots.filter(
+    (slot) => new Date(slot.startDateTime) >= currentDate
+  );
 
-  const todaySlots = availableSchedules.filter(
+  const todaySlots = bookableSlots.filter(
     (slot) => slot.day === today
   );
 
-  const isActive = todaySlots.some((slot) =>
-    isTimeBetween(currentTime, slot.startTime, slot.endTime)
+  const isActive = schedules.some((slot) =>
+    isDateBetween(currentDate, slot.startTime, slot.endTime)
   );
 
   const availableDays = [
-    ...new Set(availableSchedules.map((slot) => slot.day)),
+    ...new Set(bookableSlots.map((slot) => slot.day)),
   ];
 
-  const nextAvailableSlot = availableSchedules.find(
-    (slot) => slot.day !== today || slot.startTime > currentTime
-  );
+  const nextAvailableSlot = bookableSlots[0];
 
   return {
     status: isActive ? "active" : "inactive",
     availableDays,
-    todaySlots: todaySlots.map((slot) => ({
-      day: slot.day,
-      startTime: slot.startTime,
-      endTime: slot.endTime,
-    })),
+    availableSlots: bookableSlots,
+    todaySlots,
     nextAvailable: nextAvailableSlot
       ? {
+        scheduleId: nextAvailableSlot.scheduleId,
+        date: nextAvailableSlot.date,
         day: nextAvailableSlot.day,
         startTime: nextAvailableSlot.startTime,
         endTime: nextAvailableSlot.endTime,
+        startDateTime: nextAvailableSlot.startDateTime,
+        endDateTime: nextAvailableSlot.endDateTime,
       }
       : null,
   };
 };
 
-const formatDoctors = (doctors, today, currentTime) => {
+const formatDoctors = (doctors, today, currentDate) => {
   return doctors.map((doctor) => {
     const scheduleInfo = getScheduleInfo(
       doctor.doctorSchedules,
+      doctor.appointments,
       today,
-      currentTime
+      currentDate
     );
 
     return {
@@ -87,7 +135,7 @@ const formatDoctors = (doctors, today, currentTime) => {
 const getApprovedDoctorsForUsers = async ({ page = 1, limit = 5, search = "" }) => {
   const skip = (page - 1) * limit;
   const today = getCurrentDayName();
-  const currentTime = getCurrentTime();
+  const currentDate = new Date();
 
   const whereCondition = {
     isVerified: VerificationStatus.APPROVED,
@@ -115,17 +163,26 @@ const getApprovedDoctorsForUsers = async ({ page = 1, limit = 5, search = "" }) 
         },
         doctorSchedules: {
           select: {
+            id: true,
+            date: true,
             day: true,
             startTime: true,
             endTime: true,
-            isEmergency: true,
+          },
+          orderBy: {
+            startTime: "asc",
+          },
+        },
+        appointments: {
+          select: {
+            checkupTime: true,
           },
         },
       },
     }),
   ]);
 
-  const formattedDoctors = formatDoctors(doctors, today, currentTime);
+  const formattedDoctors = formatDoctors(doctors, today, currentDate);
 
   return {
     data: formattedDoctors,
@@ -139,15 +196,21 @@ const getApprovedDoctorsForUsers = async ({ page = 1, limit = 5, search = "" }) 
 };
 
 const getSpecificDoctor = async (doctorId) => {
+  const today = getCurrentDayName();
+  const currentDate = new Date();
+
   const doctor = await prisma.doctor.findUnique({
     where: {
       id: doctorId
     },
     select: {
+      id: true,
       education: true,
       fees: true,
       specialization: true,
       experience: true,
+      isAvailable: true,
+      isVerified: true,
       user: {
         select: {
           profileImageUrl: true,
@@ -163,22 +226,53 @@ const getSpecificDoctor = async (doctorId) => {
       doctorSchedules: {
         select: {
           id: true,
-          day: true,       
+          date: true,
+          day: true,
           startTime: true,
           endTime: true,
-          isEmergency: true
         },
         orderBy: {
           date: 'asc'
         }
+      },
+      appointments: {
+        select: {
+          checkupTime: true,
+        },
       }
     }
   });
 
-  return doctor;
+  if (!doctor) {
+    return null;
+  }
+
+  const scheduleInfo = getScheduleInfo(
+    doctor.doctorSchedules,
+    doctor.appointments,
+    today,
+    currentDate
+  );
+
+  return {
+    ...doctor,
+    ...scheduleInfo,
+  };
 };
+
+const getBookableSlotsByDoctorId = async (doctorId) => {
+  const doctor = await getSpecificDoctor(doctorId);
+
+  if (!doctor) {
+    return null;
+  }
+
+  return doctor.availableSlots;
+};
+
 
 module.exports = {
   getApprovedDoctorsForUsers,
-  getSpecificDoctor
+  getSpecificDoctor,
+  getBookableSlotsByDoctorId,
 };

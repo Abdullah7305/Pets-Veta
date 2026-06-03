@@ -24,14 +24,22 @@ export type Doctor = {
   status: "active" | "inactive";
   availableDays: string[];
   todaySlots: {
+    scheduleId: string;
+    date: string;
     day: string;
     startTime: string;
     endTime: string;
+    startDateTime: string;
+    endDateTime: string;
   }[];
   nextAvailable: {
+    scheduleId: string;
+    date: string;
     day: string;
     startTime: string;
     endTime: string;
+    startDateTime: string;
+    endDateTime: string;
   } | null;
 };
 

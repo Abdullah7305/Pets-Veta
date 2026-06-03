@@ -23,6 +23,10 @@ Router
     .delete(authMiddlware.protect, authenticateRole.authenticateUserRole('Doctor'), doctorController.deleteDoctorService);
 
 Router
+    .route('/appointments')
+    .get(authMiddlware.protect, authenticateRole.authenticateUserRole('Doctor'), doctorController.fetchDoctorAppointments);
+
+Router
     .route("/schedule")
     .post(
         authMiddlware.protect,

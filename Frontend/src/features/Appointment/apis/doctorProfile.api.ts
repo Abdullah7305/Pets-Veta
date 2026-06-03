@@ -1,8 +1,30 @@
 import { api } from "@/features/api interface/axios.interface";
 import { handleAxiosError } from "@/features/api interface/axios.interface";
 
+export type BookableSlot = {
+    scheduleId: string;
+    date: string;
+    day: string;
+    startTime: string;
+    endTime: string;
+    startDateTime: string;
+    endDateTime: string;
+}
+
 export type Data = {
-    email: string
+    id: string;
+    name: string;
+    image: string;
+    specialization: string;
+    specialty?: string;
+    education: string;
+    experience: number;
+    fees: number;
+    status: string;
+    availableDays: string[];
+    availableSlots: BookableSlot[];
+    todaySlots: BookableSlot[];
+    nextAvailable: BookableSlot | null;
 }
 
 export type ApiResponse = {

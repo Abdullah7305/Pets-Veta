@@ -4,7 +4,6 @@ const requireFields = require('../utils/validateRequest');
 const petOwnerServices = require('../services/petOwner.services');
 const sendResponse = require('../utils/SendResponse');
 const authServices = require('../services/auth.services');
-const { PatientAppointmentType } = require('@prisma/client')
 
 const registerPet = catchAsync(async (req, res) => {
     requireFields(["petOwnerId", "name", "age", "breed", "category"], req.body);
@@ -25,16 +24,15 @@ const registerPet = catchAsync(async (req, res) => {
 });
 
 const registerPetIssue = catchAsync(async (req, res) => {
-    requireFields(["petOwnerId", "petId", "issue", "appointmentType"], req.body);
-    const { petOwnerId, petId, issue, appointmentType } = req.body;
-
-    let appointment = String(appointmentType || '').toLowerCase() === 'emergency' ? PatientAppointmentType.EMERGENCY : PatientAppointmentType.NORMAL_CHECKUP;
+    requireFields(["petOwnerId", "petId", "issue", "doctorId", "checkupTime"], req.body);
+    const { petOwnerId, petId, issue, doctorId, checkupTime } = req.body;
 
     const petIssue = {
         petOwnerId: petOwnerId,
         petId: petId,
         issue: issue,
-        appointmentType: appointment
+        doctorId: doctorId,
+        checkupTime: checkupTime
     }
 
     const savePetIssue = await petOwnerServices.registerPetIssue(petIssue);

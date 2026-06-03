@@ -31,14 +31,19 @@ type ApiResponse<T> = {
   data: T;
 };
 
-const handleAxiosError = (error: unknown) => {
+export const handleAxiosError = (error: unknown) => {
   if (axios.isAxiosError(error)) {
-    throw new Error(
-      error.response?.data?.message || error.message || "Request failed",
-    );
+    if (error.response) {
+      console.log("Status Code", error.response?.status);
+      console.log("Response Data", error.response?.data);
+    } else if (error.request) {
+      console.log("No Request Response Received from server", error.request);
+    } else {
+      console.error("Axios setup error:", error.message);
+    }
+  } else {
+    console.error("Non-Axios Error:", error);
   }
-
-  throw error;
 };
 
 export const getDoctorAvailability = async () => {

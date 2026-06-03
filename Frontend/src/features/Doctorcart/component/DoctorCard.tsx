@@ -1,11 +1,11 @@
 import { CalendarDays, GraduationCap, ShieldCheck } from "lucide-react";
 import Button from "../../../shared/components/Button/Button";
 import { type Doctor } from "../apis/getDoctors.api";
-import { Navigate, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 interface DoctorCardProps {
     doctor: Doctor;
-    onBookAppointment: (doctorId: string) => void;
+    onBookAppointment: (doctorId: string, checkupTime?: string) => void;
 }
 
 const DoctorCard = ({ doctor, onBookAppointment }: DoctorCardProps) => {
@@ -62,14 +62,20 @@ const DoctorCard = ({ doctor, onBookAppointment }: DoctorCardProps) => {
                     <h3 className="text-sm font-black">Available Days</h3>
 
                     <div className="mt-3 flex flex-wrap gap-2">
-                        {doctor.availableDays.map((day) => (
-                            <span
-                                key={day}
-                                className="rounded-full bg-green-50 px-3 py-1.5 text-xs font-black text-green-700"
-                            >
-                                {day}
+                        {doctor.availableDays.length > 0 ? (
+                            doctor.availableDays.map((day) => (
+                                <span
+                                    key={day}
+                                    className="rounded-full bg-green-50 px-3 py-1.5 text-xs font-black text-green-700"
+                                >
+                                    {day}
+                                </span>
+                            ))
+                        ) : (
+                            <span className="rounded-full bg-red-50 px-3 py-1.5 text-xs font-black text-red-600">
+                                No available days
                             </span>
-                        ))}
+                        )}
                     </div>
 
                     <h3 className="mt-5 text-sm font-black">Next Available</h3>
@@ -88,7 +94,9 @@ const DoctorCard = ({ doctor, onBookAppointment }: DoctorCardProps) => {
                         <div className="mt-3 flex flex-wrap gap-2">
                             {doctor.todaySlots.map((slot, index) => (
                                 <button
-                                    key={index}
+                                    key={`${slot.scheduleId}-${slot.startDateTime}-${index}`}
+                                    type="button"
+                                    onClick={() => onBookAppointment(doctor.id, slot.startDateTime)}
                                     className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-bold transition hover:border-[#078b91] hover:bg-[#D4E2E0]/40"
                                 >
                                     {slot.startTime} - {slot.endTime}
@@ -102,13 +110,12 @@ const DoctorCard = ({ doctor, onBookAppointment }: DoctorCardProps) => {
                     )}
                 </div>
 
-                <div className="flex flex-col justify-center gap-3">
-                    <Button type="button" onClick={() => onBookAppointment(doctor.id)}>
+                <div className="flex flex-col justify-center gap-3 w-full">
+                    <NavLink
+                        to={`/doctor-profile/${doctor.id}`}
+                        className="flex h-11 w-full items-center justify-center rounded-xl bg-[#078b91] text-sm font-black text-white transition hover:bg-[#101b3d]"
+                    >
                         Book Appointment
-                    </Button>
-
-                    <NavLink to={`/doctor-profile/${doctor.id}`} className="text-sm font-black text-[#078b91] hover:text-[#20263D]">
-                        View Profile →
                     </NavLink>
                 </div>
             </div>

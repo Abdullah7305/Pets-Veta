@@ -5,7 +5,7 @@ export const api = axios.create({
     withCredentials: true
 })
 
-export const handleAxiosError = (error: any) => {
+export const handleAxiosError = (error: unknown) => {
     if (axios.isAxiosError(error)) {
         if (error.response) {
             console.log("Status Code", error.response?.status);

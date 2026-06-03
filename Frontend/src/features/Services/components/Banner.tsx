@@ -1,5 +1,6 @@
 import Button from "../../../shared/components/Button/Button";
 import bannerImg from "../../../assets/shared/images/petServiceBanner.jpg";
+import { Link } from "react-router-dom";
 
 const Banner = () => {
   return (
@@ -107,12 +108,12 @@ const Banner = () => {
               </select>
             </div>
 
-            <Button
-              type="submit"
-              className="!mt-5 !w-full !rounded-xl !bg-[#0F766E] !py-3.5 !text-sm !font-bold !text-white !shadow-md !shadow-[#0F766E]/25 !transition-all hover:!-translate-y-1 hover:!bg-[#115E59]"
+            <Link
+              className="p-2 bg-[#0F766E] text-white rounded-md min-w-[30px] flex items-center justify-center"
+              to="/doctors"
             >
               Book Appointment
-            </Button>
+            </Link>
           </form>
         </div>
       </div>

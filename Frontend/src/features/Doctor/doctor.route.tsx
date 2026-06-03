@@ -4,6 +4,7 @@ import { DoctorProtectedRoute } from "@/ProtectedRoutes/DoctorProtectedRoutes";
 import DoctorSkill from "./pages/SkillPricing";
 import { DoctorLayout } from "./Layout/doctor.layout";
 import DoctorAvailabilityPage from "./pages/DoctorAvailabilityPage";
+import PatientsPage from "./pages/PatientsPage";
 
 export const doctorDashboardRoutes = [
   {
@@ -30,6 +31,10 @@ export const doctorDashboardRoutes = [
         path: "doctor-availability",
         element: <DoctorAvailabilityPage />,
       },
+      {
+        path: "pateints",
+        element: <PatientsPage />
+      }
     ],
   },
 ];

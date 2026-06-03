@@ -9,6 +9,7 @@ export const petIssueReportSchema = z.object({
   appointmentType: z.enum(["NORMAL_CHECKUP"], {
     message: "Please select appointment type",
   }),
+  checkupTime: z.string().min(1, "Please select an appointment slot"),
 });
 
 export type PetIssueReportFormData = z.infer<typeof petIssueReportSchema>;

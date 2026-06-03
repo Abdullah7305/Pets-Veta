@@ -18,14 +18,62 @@ const registerPetIssue = async (petIssue) => {
     if (!petIssue) {
         return false;
     }
-    const newPetIssue = await prisma.petIssueReport.create({
-        data: {
-            petOwnerId: petIssue.petOwnerId,
-            petId: petIssue.petId,
-            issue: petIssue.issue,
-            appointmentType: petIssue.appointmentType
-        }
-    })
+
+    const checkupTime = new Date(petIssue.checkupTime);
+
+    if (Number.isNaN(checkupTime.getTime())) {
+        throw new Error("Invalid appointment time");
+    }
+
+    const doctor = await prisma.doctor.findUnique({
+        where: {
+            id: petIssue.doctorId,
+        },
+        select: {
+            id: true,
+            fees: true,
+        },
+    });
+
+    if (!doctor) {
+        throw new Error("Doctor not found");
+    }
+
+    const existingAppointment = await prisma.appointment.findFirst({
+        where: {
+            doctorId: petIssue.doctorId,
+            checkupTime,
+        },
+    });
+
+    if (existingAppointment) {
+        throw new Error("This appointment slot is already booked");
+    }
+
+    const newPetIssue = await prisma.$transaction(async (tx) => {
+        const createdPetIssue = await tx.petIssueReport.create({
+            data: {
+                petOwnerId: petIssue.petOwnerId,
+                petId: petIssue.petId,
+                issue: petIssue.issue,
+            }
+        });
+
+        const appointment = await tx.appointment.create({
+            data: {
+                doctorId: petIssue.doctorId,
+                petIssueReportId: createdPetIssue.id,
+                fees: doctor.fees,
+                checkupTime,
+            },
+        });
+
+        return {
+            petIssue: createdPetIssue,
+            appointment,
+        };
+    });
+
     return newPetIssue;
 }
 

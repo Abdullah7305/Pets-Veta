@@ -1,16 +1,13 @@
 import { Link, useParams } from "react-router-dom";
 import {
     FaArrowLeft,
-    FaCalendarCheck,
     FaCheckCircle,
     FaGraduationCap,
-    FaMapMarkerAlt,
-    FaStar,
     FaUserMd,
 } from "react-icons/fa";
 
-import Button from "../../../shared/components/Button/Button";
-import { getDoctorProfileData } from "../apis/doctorProfile.api";
+
+import { getDoctorProfileData, type BookableSlot } from "../apis/doctorProfile.api";
 import { useEffect, useState } from "react";
 
 type DoctorType = {
@@ -30,6 +27,10 @@ type DoctorType = {
     qualification: string;
     certification: string;
     nextSlot: string;
+    specialization: string;
+    availableSlots: BookableSlot[];
+    todaySlots: BookableSlot[];
+    nextAvailable: BookableSlot | null;
 } | null;
 
 
@@ -115,7 +116,7 @@ const DoctorProfilePage = () => {
                                     </div>
 
                                     <p className="mt-2 text-lg font-bold text-slate-500">
-                                        {doctor.specialty}
+                                        {doctor.specialization}
                                     </p>
 
                                     <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -183,17 +184,50 @@ const DoctorProfilePage = () => {
                         </div>
 
                         <h2 className="text-2xl font-extrabold text-[#07182c]">
-                            Book Appointment
+                            Select Slot to Book Appointment
                         </h2>
 
                         <p className="mt-2 text-sm leading-6 text-slate-500">
                             Select this doctor and continue to appointment form.
                         </p>
 
+                        <div className="mt-5">
+                            <h3 className="text-sm font-extrabold text-[#07182c]">
+                                Available Slots
+                            </h3>
 
-                        <Link to={`/book-appointment/${id}`}>
-                            <Button className="mt-5 w-full">Book Appointment</Button>
-                        </Link>
+                            {doctor.availableSlots?.length > 0 ? (
+                                <div className="mt-3 grid grid-cols-2 gap-2">
+                                    {doctor.availableSlots.slice(0, 8).map((slot) => (
+                                        <Link
+                                            key={`${slot.scheduleId}-${slot.startDateTime}`}
+                                            to={`/book-appointment/${id}?checkupTime=${encodeURIComponent(slot.startDateTime)}`}
+                                            className="rounded-xl border border-slate-200 px-3 py-2 text-center text-xs font-extrabold text-[#07182c] transition hover:border-[#009f9d] hover:bg-[#eefafa]"
+                                        >
+                                            <span className="block text-[11px] text-slate-500">
+                                                {slot.day}
+                                            </span>
+                                            {slot.startTime} - {slot.endTime}
+                                        </Link>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="mt-3 rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-500">
+                                    No appointment slots available.
+                                </p>
+                            )}
+                        </div>
+
+                        {/* <Link
+                            to={`/book-appointment/${id}${doctor.nextAvailable
+                                    ? `?checkupTime=${encodeURIComponent(doctor.nextAvailable.startDateTime)}`
+                                    : ""
+                                }`}
+                        >
+                            <Button className="mt-5 w-full" disabled={!doctor.nextAvailable}>
+                                Book Appointment
+                            </Button>
+                        </Link> */}
                     </aside>
                 </div>
             </div>

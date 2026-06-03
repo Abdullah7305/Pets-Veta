@@ -19,25 +19,34 @@ import {
 } from "../schemas/petIssueReport.schema";
 import { useAuth } from "@/features/Auth/hooks/authhook";
 import { getPetsData, submitPetIssue, type PetResponse } from "../apis/pet.api";
+import {
+  getDoctorProfileData,
+  type BookableSlot,
+} from "@/features/Appointment/apis/doctorProfile.api";
 
 interface PetIssueReportFormProps {
   preselectedPetId?: string;
-  doctorId: string;
-  onSubmitSuccess?: (data: any) => void;
+  doctorId?: string;
+  preselectedCheckupTime?: string;
+  onSubmitSuccess?: (data: unknown) => void;
   onCancel?: () => void;
 }
 
 const PetIssueReportForm = ({
   preselectedPetId = "",
   doctorId,
+  preselectedCheckupTime = "",
   onSubmitSuccess,
   onCancel,
 }: PetIssueReportFormProps) => {
   const { user } = useAuth();
   const [pets, setPets] = useState<PetResponse[]>([]);
   const [loadingPets, setLoadingPets] = useState(false);
+  const [loadingSlots, setLoadingSlots] = useState(false);
   const [loadPetsError, setLoadPetsError] = useState<string | null>(null);
+  const [loadSlotsError, setLoadSlotsError] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [availableSlots, setAvailableSlots] = useState<BookableSlot[]>([]);
 
   const {
     register,
@@ -52,6 +61,7 @@ const PetIssueReportForm = ({
       petId: preselectedPetId,
       issue: "",
       appointmentType: "NORMAL_CHECKUP",
+      checkupTime: preselectedCheckupTime,
     },
   });
 
@@ -63,10 +73,29 @@ const PetIssueReportForm = ({
       if (data) {
         setPets(data);
       }
-    } catch (err: any) {
+    } catch {
       setLoadPetsError("Failed to load your pets. Please retry.");
     } finally {
       setLoadingPets(false);
+    }
+  };
+
+  const fetchDoctorSlots = async () => {
+    if (!doctorId) {
+      setLoadSlotsError("Doctor is required to load appointment slots.");
+      return;
+    }
+
+    setLoadingSlots(true);
+    setLoadSlotsError(null);
+
+    try {
+      const data = await getDoctorProfileData(doctorId);
+      setAvailableSlots(data?.availableSlots || []);
+    } catch {
+      setLoadSlotsError("Failed to load appointment slots. Please retry.");
+    } finally {
+      setLoadingSlots(false);
     }
   };
 
@@ -75,13 +104,24 @@ const PetIssueReportForm = ({
   }, []);
 
   useEffect(() => {
+    fetchDoctorSlots();
+  }, [doctorId]);
+
+  useEffect(() => {
     if (preselectedPetId) {
       setValue("petId", preselectedPetId);
     }
   }, [preselectedPetId, setValue]);
 
+  useEffect(() => {
+    if (preselectedCheckupTime) {
+      setValue("checkupTime", preselectedCheckupTime);
+    }
+  }, [preselectedCheckupTime, setValue]);
+
   const issue = watch("issue") || "";
   const appointmentType = watch("appointmentType");
+  const selectedCheckupTime = watch("checkupTime");
 
   const onSubmit = async (data: PetIssueReportFormData) => {
     setSubmitError(null);
@@ -92,10 +132,16 @@ const PetIssueReportForm = ({
       return;
     }
 
+    if (!doctorId) {
+      setSubmitError("Please select a doctor before booking an appointment.");
+      return;
+    }
+
     try {
       const result = await submitPetIssue({
         ...data,
         petOwnerId,
+        doctorId,
       });
 
       if (result) {
@@ -106,8 +152,12 @@ const PetIssueReportForm = ({
       } else {
         setSubmitError("Failed to submit issue report.");
       }
-    } catch (err: any) {
-      setSubmitError(err?.response?.data?.message || "An error occurred while submitting the issue report.");
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : "An error occurred while submitting the issue report.",
+      );
     }
   };
 
@@ -139,6 +189,12 @@ const PetIssueReportForm = ({
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 px-5 py-6">
+          {submitError && (
+            <div className="rounded-xl border border-red-100 bg-red-50 p-3 text-sm font-semibold text-red-600">
+              {submitError}
+            </div>
+          )}
+
           <div>
             <label className="mb-2 block text-sm font-black">
               Select Pet <span className="text-red-500">*</span>
@@ -178,6 +234,63 @@ const PetIssueReportForm = ({
             {errors.petId && (
               <p className="mt-1 text-xs font-semibold text-red-500">
                 {errors.petId.message}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-black">
+              Appointment Slot <span className="text-red-500">*</span>
+            </label>
+
+            {loadSlotsError && (
+              <div className="mb-2 flex items-center justify-between rounded-xl border border-red-100 bg-red-50 p-2 text-xs font-semibold text-red-600">
+                <span>{loadSlotsError}</span>
+                <button
+                  type="button"
+                  onClick={fetchDoctorSlots}
+                  className="rounded-lg bg-red-100 px-2 py-1 text-xs font-bold text-red-700 transition hover:bg-red-200"
+                >
+                  Retry
+                </button>
+              </div>
+            )}
+
+            {loadingSlots ? (
+              <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm font-semibold text-slate-500">
+                Loading available slots...
+              </div>
+            ) : availableSlots.length > 0 ? (
+              <div className="grid grid-cols-2 gap-2">
+                {availableSlots.slice(0, 10).map((slot) => (
+                  <button
+                    key={`${slot.scheduleId}-${slot.startDateTime}`}
+                    type="button"
+                    onClick={() => setValue("checkupTime", slot.startDateTime)}
+                    className={`rounded-xl border p-3 text-left text-xs font-black transition ${
+                      selectedCheckupTime === slot.startDateTime
+                        ? "border-[#0B8F5A] bg-emerald-50 text-[#0B8F5A]"
+                        : "border-slate-200 bg-white text-slate-600 hover:border-[#0B8F5A]"
+                    }`}
+                  >
+                    <span className="block text-[11px] uppercase text-slate-400">
+                      {slot.day}
+                    </span>
+                    {slot.startTime} - {slot.endTime}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <p className="rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-500">
+                No appointment slots available for this doctor.
+              </p>
+            )}
+
+            <input type="hidden" {...register("checkupTime")} />
+
+            {errors.checkupTime && (
+              <p className="mt-1 text-xs font-semibold text-red-500">
+                {errors.checkupTime.message}
               </p>
             )}
           </div>

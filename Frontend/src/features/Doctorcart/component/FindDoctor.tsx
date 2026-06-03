@@ -46,8 +46,8 @@ const FindDoctor = () => {
     fetchDoctors();
   }, [page, search]);
 
-  const handleBookAppointment = (doctorId: string) => {
-    console.log("Book appointment doctor id:", doctorId);
+  const handleBookAppointment = (doctorId: string, checkupTime?: string) => {
+    console.log("Book appointment doctor id:", doctorId, "checkup time:", checkupTime);
   };
 
   return (

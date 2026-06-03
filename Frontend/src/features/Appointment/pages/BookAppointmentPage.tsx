@@ -1,24 +1,31 @@
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { CheckCircle2, ArrowLeft } from "lucide-react";
 import PetForm from "../../Pet Owner/pet details/components/PetForm";
 import PetIssueReportForm from "../../Pet Owner/pet details/components/PetIssueReportForm";
 import Button from "../../../shared/components/Button/Button";
 
+type CreatedPet = {
+  id: string;
+  name: string;
+};
+
 const BookAppointmentPage = () => {
   const { id: doctorId } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const selectedCheckupTime = searchParams.get("checkupTime") || "";
 
   const [step, setStep] = useState<1 | 2 | 3>(1);
-  const [createdPet, setCreatedPet] = useState<{ id: string; name: string } | null>(null);
+  const [createdPet, setCreatedPet] = useState<CreatedPet | null>(null);
 
-  const handlePetSubmitSuccess = (newPet: any) => {
+  const handlePetSubmitSuccess = (newPet: CreatedPet) => {
     console.log("Successfully added pet for appointment:", newPet);
     setCreatedPet(newPet);
     setStep(2);
   };
 
-  const handleIssueSubmitSuccess = (issueReport: any) => {
+  const handleIssueSubmitSuccess = (issueReport: unknown) => {
     console.log("Successfully submitted issue report:", issueReport);
     setStep(3);
   };
@@ -115,6 +122,7 @@ const BookAppointmentPage = () => {
           <PetIssueReportForm
             preselectedPetId={createdPet?.id}
             doctorId={doctorId || ""}
+            preselectedCheckupTime={selectedCheckupTime}
             onSubmitSuccess={handleIssueSubmitSuccess}
             onCancel={handleCancel}
           />

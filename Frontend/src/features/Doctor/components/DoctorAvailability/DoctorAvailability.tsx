@@ -54,6 +54,7 @@ const DoctorAvailability = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [modalErrorMessage, setModalErrorMessage] = useState("");
 
   const [slotForm, setSlotForm] = useState<SlotForm>({
     date: "",
@@ -149,7 +150,8 @@ const DoctorAvailability = () => {
   const formatDate = (date: string) => {
     if (!date) return "";
 
-    return new Date(`${date}T00:00:00`).toLocaleDateString("en-US", {
+    const [year, month, day] = date.split("-");
+    return new Date(Number(year), Number(month) - 1, Number(day)).toLocaleDateString("en-US", {
       day: "2-digit",
       month: "short",
       year: "numeric",
@@ -163,21 +165,24 @@ const DoctorAvailability = () => {
       startTime: "",
       endTime: "",
     });
+    setModalErrorMessage("");
   };
 
   const handleAddSlot = async () => {
+    setModalErrorMessage("");
+
     if (
       !slotForm.date ||
       !slotForm.day ||
       !slotForm.startTime ||
       !slotForm.endTime
     ) {
-      alert("Please select date, day, start time and end time.");
+      setModalErrorMessage("Please select date, day, start time and end time.");
       return;
     }
 
     if (slotForm.startTime >= slotForm.endTime) {
-      alert("End time must be greater than start time.");
+      setModalErrorMessage("End time must be greater than start time.");
       return;
     }
 
@@ -198,7 +203,7 @@ const DoctorAvailability = () => {
       resetSlotForm();
       setIsModalOpen(false);
     } catch (error) {
-      setErrorMessage(
+      setModalErrorMessage(
         error instanceof Error
           ? error.message
           : "Unable to add availability slot.",
@@ -213,9 +218,9 @@ const DoctorAvailability = () => {
       prev.map((slot) =>
         slot.id === slotId
           ? {
-              ...slot,
-              isAvailable: !slot.isAvailable,
-            }
+            ...slot,
+            isAvailable: !slot.isAvailable,
+          }
           : slot,
       ),
     );
@@ -262,7 +267,10 @@ const DoctorAvailability = () => {
             <Button
               type="button"
               className="flex h-12 w-auto items-center justify-center gap-2 px-5"
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => {
+                setModalErrorMessage("");
+                setIsModalOpen(true);
+              }}
             >
               <Plus size={18} />
               Add Time Slot
@@ -381,23 +389,20 @@ const DoctorAvailability = () => {
                           <button
                             type="button"
                             onClick={() => toggleAvailability(slot.id)}
-                            className={`relative h-7 w-12 rounded-full transition ${
-                              slot.isAvailable ? "bg-[#078b91]" : "bg-slate-300"
-                            }`}
+                            className={`relative h-7 w-12 rounded-full transition ${slot.isAvailable ? "bg-[#078b91]" : "bg-slate-300"
+                              }`}
                           >
                             <span
-                              className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition ${
-                                slot.isAvailable ? "left-6" : "left-1"
-                              }`}
+                              className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition ${slot.isAvailable ? "left-6" : "left-1"
+                                }`}
                             />
                           </button>
 
                           <span
-                            className={`w-fit rounded-full px-3 py-1.5 text-[11px] font-black ${
-                              slot.isAvailable
-                                ? "bg-green-50 text-green-700"
-                                : "bg-red-50 text-red-600"
-                            }`}
+                            className={`w-fit rounded-full px-3 py-1.5 text-[11px] font-black ${slot.isAvailable
+                              ? "bg-green-50 text-green-700"
+                              : "bg-red-50 text-red-600"
+                              }`}
                           >
                             {slot.isAvailable ? "Available" : "Inactive"}
                           </span>
@@ -528,6 +533,12 @@ const DoctorAvailability = () => {
             </div>
 
             <div className="space-y-4">
+              {modalErrorMessage && (
+                <div className="rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">
+                  {modalErrorMessage}
+                </div>
+              )}
+
               <div>
                 <label className="mb-2 block text-sm font-black text-[#20263D]">
                   Date
@@ -536,12 +547,13 @@ const DoctorAvailability = () => {
                 <input
                   type="date"
                   value={slotForm.date}
-                  onChange={(e) =>
+                  onChange={(e) => {
+                    setModalErrorMessage("");
                     setSlotForm((prev) => ({
                       ...prev,
                       date: e.target.value,
-                    }))
-                  }
+                    }));
+                  }}
                   className="h-12 w-full rounded-xl border border-slate-200 px-4 text-sm font-semibold outline-none transition focus:border-[#078b91] focus:ring-4 focus:ring-[#D4E2E0]/60"
                 />
               </div>
@@ -553,12 +565,13 @@ const DoctorAvailability = () => {
 
                 <select
                   value={slotForm.day}
-                  onChange={(e) =>
+                  onChange={(e) => {
+                    setModalErrorMessage("");
                     setSlotForm((prev) => ({
                       ...prev,
                       day: e.target.value as WeekDay,
-                    }))
-                  }
+                    }));
+                  }}
                   className="h-12 w-full rounded-xl border border-slate-200 px-4 text-sm font-semibold outline-none transition focus:border-[#078b91] focus:ring-4 focus:ring-[#D4E2E0]/60"
                 >
                   {weekDays.map((item) => (
@@ -578,12 +591,13 @@ const DoctorAvailability = () => {
                   <input
                     type="time"
                     value={slotForm.startTime}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      setModalErrorMessage("");
                       setSlotForm((prev) => ({
                         ...prev,
                         startTime: e.target.value,
-                      }))
-                    }
+                      }));
+                    }}
                     className="h-12 w-full rounded-xl border border-slate-200 px-4 text-sm font-semibold outline-none transition focus:border-[#078b91] focus:ring-4 focus:ring-[#D4E2E0]/60"
                   />
                 </div>
@@ -596,12 +610,13 @@ const DoctorAvailability = () => {
                   <input
                     type="time"
                     value={slotForm.endTime}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      setModalErrorMessage("");
                       setSlotForm((prev) => ({
                         ...prev,
                         endTime: e.target.value,
-                      }))
-                    }
+                      }));
+                    }}
                     className="h-12 w-full rounded-xl border border-slate-200 px-4 text-sm font-semibold outline-none transition focus:border-[#078b91] focus:ring-4 focus:ring-[#D4E2E0]/60"
                   />
                 </div>

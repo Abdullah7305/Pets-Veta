@@ -46,6 +46,10 @@ const getDoctorById = catchAsync(async (req, res) => {
     fees: doctor.fees,
     status: doctor.isAvailable ? "active" : "inactive",
     isVerified: doctor.isVerified,
+    availableDays: doctor.availableDays,
+    availableSlots: doctor.availableSlots,
+    todaySlots: doctor.todaySlots,
+    nextAvailable: doctor.nextAvailable,
   };
 
   return sendResponse(res, 200, "Doctor fetched successfully", transformedDoctor);

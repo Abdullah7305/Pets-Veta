@@ -65,9 +65,64 @@ const updateDoctorServices = async (serviceId, skill, price) => {
 
     return updatedService;
 }
+
+const getDoctorAppointments = async (userId) => {
+    const doctor = await prisma.doctor.findUnique({
+        where: {
+            userId,
+        },
+        select: {
+            id: true,
+        },
+    });
+
+    if (!doctor) {
+        throw new Error("Doctor not found");
+    }
+
+    return prisma.appointment.findMany({
+        where: {
+            doctorId: doctor.id,
+        },
+        orderBy: {
+            checkupTime: "asc",
+        },
+        select: {
+            id: true,
+            fees: true,
+            checkupTime: true,
+            status: true,
+            petIssueReport: {
+                select: {
+                    id: true,
+                    issue: true,
+                    user: {
+                        select: {
+                            fullName: true,
+                            email: true,
+                            phone: true,
+                            profileImageUrl: true,
+                        },
+                    },
+                    pet: {
+                        select: {
+                            id: true,
+                            name: true,
+                            age: true,
+                            breed: true,
+                            category: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+}
+
 module.exports = {
     addDoctorService,
     deleteDoctorService,
     getDoctorServices,
-    updateDoctorServices
+    updateDoctorServices,
+    getDoctorAppointments
 }
