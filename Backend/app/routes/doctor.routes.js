@@ -18,11 +18,9 @@ Router
     .route('/edit/service')
     .patch(authMiddlware.protect, authenticateRole.authenticateUserRole('Doctor'), doctorController.updateDoctorService);
 
-
 Router
     .route('/delete/service')
     .delete(authMiddlware.protect, authenticateRole.authenticateUserRole('Doctor'), doctorController.deleteDoctorService);
-
 
 Router
     .route("/schedule")
@@ -41,6 +39,10 @@ Router
     );
 
 Router
+    .route("/schedule/doctor/:doctorId")
+    .get(doctorScheduleController.getDoctorSchedulesByDoctorId);
+
+Router
     .route("/schedule/:id")
     .put(
         authMiddlware.protect,
@@ -52,9 +54,5 @@ Router
         authenticateRole.authenticateUserRole('Doctor'),
         doctorScheduleController.deleteDoctorSchedule
     );
-
-Router
-    .route("/schedule/doctor/:doctorId")
-    .get(doctorScheduleController.getDoctorSchedulesByDoctorId);
 
 module.exports = Router;
