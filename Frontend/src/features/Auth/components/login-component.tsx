@@ -10,12 +10,12 @@ import {
   loginSchema,
   type LoginFormData,
 } from "../../Auth/schemas/login.schema";
-import { useAuth } from "../hooks/authhook";
+
 
 const PawIcon = () => (
   <svg
     viewBox="0 0 64 64"
-    className="h-9 w-9 fill-[#178f95]"
+    className="h-8 w-8 fill-[#178f95]"
     xmlns="http://www.w3.org/2000/svg"
   >
     <circle cx="18" cy="22" r="7" />
@@ -29,11 +29,11 @@ const PawIcon = () => (
 
 export default function LoginComponent() {
   const [showPassword, setShowPassword] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState<boolean>(false);
-  const [forbiddenError, setForbiddenError] = useState<string>("");
-  const [apiMesg, setApiMesg] = useState<string>("");
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [forbiddenError, setForbiddenError] = useState("");
+  const [apiMesg, setApiMesg] = useState("");
+
   const navigate = useNavigate();
-  const { user, setUser } = useAuth();
 
   const {
     register,
@@ -45,24 +45,31 @@ export default function LoginComponent() {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    console.log(data);
-    setUser(undefined);
-    const response: ApiResponse = await userLogin(data);
-    if (response.success) {
-      setUser(response);
-      setApiMesg(response.message);
+    try {
+      setForbiddenError("");
+      setApiMesg("");
 
-      reset();
-      if (response?.data.role === "Admin") {
-        navigate("/admin-dashboard");
-        return;
-      }
-      else if (response?.data.role === "Doctor") {
-        navigate("/doctor-dashboard");
-        return;
-      } else {
+      const response: ApiResponse = await userLogin(data);
+
+      if (response.success) {
+        setApiMesg(response.message);
+        reset();
+
+        if (response?.data.role === "Admin") {
+          navigate("/admin-dashboard");
+          return;
+        }
+
+        if (response?.data.role === "Doctor") {
+          navigate("/doctor-dashboard");
+          return;
+        }
+
         navigate("/");
       }
+    } catch (error) {
+      setForbiddenError("Login failed. Please check your email and password.");
+      console.log("Login Error:", error);
     }
   };
 
@@ -70,13 +77,17 @@ export default function LoginComponent() {
     try {
       setIsGoogleLoading(true);
       setForbiddenError("");
+
       const result = await getGoogleAuthUrlApi();
+
       if (result.success && result.data?.url) {
         window.location.href = result.data.url;
       }
     } catch (error) {
+      setForbiddenError("Google login failed. Please try again.");
+
       if (error instanceof Error) {
-        console.log("Google Auth Error", error.message);
+        console.log("Google Auth Error:", error.message);
       }
     } finally {
       setIsGoogleLoading(false);
@@ -85,42 +96,39 @@ export default function LoginComponent() {
 
   return (
     <div className="w-full">
-
-      <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-[24px] bg-[#dff3f2] shadow-[0_14px_32px_rgba(23,143,149,0.2)]">
+      <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-[22px] bg-[#dff3f2] shadow-[0_12px_28px_rgba(23,143,149,0.18)]">
         <PawIcon />
       </div>
 
-
-      <div className="mb-8 text-center">
-        <h1 className="text-[29px] font-extrabold leading-tight tracking-[-0.04em] text-[#101b3d] md:text-[32px]">
+      <div className="mb-6 text-center">
+        <h1 className="text-[26px] font-extrabold leading-tight tracking-[-0.04em] text-[#101b3d] md:text-[30px]">
           Welcome Back
         </h1>
 
-        <p className="mt-2 text-[14px] font-medium text-[#6d7891]">
+        <p className="mt-2 text-[13px] font-medium text-[#6d7891]">
           Login to your PetsVeta account
         </p>
       </div>
 
       {forbiddenError && (
-        <p className="mb-4 text-center text-[14px] font-bold text-red-600">
+        <p className="mb-3 rounded-xl bg-red-50 px-4 py-2 text-center text-[13px] font-bold text-red-600">
           {forbiddenError}
         </p>
       )}
 
       {apiMesg && (
-        <p className="mb-4 text-center text-[14px] font-bold text-green-600">
+        <p className="mb-3 rounded-xl bg-green-50 px-4 py-2 text-center text-[13px] font-bold text-green-600">
           {apiMesg}
         </p>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        {/* Email */}
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <label className="mb-2 block text-[14px] font-bold text-[#17233f]">
+          <label className="mb-2 block text-[13px] font-bold text-[#17233f]">
             Email Address
           </label>
 
-          <div className="flex h-[52px] items-center rounded-2xl border border-[#d8dde8] bg-white/70 px-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] transition-all duration-300 focus-within:border-[#178f95] focus-within:shadow-[0_0_0_4px_rgba(23,143,149,0.12)]">
+          <div className="flex h-[48px] items-center rounded-2xl border border-[#d8dde8] bg-white/70 px-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] transition-all duration-300 focus-within:border-[#178f95] focus-within:shadow-[0_0_0_4px_rgba(23,143,149,0.12)]">
             <svg
               className="mr-4 h-5 w-5 text-[#7b8497]"
               fill="none"
@@ -138,24 +146,24 @@ export default function LoginComponent() {
             <input
               type="email"
               placeholder="example@gmail.com"
-              className="h-full w-full bg-transparent text-[15px] font-medium text-[#17233f] outline-none placeholder:text-[#8993a6]"
+              className="h-full w-full bg-transparent text-[14px] font-medium text-[#17233f] outline-none placeholder:text-[#8993a6]"
               {...register("email")}
             />
           </div>
+
           {errors.email && (
-            <p className="mt-2 text-[13px] font-medium text-red-600">
+            <p className="mt-1.5 text-[12px] font-semibold text-red-600">
               {errors.email.message}
             </p>
           )}
         </div>
 
-        {/* Password */}
         <div>
-          <label className="mb-2 block text-[14px] font-bold text-[#17233f]">
+          <label className="mb-2 block text-[13px] font-bold text-[#17233f]">
             Password
           </label>
 
-          <div className="flex h-[52px] items-center rounded-2xl border border-[#d8dde8] bg-white/70 px-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] transition-all duration-300 focus-within:border-[#178f95] focus-within:shadow-[0_0_0_4px_rgba(23,143,149,0.12)]">
+          <div className="flex h-[48px] items-center rounded-2xl border border-[#d8dde8] bg-white/70 px-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] transition-all duration-300 focus-within:border-[#178f95] focus-within:shadow-[0_0_0_4px_rgba(23,143,149,0.12)]">
             <svg
               className="mr-4 h-5 w-5 text-[#7b8497]"
               fill="none"
@@ -178,73 +186,98 @@ export default function LoginComponent() {
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
-              className="h-full w-full bg-transparent text-[15px] font-medium text-[#17233f] outline-none placeholder:text-[#8993a6]"
+              className="h-full w-full bg-transparent text-[14px] font-medium text-[#17233f] outline-none placeholder:text-[#8993a6]"
               {...register("password")}
             />
 
             <button
               type="button"
-              onClick={() => setShowPassword(!showPassword)}
+              onClick={() => setShowPassword((prev) => !prev)}
               className="ml-3 text-[#7b8497] transition hover:text-[#178f95]"
+              aria-label={showPassword ? "Hide password" : "Show password"}
             >
-              <svg
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M2.25 12s3.75-6.75 9.75-6.75S21.75 12 21.75 12 18 18.75 12 18.75 2.25 12 2.25 12z"
-                />
-                <circle cx="12" cy="12" r="3" />
-              </svg>
+              {showPassword ? (
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3 3l18 18"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M10.58 10.58A2 2 0 0012 14a2 2 0 001.42-3.42"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9.88 4.24A9.77 9.77 0 0112 4c6 0 9.75 8 9.75 8a17.9 17.9 0 01-2.19 3.2M6.61 6.61C3.73 8.48 2.25 12 2.25 12s3.75 8 9.75 8a9.9 9.9 0 004.18-.92"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M2.25 12s3.75-6.75 9.75-6.75S21.75 12 21.75 12 18 18.75 12 18.75 2.25 12 2.25 12z"
+                  />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              )}
             </button>
           </div>
+
           {errors.password && (
-            <p className="mt-2 text-[13px] font-medium text-red-600">
+            <p className="mt-1.5 text-[12px] font-semibold text-red-600">
               {errors.password.message}
             </p>
           )}
 
-          <div className="mt-3 text-right">
+          <div className="mt-2 text-right">
             <a
               href="/forgot-password"
-              className="text-[14px] font-extrabold text-[#178f95] transition hover:text-[#0f7075]"
+              className="text-[13px] font-extrabold text-[#178f95] transition hover:text-[#0f7075]"
             >
               Forgot Password?
             </a>
           </div>
         </div>
 
-        {/* Login Button */}
         <button
           type="submit"
-          className="mt-2 flex h-[56px] w-full items-center justify-center gap-3 rounded-2xl bg-[#15265d] text-[16px] font-extrabold text-white shadow-[0_18px_35px_rgba(21,38,93,0.28)] transition-all duration-300 hover:-translate-y-1 hover:bg-[#101f4d] active:translate-y-0"
+          className="mt-1 flex h-[50px] w-full items-center justify-center gap-3 rounded-2xl bg-[#15265d] text-[15px] font-extrabold text-white shadow-[0_16px_30px_rgba(21,38,93,0.24)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#101f4d] active:translate-y-0"
         >
           Login
-          <span className="text-xl leading-none">→</span>
+          <span className="text-lg leading-none">→</span>
         </button>
 
-        {/* Google Login Button */}
         <button
           type="button"
           onClick={handleGoogleLogin}
           disabled={isGoogleLoading}
-          className="mt-2 flex h-[56px] w-full items-center justify-center gap-3 rounded-2xl border-2 border-[#d8dde8] bg-white text-[16px] font-extrabold text-[#17233f] shadow-[0_4px_12px_rgba(23,143,149,0.1)] transition-all duration-300 hover:border-[#178f95] hover:bg-[#f8fbfb] active:translate-y-0 disabled:opacity-50"
+          className="flex h-[50px] w-full items-center justify-center gap-3 rounded-2xl border border-[#d8dde8] bg-white text-[14px] font-extrabold text-[#17233f] shadow-[0_4px_12px_rgba(23,143,149,0.08)] transition-all duration-300 hover:border-[#178f95] hover:bg-[#f8fbfb] disabled:cursor-not-allowed disabled:opacity-60"
         >
           <img
             src="https://www.svgrepo.com/show/355037/google.svg"
             className="h-5 w-5"
-            alt="google logo"
+            alt="Google"
           />
           {isGoogleLoading ? "Connecting..." : "Continue with Google"}
         </button>
 
-        {/* Signup */}
-        <p className="pt-2 text-center text-[14px] font-medium text-[#7b8497]">
+        <p className="pt-1 text-center text-[13px] font-medium text-[#7b8497]">
           Don&apos;t have an account?{" "}
           <a
             href="/doctor-signup"
