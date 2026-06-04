@@ -10,11 +10,9 @@ type Data = {
     skill: string
 }
 
-const DoctorServicesTable = ({ onEdit, onDelete, setSkill, setPrice }: {
-    onEdit: (item: ItemType) => Promise<void>,
+const DoctorServicesTable = ({ onEdit, onDelete }: {
+    onEdit: (item: ItemType) => void | Promise<void>,
     onDelete: (itemId: string) => Promise<void>,
-    setSkill: React.SetStateAction<string>,
-    setPrice: React.SetStateAction<string>
 
 }) => {
     const [services, setServices] = useState<Data[] | undefined>(undefined)

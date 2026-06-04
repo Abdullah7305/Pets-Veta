@@ -1,26 +1,21 @@
+import { useState } from "react";
 import Sidebar from "./Sidebar";
 import AdminNavbar from "../components/AdminNavbar";
 import { Outlet } from "react-router-dom";
 
 
 const AdminLayout = () => {
-
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="bg-gray-50 min-h-screen ">
-      {/* DESKTOP SIDEBAR */}
-
-      <Sidebar />
-
-    
-      {/* <MobileSidebar open={open} setOpen={setOpen} /> */}
-
+    <div className="min-h-screen bg-gray-50">
+      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
       <div className="lg:ml-[210px]">
-  
-
-        <AdminNavbar />
-        <Outlet />
+        <AdminNavbar onMenuClick={() => setSidebarOpen(true)} />
+        <div className="w-full">
+          <Outlet />
+        </div>
       </div>
     </div>
   );
