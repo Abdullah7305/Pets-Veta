@@ -12,7 +12,7 @@ const createDoctorSchedule = catchAsync(async (req, res) => {
 
     const schedule = await createDoctorScheduleService(req);
 
-    return sendResponse(res, 201, "Doctor schedule created successfully", data)
+    return sendResponse(res, 201, "Doctor schedule created successfully", schedule)
 
 })
 

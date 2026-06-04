@@ -24,14 +24,14 @@ const PatientCard = ({ appointment }: PatientCardProps) => {
     <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-[#078b91]/40 hover:shadow-md">
       <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
         <div className="flex gap-4">
-          <img
+          {/* <img
             src={
               patient.profileImageUrl ||
-              "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+            
             }
             alt={patient.fullName}
             className="h-16 w-16 rounded-2xl object-cover"
-          />
+          /> */}
 
           <div>
             <div className="flex flex-wrap items-center gap-2">

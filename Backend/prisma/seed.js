@@ -17,15 +17,15 @@ async function main() {
     const specializations = ["Veterinary Surgeon", "Feline Medicine Specialist", "Avian Veterinarian", "Canine Behavior Specialist", "Exotic Animal Vet"];
     const educations = ["DVM - University of Veterinary and Animal Sciences", "Ph.D. in Veterinary Medicine", "M.S. in Clinical Veterinary Science"];
 
-    // 💡 CRITICAL FIX: Clear old mock data so you don't hit duplicate email errors
-    console.log("🧹 Cleaning up old mock doctor data...");
-    await prisma.user.deleteMany({
-        where: {
-            email: {
-                endsWith: "@petsveta.com"
-            }
-        }
-    });
+    // // 💡 CRITICAL FIX: Clear old mock data so you don't hit duplicate email errors
+    // console.log("🧹 Cleaning up old mock doctor data...");
+    // await prisma.user.deleteMany({
+    //     where: {
+    //         email: {
+    //             endsWith: "@petsveta.com"
+    //         }
+    //     }
+    // });
 
     console.log("⏳ Injecting 500 mock doctors into PostgreSQL...");
 

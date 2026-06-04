@@ -54,7 +54,7 @@ const DoctorRequests = () => {
     const response = await approveDoctorRequest(doctorId);
     if (response.success) {
       setIsApproved(true);
-      await doctorStats(); 
+      await doctorStats();
     }
     setDoctorRequestProceed(false);
   };
@@ -64,7 +64,7 @@ const DoctorRequests = () => {
     const response = await rejectDoctorRequest(doctorId);
     if (response.success) {
       setIsApproved(true);
-      await doctorStats(); 
+      await doctorStats();
     }
     setDoctorRequestProceed(false);
   };
@@ -79,6 +79,7 @@ const DoctorRequests = () => {
       let response = null;
       if (status === 'all') {
         response = await AllDoctors(currentPage, limit);
+      
         if (response.success) {
           setDoctorList(response.data);
           setTotalDoctors(response.data.totalCount);
@@ -172,7 +173,7 @@ const DoctorRequests = () => {
 
           {doctorList?.doctors && doctorList.doctors.length > 0 ? (
             doctorList.doctors.map((doctor) => (
-              <DoctorRequestCard
+              < DoctorRequestCard
                 key={doctor.id}
                 doctor={doctor}
                 doctorRequestProceed={doctorRequestProceed}

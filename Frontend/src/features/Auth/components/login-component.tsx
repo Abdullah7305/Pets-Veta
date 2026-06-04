@@ -33,7 +33,7 @@ export default function LoginComponent() {
   const [forbiddenError, setForbiddenError] = useState<string>("");
   const [apiMesg, setApiMesg] = useState<string>("");
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
 
   const {
     register,
@@ -46,17 +46,18 @@ export default function LoginComponent() {
 
   const onSubmit = async (data: LoginFormData) => {
     console.log(data);
-
+    setUser(undefined);
     const response: ApiResponse = await userLogin(data);
     if (response.success) {
+      setUser(response);
       setApiMesg(response.message);
-      console.log("response is", response);
+
       reset();
-      if (user?.data.role === "Admin") {
+      if (response?.data.role === "Admin") {
         navigate("/admin-dashboard");
         return;
       }
-      if (user?.data.role === "Doctor") {
+      else if (response?.data.role === "Doctor") {
         navigate("/doctor-dashboard");
         return;
       } else {

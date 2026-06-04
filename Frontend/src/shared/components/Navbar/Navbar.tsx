@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import logo from "../../../assets/icons/Gemini_Generated_Image_34da4a34da4a34da-removebg-preview.png";
 import { NAVLINKS } from "./navbar.data";
 import { useAuth } from "@/features/Auth/hooks/authhook";
@@ -11,13 +11,13 @@ const Navbar = () => {
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-2.5 md:px-8">
 
         {/* Logo */}
-        <div className="flex items-center">
+        <Link to={'/'} className="flex items-center">
           <img
             src={logo}
             alt="LOGO"
             className="h-[52px] w-auto object-contain transition-transform duration-300 hover:scale-105"
           />
-        </div>
+        </Link>
 
         {/* Links */}
         <ul className="hidden items-center gap-7 lg:flex">
