@@ -1,4 +1,4 @@
-import Services from "./pages/Services";
+import Services from "./pages/ServicesPage";
 
 const servicesRoutes = [
   {

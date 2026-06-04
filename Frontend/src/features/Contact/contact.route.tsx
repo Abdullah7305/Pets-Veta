@@ -1,8 +1,8 @@
-import Contact from "./pages/Contact";
+import ContactPage from "./pages/ContactPage";
 
 export const contactRoutes = [
-  {
-    path: "contact",
-    element: <Contact />,
-  },
+    {
+        path: "/contact",
+        element: <ContactPage />,
+    },
 ];

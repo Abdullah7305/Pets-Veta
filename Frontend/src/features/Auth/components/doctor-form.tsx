@@ -4,7 +4,7 @@ import { useState } from "react";
 import { createDoctorAccount } from "../api/doctor.api";
 import { useNavigate } from "react-router-dom";
 
-import Input from "../../../shared/components/Inputs/Input";
+import Input from "../../../shared/components/Input/Input";
 import Button from "../../../shared/components/Button/Button";
 
 

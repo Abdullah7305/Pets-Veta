@@ -2,7 +2,7 @@ import { Calendar, List, PawPrint, Shield, User } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import Input from "../../../../shared/components/Inputs/Input";
+import Input from "../../../../shared/components/Input/Input";
 import Button from "../../../../shared/components/Button/Button";
 import {
   petSchema,

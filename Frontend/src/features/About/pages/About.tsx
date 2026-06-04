@@ -1,21 +1,19 @@
 import AboutHero from "../components/AboutHero";
-import AboutIntro from "../components/AboutIntro";
+import AboutMission from "../components/AboutMisson";
 import AboutStats from "../components/AboutStats";
-import AboutSteps from "../components/AboutSteps";
-import AboutWhyChoose from "../components/AboutWhyChoose";
+import AboutValues from "../components/AboutValues";
 import AboutCTA from "../components/AboutCTA";
 
-const About = () => {
-  return (
-    <main className="min-h-screen bg-[#FFF8F4] text-[#20263D]">
-      <AboutHero />
-      <AboutIntro />
-      <AboutStats />
-      <AboutSteps />
-      <AboutWhyChoose />
-      <AboutCTA />
-    </main>
-  );
+const AboutPage = () => {
+    return (
+        <>
+            <AboutHero />
+            <AboutMission />
+            <AboutStats />
+            <AboutValues />
+            <AboutCTA />
+        </>
+    );
 };
 
-export default About;
+export default AboutPage;

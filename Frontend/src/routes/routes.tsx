@@ -7,7 +7,8 @@ import { doctorDashboardRoutes } from "../features/Doctor/doctor.route";
 import adminRoutes from "../features/Admin/admin.route";
 import { doctorAppointmentRoutes } from "../features/Doctorcart/doctorAppointment.route";
 import { petsRoutes } from "../features/Pet Owner/pet details/pets.route";
-
+import { marketplaceRoutes } from "@/features/Marketplace/marketplace.route";
+import { aiAssistantRoutes } from "../features/AiAssistance/aiAssistant.route";
 const Router = createBrowserRouter([
   ...servicesRoutes,
   ...LandingPageRoutes,
@@ -17,6 +18,8 @@ const Router = createBrowserRouter([
   ...doctorAppointmentRoutes,
   ...petsRoutes,
   ...doctorDashboardRoutes,
+  ...marketplaceRoutes,
+  ...aiAssistantRoutes,
   {
     path: "*",
     element: <Notfound />,

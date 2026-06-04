@@ -5,6 +5,7 @@ import VerifyOtpPage from "./pages/verify-otp";
 import ResetPasswordPage from "./pages/reset-password";
 import PetOwnerSignup from "./pages/pet-owner-signup";
 import { AuthSuccess } from "./components/AuthSuccess";
+import ContinueAs from "./components/ContinueAs";
 
 
 
@@ -37,6 +38,10 @@ const AuthRouter = [
         path: "/reset-password",
         element: <ResetPasswordPage />,
     },
+    {
+        path: "/contuine-as",
+        elemment: <ContinueAs />
+    }
 ]
 
 export default AuthRouter;

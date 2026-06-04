@@ -1,10 +1,10 @@
-interface NavLink {
+interface NavData {
     id: number;
     title: string;
-    path: string
+    path: string;
 }
 
-export const NAVLINKS: NavLink[] = [
+const NAVLINK: NavData[] = [
     {
         id: 1,
         title: "Home",
@@ -12,22 +12,34 @@ export const NAVLINKS: NavLink[] = [
     },
     {
         id: 2,
+        title: "Marketplace",
+        path: "/marketplace"
+    },
+    {
+        id: 3,
         title: "Services",
         path: "/services"
     },
     {
-        id: 3,
+        id: 4,
+        title: "Doctors",
+        path: "/doctors"
+    },
+    {
+        id: 5,
+        title: "AI Assistant",
+        path: "/ai-assistant"
+    },
+    {
+        id: 6,
         title: "About",
         path: "/about"
     },
     {
-        id: 4,
-        title: "Contact Us",
+        id: 7,
+        title: "Contact",
         path: "/contact"
-    },
-    {
-        id: 5,
-        title: "Doctors",
-        path: '/doctors'
     }
 ];
+
+export default NAVLINK;
