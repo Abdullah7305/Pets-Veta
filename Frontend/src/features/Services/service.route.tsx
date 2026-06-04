@@ -2,7 +2,7 @@ import Services from "./pages/ServicesPage";
 
 const servicesRoutes = [
   {
-    path: "/services",
+    path: "services",
     element: <Services />,
   },
 ];
