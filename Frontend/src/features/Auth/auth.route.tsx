@@ -1,47 +1,25 @@
-import DoctorSignup from "./pages/doctor-signup";
 import LoginPage from "./pages/login";
-import ForgotPasswordPage from "./pages/forgot-password";
-import VerifyOtpPage from "./pages/verify-otp";
-import ResetPasswordPage from "./pages/reset-password";
-import PetOwnerSignup from "./pages/pet-owner-signup";
-import { AuthSuccess } from "./components/AuthSuccess";
-import ContinueAs from "./components/ContinueAs";
-
-
+import ContinueAs from "./pages/ContinueAs";
+import PetOwnerSignupPage from "./pages/pet-owner-signup";
+import DoctorSignupPage from "./pages/doctor-signup";
 
 const AuthRouter = [
-    {
-        path: "/auth-success",
-        element: <AuthSuccess />
-    },
-    {
-        path: "/doctor-signup",
-        element: <DoctorSignup />,
-    },
-    {
-        path: "/petowner-signup",
-        element: <PetOwnerSignup />
-    },
-    {
-        path: "/login",
-        element: <LoginPage />,
-    },
-    {
-        path: "/forgot-password",
-        element: <ForgotPasswordPage />,
-    },
-    {
-        path: "/verify-otp",
-        element: <VerifyOtpPage />,
-    },
-    {
-        path: "/reset-password",
-        element: <ResetPasswordPage />,
-    },
-    {
-        path: "/contuine-as",
-        elemment: <ContinueAs />
-    }
-]
+  {
+    path: "/login",
+    element: <LoginPage />,
+  },
+  {
+    path: "/continue-as",
+    element: <ContinueAs />,
+  },
+  {
+    path: "/signup/pet-owner",
+    element: <PetOwnerSignupPage />,
+  },
+  {
+    path: "/signup/doctor",
+    element: <DoctorSignupPage />,
+  },
+];
 
 export default AuthRouter;
