@@ -17,6 +17,16 @@ async function main() {
     const specializations = ["Veterinary Surgeon", "Feline Medicine Specialist", "Avian Veterinarian", "Canine Behavior Specialist", "Exotic Animal Vet"];
     const educations = ["DVM - University of Veterinary and Animal Sciences", "Ph.D. in Veterinary Medicine", "M.S. in Clinical Veterinary Science"];
 
+    // // 💡 CRITICAL FIX: Clear old mock data so you don't hit duplicate email errors
+    // console.log("🧹 Cleaning up old mock doctor data...");
+    // await prisma.user.deleteMany({
+    //     where: {
+    //         email: {
+    //             endsWith: "@petsveta.com"
+    //         }
+    //     }
+    // });
+
     console.log("⏳ Injecting 500 mock doctors into PostgreSQL...");
 
     for (let i = 1; i <= 500; i++) {
@@ -39,9 +49,7 @@ async function main() {
                         education: education,
                         isVerified: VerificationStatus.APPROVED, // All doctors are approved for seeding purposes
                         specialization: specialization,
-
                         address: `${i * 12}, Main Boulevard, Gulberg, Lahore`,
-                  
                         experience: (i % 15) + 1, // Generates logical experience ranges from 1 to 15 years
                         fees: 1000 + (i % 5) * 500 // Alternates fees between 1000, 1500, 2000, 2500, etc.
                     }
@@ -70,12 +78,3 @@ main()
     .finally(async () => {
         await prisma.$disconnect();
     });
-
-
-
-
-// giveDoctorState()
-//     .then((mesg) => {
-//         console.log("Pending Doctors are", mesg);
-//     })
-

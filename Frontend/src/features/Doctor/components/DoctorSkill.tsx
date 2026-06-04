@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Plus, ChevronDown } from "lucide-react";
 import DoctorServicesTable from "./ServiceTable";
-import { submitDoctorSkills, editDoctorService, deleteDoctorService, type ApiResponse } from "../api/doctorServices";
+import { submitDoctorSkills, editDoctorService, deleteDoctorService } from "../api/doctorServices";
 
 const VETERINARY_SKILLS = [
     "General Practice",

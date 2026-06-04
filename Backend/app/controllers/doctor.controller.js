@@ -80,9 +80,16 @@ const updateDoctorService = catchAsync(async (req, res) => {
 
 })
 
+const fetchDoctorAppointments = catchAsync(async (req, res) => {
+    const appointments = await doctorServices.getDoctorAppointments(req.user.id);
+
+    return sendResponse(res, 200, "Doctor appointments fetched successfully", appointments);
+})
+
 module.exports = {
     createDoctorServicePricing,
     fetchDoctorServices,
     deleteDoctorService,
-    updateDoctorService
+    updateDoctorService,
+    fetchDoctorAppointments
 }

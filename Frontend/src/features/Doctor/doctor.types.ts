@@ -27,3 +27,21 @@ export type DashboardData = {
     stats: DashboardStats;
     appointments: Appointment[];
 };
+
+
+export type TimeSlot = {
+    id: string;
+    day: string;
+    startTime: string;
+    endTime: string;
+};
+
+export const DAYS_OF_WEEK = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+];

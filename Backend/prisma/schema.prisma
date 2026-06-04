@@ -56,7 +56,7 @@ model User {
   doctorCertificate DoctorCertificate?
   pets              Pet[]
   petIssueReports   PetIssueReport[]
-  doctorSkills      DoctorSkills[]
+  doctorSkills      DoctorSkill[]
 
   @@index([fullName])
 }
@@ -90,7 +90,7 @@ model DoctorCertificate {
   user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model DoctorSkills {
+model DoctorSkill {
   id     String @id @default(uuid())
   userId String
   skill  String
@@ -115,6 +115,7 @@ model UserRole {
 model DoctorSchedule {
   id          String   @id @default(uuid())
   doctorId    String
+  date        DateTime
   day         WeekDays
   startTime   DateTime
   endTime     DateTime

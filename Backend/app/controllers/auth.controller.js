@@ -32,7 +32,6 @@ const verifyUser = catchAsync(async (req, res) => {
 
 )
 
-
 const getGoogleUrlController = catchAsync(async (req, res) => {
     const url = getGoogleAuthUrl();
     console.log("URL is ", url);
@@ -493,8 +492,10 @@ const resetUserPassword = catchAsync(async (req, res) => {
     const { password } = req.body;
     requireFields(["id", "email"], req.user);
     requireFields(["password"], req.body);
+    console.log("Data is ", req.body);
 
     const isValidUser = await authServices.verifyEmail(email);
+    console.log("Valid User is", isValidUser);
     if (!isValidUser) {
         throw new AppError("Invalid User", 400)
     }

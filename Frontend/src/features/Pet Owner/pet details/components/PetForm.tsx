@@ -1,6 +1,7 @@
 import { Calendar, List, PawPrint, Shield, User } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 
 import Input from "../../../../shared/components/Input/Input";
 import Button from "../../../../shared/components/Button/Button";
@@ -9,54 +10,85 @@ import {
   type PetFormInput,
   type PetFormData,
 } from "../schemas/pet.schema";
-const PetForm = () => {
+import { useAuth } from "@/features/Auth/hooks/authhook";
+import { submitPetData } from "../apis/pet.api";
+
+interface PetFormProps {
+  onSubmitSuccess?: (newPet: any) => void;
+  onCancel?: () => void;
+}
+
+const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
+  const { user } = useAuth();
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
   const {
-  register,
-  handleSubmit,
-  reset,
-  formState: { errors, isSubmitting },
-} = useForm<PetFormInput, unknown, PetFormData>({
-  resolver: zodResolver(petSchema),
-  defaultValues: {
-    name: "",
-    age: "",
-    breed: "",
-    category: undefined,
-  },
-});
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<PetFormInput, unknown, PetFormData>({
+    resolver: zodResolver(petSchema),
+    defaultValues: {
+      name: "",
+      age: "",
+      breed: "",
+      category: undefined,
+    },
+  });
 
   const onSubmit = async (data: PetFormData) => {
+    setSubmitError(null);
     console.log("Pet Form Data:", data);
+    const petOwnerId = user?.data?.id;
+    if (!petOwnerId) {
+      setSubmitError("You must be logged in to register a pet.");
+      return;
+    }
 
-    // API connect later
-    // await createPet(data)
+    try {
+      const newPet = await submitPetData({
+        ...data,
+        age: Number(data.age),
+        petOwnerId,
+      });
 
-    reset();
+      if (newPet) {
+        reset();
+        if (onSubmitSuccess) {
+          onSubmitSuccess(newPet);
+        }
+      } else {
+        setSubmitError("Failed to save pet. Please check inputs.");
+      }
+    } catch (err: any) {
+      setSubmitError(err?.response?.data?.message || "An error occurred while saving the pet.");
+    }
   };
 
   return (
     <main className="min-h-screen bg-[#F7F3FF] px-4 py-8 text-[#1F1F2E]">
       <section className="mx-auto max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl shadow-purple-200/60">
         <div className="relative h-44 bg-gradient-to-br from-[#F4ECFF] to-[#E9DDFF] px-6 py-6">
-          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#E7D9FF] text-[#6D3DD9]">
-            <PawPrint size={22} />
-          </div>
+          <h1 className="text-2xl font-black tracking-tight text-[#4c249f] sm:text-3xl">
+            Register Pet
+          </h1>
+          <p className="mt-1 text-sm font-semibold text-[#8B64D7]">
+            Please enter your pet details
+          </p>
 
-          <div className="relative z-10 mt-5">
-            <h1 className="text-2xl font-black">Add New Pet</h1>
-            <p className="mt-2 max-w-[230px] text-sm leading-5 text-slate-600">
-              Add your pet details to manage their health and appointments
-            </p>
-          </div>
-
-          <img
-            src="https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=500&q=80"
-            alt="Dog"
-            className="absolute bottom-0 right-4 h-40 w-40 object-contain"
-          />
+          <span className="absolute bottom-6 right-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-[#6D3DD9] shadow-lg shadow-purple-100">
+            <PawPrint size={32} />
+          </span>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 px-5 py-6">
+          {submitError && (
+            <div className="bg-red-50 text-red-650 p-3 rounded-2xl text-xs font-semibold border border-red-100 mb-3">
+              {submitError}
+            </div>
+          )}
+
           <Input
             label="Pet Name"
             type="text"
@@ -127,7 +159,10 @@ const PetForm = () => {
               type="button"
               variant="outline"
               className="border-[#6D3DD9]/35 text-[#6D3DD9]"
-              onClick={() => reset()}
+              onClick={() => {
+                reset();
+                if (onCancel) onCancel();
+              }}
             >
               Cancel
             </Button>

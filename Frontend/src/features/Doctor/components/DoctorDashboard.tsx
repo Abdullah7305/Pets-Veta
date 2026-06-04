@@ -1,10 +1,6 @@
-import { useEffect, useState } from "react"
+import { useState } from "react";
 import { type DashboardData } from "../doctor.types";
 import { useAuth } from "../../Auth/hooks/authhook";
-
-
-
-
 
 const defaultDashboard: DashboardData = {
   doctor: {
@@ -20,18 +16,14 @@ const defaultDashboard: DashboardData = {
   appointments: [],
 };
 
-
-
 const DoctorDashboard = () => {
-
-  const [dashboard, setDashboard] = useState<DashboardData>(defaultDashboard);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [dashboard] = useState<DashboardData>(defaultDashboard);
+  const loading = false;
   const { user } = useAuth();
 
   const statsCards = [
     {
-      title: "Today’s Appointments",
+      title: "Today's Appointments",
       value: dashboard.stats.todayAppointments,
       color: "text-teal-700",
       badgeColor: "bg-teal-50 text-teal-700",
@@ -57,27 +49,27 @@ const DoctorDashboard = () => {
   ];
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900 p-8">
-      {/* Welcome Section */}
-      <section className="mb-10">
-        <h1 className="text-4xl font-bold text-slate-900">
-          Welcome back, {user?.data.username || "Doctor"}! 👋
+    <main className="min-h-screen bg-slate-50 text-slate-900">
+      <section className="mb-6 sm:mb-8 lg:mb-10">
+        <h1 className="text-2xl font-bold leading-tight text-slate-900 sm:text-3xl lg:text-4xl">
+          Welcome back, {user?.data.username || "Doctor"}!
         </h1>
-        <p className="text-slate-600 mt-2">Here's your dashboard overview</p>
+        <p className="mt-2 text-sm text-slate-600 sm:text-base">
+          Here's your dashboard overview
+        </p>
       </section>
 
-      {/* Stats Cards Grid - 2 columns */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:gap-6">
         {statsCards.map((item) => (
           <div
             key={item.title}
-            className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+            className="flex min-h-40 flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:p-5 lg:p-6"
           >
             <p className="text-sm font-semibold text-slate-500">
               {item.title}
             </p>
 
-            <h3 className={`mt-4 text-4xl font-black ${item.color}`}>
+            <h3 className={`mt-4 text-3xl font-black sm:text-4xl ${item.color}`}>
               {item.value}
             </h3>
 
@@ -92,7 +84,5 @@ const DoctorDashboard = () => {
     </main>
   );
 };
-
-
 
 export default DoctorDashboard;

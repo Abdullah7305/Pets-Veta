@@ -8,7 +8,7 @@ import {
   Search,
   Stethoscope,
 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import DoctorFilter from "./DoctorFilter";
 import { PaginationButton } from "../PaginationButton";
 import DoctorRequestCard from "./DoctorRequestCard";
@@ -34,7 +34,6 @@ const DoctorRequests = () => {
 
 
   const [adminDoctorStats, setAdminDoctorStats] = useState<DoctorStats | undefined>(undefined);
-  const [isApproved, setIsApproved] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
 
   const pageTitle = 'Admin Dashboard';
@@ -42,19 +41,18 @@ const DoctorRequests = () => {
   const totalPages = Math.ceil(totalDoctors / limit);
   const pageDescription = 'Here Admin can approve and reject the doctors based on attestation process';
 
-  const doctorStats = useCallback(async () => {
+  const doctorStats = async () => {
     const response = await fetchDoctorStats();
     if (response.success) {
       setAdminDoctorStats(response.data);
     }
-  }, []);
+  };
 
   const onApprove = async (doctorId: string): Promise<void> => {
     setDoctorRequestProceed(true);
     const response = await approveDoctorRequest(doctorId);
     if (response.success) {
-      setIsApproved(true);
-      await doctorStats(); 
+      await doctorStats();
     }
     setDoctorRequestProceed(false);
   };
@@ -63,34 +61,46 @@ const DoctorRequests = () => {
     setDoctorRequestProceed(true);
     const response = await rejectDoctorRequest(doctorId);
     if (response.success) {
-      setIsApproved(true);
-      await doctorStats(); 
+      await doctorStats();
     }
     setDoctorRequestProceed(false);
   };
 
 
   useEffect(() => {
-    doctorStats();
-  }, [doctorStats]);
+    let isMounted = true;
+
+    const loadDoctorStats = async () => {
+      const response = await fetchDoctorStats();
+      if (isMounted && response.success) {
+        setAdminDoctorStats(response.data);
+      }
+    };
+
+    void loadDoctorStats();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const doctorQuery = async (status: string, currentPage: number) => {
-      let response = null;
       if (status === 'all') {
-        response = await AllDoctors(currentPage, limit);
+        const response = await AllDoctors(currentPage, limit);
+      
         if (response.success) {
           setDoctorList(response.data);
           setTotalDoctors(response.data.totalCount);
         }
       } else if (status === 'pending') {
-        response = await PendingDoctors(currentPage, limit);
+        const response = await PendingDoctors(currentPage, limit);
         if (response.success) {
           setDoctorList(response.data);
           setTotalDoctors(response.data.totalCount);
         }
       } else if (status === 'approved') {
-        response = await ApprovedDoctors(currentPage, limit);
+        const response = await ApprovedDoctors(currentPage, limit);
         if (response.success) {
           setDoctorList(response.data);
           setTotalDoctors(response.data.totalCount);
@@ -101,15 +111,15 @@ const DoctorRequests = () => {
   }, [doctorStatus, page]);
 
   return (
-    <main className="min-h-screen flex flex-col items-center bg-[#f8fbfb] text-[#12213a]">
-      <section className="">
-        <div className="px-5 pb-10 lg:px-8">
-          <section className="relative overflow-hidden rounded-lg border border-[#eef2f2] bg-linear-to-r from-[#fff7f1] via-white to-[#effaf8] px-8 pb-8 pt-9 shadow-sm">
+    <main className="min-h-screen bg-[#f8fbfb] text-[#12213a]">
+      <section className="w-full">
+        <div className="mx-auto w-full max-w-7xl px-4 pb-10 pt-4 sm:px-5 md:px-6 lg:px-8">
+          <section className="relative overflow-hidden rounded-lg border border-[#eef2f2] bg-linear-to-r from-[#fff7f1] via-white to-[#effaf8] px-4 pb-6 pt-6 shadow-sm sm:px-6 md:px-8 md:pb-8 md:pt-9">
             <div className="relative z-10 max-w-[720px]">
-              <h1 className="text-3xl font-black tracking-normal text-[#0f1b2f] md:text-4xl">
+              <h1 className="text-2xl font-black tracking-normal text-[#0f1b2f] sm:text-3xl md:text-4xl">
                 {pageTitle}
               </h1>
-              <p className="mt-4 text-base leading-7 text-[#405169]">
+              <p className="mt-3 text-sm leading-6 text-[#405169] sm:mt-4 sm:text-base sm:leading-7">
                 {pageDescription}
               </p>
             </div>
@@ -119,7 +129,7 @@ const DoctorRequests = () => {
               <Stethoscope className="absolute right-5 top-10 h-28 w-28 text-[#078b91]" strokeWidth={2.4} />
             </div>
 
-            <div className="relative z-10 mt-14 grid gap-0 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-[0_14px_35px_rgba(15,23,42,0.08)] md:grid-cols-2 xl:grid-cols-3">
+            <div className="relative z-10 mt-8 grid gap-0 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-[0_14px_35px_rgba(15,23,42,0.08)] sm:mt-10 md:grid-cols-2 xl:mt-14 xl:grid-cols-3">
               {/* 💡 3. Tied values directly to the live backend data properties with string parsing safety */}
               <StatCard
                 title="Pending Requests"
@@ -172,7 +182,7 @@ const DoctorRequests = () => {
 
           {doctorList?.doctors && doctorList.doctors.length > 0 ? (
             doctorList.doctors.map((doctor) => (
-              <DoctorRequestCard
+              < DoctorRequestCard
                 key={doctor.id}
                 doctor={doctor}
                 doctorRequestProceed={doctorRequestProceed}

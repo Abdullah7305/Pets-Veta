@@ -98,7 +98,7 @@ const DoctorRequestCard = ({
             </div>
 
             <a
-              href={doctor.degreeLicenseUrl}
+              href={doctor.user.doctorCertificate.publicUrl}
               target="_blank"
               rel="noreferrer"
               className="hidden h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-sm font-black text-[#078b91] transition hover:border-[#078b91] hover:bg-[#eefaf8] sm:flex"

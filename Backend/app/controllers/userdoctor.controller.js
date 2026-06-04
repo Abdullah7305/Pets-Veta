@@ -1,7 +1,7 @@
 const doctorService = require("../services/userdoctor.services");
 const catchAsync = require("../utils/CatchAsync");
 const AppError = require("../utils/AppError");
-const sendResponse = require("../utils/sendResponse");
+const sendResponse = require("../utils/SendResponse");
 
 const getApprovedDoctorsForUsers = catchAsync(async (req, res, next) => {
   const page = Number(req.query.page) || 1;
@@ -21,6 +21,41 @@ const getApprovedDoctorsForUsers = catchAsync(async (req, res, next) => {
   sendResponse(res, 200, "Approved doctors fetched successfully", result);
 });
 
+const getDoctorById = catchAsync(async (req, res) => {
+  const { doctorId } = req.query;
+
+  if (!doctorId) {
+    throw new AppError("Doctor ID is required", 400);
+  }
+
+  const doctor = await doctorService.getSpecificDoctor(doctorId);
+
+  if (!doctor) {
+    throw new AppError("Doctor not found", 404);
+  }
+
+  console.log("Doctor Data ==> ", JSON.stringify(doctor, null, 2));
+
+  const transformedDoctor = {
+    id: doctor.id,
+    name: doctor.user.fullName,
+    image: doctor.user.profileImageUrl,
+    specialization: doctor.specialization,
+    experience: doctor.experience,
+    education: doctor.education,
+    fees: doctor.fees,
+    status: doctor.isAvailable ? "active" : "inactive",
+    isVerified: doctor.isVerified,
+    availableDays: doctor.availableDays,
+    availableSlots: doctor.availableSlots,
+    todaySlots: doctor.todaySlots,
+    nextAvailable: doctor.nextAvailable,
+  };
+
+  return sendResponse(res, 200, "Doctor fetched successfully", transformedDoctor);
+})
+
 module.exports = {
   getApprovedDoctorsForUsers,
+  getDoctorById
 };

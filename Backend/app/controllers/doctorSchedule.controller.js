@@ -5,92 +5,51 @@ const {
     deleteDoctorScheduleService,
     getDoctorSchedulesByDoctorIdService,
 } = require("../services/doctorSchedule.service");
+const catchAsync = require('../utils/CatchAsync')
+const sendResponse = require('../utils/SendResponse')
 
-const createDoctorSchedule = async (req, res) => {
-    try {
-        const schedule = await createDoctorScheduleService(req);
+const createDoctorSchedule = catchAsync(async (req, res) => {
 
-        res.status(201).json({
-            success: true,
-            message: "Doctor schedule created successfully",
-            data: schedule,
-        });
-    } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message,
-        });
-    }
-};
+    const schedule = await createDoctorScheduleService(req);
 
-const getDoctorSchedule = async (req, res) => {
-    try {
-        const schedules = await getDoctorScheduleService(req);
+    return sendResponse(res, 201, "Doctor schedule created successfully", schedule)
 
-        res.status(200).json({
-            success: true,
-            message: "Doctor schedules fetched successfully",
-            data: schedules,
-        });
-    } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message,
-        });
-    }
-};
+})
 
-const updateDoctorSchedule = async (req, res) => {
-    try {
-        const updatedSchedule = await updateDoctorScheduleService(req);
+const getDoctorSchedule = catchAsync(async (req, res) => {
 
-        res.status(200).json({
-            success: true,
-            message: "Doctor schedule updated successfully",
-            data: updatedSchedule,
-        });
-    } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message,
-        });
-    }
-};
+    const schedules = await getDoctorScheduleService(req);
 
-const deleteDoctorSchedule = async (req, res) => {
-    try {
-        const result = await deleteDoctorScheduleService(req);
+    return sendResponse(res, 200, "Doctor schedules fetched successfully", schedules)
 
-        res.status(200).json({
-            success: true,
-            message: result.message,
-        });
-    } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message,
-        });
-    }
-};
+})
 
-const getDoctorSchedulesByDoctorId = async (req, res) => {
-    try {
-        const { doctorId } = req.params;
+const updateDoctorSchedule = catchAsync(async (req, res) => {
 
-        const schedules = await getDoctorSchedulesByDoctorIdService(doctorId);
+    const updatedSchedule = await updateDoctorScheduleService(req);
 
-        res.status(200).json({
-            success: true,
-            message: "Doctor schedules fetched successfully",
-            data: schedules,
-        });
-    } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message,
-        });
-    }
-};
+    return sendResponse(res, 200, "Doctor schedule updated successfully", updatedSchedule)
+
+
+});
+
+const deleteDoctorSchedule = catchAsync(async (req, res) => {
+
+    const result = await deleteDoctorScheduleService(req);
+
+    return sendResponse(res, 200, "Success", result.message)
+
+
+});
+
+const getDoctorSchedulesByDoctorId = catchAsync(async (req, res) => {
+
+    const { doctorId } = req.params;
+
+    const schedules = await getDoctorSchedulesByDoctorIdService(doctorId);
+    return sendResponse(res, 200, "Doctor schedules fetched successfully", schedules)
+
+});
 
 module.exports = {
     createDoctorSchedule,

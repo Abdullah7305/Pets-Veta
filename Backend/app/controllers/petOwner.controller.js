@@ -4,7 +4,6 @@ const requireFields = require('../utils/validateRequest');
 const petOwnerServices = require('../services/petOwner.services');
 const sendResponse = require('../utils/SendResponse');
 const authServices = require('../services/auth.services');
-const { PatientAppointmentType } = require('@prisma/client')
 
 const registerPet = catchAsync(async (req, res) => {
     requireFields(["petOwnerId", "name", "age", "breed", "category"], req.body);
@@ -13,7 +12,7 @@ const registerPet = catchAsync(async (req, res) => {
     const pet = {
         petOwnerId: petOwnerId,
         name: name,
-        age: age,
+        age: parseFloat(age),
         category: category,
         breed: breed
     }
@@ -25,16 +24,15 @@ const registerPet = catchAsync(async (req, res) => {
 });
 
 const registerPetIssue = catchAsync(async (req, res) => {
-    requireFields(["petOwnerId", "petId", "issue", "appointmentType"], req.body);
-    const { petOwnerId, petId, issue, appointmentType } = req.body;
-
-    let appointment = appointmentType.toLowerCase() === 'emergency' ? PatientAppointmentType.EMERGENCY : PatientAppointmentType.NORMAL_CHECKUP;
+    requireFields(["petOwnerId", "petId", "issue", "doctorId", "checkupTime"], req.body);
+    const { petOwnerId, petId, issue, doctorId, checkupTime } = req.body;
 
     const petIssue = {
         petOwnerId: petOwnerId,
         petId: petId,
         issue: issue,
-        appointmentType: appointment
+        doctorId: doctorId,
+        checkupTime: checkupTime
     }
 
     const savePetIssue = await petOwnerServices.registerPetIssue(petIssue);
@@ -48,16 +46,16 @@ const registerPetIssue = catchAsync(async (req, res) => {
 
 
 const getPetOwnerById = catchAsync(async (req, res) => {
-    const id = req.params;
+    const { id } = req.user;
     const getPetOwner = await authServices.getUserById(id);
 
     if (!getPetOwner) {
         return sendResponse(res, 400, "Invalid User", {});
     }
     const user = {
-        username: user.username,
-        email: user.email,
-        address: user.address,
+        username: getPetOwner.username,
+        email: getPetOwner.email,
+        address: getPetOwner.phone || "",
         role: 'PetOwner'
     }
 
@@ -65,7 +63,7 @@ const getPetOwnerById = catchAsync(async (req, res) => {
 })
 
 const getPetsData = catchAsync(async (req, res) => {
-    const id = req.params;
+    const { id } = req.user;
 
     const petsData = await petOwnerServices.getUserPets(id);
 
@@ -76,6 +74,7 @@ const getPetsData = catchAsync(async (req, res) => {
     return sendResponse(res, 200, "Successfully Send Data", petsData);
 
 })
+
 
 module.exports = {
     registerPetIssue,
