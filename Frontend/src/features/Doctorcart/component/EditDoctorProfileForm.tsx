@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 import Button from "../../../shared/components/Button/Button";
-import Input from "../../../shared/components/Inputs/Input";
+import Input from "../../../shared/components/Input/Input";
 
 import {
   doctorProfileSchema,
@@ -307,10 +307,10 @@ const EditDoctorProfileForm = () => {
 
             <Button
               type="submit"
-              isSubmitting={isSubmitting}
+              disabled={isSubmitting}
               className="h-11 w-auto px-7"
             >
-              Save Changes
+              {isSubmitting ? "Saving..." : "Save Changes"}
             </Button>
           </div>
         </form>
