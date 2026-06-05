@@ -11,7 +11,7 @@ import {
 } from "../schema/admin.login.schema";
 
 import Button from "../../../shared/components/Button/Button";
-import Input from "../../../shared/components/Inputs/Input";
+import Input from "../../../shared/components/Input/Input";
 import { useAuth } from "@/features/Auth/hooks/authhook";
 
 const AdminLoginPage = () => {

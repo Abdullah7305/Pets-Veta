@@ -1,74 +1,52 @@
-type ButtonProps = {
-  children: React.ReactNode;
+import type { ButtonHTMLAttributes, ReactNode } from "react";
 
-  type?: "button" | "submit" | "reset";
+type ButtonVariant = "primary" | "secondary" | "outline";
+type ButtonSize = "sm" | "md" | "lg";
 
-  variant?: "primary" | "outline";
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  children: ReactNode;
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  fullWidth?: boolean;
+}
 
-  loading?: boolean;
-
-  isSubmitting?: boolean;
-
-  className?: string;
-} & React.ButtonHTMLAttributes<HTMLButtonElement>;
-
-export default function Button({
+const Button = ({
   children,
-
-  type = "button",
-
   variant = "primary",
-
-  loading = false,
-
+  size = "md",
+  fullWidth = false,
   className = "",
-
-  isSubmitting = false,
-
+  type = "button",
   ...props
-}: ButtonProps) {
-  /* BASE STYLES */
-  const baseStyles = `
-    w-full rounded-xl py-3
-    text-sm font-semibold
+}: ButtonProps) => {
+  const baseStyle =
+    "rounded-lg font-medium transition duration-300 disabled:opacity-60 disabled:cursor-not-allowed";
 
-    transition-all duration-300 ease-in-out
-
-    cursor-pointer
-
-    disabled:opacity-70
-    disabled:cursor-not-allowed
-  `;
-
-  /* VARIANTS */
   const variants = {
-    primary: `
-      bg-[#078b91] text-white
-      hover:bg-white  hover:text-[#078b91]  hover:border-[#078b91] hover:border
-       active:shadow-sm 
-
-    `,
-
-    outline: `
-      border border-gray-300
-      bg-white text-gray-700
-      hover:bg-gray-50 hover:border-gray-400
-      active:scale-95 active:shadow-sm
-    `,
+    primary:
+      "bg-sky-800 text-white hover:bg-gray-100 hover:text-sky-800 border border-sky-800",
+    secondary: "bg-[#F9C5A8] text-sky-100 hover:bg-[#f5b58f]",
+    outline:
+      "border border-[#178f95] text-[#178f95] hover:bg-[#178f95] hover:text-white",
   };
+
+  const sizes = {
+    sm: "px-3 py-2 text-sm",
+    md: "px-5 py-3 text-base",
+    lg: "px-6 py-4 text-lg",
+  };
+
+  const width = fullWidth ? "w-full" : "";
 
   return (
     <button
       type={type}
-      disabled={loading || isSubmitting}
-      className={`
-        ${baseStyles}
-        ${variants[variant]}
-        ${className}
-      `}
+      className={`${baseStyle} ${variants[variant]} ${sizes[size]} ${width} ${className}`}
       {...props}
     >
-      {loading || isSubmitting ? "Loading..." : children}
+      {children}
     </button>
   );
-}
+};
+
+export default Button;

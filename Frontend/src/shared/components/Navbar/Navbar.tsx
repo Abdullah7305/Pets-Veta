@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import logo from "../../../assets/icons/Gemini_Generated_Image_34da4a34da4a34da-removebg-preview.png";
-import { NAVLINKS } from "./navbar.data";
-import { useAuth } from "@/features/Auth/hooks/authhook";
+
+import NAVLINK from "./navbar.data";
+import Logo from "../Logo/Logo";
+import Button from "../Button";
 
 const Navbar = () => {
+<<<<<<< HEAD
   const { user, isLoading } = useAuth();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
@@ -27,10 +29,20 @@ const Navbar = () => {
 
         <ul className="hidden items-center gap-7 lg:flex">
           {NAVLINKS.map((link) => (
+=======
+  return (
+    <nav className="bg-gray-100">
+      <div className="flex items-center justify-around py-4">
+        <Logo />
+
+        <ul className="flex gap-6 font-bold text-sky-800">
+          {NAVLINK.map((link) => (
+>>>>>>> 01a3854942989e8ebbfd1599897a475fe4ed4146
             <li key={link.id}>
               <NavLink
                 to={link.path}
                 className={({ isActive }) =>
+<<<<<<< HEAD
                   `relative text-[15px] font-semibold transition-all duration-300 
                   ${
                     isActive
@@ -42,6 +54,11 @@ const Navbar = () => {
                     isActive
                       ? "after:w-full"
                       : "after:w-0 hover:after:w-full"
+=======
+                  `relative pb-1 transition-all duration-300 ${isActive
+                    ? "text-[#178f95] after:absolute after:left-0 after:-bottom-1 after:h-[3px] after:w-full after:rounded-full after:bg-[#178f95]"
+                    : "text-sky-800 hover:text-[#178f95]"
+>>>>>>> 01a3854942989e8ebbfd1599897a475fe4ed4146
                   }`
                 }
               >
@@ -51,6 +68,7 @@ const Navbar = () => {
           ))}
         </ul>
 
+<<<<<<< HEAD
         <div className="flex min-w-[120px] items-center justify-end">
           {isLoading ? (
             <div className="hidden h-10 w-32 animate-pulse rounded-full bg-[#078b91]/10 md:block" />
@@ -116,6 +134,17 @@ const Navbar = () => {
             <span className="block h-[2px] w-5 rounded-full bg-[#20263d]" />
           </span>
         </button>
+=======
+        <div className="flex gap-2">
+          <Link to="/login">
+            <Button>Login</Button>
+          </Link>
+
+          <Link to="/continue-as">
+            <Button>Signup</Button>
+          </Link>
+        </div>
+>>>>>>> 01a3854942989e8ebbfd1599897a475fe4ed4146
       </div>
     </nav>
   );

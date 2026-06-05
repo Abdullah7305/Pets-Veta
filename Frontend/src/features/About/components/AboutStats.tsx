@@ -1,63 +1,42 @@
-import { CalendarDays, PawPrint, Stethoscope, UsersRound } from "lucide-react";
-
 const stats = [
   {
-    id: 1,
-    number: "2,500+",
+    value: "100+",
+    label: "Verified Veterinary Doctors",
+  },
+  {
+    value: "500+",
+    label: "Pet Products Listed",
+  },
+  {
+    value: "10K+",
     label: "Happy Pet Parents",
-    icon: UsersRound,
   },
   {
-    id: 2,
-    number: "120+",
-    label: "Expert Doctors",
-    icon: Stethoscope,
-  },
-  {
-    id: 3,
-    number: "5,000+",
-    label: "Appointments Booked",
-    icon: CalendarDays,
-  },
-  {
-    id: 4,
-    number: "15,000+",
-    label: "Pets Treated",
-    icon: PawPrint,
+    value: "24/7",
+    label: "AI Pet Assistance",
   },
 ];
 
 const AboutStats = () => {
   return (
-    <section className="mx-auto max-w-6xl px-5 pb-16">
-      <div className="grid gap-5 rounded-3xl bg-[#D4E2E0]/45 p-5 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map((item, index) => {
-          const Icon = item.icon;
-
-          return (
+    <section className="bg-[#f5fbff] px-5 py-14 lg:px-16">
+      <div className="mx-auto max-w-7xl">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {stats.map((item) => (
             <div
-              key={item.id}
-              className={`flex items-center gap-3 px-3 py-3 ${
-                index !== stats.length - 1
-                  ? "lg:border-r lg:border-[#078b91]/20"
-                  : ""
-              }`}
+              key={item.label}
+              className="rounded-3xl bg-white p-6 text-center shadow-[0_10px_35px_rgba(15,23,42,0.08)]"
             >
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-[#078b91] shadow-sm">
-                <Icon size={24} />
-              </div>
+              <h3 className="text-4xl font-extrabold text-[#009f9d]">
+                {item.value}
+              </h3>
 
-              <div>
-                <h3 className="text-2xl font-black text-[#078b91]">
-                  {item.number}
-                </h3>
-                <p className="mt-1 text-sm font-medium text-[#071B4D]">
-                  {item.label}
-                </p>
-              </div>
+              <p className="mt-2 text-sm font-bold text-[#07182c]">
+                {item.label}
+              </p>
             </div>
-          );
-        })}
+          ))}
+        </div>
       </div>
     </section>
   );

@@ -1,43 +1,33 @@
-import { PawPrint } from "lucide-react";
+import { Link } from "react-router-dom";
+import Button from "../../../shared/components/Button";
 
 const ContactCTA = () => {
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-slate-100 bg-gradient-to-r from-[#D4E2E0]/80 via-white to-[#FFF1E9] p-6 shadow-sm md:p-8">
-      <div className="absolute left-10 top-8 hidden text-4xl text-[#F28B5B]/40 md:block">
-        ♡
-      </div>
+    <section className="bg-white px-5 pb-16 lg:px-16">
+      <div className="mx-auto max-w-7xl rounded-[36px] bg-gradient-to-br from-[#bdf0ee] via-[#f5fbff] to-[#fff3ec] p-8 text-center shadow-[0_18px_50px_rgba(15,23,42,0.10)] md:p-12">
+        <h2 className="text-3xl font-extrabold text-[#07182c] md:text-4xl">
+          Need immediate pet-care support?
+        </h2>
 
-      <div className="absolute right-20 bottom-8 hidden text-4xl text-[#F28B5B]/40 md:block">
-        ♡
-      </div>
+        <p className="mx-auto mt-3 max-w-2xl leading-7 text-slate-600">
+          Explore doctors, book appointments and get trusted assistance for
+          your pets.
+        </p>
 
-      <div className="relative grid items-center gap-8 md:grid-cols-[0.8fr_1.2fr_0.7fr]">
-        <div className="hidden md:flex">
-          <div className="flex h-28 w-full items-center justify-center gap-4 rounded-3xl bg-white/50">
-            <span className="text-5xl">🐶</span>
-            <span className="text-4xl">🐱</span>
-          </div>
-        </div>
+        <div className="mt-7 flex flex-wrap justify-center gap-4">
+          <Link to="/doctors">
+            <Button>Find Doctors</Button>
+          </Link>
 
-        <div>
-          <h2 className="text-2xl font-black text-[#071B4D] md:text-3xl">
-            Love Your Pet? We Do Too!
-          </h2>
-
-          <p className="mt-3 text-sm leading-7 text-slate-600">
-            Join thousands of pet parents who trust PawCare for the best
-            services and products.
-          </p>
-        </div>
-
-        <div className="flex md:justify-end">
-          <button className="inline-flex items-center gap-2 rounded-xl bg-[#071B4D] px-6 py-3 text-sm font-bold text-white shadow-md transition hover:-translate-y-0.5 hover:bg-[#0B255F]">
-            <PawPrint size={18} />
-            Explore Services
-          </button>
+          <Link
+            to="/"
+            className="inline-flex items-center justify-center rounded-xl border border-[#009f9d] px-5 py-3 text-sm font-bold text-[#009f9d] transition hover:bg-[#eefafa]"
+          >
+            Back to Home
+          </Link>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
