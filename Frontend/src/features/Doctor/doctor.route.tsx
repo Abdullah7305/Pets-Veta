@@ -20,7 +20,7 @@ export const doctorDashboardRoutes = [
         element: <DoctorDashboardPage />,
       },
       {
-        path: "doctor-profile",
+        path: "doctor-dashboard-profile",
         element: <DoctorProfilePage />,
       },
       {

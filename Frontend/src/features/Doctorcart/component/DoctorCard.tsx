@@ -1,5 +1,4 @@
 import { CalendarDays, GraduationCap, ShieldCheck } from "lucide-react";
-import Button from "../../../shared/components/Button/Button";
 import { type Doctor } from "../apis/getDoctors.api";
 import { NavLink } from "react-router-dom";
 

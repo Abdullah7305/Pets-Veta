@@ -9,7 +9,7 @@ import {
   Stethoscope,
   X,
 } from "lucide-react";
-import doctorLogo from '../../../../assets/icons/doctor.png'
+import doctorLogo from "../../../../assets/icons/doctor.png";
 import { InfoPill } from "./InfoPill";
 import { ContactRow } from "./ContactRow";
 import { type DoctorData } from "../../apis/doctorquery.api";
@@ -18,21 +18,16 @@ type DoctorRequestCardProps = {
   doctor: DoctorData;
   onApprove: (doctorId: string) => void;
   onReject: (doctorId: string) => void;
-
-  doctorRequestProceed: boolean
+  doctorRequestProceed: boolean;
 };
 
 const DoctorRequestCard = ({
   doctor,
   onApprove,
   onReject,
-
-  doctorRequestProceed
+  doctorRequestProceed,
 }: DoctorRequestCardProps) => {
-
-  // Create explicit helper booleans to make the JSX clean
   const isPending = doctor.isVerified === "PENDING";
-  const isApproved = doctor.isVerified === "APPROVED";
 
   return (
     <article className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_16px_40px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(15,23,42,0.12)]">
@@ -52,24 +47,28 @@ const DoctorRequestCard = ({
                 <h2 className="truncate text-2xl font-black text-[#0f1b2f]">
                   {doctor.user.fullName}
                 </h2>
+
                 <p className="mt-1 font-semibold text-[#078b91]">
                   {doctor.specialization}
                 </p>
               </div>
 
-              {/* 🎨 1. Top Right Badge Condition Fixed */}
               <span
-                className={`rounded-full px-3 py-1 text-xs font-black uppercase tracking-wide ${isPending
-                  ? "bg-orange-100 text-orange-600"
-                  : "bg-green-100 text-green-700"
-                  }`}
+                className={`rounded-full px-3 py-1 text-xs font-black uppercase tracking-wide ${
+                  isPending
+                    ? "bg-orange-100 text-orange-600"
+                    : "bg-green-100 text-green-700"
+                }`}
               >
                 {isPending ? "Pending" : "Approved"}
               </span>
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2">
-              <InfoPill icon={<BriefcaseMedical size={16} />} text={`${doctor.experience} Yrs Experience`} />
+              <InfoPill
+                icon={<BriefcaseMedical size={16} />}
+                text={`${doctor.experience} Yrs Experience`}
+              />
               <InfoPill icon={<Award size={16} />} text={doctor.education} />
             </div>
           </div>
@@ -77,7 +76,10 @@ const DoctorRequestCard = ({
 
         <div className="mt-6 grid gap-3 text-sm text-[#26364f] sm:grid-cols-2">
           <ContactRow icon={<Mail size={18} />} text={doctor.user.email} />
-          <ContactRow icon={<Phone size={18} />} text={doctor.user.phone || "No phone provided"} />
+          <ContactRow
+            icon={<Phone size={18} />}
+            text={doctor.user.phone || "No phone provided"}
+          />
           <ContactRow
             icon={<Stethoscope size={18} />}
             text={doctor.specialization}
@@ -98,7 +100,7 @@ const DoctorRequestCard = ({
             </div>
 
             <a
-              href={doctor.user.doctorCertificate.publicUrl}
+              href={doctor.degreeLicenseUrl}
               target="_blank"
               rel="noreferrer"
               className="hidden h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-sm font-black text-[#078b91] transition hover:border-[#078b91] hover:bg-[#eefaf8] sm:flex"
@@ -119,27 +121,34 @@ const DoctorRequestCard = ({
           </a>
         </div>
 
-        {/* 🛠️ 2. Bottom Button Logic Fixed */}
         {isPending ? (
           <div className="mt-5 grid grid-cols-2 gap-3">
             <button
-              disabled={doctorRequestProceed ? true : false}
+              disabled={doctorRequestProceed}
               type="button"
               onClick={() => onReject(doctor.id)}
-              className={`flex h-11 items-center cursor-pointer justify-center gap-2 rounded-xl border border-red-200 bg-white font-black ${doctorRequestProceed ? 'text-red-400 transition' : 'text-red-500 transition'} hover:bg-red-50`}
+              className={`flex h-11 items-center justify-center gap-2 rounded-xl border border-red-200 bg-white font-black transition ${
+                doctorRequestProceed
+                  ? "cursor-not-allowed text-red-300"
+                  : "cursor-pointer text-red-500 hover:bg-red-50"
+              }`}
             >
               <X size={19} />
-              {!doctorRequestProceed ? 'Rejecting' : 'Reject'}
+              {doctorRequestProceed ? "Rejecting..." : "Reject"}
             </button>
 
             <button
               type="button"
-              disabled={doctorRequestProceed ? true : false}
+              disabled={doctorRequestProceed}
               onClick={() => onApprove(doctor.id)}
-              className={`flex h-11 items-center cursor-pointer justify-center gap-2 rounded-xl ${doctorRequestProceed ? 'bg-[#0aa082] ' : 'bg-[#078b91] '} font-black text-white shadow-lg shadow-cyan-100 transition hover:bg-[#06777d]`}
+              className={`flex h-11 items-center justify-center gap-2 rounded-xl font-black text-white shadow-lg shadow-cyan-100 transition ${
+                doctorRequestProceed
+                  ? "cursor-not-allowed bg-[#0aa082]/70"
+                  : "cursor-pointer bg-[#078b91] hover:bg-[#06777d]"
+              }`}
             >
               <Check size={19} />
-              {doctorRequestProceed ? 'Approving' : 'Approve'}
+              {doctorRequestProceed ? "Approving..." : "Approve"}
             </button>
           </div>
         ) : (
@@ -152,9 +161,5 @@ const DoctorRequestCard = ({
     </article>
   );
 };
-
-
-
-
 
 export default DoctorRequestCard;

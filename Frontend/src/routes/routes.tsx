@@ -13,11 +13,11 @@ const Router = createBrowserRouter([
   ...servicesRoutes,
   ...LandingPageRoutes,
   ...AuthRouter,
+  ...doctorAppointmentRoutes,
+  ...doctorRoutes,
   ...doctorDashboardRoutes,
   ...adminRoutes,
-  ...doctorAppointmentRoutes,
   ...petsRoutes,
-  ...doctorRoutes,
   {
     path: "*",
     element: <Notfound />,

@@ -14,7 +14,7 @@ export const DoctorSidebar = ({ sidebarOpen, setSidebarOpen }: DoctorSidebarProp
         { id: 3, label: "Patients", icon: Users, address: "pateints" },
         { id: 4, label: "Availability", icon: CalendarDays, address: "doctor-availability" },
         { id: 5, label: "Pricing", icon: DollarSignIcon, address: "doctor-pricing" },
-        { id: 6, label: "Profile", icon: Users, address: "doctor-profile" },
+        { id: 6, label: "Profile", icon: Users, address: "doctor-dashboard-profile" },
     ];
 
     return (
