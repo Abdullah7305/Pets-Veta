@@ -119,10 +119,105 @@ const getDoctorAppointments = async (userId) => {
     });
 }
 
+const getDoctorProfile = async (userId) => {
+    const doctorProfile = await prisma.user.findUnique({
+        where: {
+            id: userId,
+        },
+        select: {
+            id: true,
+            fullName: true,
+            username: true,
+            email: true,
+            phone: true,
+            profileImageUrl: true,
+            isActive: true,
+            doctors: {
+                select: {
+                    id: true,
+                    specialization: true,
+                    education: true,
+                    experience: true,
+                    fees: true,
+                    address: true,
+                    isAvailable: true,
+                    isVerified: true,
+                },
+            },
+        },
+    });
+
+    return doctorProfile;
+};
+
+
+const updateDoctorProfile = async (userId, profileData) => {
+    const {
+        fullName,
+        username,
+        phone,
+        profileImageUrl,
+        specialization,
+        education,
+        experience,
+        fees,
+        address,
+        isAvailable,
+    } = profileData;
+
+    const updatedProfile = await prisma.user.update({
+        where: {
+            id: userId,
+        },
+        data: {
+            fullName,
+            username,
+            phone,
+            profileImageUrl,
+
+            doctors: {
+                update: {
+                    specialization,
+                    education,
+                    experience: Number(experience),
+                    fees: Number(fees),
+                    address,
+                    isAvailable,
+                },
+            },
+        },
+        select: {
+            id: true,
+            fullName: true,
+            username: true,
+            email: true,
+            phone: true,
+            profileImageUrl: true,
+            isActive: true,
+            doctors: {
+                select: {
+                    id: true,
+                    specialization: true,
+                    education: true,
+                    experience: true,
+                    fees: true,
+                    address: true,
+                    isAvailable: true,
+                    isVerified: true,
+                },
+            },
+        },
+    });
+
+    return updatedProfile;
+};
+
 module.exports = {
     addDoctorService,
     deleteDoctorService,
     getDoctorServices,
     updateDoctorServices,
-    getDoctorAppointments
-}
+    getDoctorAppointments,
+    getDoctorProfile,
+    updateDoctorProfile,
+};

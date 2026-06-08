@@ -1,36 +1,71 @@
-const express = require('express');
-const authMiddlware = require('../middleware/auth.middleware');
-const authenticateRole = require('../middleware/authorizeRole.middleware');
-const doctorController = require('../controllers/doctor.controller');
-const doctorScheduleController = require('../controllers/doctorSchedule.controller');
+const express = require("express");
+
+const doctorController = require("../controllers/doctor.controller");
+const doctorScheduleController = require("../controllers/doctorSchedule.controller");
+
+const authMiddlware = require("../middleware/auth.middleware");
+const authenticateRole = require("../middleware/authorizeRole.middleware");
 
 const Router = express.Router();
 
 Router
     .route("/add/service")
-    .post(authMiddlware.protect, authenticateRole.authenticateUserRole('Doctor'), doctorController.createDoctorServicePricing);
+    .post(
+        authMiddlware.protect,
+        authenticateRole.authenticateUserRole("Doctor"),
+        doctorController.createDoctorServicePricing
+    );
 
 Router
-    .route('/get/services')
-    .get(authMiddlware.protect, authenticateRole.authenticateUserRole('Doctor'), doctorController.fetchDoctorServices);
+    .route("/get/services")
+    .get(
+        authMiddlware.protect,
+        authenticateRole.authenticateUserRole("Doctor"),
+        doctorController.fetchDoctorServices
+    );
 
 Router
-    .route('/edit/service')
-    .patch(authMiddlware.protect, authenticateRole.authenticateUserRole('Doctor'), doctorController.updateDoctorService);
+    .route("/edit/service")
+    .patch(
+        authMiddlware.protect,
+        authenticateRole.authenticateUserRole("Doctor"),
+        doctorController.updateDoctorService
+    );
 
 Router
-    .route('/delete/service')
-    .delete(authMiddlware.protect, authenticateRole.authenticateUserRole('Doctor'), doctorController.deleteDoctorService);
+    .route("/delete/service")
+    .delete(
+        authMiddlware.protect,
+        authenticateRole.authenticateUserRole("Doctor"),
+        doctorController.deleteDoctorService
+    );
 
 Router
-    .route('/appointments')
-    .get(authMiddlware.protect, authenticateRole.authenticateUserRole('Doctor'), doctorController.fetchDoctorAppointments);
+    .route("/appointments")
+    .get(
+        authMiddlware.protect,
+        authenticateRole.authenticateUserRole("Doctor"),
+        doctorController.fetchDoctorAppointments
+    );
+
+Router
+    .route("/profile")
+    .get(
+        authMiddlware.protect,
+        authenticateRole.authenticateUserRole("Doctor"),
+        doctorController.getDoctorProfile
+    )
+    .patch(
+        authMiddlware.protect,
+        authenticateRole.authenticateUserRole("Doctor"),
+        doctorController.updateDoctorProfile
+    );
 
 Router
     .route("/schedule")
     .post(
         authMiddlware.protect,
-        authenticateRole.authenticateUserRole('Doctor'),
+        authenticateRole.authenticateUserRole("Doctor"),
         doctorScheduleController.createDoctorSchedule
     );
 
@@ -38,7 +73,7 @@ Router
     .route("/schedule/me")
     .get(
         authMiddlware.protect,
-        authenticateRole.authenticateUserRole('Doctor'),
+        authenticateRole.authenticateUserRole("Doctor"),
         doctorScheduleController.getDoctorSchedule
     );
 
@@ -50,12 +85,12 @@ Router
     .route("/schedule/:id")
     .put(
         authMiddlware.protect,
-        authenticateRole.authenticateUserRole('Doctor'),
+        authenticateRole.authenticateUserRole("Doctor"),
         doctorScheduleController.updateDoctorSchedule
     )
     .delete(
         authMiddlware.protect,
-        authenticateRole.authenticateUserRole('Doctor'),
+        authenticateRole.authenticateUserRole("Doctor"),
         doctorScheduleController.deleteDoctorSchedule
     );
 

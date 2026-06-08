@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 import {
   FaShieldAlt,
   FaLock,
@@ -8,7 +10,7 @@ import {
   FaPaw,
 } from "react-icons/fa";
 
-import img from "@/assets/shared/images/dog2.jpeg"
+import img from "@/assets/shared/images/dog2.jpeg";
 import Button from "../../../shared/components/Button/Button";
 
 export const Banner = () => {
@@ -31,23 +33,27 @@ export const Banner = () => {
         </p>
 
         <div className="flex flex-wrap gap-4 mb-8">
-          <Button
-            variant="primary"
-            size="md"
-            className="inline-flex items-center gap-3 !bg-[#009f9d] !border-[#009f9d] !text-white hover:!bg-[#008f8d] hover:!text-white rounded-2xl shadow-xl"
-          >
-            <FaCalendarAlt />
-            Book a Vet Appointment
-          </Button>
+          <Link to="/doctors">
+            <Button
+              variant="primary"
+              size="md"
+              className="inline-flex items-center gap-3 !bg-[#009f9d] !border-[#009f9d] !text-white hover:!bg-[#008f8d] hover:!text-white rounded-2xl shadow-xl"
+            >
+              <FaCalendarAlt />
+              Book a Vet Appointment
+            </Button>
+          </Link>
 
-          <Button
-            variant="outline"
-            size="md"
-            className="inline-flex items-center gap-3 !bg-white !text-[#07182c] !border-white hover:!bg-white hover:!text-[#009f9d] rounded-2xl shadow-lg"
-          >
-            <FaShoppingBag />
-            Explore Marketplace
-          </Button>
+          <Link to="/marketplace">
+            <Button
+              variant="outline"
+              size="md"
+              className="inline-flex items-center gap-3 !bg-white !text-[#07182c] !border-white hover:!bg-white hover:!text-[#009f9d] rounded-2xl shadow-lg"
+            >
+              <FaShoppingBag />
+              Explore Marketplace
+            </Button>
+          </Link>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-5">

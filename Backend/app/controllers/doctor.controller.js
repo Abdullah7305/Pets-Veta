@@ -86,10 +86,90 @@ const fetchDoctorAppointments = catchAsync(async (req, res) => {
     return sendResponse(res, 200, "Doctor appointments fetched successfully", appointments);
 })
 
+const getDoctorProfile = catchAsync(async (req, res) => {
+    const userId = req.user.id;
+
+    const doctorProfile = await doctorServices.getDoctorProfile(userId);
+
+    if (!doctorProfile) {
+        throw new AppError("Doctor profile not found", 404);
+    }
+
+    if (!doctorProfile.doctors) {
+        throw new AppError("Doctor data not found", 404);
+    }
+
+    return sendResponse(
+        res,
+        200,
+        "Doctor profile fetched successfully",
+        doctorProfile
+    );
+});
+
+
+const updateDoctorProfile = catchAsync(async (req, res) => {
+    const userId = req.user.id;
+
+    const {
+        fullName,
+        username,
+        phone,
+        profileImageUrl,
+        specialization,
+        education,
+        experience,
+        fees,
+        address,
+        isAvailable,
+    } = req.body;
+
+    requireFields(
+        [
+            "fullName",
+            "username",
+            "phone",
+            "profileImageUrl",
+            "specialization",
+            "education",
+            "experience",
+            "fees",
+            "address",
+            "isAvailable",
+        ],
+        req.body
+    );
+
+    const updatedDoctorProfile = await doctorServices.updateDoctorProfile(
+        userId,
+        {
+            fullName,
+            username,
+            phone,
+            profileImageUrl,
+            specialization,
+            education,
+            experience,
+            fees,
+            address,
+            isAvailable,
+        }
+    );
+
+    return sendResponse(
+        res,
+        200,
+        "Doctor profile updated successfully",
+        updatedDoctorProfile
+    );
+});
+
 module.exports = {
     createDoctorServicePricing,
     fetchDoctorServices,
     deleteDoctorService,
     updateDoctorService,
-    fetchDoctorAppointments
-}
+    fetchDoctorAppointments,
+    getDoctorProfile,
+    updateDoctorProfile,
+};

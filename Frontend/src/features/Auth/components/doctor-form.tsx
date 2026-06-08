@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import Input from "../../../shared/components/Input/Input";
 import Button from "../../../shared/components/Button/Button";
 
-
 import {
   doctorSchema,
   type DoctorFormData,
@@ -20,7 +19,7 @@ const doctorFields = [
   { name: "email", label: "Email Address", type: "email", placeholder: "example@gmail.com" },
   { name: "phone", label: "Phone Number", type: "tel", placeholder: "+923001234567" },
   { name: "experience", label: "Years of Experience", type: "number", placeholder: "5" },
-  { name: "fees", label: "fees", type: "number", placeholder: "Enter Checkup Fees" },
+  { name: "fees", label: "Fees", type: "number", placeholder: "Enter Checkup Fees" },
   { name: "medicalLicenseNumber", label: "Medical License Number", type: "text", placeholder: "LIC-123456" },
   { name: "education", label: "Education/Qualifications", type: "text", placeholder: "e.g., DVM, BVSc" },
   { name: "address", label: "Clinic Address", type: "text", placeholder: "Clinic Address" },
@@ -31,7 +30,7 @@ const doctorFields = [
 
 const specializations = ["General Veterinary", "Pet Surgeon", "Animal Dentist"];
 
-interface registrationResponse {
+interface RegistrationResponse {
   success: boolean;
   message: string;
 }
@@ -40,6 +39,7 @@ export default function DoctorForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [responseMessage, setResponseMessage] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
+
   const navigate = useNavigate();
 
   const {
@@ -53,39 +53,40 @@ export default function DoctorForm() {
   });
 
   const onSubmit = async (data: DoctorFormData) => {
-
     setErrorMessage("");
     setResponseMessage("");
-
 
     const formData = new FormData();
 
     Object.keys(data).forEach((key) => {
       if (key !== "document") {
         const value = data[key as keyof DoctorFormData];
+
         if (value !== undefined && value !== null) {
           formData.append(key, String(value));
         }
       }
     });
 
-
     if (data.document && data.document.length > 0) {
       formData.append("document", data.document[0]);
     }
 
-    console.log("Submitting FormData...");
-    const response = await createDoctorAccount<registrationResponse>(formData);
-    if (response.success) {
-      setResponseMessage(response.message || "Account created successfully!");
+    try {
+      const response = await createDoctorAccount<RegistrationResponse>(formData);
 
-      setTimeout(() => {
-        reset();
-        navigate("/verify-otp");
-      }, 2000);
+      if (response.success) {
+        setResponseMessage(response.message || "Account created successfully!");
+
+        setTimeout(() => {
+          reset();
+          navigate("/verify-otp");
+        }, 2000);
+      }
+    } catch (error) {
+      setErrorMessage("Something went wrong. Please try again.");
+      console.error("Doctor signup error:", error);
     }
-    console.log("Success response:", response);
-
   };
 
   const onError: SubmitErrorHandler<DoctorFormInput> = (formErrors) => {
@@ -93,43 +94,63 @@ export default function DoctorForm() {
   };
 
   return (
-    <div className=" rounded-3xl bg-white/80 p-6 shadow-sm backdrop-blur-lg">
+    <div className="rounded-3xl bg-white/80 p-6 shadow-sm backdrop-blur-lg">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-[#078b91]">Doctor Registration</h1>
-        <p className="mt-2 text-gray-500">Create your professional doctor account</p>
+        <h1 className="text-3xl font-bold text-[#078b91]">
+          Doctor Registration
+        </h1>
+        <p className="mt-2 text-gray-500">
+          Create your professional doctor account
+        </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-5 ">
+      <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-5">
         {responseMessage && (
           <div className="rounded-lg border border-green-200 bg-green-50 p-4">
-            <p className="text-center font-medium text-green-800">{responseMessage}</p>
+            <p className="text-center font-medium text-green-800">
+              {responseMessage}
+            </p>
           </div>
         )}
 
         {errorMessage && (
           <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-            <p className="text-center font-medium text-red-800">{errorMessage}</p>
+            <p className="text-center font-medium text-red-800">
+              {errorMessage}
+            </p>
           </div>
         )}
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {doctorFields.map((field) => {
+            const isPasswordField =
+              field.name === "password" || field.name === "confirmPassword";
 
-          {doctorFields.map((field) => (
-            <Input
-              key={field.name}
-              label={field.label}
-              type={field.type}
-              placeholder={field.placeholder || ""}
-              error={errors[field.name as keyof DoctorFormInput]?.message as string}
-              showPassword={showPassword}
-              onTogglePassword={() => setShowPassword(!showPassword)}
-              {...register(field.name)}
-            />
-          ))}
+            return (
+              <Input
+                key={field.name}
+                label={field.label}
+                type={field.type}
+                placeholder={field.placeholder || ""}
+                error={
+                  errors[field.name as keyof DoctorFormInput]?.message as string
+                }
+                showPassword={isPasswordField ? showPassword : undefined}
+                onTogglePassword={
+                  isPasswordField
+                    ? () => setShowPassword((prev) => !prev)
+                    : undefined
+                }
+                {...register(field.name)}
+              />
+            );
+          })}
 
-          {/* SPECIALIZATION */}
           <div className="flex flex-col gap-2 md:col-span-2">
-            <label className="text-sm font-medium text-gray-700">Specialization</label>
+            <label className="text-sm font-medium text-gray-700">
+              Specialization
+            </label>
+
             <select
               className="w-full rounded-xl border border-gray-300 px-4 py-2.5 outline-none focus:border-blue-600"
               {...register("specialization")}
@@ -141,36 +162,32 @@ export default function DoctorForm() {
                 </option>
               ))}
             </select>
+
             {errors.specialization && (
-              <p className="text-sm text-red-500">{errors.specialization.message}</p>
+              <p className="text-sm text-red-500">
+                {errors.specialization.message}
+              </p>
             )}
           </div>
         </div>
 
-
-
-        {/* BUTTONS */}
         <div className="space-y-3 pt-2">
-          <Button
-            type="submit"
-            isSubmitting={isSubmitting} // Corrected to use your custom prop
-          >
+          <Button type="submit" isSubmitting={isSubmitting}>
             {isSubmitting ? "Creating Account..." : "Create Account"}
           </Button>
 
-          {/* DIVIDER */}
           <div className="flex items-center gap-3">
             <div className="h-px flex-1 bg-gray-300" />
             <span className="text-xs text-gray-500">OR</span>
             <div className="h-px flex-1 bg-gray-300" />
           </div>
 
-
-
-          {/* LOGIN */}
           <p className="text-center text-sm text-gray-600">
             Already have an account?{" "}
-            <a href="/login" className="font-semibold text-blue-900 hover:underline">
+            <a
+              href="/login"
+              className="font-semibold text-blue-900 hover:underline"
+            >
               Login
             </a>
           </p>

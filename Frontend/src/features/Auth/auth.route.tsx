@@ -1,5 +1,5 @@
 import LoginPage from "./pages/login";
-import ContinueAs from "./pages/ContinueAs";
+import ContinueAsPage from "./pages/ContinueAs";
 import PetOwnerSignupPage from "./pages/pet-owner-signup";
 import DoctorSignupPage from "./pages/doctor-signup";
 
@@ -10,7 +10,7 @@ const AuthRouter = [
   },
   {
     path: "/continue-as",
-    element: <ContinueAs />,
+    element: <ContinueAsPage />,
   },
   {
     path: "/signup/pet-owner",
