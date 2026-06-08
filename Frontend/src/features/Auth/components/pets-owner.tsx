@@ -2,6 +2,7 @@ import { getGoogleAuthUrlApi, type ApiResponse } from "../api/petOwner.api";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
+import { AxiosError } from "axios";
 
 
 import {
@@ -92,19 +93,19 @@ export default function PetOwnerForm() {
         window.location.href = result.data.url;
       }
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        const status = error?.response?.status;
-        const message = error?.response?.data?.message;
+      if (error instanceof AxiosError) {
+        const status = error.response?.status;
+        const message = error.response?.data?.message;
 
-
-        if (status >= 400 && status < 500) {
+        if (status && status >= 400 && status < 500) {
           setIsError(message || "Invalid request");
-        }
-
-        else {
+        } else {
           setIsError("Something went wrong. Please try again.");
         }
 
+        console.log("Signup Error:", error);
+      } else {
+        setIsError("Something went wrong. Please try again.");
         console.log("Signup Error:", error);
       }
     } finally {

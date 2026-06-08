@@ -1,22 +1,18 @@
 import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
 import { createDoctorAccount } from '../api/doctor.api';
-import { type DoctorFormData } from '../schemas/doctor.schema';
 import { type ApiResponse } from '../api/doctor.api';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './authhook';
 
-
-export const useDoctorAccountHook = (options: UseMutationOptions<ApiResponse, Error, DoctorFormData> = {}) => {
+export const useDoctorAccountHook = (options: UseMutationOptions<ApiResponse, Error, FormData> = {}) => {
     const { setUser, setIsAuthenticateUser } = useAuth();
     const navigate = useNavigate();
 
     return useMutation({
         mutationFn: createDoctorAccount,
-        // Spread options FIRST so they don't overwrite your custom handlers
         ...options,
 
-        onSuccess: (response, variables, context) => {
-            // 1. Your Custom Hook Logic
+        onSuccess: (response, variables, onMutateResult, context) => {
             setUser(response);
             setIsAuthenticateUser(true);
 
@@ -25,19 +21,16 @@ export const useDoctorAccountHook = (options: UseMutationOptions<ApiResponse, Er
                 navigate("/verify-otp", { replace: true });
             }
 
-            // 2. Execute the component's onSuccess if it exists
             if (options.onSuccess) {
-                options.onSuccess(response, variables, context);
+                options.onSuccess(response, variables, onMutateResult, context);
             }
         },
 
-        onError: (error, variables, context) => {
-            // 1. Your Custom Hook Logic
+        onError: (error, variables, onMutateResult, context) => {
             console.log("Doctor Account Error ", error);
 
-            // 2. Execute the component's onError if it exists
             if (options.onError) {
-                options.onError(error, variables, context);
+                options.onError(error, variables, onMutateResult, context);
             }
         }
     });

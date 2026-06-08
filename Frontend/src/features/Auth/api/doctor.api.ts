@@ -1,5 +1,4 @@
 import { api, handleAxiosError } from "@/features/api interface/axios.interface";
-import { type DoctorFormData } from "../schemas/doctor.schema";
 
 type Data = {
     id: string,
@@ -14,17 +13,14 @@ export type ApiResponse = {
     data: Data
 }
 
-
-export const createDoctorAccount = async (data: DoctorFormData): Promise<ApiResponse> => {
+export const createDoctorAccount = async (data: FormData): Promise<ApiResponse> => {
     try {
         const response = await api.post("auth/register/doctor", data)
-
 
         return response.data;
     }
     catch (error) {
         handleAxiosError(error)
         throw error
-
     }
 }

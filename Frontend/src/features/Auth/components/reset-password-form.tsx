@@ -1,17 +1,10 @@
 import { useState } from "react";
-
 import { useNavigate } from "react-router-dom";
-
 import { useForm } from "react-hook-form";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import Input from "../../../shared/components/Input/Input";
-
 import Button from "../../../shared/components/Button/Button";
-
-import { resetPasswordRequest } from "../api/resetpassword.api";
-
+import { useResetPassword } from "../hooks/useResetPassword";
 import {
   resetPasswordSchema,
   type ResetPasswordFormData,
@@ -24,7 +17,6 @@ const passwordFields = [
     type: "password",
     placeholder: "******",
   },
-
   {
     name: "confirmPassword",
     label: "Confirm Password",
@@ -35,9 +27,6 @@ const passwordFields = [
 
 export default function ResetPasswordForm() {
   const navigate = useNavigate();
-
-  const [loading, setLoading] = useState(false);
-
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -49,40 +38,26 @@ export default function ResetPasswordForm() {
     resolver: zodResolver(resetPasswordSchema),
   });
 
-  const onSubmit = async (data: ResetPasswordFormData) => {
-    console.log(data);
-    try {
-      const response = await resetPasswordRequest(data)
-      console.log(response);
+  const { mutate: resetPassword, isPending } = useResetPassword({
+    onSuccess: () => {
       reset();
-      navigate('/')
-    } catch (error) {
-      console.log("Error in login", error);
-    }
-    finally {
-      setLoading(false);
-    }
+      navigate("/");
+    },
+    onError: (error) => {
+      console.log("Error in reset password", error);
+    },
+  });
+
+  const onSubmit = (data: ResetPasswordFormData) => {
+    resetPassword(data);
   };
 
   return (
     <div className="w-full">
       <div className="mb-6 text-center">
-        <h1
-          className="
-          text-3xl font-bold
-          text-blue-900
-        "
-        >
-          Reset Password
-        </h1>
+        <h1 className="text-3xl font-bold text-blue-900">Reset Password</h1>
 
-        <p
-          className="
-          mt-2 text-gray-500
-        "
-        >
-          Create your new password
-        </p>
+        <p className="mt-2 text-gray-500">Create your new password</p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -99,7 +74,7 @@ export default function ResetPasswordForm() {
           />
         ))}
 
-        <Button type="submit" loading={loading}>
+        <Button type="submit" loading={isPending}>
           Reset Password
         </Button>
       </form>

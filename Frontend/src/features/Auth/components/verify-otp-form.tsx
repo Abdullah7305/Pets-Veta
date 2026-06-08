@@ -4,7 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import Button from "../../../shared/components/Button/Button";
 import BackButton from "../../../shared/components/Button";
-import { verifyUserOtp, resendUserOtp } from "../api/verifyotp.api";
+import { useOtp } from "../hooks/useOtp";
+import { useResendOtp } from "../hooks/useResendOtp";
 import {
   verifyOtpSchema,
   type VerifyOtpFormData,
@@ -13,7 +14,6 @@ import {
 export default function VerifyOtpForm() {
   const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(360);
 
   useEffect(() => {
@@ -38,34 +38,31 @@ export default function VerifyOtpForm() {
     },
   });
 
-  const onSubmit = async (data: VerifyOtpFormData) => {
-    try {
-      setLoading(true);
-
-      const response = await verifyUserOtp(data);
-      console.log(response);
-
+  const { mutate: verifyOtp, isPending: isVerifying } = useOtp({
+    onSuccess: () => {
       navigate("/");
-    } catch (error) {
+    },
+    onError: (error) => {
       console.log("==========>>", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+  });
 
-  const handleResendOtp = async () => {
-    try {
-      setLoading(true);
+  const { mutate: resendOtp, isPending: isResending } = useResendOtp({
+    onSuccess: () => {
       setTimer(360);
       setValue("otp", "");
-
-      const response = await resendUserOtp();
-      console.log(response);
-    } catch (error) {
+    },
+    onError: (error) => {
       console.log("==========>>", error);
-    } finally {
-      setLoading(false);
-    }
+    },
+  });
+
+  const onSubmit = (data: VerifyOtpFormData) => {
+    verifyOtp(data);
+  };
+
+  const handleResendOtp = () => {
+    resendOtp();
   };
 
   const minutes = Math.floor(timer / 60);
@@ -127,7 +124,7 @@ export default function VerifyOtpForm() {
           <button
             type="button"
             onClick={handleResendOtp}
-            disabled={loading}
+            disabled={isResending}
             className="
               cursor-pointer text-sm
               font-medium text-blue-900
@@ -140,7 +137,7 @@ export default function VerifyOtpForm() {
           </button>
         </div>
 
-        <Button type="submit" loading={loading}>
+        <Button type="submit" loading={isVerifying}>
           Verify OTP
         </Button>
 
