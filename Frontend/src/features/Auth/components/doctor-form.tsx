@@ -4,7 +4,7 @@ import { useState } from "react";
 import { type ApiResponse } from "../api/doctor.api";
 
 
-import Input from "../../../shared/components/Inputs/Input";
+import Input from "../../../shared/components/Input/Input";
 import Button from "../../../shared/components/Button/Button";
 import { useDoctorAccountHook } from "../hooks/useDoctorAccount";
 

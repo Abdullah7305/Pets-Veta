@@ -1,34 +1,30 @@
-import { CalendarCheck } from "lucide-react";
+import { Link } from "react-router-dom";
+import Button from "../../../shared/components/Button";
 
 const AboutCTA = () => {
   return (
-    <section className="mx-auto max-w-6xl px-5 pb-16">
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#071B4D] to-[#0B255F] p-6 text-white shadow-xl md:p-8">
-        <div className="absolute right-10 top-8 text-7xl opacity-10">🐾</div>
-        <div className="absolute bottom-0 left-10 hidden text-8xl md:block">
-          🐶
-        </div>
+    <section className="bg-white px-5 pb-16 lg:px-16">
+      <div className="mx-auto max-w-7xl rounded-[36px] bg-gradient-to-br from-[#bdf0ee] via-[#f5fbff] to-[#fff3ec] p-8 text-center shadow-[0_18px_50px_rgba(15,23,42,0.10)] md:p-12">
+        <h2 className="text-3xl font-extrabold text-[#07182c] md:text-4xl">
+          Ready to care better for your pet?
+        </h2>
 
-        <div className="relative grid items-center gap-8 md:grid-cols-[1fr_1.5fr_0.8fr]">
-          <div className="hidden md:block" />
+        <p className="mx-auto mt-3 max-w-2xl leading-7 text-slate-600">
+          Explore verified doctors, book appointments and get smart assistance
+          for your pet’s health.
+        </p>
 
-          <div>
-            <h2 className="text-3xl font-black md:text-[2.2rem]">
-              Ready To Book An Appointment?
-            </h2>
+        <div className="mt-7 flex flex-wrap justify-center gap-4">
+          <Link to="/doctors">
+            <Button>Find Doctors</Button>
+          </Link>
 
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-white/75">
-              Your pet’s health is our priority. Book an appointment today and
-              give your pet the best care possible.
-            </p>
-          </div>
-
-          <div className="flex md:justify-end">
-            <button className="inline-flex items-center gap-2 rounded-xl bg-[#F28B5B] px-6 py-3 text-sm font-black text-white shadow-md transition hover:-translate-y-0.5 hover:bg-[#ff9b6e]">
-              <CalendarCheck size={18} />
-              Book Appointment Now
-            </button>
-          </div>
+          <Link
+            to="/"
+            className="inline-flex items-center justify-center rounded-xl border border-[#009f9d] px-5 py-3 text-sm font-bold text-[#009f9d] transition hover:bg-[#eefafa]"
+          >
+            Back to Home
+          </Link>
         </div>
       </div>
     </section>

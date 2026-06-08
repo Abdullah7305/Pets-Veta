@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 
-import Input from "../../../../shared/components/Inputs/Input";
+import Input from "../../../../shared/components/Input/Input";
 import Button from "../../../../shared/components/Button/Button";
 import {
   petSchema,

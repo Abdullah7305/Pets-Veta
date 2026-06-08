@@ -6,11 +6,10 @@ import { useForm } from "react-hook-form";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import Input from "../../../shared/components/Inputs/Input";
+import Input from "../../../shared/components/Input/Input";
 
 import Button from "../../../shared/components/Button/Button";
 
-import BackButton from "../../../shared/components/Button/BackButton/BackButton";
 import { resetPasswordRequest } from "../api/resetpassword.api";
 
 import {
@@ -106,7 +105,7 @@ export default function ResetPasswordForm() {
       </form>
 
       <div className="mt-5 text-center">
-        <BackButton href="/verify-otp" text="Back" />
+        <Button href="/verify-otp" text="Back" />
       </div>
     </div>
   );

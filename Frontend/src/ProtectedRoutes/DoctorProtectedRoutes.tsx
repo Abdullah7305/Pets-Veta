@@ -1,4 +1,4 @@
-import { Outlet, Navigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import Notfound from "@/shared/components/Notfound/Notfound";
 import { useAuth } from "@/features/Auth/hooks/authhook";
 

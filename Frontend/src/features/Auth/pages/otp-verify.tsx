@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import Button from "../../../shared/components/Button/Button";
-import BackButton from "../../../shared/components/Button/BackButton/BackButton";
+import BackButton from "../../../shared/components/Button/Button";
 import { verifyUserOtp, resendUserOtp } from "../api/verifyotp.api";
 import {
   verifyOtpSchema,

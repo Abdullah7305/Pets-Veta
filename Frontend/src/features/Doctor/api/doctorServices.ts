@@ -1,4 +1,4 @@
-import axios from 'axios'
+
 import { api } from '../../api interface/axios.interface'
 import { handleAxiosError } from '../../api interface/axios.interface'
 
