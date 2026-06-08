@@ -4,6 +4,7 @@ import { NAVLINKS } from "./navbar.data";
 import { useAuth } from "@/features/Auth/hooks/authhook";
 
 const Navbar = () => {
+  
   const { user, isLoading } = useAuth();
 
   return (
@@ -19,7 +20,7 @@ const Navbar = () => {
           />
         </Link>
 
-        {/* Links */}
+
         <ul className="hidden items-center gap-7 lg:flex">
           {NAVLINKS.map((link) => (
             <li key={link.id}>
@@ -47,7 +48,7 @@ const Navbar = () => {
 
         <div className="flex items-center justify-end min-w-[120px]">
           {isLoading ? (
-    
+
             <div className="hidden h-10 w-32 animate-pulse rounded-full bg-[#078b91]/10 md:block" />
           ) : user?.data ? (
 
@@ -64,7 +65,7 @@ const Navbar = () => {
               </div>
             </div>
           ) : (
-    
+
             <div className="hidden items-center gap-3 md:flex">
               <NavLink
                 to="/login"
@@ -83,7 +84,7 @@ const Navbar = () => {
           )}
         </div>
 
-     
+
         <button className="flex h-11 w-11 items-center justify-center rounded-full border border-white/40 bg-white/35 shadow-sm backdrop-blur-xl transition-all duration-300 hover:bg-white/60 lg:hidden">
           <span className="space-y-1.5">
             <span className="block h-[2px] w-5 rounded-full bg-[#20263d]" />

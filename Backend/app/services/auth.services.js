@@ -23,7 +23,7 @@ const createDoctor = async (doctorData) => {
                     fees: parseInt(doctorData.fees)
                 }
             },
-            doctorCertificates: {
+            doctorCertificate: {
                 create: {
                     publicId: doctorData.publicId,
                     publicUrl: doctorData.publicUrl
@@ -37,13 +37,16 @@ const createDoctor = async (doctorData) => {
         include: {
             doctors: true,
             userRole: true,
-            doctorCertificates: true
+            doctorCertificate: true
         }
     });
 };
 
 
 const createPetOwner = async (petOwnerData) => {
+    if (!petOwnerData) {
+        throw new AppError("Data is Invalid ", 400)
+    }
 
     const isCreated = await prisma.user.findFirst({
         where: {

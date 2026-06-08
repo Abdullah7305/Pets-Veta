@@ -1,15 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { userLogin } from "../api/loginuser.api";
+import { useLogin } from "../hooks/useLogin";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getGoogleAuthUrlApi } from "../api/petOwner.api";
 import { type ApiResponse } from "../api/loginuser.api";
+import { useAuth } from "../hooks/authhook";
 
 import {
   loginSchema,
   type LoginFormData,
 } from "../../Auth/schemas/login.schema";
+
 
 
 const PawIcon = () => (
@@ -28,12 +30,51 @@ const PawIcon = () => (
 );
 
 export default function LoginComponent() {
+
   const [showPassword, setShowPassword] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [forbiddenError, setForbiddenError] = useState("");
   const [apiMesg, setApiMesg] = useState("");
 
+  const { isAuthenticatedUser, user } = useAuth()
   const navigate = useNavigate();
+
+  const { mutate: login, isPending: isloggingIn } = useLogin({
+    onSuccess: (response: ApiResponse) => {
+
+      if (response.success) {
+
+
+        setApiMesg(response.message);
+        console.log("Role is ", response.data.role);
+
+        reset();
+
+      }
+
+    },
+    onError: (error) => {
+      setForbiddenError("Login Failed.Please check you email and password");
+      console.log("Login Error", error)
+    }
+  })
+
+  useEffect(() => {
+    console.log("Wokring")
+    if (isAuthenticatedUser && user?.data) {
+      if (user.data.role === "Admin") {
+        navigate("/admin-dashboard", { replace: true });
+      }
+      else if (user.data.role === "Doctor") {
+        navigate("/doctor-dashboard", { replace: true });
+      }
+      else {
+        navigate("/", { replace: true });
+      }
+    }
+  }, [isAuthenticatedUser, user, navigate]);
+
+
 
   const {
     register,
@@ -45,32 +86,10 @@ export default function LoginComponent() {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    try {
-      setForbiddenError("");
-      setApiMesg("");
+    setForbiddenError('');
+    setApiMesg('');
+    login(data)
 
-      const response: ApiResponse = await userLogin(data);
-
-      if (response.success) {
-        setApiMesg(response.message);
-        reset();
-
-        if (response?.data.role === "Admin") {
-          navigate("/admin-dashboard");
-          return;
-        }
-
-        if (response?.data.role === "Doctor") {
-          navigate("/doctor-dashboard");
-          return;
-        }
-
-        navigate("/");
-      }
-    } catch (error) {
-      setForbiddenError("Login failed. Please check your email and password.");
-      console.log("Login Error:", error);
-    }
   };
 
   const handleGoogleLogin = async () => {
@@ -257,9 +276,10 @@ export default function LoginComponent() {
 
         <button
           type="submit"
+          disabled={isloggingIn}
           className="mt-1 flex h-[50px] w-full items-center justify-center gap-3 rounded-2xl bg-[#15265d] text-[15px] font-extrabold text-white shadow-[0_16px_30px_rgba(21,38,93,0.24)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#101f4d] active:translate-y-0"
         >
-          Login
+          {isloggingIn ? "Logginin In" : "Log In"}
           <span className="text-lg leading-none">→</span>
         </button>
 

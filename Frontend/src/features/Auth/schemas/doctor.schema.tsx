@@ -1,7 +1,8 @@
 import { z } from "zod";
 
 // Helper to check for a valid file size (e.g., max 5MB)
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ACCEPTED_FILE_TYPES = ["image/jpeg", "image/jpg", "image/png", "application/pdf"];
 
 export const doctorSchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters"),
@@ -22,13 +23,21 @@ export const doctorSchema = z.object({
 
 
 
-  // File inputs return a FileList in the browser.
   document: z
     .any()
-    .refine((files) => files && files.length > 0, "Document is required")
+    // 1. Check if a file was selected by checking the length of the FileList
+    .refine((files) => files && files.length > 0, "Document is required.")
+
+    // 2. Look at the FIRST file in the list and check its size
     .refine(
-      (files) => files && files[0]?.size <= MAX_FILE_SIZE,
-      "Max file size is 5MB"
+      (files) => files?.[0]?.size <= MAX_FILE_SIZE,
+      "Max file size is 5MB."
+    )
+
+    // 3. Look at the FIRST file and check its type (Browser uses 'type', not 'mimetype')
+    .refine(
+      (files) => ACCEPTED_FILE_TYPES.includes(files?.[0]?.type),
+      "Only .jpg, .jpeg, .png and .pdf formats are supported."
     ),
 
   password: z.string().min(6, "Password must be at least 6 characters"),

@@ -11,12 +11,13 @@ export const handleAxiosError = (error: unknown) => {
             console.log("Status Code", error.response?.status);
             console.log("Response Data", error.response?.data);
         } else if (error.request) {
-            console.log("No Request Response Received from server", error.request);
-        } else {
-            console.error("Axios setup error:", error.message);
+            console.log("No Request Response Received", error.request);
         }
+        
+        throw error;
     } else {
         console.error("Non-Axios Error:", error);
+        throw error;
     }
 };
 

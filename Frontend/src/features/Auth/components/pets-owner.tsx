@@ -1,15 +1,16 @@
-import { getGoogleAuthUrlApi } from "../api/petOwner.api";
+import { getGoogleAuthUrlApi, type ApiResponse } from "../api/petOwner.api";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+
 
 import {
   petOwnerSchema,
   type PetOwnerFormData,
 } from "../schemas/petowner.schema";
 
-import { createPetOwnerAccount } from "../api/petOwner.api";
+
+import { usePetOwnerHook } from "../hooks/usePetOwnerAccount";
 
 const PawIcon = () => (
   <svg
@@ -26,10 +27,10 @@ const PawIcon = () => (
   </svg>
 );
 
-interface RegistrationResponse {
-  success: boolean;
-  message: string;
-}
+// interface RegistrationResponse {
+//   success: boolean;
+//   message: string;
+// }
 
 export default function PetOwnerForm() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -38,7 +39,31 @@ export default function PetOwnerForm() {
   const [isGoogleLoading, setIsGoogleLoading] = useState<boolean>(false);
   const [isError, setIsError] = useState<string>("");
 
-  const navigate = useNavigate();
+
+
+  const { mutate: createAccount } = usePetOwnerHook({
+
+    onSuccess: (response: ApiResponse) => {
+      console.log("Role is ", response);
+      if (response.success) {
+        reset();
+      }
+    },
+    onError: (error) => {
+      setIsError("Failed in Creating Account");
+      const status = error.response?.status;
+      const message = error.response?.data?.message;
+
+      if (status && status >= 400 && status < 500) {
+        setIsError(message || "Invalid request");
+      } else {
+        setIsError("Something went wrong. Please try again.");
+      }
+
+
+    }
+
+  })
 
   const {
     register,
@@ -50,24 +75,10 @@ export default function PetOwnerForm() {
   });
 
   const onSubmit = async (data: PetOwnerFormData) => {
-    try {
-      setIsError("");
 
-      const response =
-        await createPetOwnerAccount<RegistrationResponse>(data);
+    setIsError('');
+    createAccount(data);
 
-      console.log("Response is ", response);
-
-      if (response.success) {
-        reset();
-        navigate("/verify-otp");
-      } else {
-        setIsError(response.message || "Account creation failed.");
-      }
-    } catch (error) {
-      console.log("Signup Error:", error);
-      setIsError("Something went wrong. Please try again.");
-    }
   };
 
   const handleGoogleLogin = async () => {
@@ -80,9 +91,22 @@ export default function PetOwnerForm() {
       if (result.success && result.data?.url) {
         window.location.href = result.data.url;
       }
-    } catch (error) {
-      console.log("Google Auth Error:", error);
-      setIsError("Google login failed. Please try again.");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        const status = error?.response?.status;
+        const message = error?.response?.data?.message;
+
+
+        if (status >= 400 && status < 500) {
+          setIsError(message || "Invalid request");
+        }
+
+        else {
+          setIsError("Something went wrong. Please try again.");
+        }
+
+        console.log("Signup Error:", error);
+      }
     } finally {
       setIsGoogleLoading(false);
     }

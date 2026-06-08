@@ -3,20 +3,21 @@ const authMiddlware = require('../middleware/auth.middleware');
 const authenticateRole = require('../middleware/authorizeRole.middleware');
 const doctorController = require('../controllers/doctor.controller');
 const doctorScheduleController = require('../controllers/doctorSchedule.controller');
+const { doctorLimiter } = require('../middleware/rateLimiter')
 
 const Router = express.Router();
 
 Router
     .route("/add/service")
-    .post(authMiddlware.protect, authenticateRole.authenticateUserRole('Doctor'), doctorController.createDoctorServicePricing);
+    .post(doctorLimiter, authMiddlware.protect, authenticateRole.authenticateUserRole('Doctor'), doctorController.createDoctorServicePricing);
 
 Router
     .route('/get/services')
-    .get(authMiddlware.protect, authenticateRole.authenticateUserRole('Doctor'), doctorController.fetchDoctorServices);
+    .get(doctorLimiter, authMiddlware.protect, authenticateRole.authenticateUserRole('Doctor'), doctorController.fetchDoctorServices);
 
 Router
     .route('/edit/service')
-    .patch(authMiddlware.protect, authenticateRole.authenticateUserRole('Doctor'), doctorController.updateDoctorService);
+    .patch(doctorLimiter, authMiddlware.protect, authenticateRole.authenticateUserRole('Doctor'), doctorController.updateDoctorService);
 
 Router
     .route('/delete/service')
@@ -24,7 +25,7 @@ Router
 
 Router
     .route('/appointments')
-    .get(authMiddlware.protect, authenticateRole.authenticateUserRole('Doctor'), doctorController.fetchDoctorAppointments);
+    .get(doctorLimiter, authMiddlware.protect, authenticateRole.authenticateUserRole('Doctor'), doctorController.fetchDoctorAppointments);
 
 Router
     .route("/schedule")
@@ -37,6 +38,7 @@ Router
 Router
     .route("/schedule/me")
     .get(
+        doctorLimiter,
         authMiddlware.protect,
         authenticateRole.authenticateUserRole('Doctor'),
         doctorScheduleController.getDoctorSchedule
@@ -49,6 +51,7 @@ Router
 Router
     .route("/schedule/:id")
     .put(
+        doctorLimiter,
         authMiddlware.protect,
         authenticateRole.authenticateUserRole('Doctor'),
         doctorScheduleController.updateDoctorSchedule

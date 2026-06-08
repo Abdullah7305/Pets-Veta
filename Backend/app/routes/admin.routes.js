@@ -2,6 +2,8 @@ const express = require('express');
 const authMiddleware = require('../middleware/auth.middleware');
 const adminController = require('../controllers/admin.controller');
 const authenticateRole = require('../middleware/authorizeRole.middleware')
+const { adminLimiter } = require('../middleware/rateLimiter');
+
 const Router = express.Router();
 
 Router
@@ -10,15 +12,15 @@ Router
 
 Router
     .route('/doctor-stats')
-    .get(authMiddleware.protect, authenticateRole.authenticateUserRole('Admin'), adminController.fetchDoctorStats)
+    .get(adminLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('Admin'), adminController.fetchDoctorStats)
 
 Router
     .route('/pending/doctors')
-    .get(authMiddleware.protect, authenticateRole.authenticateUserRole('Admin'), adminController.pendingDoctorList)
+    .get(adminLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('Admin'), adminController.pendingDoctorList)
 
 Router
     .route('/approved/doctors')
-    .get(authMiddleware.protect, authenticateRole.authenticateUserRole('Admin'), adminController.approvedDoctor)
+    .get(adminLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('Admin'), adminController.approvedDoctor)
 
 Router
     .route('/approve-pending/doctor')

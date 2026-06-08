@@ -1,30 +1,24 @@
-import axios from "axios";
 import type { ResetPasswordFormData } from "../schemas/reset-password.schema";
-import { api } from "@/features/api interface/axios.interface";
+import { api, handleAxiosError } from "@/features/api interface/axios.interface";
 
-export const resetPasswordRequest = async<T>(data: ResetPasswordFormData): Promise<T> => {
+type Data = {
+    email: string
+}
+
+export type ApiResponse = {
+    success: boolean,
+    message: string,
+    data: Data
+}
+
+export const resetPasswordRequest = async (data: ResetPasswordFormData): Promise<ApiResponse> => {
     try {
         const response = await api.post("auth/password-resets", data)
 
         return response.data;
 
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            if (error.response) {
-                console.log("Status Code", error.response?.status);
-                console.log("Response Data", error.response?.data)
-            }
-            else if (error.request) {
-                console.log("No Request Response Recieved from server", error.request)
-            }
-            else {
-                console.error("Axios setup error:", error.message);
-            }
-
-        }
-        else {
-            console.error("Non-Axios Error:", error);
-        }
+        handleAxiosError(error)
         throw error
 
     }

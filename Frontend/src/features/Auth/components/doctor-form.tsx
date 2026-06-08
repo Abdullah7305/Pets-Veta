@@ -1,12 +1,12 @@
 import { useForm, type SubmitErrorHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { createDoctorAccount } from "../api/doctor.api";
-import { useNavigate } from "react-router-dom";
+import { type ApiResponse } from "../api/doctor.api";
+
 
 import Input from "../../../shared/components/Inputs/Input";
 import Button from "../../../shared/components/Button/Button";
-
+import { useDoctorAccountHook } from "../hooks/useDoctorAccount";
 
 import {
   doctorSchema,
@@ -31,16 +31,13 @@ const doctorFields = [
 
 const specializations = ["General Veterinary", "Pet Surgeon", "Animal Dentist"];
 
-interface registrationResponse {
-  success: boolean;
-  message: string;
-}
 
 export default function DoctorForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [responseMessage, setResponseMessage] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const navigate = useNavigate();
+
+
 
   const {
     register,
@@ -51,6 +48,19 @@ export default function DoctorForm() {
     resolver: zodResolver(doctorSchema),
     mode: "onChange",
   });
+
+  const { mutate: createAccount } = useDoctorAccountHook({
+    onSuccess: (response: ApiResponse) => {
+      if (response.success) {
+        setResponseMessage(response.message || "Account Created Successfully")
+        reset();
+      }
+    },
+    onError: (error) => {
+      setErrorMessage(error.message);
+      console.log("Error is Doctor", error)
+    }
+  })
 
   const onSubmit = async (data: DoctorFormData) => {
 
@@ -74,17 +84,8 @@ export default function DoctorForm() {
       formData.append("document", data.document[0]);
     }
 
-    console.log("Submitting FormData...");
-    const response = await createDoctorAccount<registrationResponse>(formData);
-    if (response.success) {
-      setResponseMessage(response.message || "Account created successfully!");
-
-      setTimeout(() => {
-        reset();
-        navigate("/verify-otp");
-      }, 2000);
-    }
-    console.log("Success response:", response);
+    console.log("Submitting FormData...", data);
+    createAccount(formData)
 
   };
 

@@ -22,6 +22,9 @@ export const userLogin = async<T>(data: LoginFormData): Promise<T> => {
     } catch (error) {
         if (axios.isAxiosError(error)) {
             if (error.response) {
+                if (error.response.status == 429) {
+                    throw new Error("Please wait for a minute")
+                }
                 console.log("Status Code", error.response?.status);
                 console.log("Response Data", error.response?.data)
             }

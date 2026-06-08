@@ -1,8 +1,21 @@
-import axios from "axios";
-import { api } from "@/features/api interface/axios.interface";
+import { api, handleAxiosError } from "@/features/api interface/axios.interface";
+import { type DoctorFormData } from "../schemas/doctor.schema";
+
+type Data = {
+    id: string,
+    email: string,
+    role: string,
+    username: string
+}
+
+export type ApiResponse = {
+    success: boolean,
+    message: string,
+    data: Data
+}
 
 
-export const createDoctorAccount = async<T>(data: FormData): Promise<T> => {
+export const createDoctorAccount = async (data: DoctorFormData): Promise<ApiResponse> => {
     try {
         const response = await api.post("auth/register/doctor", data)
 
@@ -10,22 +23,7 @@ export const createDoctorAccount = async<T>(data: FormData): Promise<T> => {
         return response.data;
     }
     catch (error) {
-        if (axios.isAxiosError(error)) {
-            if (error.response) {
-                console.log("Status Code", error.response?.status);
-                console.log("Response Data", error.response?.data)
-            }
-            else if (error.request) {
-                console.log("No Request Response Recieved from server", error.request)
-            }
-            else {
-                console.error("Axios setup error:", error.message);
-            }
-
-        }
-        else {
-            console.error("Non-Axios Error:", error);
-        }
+        handleAxiosError(error)
         throw error
 
     }

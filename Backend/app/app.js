@@ -1,6 +1,8 @@
 const path = require('path');
 
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+require('./config/redis.config');
+
 const cors = require('cors');
 const express = require('express');
 const cookieParser = require('cookie-parser')
