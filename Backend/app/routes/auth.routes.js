@@ -3,6 +3,9 @@ const Router = express.Router();
 const authController = require('../controllers/auth.controller');
 const authMiddleware = require('../middleware/auth.middleware');
 const upload = require('../config/multer.config');
+const { authLimiter } = require('../middleware/rateLimiter');
+const { validateRequest } = require('../middleware/zod.middleware')
+const { doctorSchema, petOwnerSchema, loginSchema, resetPasswordSchema, forgotPasswordSchema } = require('../schema/zod.schema')
 
 Router
     .route('/me')
@@ -10,11 +13,11 @@ Router
 
 Router
     .route('/google/url')
-    .get(authController.getGoogleUrlController)
+    .get(authLimiter, authController.getGoogleUrlController)
 
 Router
     .route('/google/callback')
-    .get(authController.handleGoogleCallbackController)
+    .get(authLimiter, authController.handleGoogleCallbackController)
 
 Router
     .route('/register/doctor')
@@ -22,19 +25,19 @@ Router
 
 Router
     .route('/register/pet-owner')
-    .post(authController.createPetOwnerAccount)
+    .post(authLimiter, validateRequest(petOwnerSchema), authController.createPetOwnerAccount)
 
 Router
     .route('/register/admin')
-    .post(authController.createAdminAccount)
+    .post(authLimiter, authController.createAdminAccount)
 
 Router
     .route('/login/admin')
-    .post(authController.adminLogin)
+    .post(authLimiter, validateRequest(loginSchema), authController.adminLogin)
 
 Router
     .route('/login/user')
-    .post(authController.loginUserAccount)
+    .post(authLimiter, validateRequest(loginSchema), authController.loginUserAccount)
 
 Router
     .route('/logout/user')
@@ -42,23 +45,23 @@ Router
 
 Router
     .route('/refresh/token')
-    .get(authMiddleware.protectRefresh, authController.refreshTokenController)
+    .get(authLimiter, authMiddleware.protectRefresh, authController.refreshTokenController)
 
 Router
     .route('/verify/email')
-    .post(authController.verifyUserEmail)
+    .post(authLimiter, authController.verifyUserEmail)
 
 Router
     .route('/resend/otp')
-    .get(authMiddleware.protectOtp, authController.resendUserOtp)
+    .get(authLimiter, authMiddleware.protectOtp, authController.resendUserOtp)
 
 Router
     .route('/otp-verification')
-    .post(authMiddleware.protectOtp, authController.verifyOtp)
+    .post(authLimiter, authMiddleware.protectOtp, authController.verifyOtp)
 
 Router
     .route('/password-resets')
-    .post(authMiddleware.protectOtp, authController.resetUserPassword)
+    .post(authLimiter, authMiddleware.protectOtp, authController.resetUserPassword)
 
 
 

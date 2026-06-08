@@ -1,29 +1,28 @@
-import axios from "axios";
 import type { PetOwnerFormData } from "../schemas/petowner.schema";
-import { api } from "@/features/api interface/axios.interface";
+import { api, handleAxiosError } from "@/features/api interface/axios.interface";
 
-export const createPetOwnerAccount = async <T>(data: PetOwnerFormData): Promise<T> => {
+type Data = {
+    id: string,
+    email: string,
+    username: string,
+    role: string
+}
+
+export type ApiResponse = {
+    success: boolean,
+    message: string,
+    data: Data
+}
+
+export const createPetOwnerAccount = async (data: PetOwnerFormData): Promise<ApiResponse> => {
     try {
         const response = await api.post("auth/register/pet-owner", data);
 
         return response.data;
     } catch (error) {
-        if (axios.isAxiosError(error)) {
+        handleAxiosError(error)
+        throw error
 
-            if (error.response) {
-                console.log("Status Code:", error.response.status);
-                console.error("Response Data:", error.response.data);
-            } else if (error.request) {
-
-                console.error("No response received from server:", error.request);
-            } else {
-
-                console.error("Axios setup error:", error.message);
-            }
-        } else {
-            console.error("Non-Axios Error:", error);
-        }
-        throw error;
     }
 }
 
@@ -33,21 +32,6 @@ export const getGoogleAuthUrlApi = async () => {
         return response.data
     }
     catch (error) {
-        if (axios.isAxiosError(error)) {
-
-            if (error.response) {
-                console.log("Status Code:", error.response.status);
-                console.error("Response Data:", error.response.data);
-            } else if (error.request) {
-
-                console.error("No response received from server:", error.request);
-            } else {
-
-                console.error("Axios setup error:", error.message);
-            }
-        } else {
-            console.error("Non-Axios Error:", error);
-        }
-        throw error;
+        handleAxiosError(error)
     }
 }

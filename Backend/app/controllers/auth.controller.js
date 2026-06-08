@@ -56,15 +56,16 @@ const handleGoogleCallbackController = catchAsync(async (req, res) => {
 
 
 const createDoctorAccount = catchAsync(async (req, res) => {
-
+    console.log("Doctor Account....", req.body);
     if (!req.file) {
+
         throw new AppError("File is missing", 400);
     }
 
     requireFields(["fullName", "username", "fees", "email", "password", "phone", "education", "specialization", "address", "experience"], req.body)
     const { fullName, username, email, password, fees, phone,
         education, specialization, address, experience } = req.body;
-
+    console.log("I run....")
     req.body.fees = Number(req.body.fees);
 
     const isDoctorExist = await authServices.verifyEmail(email);
@@ -127,14 +128,16 @@ const createDoctorAccount = catchAsync(async (req, res) => {
     newDoctor = {
         id: newDoctor.id,
         email: newDoctor.email,
+        username: newDoctor.username,
         role: newDoctor.userRole.role
+
     }
 
     const otpToken = jwtSign(payload, Token_Types.OTP);
 
     res.cookie('otpToken', otpToken, cookiesOptions);
 
-    return sendResponse(res, 200, "Success", newDoctor);
+    return sendResponse(res, 201, "Success", newDoctor);
 
 })
 
@@ -160,11 +163,12 @@ const createPetOwnerAccount = catchAsync(async (req, res) => {
     }
 
     let validPetOwner = {
-        name: newPetOwner.fullName,
+        id: newPetOwner.id,
         username: newPetOwner.username,
         email: newPetOwner.email,
         role: newPetOwner.userRole.role
     }
+
     const otpCode = authUtils.otpGenerator();
     const hashedOtp = await bcrypt.hash(otpCode, 12);
     await authServices.saveUserOtp(email, hashedOtp);

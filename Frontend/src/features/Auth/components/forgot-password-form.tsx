@@ -1,14 +1,11 @@
-import { useState } from "react";
-
 import { useForm } from "react-hook-form";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 
 import Input from "../../../shared/components/Input/Input";
-import { veriyUserEmail } from "../api/verifyemail.api";
 import Button from "../../../shared/components/Button/Button";
 import BackButton from "../../../shared/components/Button";
+import { useForgotPassword } from "../hooks/useForgotPassword";
 
 import {
   forgotPasswordSchema,
@@ -26,8 +23,6 @@ const forgotFields = [
 export default function ForgotPasswordForm() {
   const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(false);
-
   const {
     register,
     handleSubmit,
@@ -37,19 +32,18 @@ export default function ForgotPasswordForm() {
     resolver: zodResolver(forgotPasswordSchema),
   });
 
-  const onSubmit = async (data: ForgotPasswordFormData) => {
-    try {
-      setLoading(true);
-      const response = await veriyUserEmail(data);
-
-      console.log(response);
+  const { mutate: forgotPassword, isPending } = useForgotPassword({
+    onSuccess: () => {
       reset();
       navigate("/verify-otp");
-    } catch (error) {
+    },
+    onError: (error) => {
       console.log(error);
-    } finally {
-      setLoading(false);
-    }
+    },
+  });
+
+  const onSubmit = (data: ForgotPasswordFormData) => {
+    forgotPassword(data);
   };
 
   return (
@@ -74,7 +68,7 @@ export default function ForgotPasswordForm() {
           />
         ))}
 
-        <Button type="submit" loading={loading}>
+        <Button type="submit" loading={isPending}>
           Next
         </Button>
 

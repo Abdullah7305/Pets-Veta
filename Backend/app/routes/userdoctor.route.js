@@ -1,5 +1,6 @@
 const express = require("express");
 const userDoctorController = require("../controllers/userdoctor.controller");
+const { globalUserLimiter } = require('../middleware/rateLimiter')
 
 const Router = express.Router();
 
