@@ -13,7 +13,7 @@ export const useApprovedDoctors = (
 
 ) => {
     return useQuery({
-        queryKey: ['approved-doctors'],
+        queryKey: ['approved-doctors', page, limit, search],
         queryFn: () => getApprovedDoctors(page, limit, search),
         ...options,
     })

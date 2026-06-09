@@ -12,17 +12,16 @@ import {
   type DoctorProfileFormInput,
 } from "../schemas/doctorProfile.schema";
 
-import {
-  getDoctorProfileApi,
-  updateDoctorProfileApi,
-} from "../apis/doctorProfile.api";
+import { updateDoctorProfileApi } from "../apis/doctorProfile.api";
+import { useDoctorProfileById } from "../hooks/useDoctorProfile";
 
 const EditDoctorProfileForm = () => {
   const navigate = useNavigate();
 
   const [apiError, setApiError] = useState("");
   const [apiMessage, setApiMessage] = useState("");
-  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+
+  const { data: profileData, isLoading, error } = useDoctorProfileById();
 
   const {
     register,
@@ -50,37 +49,27 @@ const EditDoctorProfileForm = () => {
   const isAvailable = watch("isAvailable");
 
   useEffect(() => {
-    const fetchDoctorProfile = async () => {
-      try {
-        setIsLoadingProfile(true);
-        setApiError("");
+    if (profileData?.success) {
+      const d = profileData.data;
+      reset({
+        fullName: d.fullName || "",
+        username: d.username || "",
+        phone: d.phone || "",
+        profileImageUrl: d.profileImageUrl || "",
+        specialization: d.specialization || "",
+        education: d.education || "",
+        address: d.address || "",
+        experience: String(d.experience ?? ""),
+        fees: String(d.fees ?? ""),
+        isAvailable: d.isAvailable ?? true,
+      });
+    }
 
-        const response = await getDoctorProfileApi();
-
-        if (response.success) {
-          reset({
-            fullName: response.data.fullName || "",
-            username: response.data.username || "",
-            phone: response.data.phone || "",
-            profileImageUrl: response.data.profileImageUrl || "",
-            specialization: response.data.specialization || "",
-            education: response.data.education || "",
-            address: response.data.address || "",
-            experience: String(response.data.experience ?? ""),
-            fees: String(response.data.fees ?? ""),
-            isAvailable: response.data.isAvailable ?? true,
-          });
-        }
-      } catch (error) {
-        console.log("Fetch doctor profile error:", error);
-        setApiError("Failed to load doctor profile.");
-      } finally {
-        setIsLoadingProfile(false);
-      }
-    };
-
-    fetchDoctorProfile();
-  }, [reset]);
+    if (error) {
+      console.log("Fetch doctor profile error:", error);
+      setApiError("Failed to load doctor profile.");
+    }
+  }, [profileData, error, reset]);
 
   const onSubmit = async (data: DoctorProfileFormData) => {
     try {
@@ -102,7 +91,7 @@ const EditDoctorProfileForm = () => {
     }
   };
 
-  if (isLoadingProfile) {
+  if (isLoading) {
     return (
       <main className="min-h-screen bg-[#F8FAFA] px-4 py-6 text-[#20263D] sm:px-6 lg:px-8">
         <section className="mx-auto max-w-5xl">

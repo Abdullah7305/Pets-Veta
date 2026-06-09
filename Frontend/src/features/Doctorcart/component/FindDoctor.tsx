@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-
-import { getApprovedDoctors, type Doctor } from "../apis/getDoctors.api";
+import { useState } from "react";
+import { type Doctor } from "../apis/getDoctors.api";
+import { useApprovedDoctors } from "../hooks/useGetDoctors";
 import DoctorsList from "./DoctorsList";
 import FilterSidebar from "./FilterSidebar";
 import PageHeader from "./PageHeader";
@@ -9,42 +9,13 @@ import Pagination from "./Pagination";
 const LIMIT = 5;
 
 const FindDoctor = () => {
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const fetchDoctors = async () => {
-    try {
-      setLoading(true);
-      const response = await getApprovedDoctors(page, LIMIT, search);
+  const { data, isLoading } = useApprovedDoctors({ page, limit: LIMIT, search });
 
-      // Defensive checks
-      const doctorsData = response?.data?.data;
-      const isArray = Array.isArray(doctorsData);
-
-      console.log("Doctors data:", { doctorsData, isArray });
-
-      if (!isArray) {
-        console.error("Invalid doctors data format:", doctorsData);
-        setDoctors([]);
-      } else {
-        setDoctors(doctorsData);
-      }
-
-      setTotalPages(response?.data?.meta?.totalPages || 1);
-    } catch (error) {
-      console.error("Error fetching doctors:", error);
-      setDoctors([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchDoctors();
-  }, [page, search]);
+  const doctors = data?.data?.data ?? [];
+  const totalPages = data?.data?.meta?.totalPages ?? 1;
 
   const handleBookAppointment = (doctorId: string, checkupTime?: string) => {
     console.log("Book appointment doctor id:", doctorId, "checkup time:", checkupTime);
@@ -70,7 +41,7 @@ const FindDoctor = () => {
 
           <DoctorsList
             doctors={doctors}
-            loading={loading}
+            loading={isLoading}
             onBookAppointment={handleBookAppointment}
           />
 
