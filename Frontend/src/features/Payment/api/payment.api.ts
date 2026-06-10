@@ -1,4 +1,4 @@
-import {api,handleAxiosError} from "@/features/api interface/axios.interface";
+import { api, handleAxiosError } from "@/features/api interface/axios.interface";
 import type {
   CreateCheckoutSessionResponse,
   PaymentStatusResponse,
@@ -7,17 +7,27 @@ import type {
 export const createCheckoutSessionApi = async (
   appointmentId: string
 ): Promise<CreateCheckoutSessionResponse> => {
-  const response = await api.post("/payment/create-checkout-session", {
-    appointmentId,
-  });
+  try {
+    const response = await api.post("/payment/create-checkout-session", {
+      appointmentId,
+    });
 
-  return response.data;
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error)
+    throw error;
+  }
 };
 
 export const getPaymentStatusApi = async (
   sessionId: string
 ): Promise<PaymentStatusResponse> => {
-  const response = await api.get(`/payment/status/${sessionId}`);
+  try {
+    const response = await api.get(`/payment/status/${sessionId}`);
 
-  return response.data;
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error);
+    throw error;
+  }
 };

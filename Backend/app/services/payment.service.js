@@ -1,5 +1,5 @@
-const prisma = require("../../config/prisma");
-const stripe = require("../../config/stripe");
+const prisma = require("../config/prisma");
+const stripe = require("../config/stripe");
 
 const createAppointmentCheckoutSession = async ({ appointmentId, userId }) => {
   const appointment = await prisma.appointment.findUnique({

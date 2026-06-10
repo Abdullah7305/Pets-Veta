@@ -1,5 +1,5 @@
-const stripe = require("../../config/stripe");
-const paymentService = require("./payment.service");
+const stripe = require("../config/stripe");
+const paymentService = require("../services/payment.service");
 
 const createCheckoutSession = async (req, res) => {
   try {
