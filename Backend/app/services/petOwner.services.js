@@ -59,22 +59,27 @@ const registerPetIssue = async (petIssue) => {
             }
         });
 
-        const appointment = await tx.appointment.create({
-            data: {
-                doctorId: petIssue.doctorId,
-                petIssueReportId: createdPetIssue.id,
-                fees: doctor.fees,
-                checkupTime,
-            },
-        });
+        // const appointment = await tx.appointment.create({
+        //     data: {
+        //         doctorId: petIssue.doctorId,
+        //         petIssueReportId: createdPetIssue.id,
+        //         fees: doctor.fees,
+        //         checkupTime,
+
+        //     },
+        // });
 
         return {
             petIssue: createdPetIssue,
-            appointment,
+            // appointment,
         };
     });
 
     return newPetIssue;
+}
+
+const registerPetAppointment = async () => {
+    
 }
 
 const getUserPets = async (userId) => {
