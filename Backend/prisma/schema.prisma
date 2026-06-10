@@ -34,7 +34,17 @@ enum PetCategory {
 
 enum AppointmentStatus {
   PENDING
+  CONFIRMED
   COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELLED
+  REFUNDED
 }
 
 model User {
