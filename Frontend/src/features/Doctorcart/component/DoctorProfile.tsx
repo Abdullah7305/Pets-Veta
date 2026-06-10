@@ -1,3 +1,4 @@
+import { useEffect, useState, type ReactNode } from "react";
 import {
   BadgeCheck,
   BriefcaseBusiness,
@@ -18,6 +19,10 @@ import {
 
 import { useNavigate } from "react-router-dom";
 import Button from "../../../shared/components/Button/Button";
+import {
+  getDoctorProfileApi,
+  type DoctorProfileData as ApiDoctorProfileData,
+} from "../apis/doctorProfile.api";
 
 type DoctorProfileData = {
   fullName: string;
@@ -38,29 +43,95 @@ type DoctorProfileData = {
   isAvailable: boolean;
 };
 
-const doctor: DoctorProfileData = {
-  fullName: "Dr. Ayesha Khan",
-  email: "ayesha.khan@gmail.com",
-  phone: "+92 300 1234567",
-  profileImageUrl:
-    "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=500&q=80",
-  specialization: "Veterinary Surgeon",
-  education: "DVM",
-  experience: 5,
-  fees: 2500,
-  rating: 4.8,
-  reviews: 128,
-  licenseNumber: "VS-PK-2021-11234",
-  languages: "English, Urdu, Punjabi",
-  address: "PetCare Clinic, Gulberg III, Lahore",
-  about:
-    "Passionate about animal care and dedicated to providing the best medical services to pets.",
-  isVerified: true,
-  isAvailable: true,
+const DEFAULT_DOCTOR_IMAGE =
+  "https://ui-avatars.com/api/?name=Doctor&background=078b91&color=fff";
+
+const mapApiDoctorToProfile = (
+  apiDoctor: ApiDoctorProfileData
+): DoctorProfileData => {
+  return {
+    fullName: apiDoctor.fullName || "Doctor",
+    email: apiDoctor.email || "Not provided",
+    phone: apiDoctor.phone || "Not provided",
+    profileImageUrl: apiDoctor.profileImageUrl || DEFAULT_DOCTOR_IMAGE,
+    specialization: apiDoctor.specialization || "Veterinary Doctor",
+    education: apiDoctor.education || "Not provided",
+    experience: apiDoctor.experience || 0,
+    fees: apiDoctor.fees || 0,
+    rating: 0,
+    reviews: 0,
+    licenseNumber: "Not provided",
+    languages: "English, Urdu",
+    address: apiDoctor.address || "Not provided",
+    about:
+      "Passionate about animal care and dedicated to providing the best medical services to pets.",
+    isVerified: apiDoctor.isVerified === "APPROVED",
+    isAvailable: apiDoctor.isAvailable,
+  };
 };
 
 const DoctorProfile = () => {
   const navigate = useNavigate();
+
+  const [doctor, setDoctor] = useState<DoctorProfileData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    const fetchDoctorProfile = async () => {
+      try {
+        setLoading(true);
+        setErrorMessage("");
+
+        const response = await getDoctorProfileApi();
+
+        const mappedDoctor = mapApiDoctorToProfile(response.data);
+
+        setDoctor(mappedDoctor);
+      } catch (error) {
+        console.log("Doctor profile fetch error:", error);
+        setErrorMessage("Failed to load doctor profile");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDoctorProfile();
+  }, []);
+
+  if (loading) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#F8FAFA] px-4 py-6 text-[#20263D] sm:px-6 lg:px-8">
+        <div className="rounded-[28px] border border-slate-200 bg-white px-8 py-6 shadow-sm">
+          <p className="text-sm font-black text-[#078b91]">
+            Loading doctor profile...
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  if (errorMessage || !doctor) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#F8FAFA] px-4 py-6 text-[#20263D] sm:px-6 lg:px-8">
+        <div className="max-w-md rounded-[28px] border border-slate-200 bg-white p-8 text-center shadow-sm">
+          <h2 className="text-2xl font-black text-[#101b3d]">
+            {errorMessage || "Doctor profile not found"}
+          </h2>
+
+          <p className="mt-3 text-sm font-medium text-slate-500">
+            Please login as doctor and try again.
+          </p>
+
+          <div className="mt-6">
+            <Button type="button" onClick={() => navigate("/login")}>
+              Go to Login
+            </Button>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-[#F8FAFA] px-4 py-6 text-[#20263D] sm:px-6 lg:px-8">
@@ -93,7 +164,11 @@ const DoctorProfile = () => {
                   className="h-full w-full object-cover"
                 />
 
-                <span className="absolute bottom-3 right-3 h-5 w-5 rounded-full border-2 border-white bg-green-500" />
+                <span
+                  className={`absolute bottom-3 right-3 h-5 w-5 rounded-full border-2 border-white ${
+                    doctor.isAvailable ? "bg-green-500" : "bg-red-500"
+                  }`}
+                />
               </div>
 
               <h2 className="mt-5 text-center text-2xl font-black text-[#101b3d]">
@@ -227,13 +302,7 @@ const DoctorProfile = () => {
   );
 };
 
-const ContactRow = ({
-  icon,
-  value,
-}: {
-  icon: React.ReactNode;
-  value: string;
-}) => {
+const ContactRow = ({ icon, value }: { icon: ReactNode; value: string }) => {
   return (
     <div className="flex items-start gap-4 text-sm font-semibold text-slate-600">
       <span className="mt-0.5 text-[#078b91]">{icon}</span>
@@ -249,7 +318,7 @@ const MetricCard = ({
   value,
   description,
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   iconClass: string;
   label: string;
   value: string;
@@ -284,7 +353,7 @@ const InfoRow = ({
   value,
   noBorder = false,
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   label: string;
   value: string;
   noBorder?: boolean;

@@ -33,14 +33,7 @@ const Navbar = () => {
             Login
           </Button>
 
-<<<<<<< HEAD
           <Button href="/continue-as" variant="primary" size="sm">
-=======
-          <NavLink
-            to="/continue-as"
-            className="rounded-lg bg-[#178f95] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#12757a]"
-          >
->>>>>>> 8dc65a4f1d5169809732c30d2403adcb090d5262
             Register
           </Button>
         </div>
