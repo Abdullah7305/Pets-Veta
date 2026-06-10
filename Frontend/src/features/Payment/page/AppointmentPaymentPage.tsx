@@ -14,6 +14,8 @@ const AppointmentPaymentPage = () => {
 
   const handlePayNow = async () => {
     try {
+      console.log("Appointment object:", appointment);
+
       if (!appointment?.appointmentId) {
         alert("Appointment ID not found");
         return;
@@ -21,18 +23,23 @@ const AppointmentPaymentPage = () => {
 
       setLoading(true);
 
-      const response = await createCheckoutSessionApi(
-        appointment.appointmentId
-      );
+      console.log("Sending appointmentId:", appointment.appointmentId);
 
-      const checkoutUrl = response?.data?.url;
+      const response = await createCheckoutSessionApi(appointment.appointmentId);
+
+      console.log("Backend Stripe response:", response);
+
+      const checkoutUrl =
+        response?.data?.url || response?.data?.data?.url || response?.url;
+
+      console.log("Stripe Checkout URL:", checkoutUrl);
 
       if (!checkoutUrl) {
-        alert("Stripe checkout URL not found");
+        alert("Stripe checkout URL not found. Check console response.");
         return;
       }
 
-      window.location.href = checkoutUrl;
+      window.location.assign(checkoutUrl);
     } catch (error) {
       console.error("Stripe checkout error:", error);
       alert("Failed to start payment. Please try again.");

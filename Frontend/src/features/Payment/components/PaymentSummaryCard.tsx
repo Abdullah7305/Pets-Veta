@@ -15,8 +15,13 @@ const PaymentSummaryCard = ({
     ? new Date(appointment.checkupTime).toLocaleString()
     : "Not available";
 
+  const handleClick = () => {
+    console.log("Pay Now button clicked");
+    onPayNow();
+  };
+
   return (
-    <div className="w-full max-w-lg rounded-3xl bg-white p-7 shadow-xl border border-slate-100">
+    <div className="w-full max-w-lg rounded-3xl border border-slate-100 bg-white p-7 shadow-xl">
       <div className="text-center">
         <span className="inline-flex rounded-full bg-teal-50 px-4 py-2 text-sm font-semibold text-teal-700">
           Appointment Payment
@@ -36,15 +41,15 @@ const PaymentSummaryCard = ({
           <span className="text-sm font-medium text-slate-500">
             Appointment ID
           </span>
+
           <span className="max-w-[180px] truncate text-sm font-semibold text-slate-800">
             {appointment.appointmentId}
           </span>
         </div>
 
         <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-          <span className="text-sm font-medium text-slate-500">
-            Doctor
-          </span>
+          <span className="text-sm font-medium text-slate-500">Doctor</span>
+
           <span className="text-sm font-semibold text-slate-800">
             {appointment.doctorName || "Doctor"}
           </span>
@@ -54,6 +59,7 @@ const PaymentSummaryCard = ({
           <span className="text-sm font-medium text-slate-500">
             Checkup Time
           </span>
+
           <span className="text-right text-sm font-semibold text-slate-800">
             {formattedDate}
           </span>
@@ -63,6 +69,7 @@ const PaymentSummaryCard = ({
           <span className="text-base font-semibold text-slate-700">
             Total Fee
           </span>
+
           <span className="text-2xl font-bold text-teal-700">
             ${appointment.fees}
           </span>
@@ -71,7 +78,7 @@ const PaymentSummaryCard = ({
 
       <button
         type="button"
-        onClick={onPayNow}
+        onClick={handleClick}
         disabled={loading}
         className="mt-7 w-full rounded-xl bg-sky-800 px-5 py-3.5 text-base font-semibold text-white transition hover:bg-sky-900 disabled:cursor-not-allowed disabled:opacity-70"
       >
