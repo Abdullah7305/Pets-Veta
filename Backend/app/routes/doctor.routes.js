@@ -52,18 +52,6 @@ Router
     .route("/schedule/doctor/:doctorId")
     .get(doctorScheduleController.getDoctorSchedulesByDoctorId);
 
-Router
-    .route("/schedule/:id")
-    .put(
-        doctorLimiter,
-        authMiddlware.protect,
-        authenticateRole.authenticateUserRole("Doctor"),
-        doctorScheduleController.updateDoctorSchedule
-    )
-    .delete(
-        authMiddlware.protect,
-        authenticateRole.authenticateUserRole("Doctor"),
-        doctorScheduleController.deleteDoctorSchedule
-    );
+
 
 module.exports = Router;

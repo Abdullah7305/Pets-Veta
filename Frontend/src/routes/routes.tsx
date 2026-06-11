@@ -9,7 +9,7 @@ import { doctorAppointmentRoutes } from "../features/Doctorcart/doctorAppointmen
 import { petsRoutes } from "../features/Pet Owner/pet details/pets.route";
 import { marketplaceRoutes } from "@/features/Marketplace/marketplace.route";
 import { aiAssistantRoutes } from "@/features/AiAssistance/aiAssistant.route";
-import { paymentRoutes } from "@/features/Payment/payment.routes";
+// import { paymentRoutes } from "@/features/Payment/payment.routes";
 const Router = createBrowserRouter([
   ...LandingPageRoutes,
   ...AuthRouter,
@@ -20,7 +20,7 @@ const Router = createBrowserRouter([
   ...petsRoutes,
   ...marketplaceRoutes,
   ...aiAssistantRoutes,
-  ...paymentRoutes,
+  
   {
     path: "*",
     element: <Notfound />,

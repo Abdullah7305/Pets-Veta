@@ -4,8 +4,9 @@ import {
     FaCheckCircle,
     FaGraduationCap,
     FaUserMd,
-} from "react-icons/fa";
 
+} from "react-icons/fa";
+import { User } from 'lucide-react'
 
 import { getDoctorProfileData, type BookableSlot } from "../apis/doctorProfile.api";
 import { useEffect, useState } from "react";
@@ -48,6 +49,7 @@ const DoctorProfilePage = () => {
             if (id) {
                 const data = await getDoctorProfileData(id);
                 console.log("Doctor Profile Data", data);
+                console.log("Doctor is ", data);
                 setDoctor(data);
             }
             setLoading(false);
@@ -94,16 +96,18 @@ const DoctorProfilePage = () => {
                     <div className="space-y-6">
                         <div className="rounded-3xl bg-white p-6 shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
                             <div className="grid gap-6 md:grid-cols-[220px_1fr]">
-                                <div className="relative h-60 overflow-hidden rounded-3xl bg-[#eefafa]">
-                                    <img
-                                        src={doctor.image}
-                                        alt={doctor.name}
-                                        className="h-full w-full object-cover"
-                                    />
+                                <div className="relative h-60 overflow-hidden rounded-3xl bg-[#eefafa] flex justify-center items-center">
+                                    {
+                                        doctor.image.startsWith('/') ?
+                                            <img
+                                                src={doctor.image}
+                                                alt={doctor.name}
+                                                className="h-full w-full object-cover"
+                                            /> :
+                                            <User size={112} />
+                                    }
 
-                                    <span className="absolute bottom-4 left-4 rounded-full bg-green-100 px-3 py-1 text-xs font-extrabold text-green-700">
-                                        {doctor.status}
-                                    </span>
+                                   
                                 </div>
 
                                 <div>
@@ -218,16 +222,7 @@ const DoctorProfilePage = () => {
                             )}
                         </div>
 
-                        {/* <Link
-                            to={`/book-appointment/${id}${doctor.nextAvailable
-                                    ? `?checkupTime=${encodeURIComponent(doctor.nextAvailable.startDateTime)}`
-                                    : ""
-                                }`}
-                        >
-                            <Button className="mt-5 w-full" disabled={!doctor.nextAvailable}>
-                                Book Appointment
-                            </Button>
-                        </Link> */}
+                       
                     </aside>
                 </div>
             </div>

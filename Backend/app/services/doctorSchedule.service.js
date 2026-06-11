@@ -1,109 +1,68 @@
 const { default: prisma } = require("../config/prisma");
+const requireFields = require('../utils/validateRequest')
 const AppError = require('../utils/AppError')
 
-const VALID_DAYS = [
-    "SUNDAY",
-    "MONDAY",
-    "TUESDAY",
-    "WEDNESDAY",
-    "THURSDAY",
-    "FRIDAY",
-    "SATURDAY",
-];
-
-const parseScheduleDate = (value, fieldName) => {
-    const parsedDate = new Date(value);
-
-    if (Number.isNaN(parsedDate.getTime())) {
-        throw new AppError(`${fieldName} is invalid`, 400);
-    }
-
-    return parsedDate;
-};
-
-const getDayFromDate = (date) => {
-    return VALID_DAYS[date.getDay()];
-};
-
-const validateDoctorScheduleInput = ({ day, startTime, endTime }) => {
-    if (!day) {
-        throw new AppError("Day is required", 400);
-    }
-
-    if (!startTime) {
-        throw new AppError("Start time is required", 400);
-    }
-
-    if (!endTime) {
-        throw new AppError("End time is required", 400);
-    }
-
-    const normalizedDay = day.toUpperCase();
-
-    if (!VALID_DAYS.includes(normalizedDay)) {
-        throw new AppError("Day is invalid", 400);
-    }
-
-    const startTimeDate = parseScheduleDate(startTime, "Start time");
-    const endTimeDate = parseScheduleDate(endTime, "End time");
-
-    if (startTimeDate >= endTimeDate) {
-        throw new AppError("Start time must be before end time", 400);
-    }
-
-    const selectedDateDay = getDayFromDate(startTimeDate);
-
-    if (selectedDateDay !== normalizedDay) {
-        throw new AppError("Selected day does not match selected date", 400);
-    }
-
-    return {
-        day: normalizedDay,
-        startTimeDate,
-        endTimeDate,
-    };
-};
-
-const getLoggedInDoctor = async (req) => {
-    const userId = req.user.id;
-
-    const doctor = await prisma.doctor.findUnique({
-        where: { userId },
-    });
-
-    if (!doctor) {
-        throw new AppError("Doctor not found", 400);
-    }
-
-    return doctor;
-};
 
 const createDoctorScheduleService = async (req) => {
-    const doctor = await getLoggedInDoctor(req);
-    const { day, startTime, endTime } = req.body;
+    const userId = req.user.id;
+    const doctor = await prisma.doctor.findUnique({
+        where: {
+            userId: userId
+        }
+    })
 
-    const validatedSchedule = validateDoctorScheduleInput({
-        day,
-        startTime,
-        endTime,
+    if (!doctor) {
+        throw new AppError("Doctor is Not Valid", 400);
+    }
+    const doctorId = doctor.id;
+
+    requireFields(["date", "startTime", "endTime"], req.body);
+    const { date, startTime, endTime } = req.body;
+
+
+    const startDateTime = new Date(`${date}T${startTime}:00`);
+    const endDateTime = new Date(`${date}T${endTime}:00`);
+
+
+
+    if (isNaN(startDateTime.getTime()) || isNaN(endDateTime.getTime())) {
+        throw new AppError("Invalid date or time format provided", 400);
+    }
+
+    const durationInMs = endDateTime.getTime() - startDateTime.getTime();
+    const totalHours = Math.floor(durationInMs / (1000 * 60 * 60));
+
+    if (totalHours < 1) {
+        throw new AppError("Availability block must be at least 1 hour", 400);
+    }
+
+    const slots = Array.from({ length: totalHours }).map((_, index) => {
+        const slotStart = new Date(startDateTime.getTime() + index * 60 * 60 * 1000);
+        const slotEnd = new Date(slotStart.getTime() + 60 * 60 * 1000);
+        return {
+            doctorId,
+            date: new Date(`${date}T00:00:00Z`),
+            startTime: slotStart,
+            endTime: slotEnd,
+            isBooked: false,
+        };
     });
 
-    const schedule = await prisma.doctorSchedule.create({
-        data: {
-            doctorId: doctor.id,
-            date: validatedSchedule.startTimeDate,
-            day: validatedSchedule.day,
-            startTime: validatedSchedule.startTimeDate,
-            endTime: validatedSchedule.endTimeDate,
-        },
+    const result = await prisma.doctorSchedule.createMany({
+        data: slots,
+        skipDuplicates: true
     });
 
-    return schedule;
+    return result;
 };
 
 const getDoctorScheduleService = async (req) => {
-    const doctor = await getLoggedInDoctor(req);
-
+    const doctor = await prisma.doctor.findUnique({
+        where: {
+            userId: req.user.id
+        }
+    });
+    const doctorId = doctor.id
     const schedules = await prisma.doctorSchedule.findMany({
         where: {
             doctorId: doctor.id,
@@ -112,72 +71,10 @@ const getDoctorScheduleService = async (req) => {
             startTime: "asc",
         },
     });
-
+    console.log('Schedule is ', schedules);
     return schedules;
 };
 
-const updateDoctorScheduleService = async (req) => {
-    const doctor = await getLoggedInDoctor(req);
-    const { id } = req.params;
-    const { day, startTime, endTime } = req.body;
-
-    const schedule = await prisma.doctorSchedule.findUnique({
-        where: { id },
-    });
-
-    if (!schedule) {
-        throw new AppError("Schedule not found", 400);
-    }
-
-    if (schedule.doctorId !== doctor.id) {
-        throw new AppError("You are not allowed to update this schedule", 400);
-    }
-
-    const validatedSchedule = validateDoctorScheduleInput({
-        day: day || schedule.day,
-        startTime: startTime || schedule.startTime,
-        endTime: endTime || schedule.endTime,
-    });
-
-    const updatedData = {
-        day: validatedSchedule.day,
-        date: validatedSchedule.startTimeDate,
-        startTime: validatedSchedule.startTimeDate,
-        endTime: validatedSchedule.endTimeDate,
-    };
-
-    const updatedSchedule = await prisma.doctorSchedule.update({
-        where: { id },
-        data: updatedData,
-    });
-
-    return updatedSchedule;
-};
-
-const deleteDoctorScheduleService = async (req) => {
-    const doctor = await getLoggedInDoctor(req);
-    const { id } = req.params;
-
-    const schedule = await prisma.doctorSchedule.findUnique({
-        where: { id },
-    });
-
-    if (!schedule) {
-        throw new AppError("Schedule not found", 400);
-    }
-
-    if (schedule.doctorId !== doctor.id) {
-        throw new AppError("You are not allowed to delete this schedule", 400);
-    }
-
-    await prisma.doctorSchedule.delete({
-        where: { id },
-    });
-
-    return {
-        message: "Schedule deleted successfully",
-    };
-};
 
 const getDoctorSchedulesByDoctorIdService = async (doctorId) => {
     const doctor = await prisma.doctor.findUnique({
@@ -203,7 +100,5 @@ const getDoctorSchedulesByDoctorIdService = async (doctorId) => {
 module.exports = {
     createDoctorScheduleService,
     getDoctorScheduleService,
-    updateDoctorScheduleService,
-    deleteDoctorScheduleService,
     getDoctorSchedulesByDoctorIdService,
 };
