@@ -2,21 +2,24 @@ import { RouterProvider } from "react-router-dom"
 import Router from "../routes/routes"
 import { AuthContextProvider } from "@/features/Auth/Context/auth.context"
 import { QueryProvider } from "@/features/Auth/Query/Providers/AuthQueryProvider"
+import SmoothScroll from "@/Global Provider/SmoothScroller"
 
 function App() {
 
 
   return (
     <>
-      <QueryProvider>
+      <SmoothScroll>
+        <QueryProvider>
 
-        <AuthContextProvider>
+          <AuthContextProvider>
 
-          <RouterProvider router={Router} />
+            <RouterProvider router={Router} />
 
-        </AuthContextProvider>
+          </AuthContextProvider>
 
-      </QueryProvider>
+        </QueryProvider>
+      </SmoothScroll>
     </>
   )
 }

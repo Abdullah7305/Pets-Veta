@@ -1,17 +1,17 @@
 import { FaSortAmountDown } from "react-icons/fa";
 
-import MarketplaceFilters from "./MarketplaceFilters";
 import ProductCard from "./ProductCard";
 import { products } from "../data/marketplace.data";
 
 const ProductsGrid = () => {
     return (
-        <section className="bg-white px-5 py-16 lg:px-16">
-            <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[260px_1fr]">
-                <MarketplaceFilters />
-
+        <section
+            className="px-5 py-16 lg:px-16"
+           
+        >
+            <div className="mx-auto max-w-7xl">
                 <div>
-                    <div className="mb-6 flex flex-col gap-4 rounded-3xl bg-[#f5fbff] p-5 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="mb-6 flex flex-col gap-4 rounded-3xl bg-white/90 p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <h2 className="text-2xl font-extrabold text-[#07182c]">
                                 Featured Products
@@ -22,7 +22,7 @@ const ProductsGrid = () => {
                             </p>
                         </div>
 
-                        <div className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-sm">
+                        <div className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-sm border border-slate-100">
                             <FaSortAmountDown className="text-[#009f9d]" />
 
                             <select className="bg-transparent text-sm font-bold text-[#07182c] outline-none">
@@ -34,7 +34,7 @@ const ProductsGrid = () => {
                         </div>
                     </div>
 
-                    <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                    <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                         {products.map((product) => (
                             <ProductCard
                                 key={product.id}
