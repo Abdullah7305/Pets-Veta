@@ -1,4 +1,5 @@
 const { default: prisma, } = require('../config/prisma');
+const AppError = require('../utils/AppError');
 
 
 const saveUserPet = async (pet) => {
@@ -45,10 +46,13 @@ const registerPetIssue = async (petIssue) => {
             checkupTime,
         },
     });
-
+    console.log("Appointment is ", existingAppointment);
     if (existingAppointment) {
+        console.log("Check Existin Appointemtn Condition Running")
         throw new Error("This appointment slot is already booked");
+        return;
     }
+    console.log("Outside Appointment COndition here");
 
     const newPetIssue = await prisma.$transaction(async (tx) => {
         const createdPetIssue = await tx.petIssueReport.create({
@@ -59,19 +63,20 @@ const registerPetIssue = async (petIssue) => {
             }
         });
 
-        // const appointment = await tx.appointment.create({
-        //     data: {
-        //         doctorId: petIssue.doctorId,
-        //         petIssueReportId: createdPetIssue.id,
-        //         fees: doctor.fees,
-        //         checkupTime,
+        const appointment = await tx.appointment.create({
+            data: {
+                doctorId: petIssue.doctorId,
+                petIssueReportId: createdPetIssue.id,
+                fees: doctor.fees,
+                checkupTime,
 
-        //     },
-        // });
+
+            },
+        });
 
         return {
             petIssue: createdPetIssue,
-            // appointment,
+            appointment,
         };
     });
 
@@ -79,7 +84,7 @@ const registerPetIssue = async (petIssue) => {
 }
 
 const registerPetAppointment = async () => {
-    
+
 }
 
 const getUserPets = async (userId) => {
@@ -103,8 +108,22 @@ const getUserPets = async (userId) => {
     return pets;
 }
 
+const updateAppointmentStripeId = async (appointmentId, sessionId) => {
+    if (!appointmentId || !sessionId) {
+        throw new AppError("Appointment or Session Id is Invalid", 400);
+    }
 
+    const result = await prisma.appointment.update({
+        where: { id: appointmentId },
+        data: {
+            stripeSessionId: sessionId,
+        },
+    });
+
+    return result;
+};
 module.exports = {
     saveUserPet,
-    registerPetIssue, getUserPets
+    registerPetIssue, getUserPets,
+    updateAppointmentStripeId
 }

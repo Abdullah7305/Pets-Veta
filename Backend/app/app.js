@@ -28,11 +28,8 @@ app.use(
   })
 );
 
-/*
-  IMPORTANT:
-  Stripe webhook route must be before express.json()
-  because Stripe needs raw body for signature verification.
-*/
+// TODO: STRIPE PAYMENT API
+
 app.post(
   "/api/v1/payment/webhook",
   express.raw({ type: "application/json" }),

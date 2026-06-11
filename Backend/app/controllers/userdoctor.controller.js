@@ -36,23 +36,9 @@ const getDoctorById = catchAsync(async (req, res) => {
 
   console.log("Doctor Data ==> ", JSON.stringify(doctor, null, 2));
 
-  const transformedDoctor = {
-    id: doctor.id,
-    name: doctor.user.fullName,
-    image: doctor.user.profileImageUrl,
-    specialization: doctor.specialization,
-    experience: doctor.experience,
-    education: doctor.education,
-    fees: doctor.fees,
-    status: doctor.isAvailable ? "active" : "inactive",
-    isVerified: doctor.isVerified,
-    availableDays: doctor.availableDays,
-    availableSlots: doctor.availableSlots,
-    todaySlots: doctor.todaySlots,
-    nextAvailable: doctor.nextAvailable,
-  };
 
-  return sendResponse(res, 200, "Doctor fetched successfully", transformedDoctor);
+
+  return sendResponse(res, 200, "Doctor fetched successfully", doctor);
 })
 
 module.exports = {

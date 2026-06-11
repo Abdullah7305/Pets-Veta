@@ -29,7 +29,7 @@ async function main() {
 
     console.log("⏳ Injecting 500 mock doctors into PostgreSQL...");
 
-    for (let i = 1; i <= 500; i++) {
+    for (let i = 1; i <= 20; i++) {
         const username = `doctor_user_${i}`;
         const email = `doctor${i}@petsveta.com`;
 

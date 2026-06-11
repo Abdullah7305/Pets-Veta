@@ -149,7 +149,7 @@ const PetIssueReportForm = ({
         reset();
         if (onSubmitSuccess) {
           onSubmitSuccess(result);
-          navigate("/appointment-payment");
+          navigate(result.checkoutUrl);
         }
 
       } else {

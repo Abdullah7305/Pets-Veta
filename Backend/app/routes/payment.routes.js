@@ -1,19 +1,12 @@
-const express = require("express");
-const paymentController = require("../controllers/payment.controller");
-const { protect } = require("../middleware/auth.middleware");
+const express = require('express');
+const Router = express.Router();
+const paymentController = require('../controllers/payment.controller');
 
-const router = express.Router();
 
-router.post(
-  "/create-checkout-session",
-  protect,
-  paymentController.createCheckoutSession
+Router.post(
+    '/webhook',
+    express.raw({ type: 'application/json' }),
+    paymentController.stripeWebhook
 );
 
-router.get(
-  "/status/:sessionId",
-  protect,
-  paymentController.getPaymentStatus
-);
-
-module.exports = router;
+module.exports = Router;
