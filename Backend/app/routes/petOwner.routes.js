@@ -16,13 +16,14 @@ Router
 
 
 Router
-    .route('/submit/pet-data')
-    .post(petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.registerPet)
+  .route("/submit/pet-data")
+  .post(
+    petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole("PetOwner"), upload.any(),petOwnerController.registerPet);
 
 Router
     .route('/submit/pet-issue')
-    .post(petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.registerPetIssue)
-
+    .post(
+        petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), upload.any(), petOwnerController.registerPetIssue);
 Router
     .route('/petOwner-data')
     .get(petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.getPetOwnerById)
