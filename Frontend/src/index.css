@@ -1,7 +1,19 @@
 @import "tailwindcss";
 
 
-/* Ensure the body behaves nicely with Lenis */
+html {
+    overflow-y: scroll;
+    /* Forces a single scrollbar track */
+    height: auto;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+}
+
 html.lenis,
 html.lenis body {
     height: auto;

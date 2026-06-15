@@ -65,14 +65,7 @@ const MyPetsSection = ({
             Add your first pet to start booking veterinary appointments.
           </p>
 
-          <Button
-            type="button"
-            className="mx-auto mt-5 flex w-auto items-center gap-2 px-6"
-            onClick={onAddPet}
-          >
-            <Plus size={17} />
-            Add First Pet
-          </Button>
+
         </Card>
       ) : (
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">

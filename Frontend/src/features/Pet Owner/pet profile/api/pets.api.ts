@@ -1,4 +1,4 @@
-import {api} from "@/features/api interface/axios.interface";
+import { api } from "@/features/api interface/axios.interface";
 
 import type { PetFormData } from "../schemas/pet.schema";
 
@@ -8,7 +8,7 @@ import type {
 } from "../types/petProfile.types";
 
 export const getMyPetsApi = async (): Promise<PetsResponse> => {
-  const response = await api.get<PetsResponse>("/pets/my-pets");
+  const response = await api.get<PetsResponse>("/petOwner/my-pets");
 
   return response.data;
 };

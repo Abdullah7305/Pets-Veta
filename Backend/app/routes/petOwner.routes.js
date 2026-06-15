@@ -6,6 +6,13 @@ const { petOwnerLimiter } = require('../middleware/rateLimiter')
 
 const Router = express.Router();
 
+Router
+    .route('/my-pets')
+    .get(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.getPetsData)
+
+Router
+    .route('/pet-profile')
+    .get(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.getPetOwnerById);
 
 
 Router

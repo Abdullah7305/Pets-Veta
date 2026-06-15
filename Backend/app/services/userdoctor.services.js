@@ -31,8 +31,6 @@ const compileScheduleInfo = (doctorSchedules, currentDate) => {
 };
 
 
-
-
 const getApprovedDoctorsForUsers = async ({ page = 1, limit = 5, search = "" }) => {
   const skip = (page - 1) * limit;
   const currentDate = new Date();
@@ -124,7 +122,7 @@ const getSpecificDoctor = async (doctorId) => {
     experience: doctor.experience,
     education: doctor.education,
     fees: doctor.fees,
-    isVerified: doctor.isVerified,
+    isVerified: VerificationStatus.APPROVED,
     ...compileScheduleInfo(doctor.doctorSchedules, currentDate),
   };
 };

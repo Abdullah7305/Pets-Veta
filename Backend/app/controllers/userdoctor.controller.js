@@ -17,7 +17,7 @@ const getApprovedDoctorsForUsers = catchAsync(async (req, res, next) => {
     limit,
     search,
   });
-
+  console.log("Result is ", result);
   sendResponse(res, 200, "Approved doctors fetched successfully", result);
 });
 
