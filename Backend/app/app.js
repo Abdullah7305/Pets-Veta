@@ -15,6 +15,9 @@ const doctorRouter = require("./routes/doctor.routes");
 const userRoutes = require("./routes/userdoctor.route");
 const petOwnerRoutes = require("./routes/petOwner.routes");
 
+const sellerRouter = require("./routes/seller.routes");
+const marketplaceRouter = require("./routes/marketplace.routes");
+const marketplaceOrderRouter = require("./routes/marketplaceOrder.routes");
 // Stripe payment imports
 const paymentRouter = require("./routes/payment.routes");
 const paymentController = require("./controllers/payment.controller");
@@ -45,6 +48,9 @@ app.use("/api/v1/doctor", doctorRouter);
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/petOwner", petOwnerRoutes);
 
+app.use("/api/v1/seller", sellerRouter);
+app.use("/api/v1/marketplace", marketplaceRouter);
+app.use("/api/v1/orders", marketplaceOrderRouter);
 // Payment routes
 app.use("/api/v1/payment", paymentRouter);
 

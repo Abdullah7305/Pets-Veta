@@ -3,6 +3,7 @@ import {
   FaBox,
   FaChartPie,
   FaClipboardList,
+  FaHeart,
   FaPlusCircle,
   FaShoppingCart,
   FaStore,
@@ -15,7 +16,8 @@ const links = [
   { label: "Add Product", icon: FaPlusCircle, path: "/seller/add-product" },
   { label: "Orders", icon: FaShoppingCart, path: "/seller/orders" },
   { label: "Stock", icon: FaBox, path: "/seller/stock" },
-  { label: "Marketplace", icon: FaStore, path: "/marketplace" },
+  { label: "Saved Listings", icon: FaHeart, path: "/seller/saved-listings" },
+  { label: "Marketplace", icon: FaStore, path: "/marketplace1" },
   { label: "Profile", icon: FaUser, path: "/seller/profile" },
 ];
 

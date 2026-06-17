@@ -11,7 +11,6 @@ import {
   FaArrowRight,
 } from "react-icons/fa";
 
-import Button from "../../../shared/components/Button/Button";
 import img from "@/assets/shared/images/dog2.jpeg"
 import { NavLink } from "react-router-dom";
 
@@ -33,7 +32,7 @@ const services = [
       "Grooming essentials",
     ],
     button: "Explore Marketplace",
-    url:"/marketplace"
+    url:"/marketplace1"
   },
   {
     title: "Vet Consultation",

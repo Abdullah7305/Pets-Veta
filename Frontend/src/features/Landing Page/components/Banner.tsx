@@ -44,7 +44,7 @@ export const Banner = () => {
             </Button>
           </Link>
 
-          <Link to="/marketplace">
+          <Link to="/marketplace1">
             <Button
               variant="outline"
               size="md"

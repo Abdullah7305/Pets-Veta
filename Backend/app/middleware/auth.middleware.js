@@ -3,7 +3,11 @@ const bcrypt = require('bcrypt');
 
 const protect = async (req, res, next) => {
     try {
-        const token = req.cookies.accessToken;
+        const authHeader = req.headers.authorization || "";
+        const bearerToken = authHeader.startsWith("Bearer ")
+            ? authHeader.split(" ")[1]
+            : null;
+        const token = req.cookies.accessToken || bearerToken;
         console.log("Cookies in protect are ", req.cookies)
         if (!token) {
             console.log("No Token!");

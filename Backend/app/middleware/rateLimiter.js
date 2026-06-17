@@ -2,34 +2,20 @@ const redisClient = require('../config/redis.config');
 const { RedisStore } = require('rate-limit-redis');
 const { rateLimit } = require('express-rate-limit');
 
-const authStore = new RedisStore({
-    sendCommand: (...args) => redisClient.sendCommand(args),
-    prefix: 'rl:auth:',
-});
+const createRedisStore = (prefix) => {
+    if (!redisClient) {
+        return undefined;
+    }
 
-const adminStore = new RedisStore({
-    sendCommand: (...args) => redisClient.sendCommand(args),
-    prefix: 'rl:admin:'
-});
-
-const petOwnerStore = new RedisStore({
-    sendCommand: (...args) => redisClient.sendCommand(args),
-    prefix: 'rl:petOwner:'
-});
-
-const globalUserStore = new RedisStore({
-    sendCommand: (...args) => redisClient.sendCommand(args),
-    prefix: 'rl:global:'
-})
-
-const doctorStore = new RedisStore({
-    sendCommand: (...args) => redisClient.sendCommand(args),
-    prefix: 'rl:doctor:'
-})
+    return new RedisStore({
+        sendCommand: (...args) => redisClient.sendCommand(args),
+        prefix,
+    });
+}
 
 
 const authLimiter = rateLimit({
-    store: authStore,
+    store: createRedisStore('rl:auth:'),
     windowMs: 5 * 60 * 1000,
     limit: 10,
     standardHeaders: 'draft-8',
@@ -41,7 +27,7 @@ const authLimiter = rateLimit({
 });
 
 const adminLimiter = rateLimit({
-    store: adminStore,
+    store: createRedisStore('rl:admin:'),
     windowMs: 10 * 60 * 1000,
     limit: 50,
     standardHeaders: false,
@@ -52,7 +38,7 @@ const adminLimiter = rateLimit({
 })
 
 const petOwnerLimiter = rateLimit({
-    store: petOwnerStore,
+    store: createRedisStore('rl:petOwner:'),
     windowMs: 10 * 60 * 1000,
     limit: 50,
     standardHeaders: 'draft-8',
@@ -64,7 +50,7 @@ const petOwnerLimiter = rateLimit({
 });
 
 const globalUserLimiter = rateLimit({
-    store: globalUserStore,
+    store: createRedisStore('rl:global:'),
     windowMs: 10 * 60 * 1000,
     limit: 150,
     legacyHeaders: false,

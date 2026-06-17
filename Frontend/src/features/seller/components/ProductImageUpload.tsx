@@ -1,13 +1,12 @@
 import { FaCloudUploadAlt } from "react-icons/fa";
-import Button from "@/shared/components/Button/Button";
 
 type ProductImageUploadProps = {
-  preview: string;
-  onImageChange: (file: File) => void;
+  previews: string[];
+  onImageChange: (files: File[]) => void;
 };
 
 const ProductImageUpload = ({
-  preview,
+  previews,
   onImageChange,
 }: ProductImageUploadProps) => {
   return (
@@ -28,23 +27,24 @@ const ProductImageUpload = ({
         <input
           type="file"
           accept="image/*"
+          multiple
           className="hidden"
           onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) onImageChange(file);
+            const files = Array.from(e.target.files || []).slice(0, 5);
+            if (files.length) onImageChange(files);
           }}
         />
       </label>
 
       <div className="mt-3 flex gap-3">
-        {[1, 2, 3, 4].map((item) => (
+        {[0, 1, 2, 3, 4].map((item) => (
           <div
             key={item}
             className="flex h-14 w-14 items-center justify-center rounded-lg border border-gray-200 bg-gray-50"
           >
-            {preview ? (
+            {previews[item] ? (
               <img
-                src={preview}
+                src={previews[item]}
                 alt="preview"
                 className="h-full w-full rounded-lg object-cover"
               />
@@ -54,10 +54,6 @@ const ProductImageUpload = ({
           </div>
         ))}
       </div>
-
-      <Button variant="outline" size="sm" className="mt-3">
-        Upload Image
-      </Button>
     </div>
   );
 };

@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   FaPaw,
   FaShoppingBag,
@@ -11,49 +12,116 @@ import Input from "@/shared/components/Input/Input";
 import MarketplaceProductCard from "../components/MarketplaceProductCard";
 import MarketplaceDetailPanel from "../components/MarketplaceDetailPanel";
 import MarketplacePagination from "../components/MarketplacePagination";
-import { marketplaceItems } from "../data/marketplace.data";
+import {
+  fetchMarketplaceProducts,
+  fetchSavedMarketplaceListings,
+  removeMarketplaceListing,
+  saveMarketplaceListing,
+  toBackendCategory,
+  type MarketplaceProduct,
+} from "../api/marketplace.api";
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 12;
 
 const MarketplacePage = () => {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [location, setLocation] = useState("All");
   const [page, setPage] = useState(1);
-  const [savedIds, setSavedIds] = useState<number[]>([6]);
+  const [savedIds, setSavedIds] = useState<string[]>([]);
+  const [products, setProducts] = useState<MarketplaceProduct[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const [selectedProduct, setSelectedProduct] = useState<
-    (typeof marketplaceItems)[number] | null
-  >(marketplaceItems[0]);
+  const [selectedProduct, setSelectedProduct] =
+    useState<MarketplaceProduct | null>(null);
 
   const categories = ["All", "Pets", "Food", "Accessories"];
 
-  const filteredItems = useMemo(() => {
-    return marketplaceItems.filter((item) => {
-      const searchMatch = item.title
-        .toLowerCase()
-        .includes(search.toLowerCase());
-
-      const categoryMatch = category === "All" || item.category === category;
-      const locationMatch = location === "All" || item.location === location;
-
-      return searchMatch && categoryMatch && locationMatch;
-    });
-  }, [search, category, location]);
-
-  const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
-
-  const paginatedItems = filteredItems.slice(
-    (page - 1) * ITEMS_PER_PAGE,
-    page * ITEMS_PER_PAGE
+  const queryCategory = useMemo(
+    () => (category === "All" ? "" : toBackendCategory(category)),
+    [category]
   );
 
-  const toggleSave = (id: number) => {
-    setSavedIds((prev) =>
-      prev.includes(id)
-        ? prev.filter((savedId) => savedId !== id)
-        : [...prev, id]
-    );
+  useEffect(() => {
+    let ignore = false;
+
+    const loadProducts = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const data = await fetchMarketplaceProducts({
+          page,
+          limit: ITEMS_PER_PAGE,
+          search,
+          category: queryCategory,
+          location: location === "All" ? "" : location,
+        });
+
+        if (ignore) return;
+
+        setProducts(data.products);
+        setTotalPages(data.pagination.totalPages || 1);
+        setSelectedProduct((current) => {
+          if (current && data.products.some((product) => product.id === current.id)) {
+            return current;
+          }
+
+          return data.products[0] || null;
+        });
+      } catch {
+        if (!ignore) {
+          setError("Marketplace products load nahi ho sake.");
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadProducts();
+
+    return () => {
+      ignore = true;
+    };
+  }, [page, search, queryCategory, location]);
+
+  useEffect(() => {
+    const loadSaved = async () => {
+      try {
+        const saved = await fetchSavedMarketplaceListings();
+        setSavedIds(saved.map((item) => item.productId));
+      } catch {
+        setSavedIds([]);
+      }
+    };
+
+    void loadSaved();
+  }, []);
+
+  const toggleSave = async (id: string) => {
+    const isSaved = savedIds.includes(id);
+
+    try {
+      if (isSaved) {
+        await removeMarketplaceListing(id);
+        setSavedIds((prev) => prev.filter((savedId) => savedId !== id));
+        return;
+      }
+
+      await saveMarketplaceListing(id);
+      setSavedIds((prev) => [...prev, id]);
+    } catch {
+      navigate("/login", {
+        state: {
+          redirectTo: "/marketplace1",
+        },
+      });
+    }
   };
 
   const clearFilters = () => {
@@ -76,7 +144,7 @@ const MarketplacePage = () => {
           </p>
         </div>
 
-        <Button className="gap-2">
+        <Button className="gap-2" onClick={() => navigate("/seller/add-product")}>
           <FaShoppingBag />
           Sell Your Product
         </Button>
@@ -162,7 +230,7 @@ const MarketplacePage = () => {
               </h2>
 
               <p className="text-sm text-gray-500">
-                Showing {paginatedItems.length} available listings
+                Showing {products.length} available listings
               </p>
             </div>
 
@@ -185,7 +253,25 @@ const MarketplacePage = () => {
                 : "md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
             }`}
           >
-            {paginatedItems.map((product) => (
+            {loading && (
+              <p className="col-span-full rounded-lg bg-gray-50 p-5 text-sm text-gray-500">
+                Loading marketplace products...
+              </p>
+            )}
+
+            {error && (
+              <p className="col-span-full rounded-lg bg-red-50 p-5 text-sm font-medium text-red-600">
+                {error}
+              </p>
+            )}
+
+            {!loading && !error && products.length === 0 && (
+              <p className="col-span-full rounded-lg bg-gray-50 p-5 text-sm text-gray-500">
+                No active listings found.
+              </p>
+            )}
+
+            {products.map((product) => (
               <MarketplaceProductCard
                 key={product.id}
                 product={product}

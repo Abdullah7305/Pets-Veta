@@ -4,6 +4,7 @@ import SellerDashboardPage from "../seller/pages/SellerDashboardPage";
 import SellerProductsPage from "../seller/pages/SellerProductsPage";
 import SellerProductFormPage from "../seller/pages/SellerProductFormPage";
 import SellerOrdersStockPage from "../seller/pages/SellerOrdersStockPage";
+import SellerSavedListingsPage from "../seller/pages/SellerSavedListingsPage";
 export const sellerRoutes = [
   {
     path: "/seller/dashboard",
@@ -30,5 +31,9 @@ export const sellerRoutes = [
   {
     path: "/seller/stock",
     element: <SellerOrdersStockPage />,
+  },
+  {
+    path: "/seller/saved-listings",
+    element: <SellerSavedListingsPage />,
   },
 ];

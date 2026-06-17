@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import Button from "@/shared/components/Button/Button";
 import Input from "@/shared/components/Input/Input";
 import Card from "@/shared/components/Card/Card";
@@ -6,23 +7,161 @@ import SellerHeader from "../components/SellerHeader";
 import SellerSidebar from "../components/SellerSidebar";
 import ProductImageUpload from "../components/ProductImageUpload";
 import ProductPreviewCard from "../components/ProductPreviewCard";
+import {
+  toBackendCategory,
+  toDisplayCategory,
+} from "@/features/marketplace1/api/marketplace.api";
+import {
+  createSellerProduct,
+  fetchSellerProducts,
+  updateSellerProduct,
+} from "../api/seller.api";
+
+type ApiError = {
+  response?: {
+    status?: number;
+    data?: {
+      message?: string;
+    };
+  };
+};
+
+const toBackendStatus = (status: string) => {
+  const map: Record<string, string> = {
+    Active: "ACTIVE",
+    Draft: "DRAFT",
+    "Sold Out": "SOLD_OUT",
+  };
+
+  return map[status] || status;
+};
+
+const toDisplayStatus = (status: string) => {
+  const map: Record<string, string> = {
+    ACTIVE: "Active",
+    DRAFT: "Draft",
+    SOLD_OUT: "Sold Out",
+  };
+
+  return map[status] || status;
+};
 
 const SellerProductFormPage = () => {
-  const [preview, setPreview] = useState("");
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [previews, setPreviews] = useState<string[]>([]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
-    title: "Royal Canin Mini Adult 2kg",
+    title: "",
     category: "Food",
-    price: "4200",
-    stock: "3",
-    location: "Lahore, Punjab",
-    description:
-      "Complete and balanced nutrition for small breed adult dogs. Supports healthy skin, coat and digestion.",
+    price: "",
+    stock: "1",
+    location: "",
+    description: "",
     status: "Active",
-    featured: false,
   });
+
+  const isEditMode = Boolean(id);
+
+  useEffect(() => {
+    let ignore = false;
+
+    const loadProductForEdit = async () => {
+      if (!id) return;
+
+      try {
+        const products = await fetchSellerProducts();
+        const product = products.find((item) => item.id === id);
+
+        if (!product) {
+          setError("Product nahi mila.");
+          return;
+        }
+
+        if (!ignore) {
+          setForm({
+            title: product.title,
+            category: toDisplayCategory(product.category),
+            price: String(product.price),
+            stock: String(product.stock),
+            location: product.location || "",
+            description: product.description || "",
+            status: toDisplayStatus(product.status),
+          });
+          setPreviews(product.images?.map((image) => image.publicUrl) || []);
+        }
+      } catch (err) {
+        const apiError = err as ApiError;
+
+        if (apiError.response?.status === 401) {
+          navigate("/login", { state: { redirectTo: `/seller/edit-product/${id}` } });
+          return;
+        }
+
+        if (!ignore) {
+          setError("Product edit ke liye load nahi ho saka.");
+        }
+      }
+    };
+
+    void loadProductForEdit();
+
+    return () => {
+      ignore = true;
+    };
+  }, [id, navigate]);
 
   const updateField = (name: string, value: string | boolean) => {
     setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      setSaving(true);
+      setError("");
+      setMessage("");
+
+      if (!form.title.trim() || !form.price || Number(form.price) <= 0) {
+        setError("Product title aur valid price required hain.");
+        return;
+      }
+
+      const payload = new FormData();
+      payload.append("title", form.title);
+      payload.append("description", form.description);
+      payload.append("category", toBackendCategory(form.category));
+      payload.append("status", toBackendStatus(form.status));
+      payload.append("price", form.price);
+      payload.append("stock", form.stock);
+      payload.append("location", form.location);
+
+      imageFiles.forEach((file) => {
+        payload.append("images", file);
+      });
+
+      if (id) {
+        await updateSellerProduct(id, payload);
+      } else {
+        await createSellerProduct(payload);
+      }
+
+      setMessage(isEditMode ? "Product updated successfully." : "Product saved successfully.");
+      navigate("/seller/listings");
+    } catch (err) {
+      const apiError = err as ApiError;
+
+      if (apiError.response?.status === 401) {
+        navigate("/login", { state: { redirectTo: "/seller/add-product" } });
+        return;
+      }
+
+      setError(apiError.response?.data?.message || "Product save nahi ho saka.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -35,7 +174,7 @@ const SellerProductFormPage = () => {
         <section className="p-6">
           <div className="mb-5">
             <h1 className="text-2xl font-semibold text-gray-900">
-              Add / Edit Product Listing
+              {isEditMode ? "Edit Product Listing" : "Add Product Listing"}
             </h1>
             <p className="mt-1 text-sm text-gray-500">
               Dashboard / Add / Edit Product
@@ -47,6 +186,18 @@ const SellerProductFormPage = () => {
               <h2 className="mb-5 text-lg font-semibold text-gray-900">
                 Product Information
               </h2>
+
+              {message && (
+                <p className="mb-4 rounded-lg bg-green-50 px-4 py-2 text-sm font-medium text-green-700">
+                  {message}
+                </p>
+              )}
+
+              {error && (
+                <p className="mb-4 rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-600">
+                  {error}
+                </p>
+              )}
 
               <div className="grid gap-4 md:grid-cols-2">
                 <Input
@@ -72,12 +223,16 @@ const SellerProductFormPage = () => {
 
                 <Input
                   label="Price (PKR)"
+                  type="number"
+                  min="1"
                   value={form.price}
                   onChange={(e) => updateField("price", e.target.value)}
                 />
 
                 <Input
                   label="Stock Quantity"
+                  type="number"
+                  min="0"
                   value={form.stock}
                   onChange={(e) => updateField("stock", e.target.value)}
                 />
@@ -105,10 +260,11 @@ const SellerProductFormPage = () => {
                 </div>
 
                 <ProductImageUpload
-                  preview={preview}
-                  onImageChange={(file) =>
-                    setPreview(URL.createObjectURL(file))
-                  }
+                  previews={previews}
+                  onImageChange={(files) => {
+                    setImageFiles(files);
+                    setPreviews(files.map((file) => URL.createObjectURL(file)));
+                  }}
                 />
 
                 <div className="grid content-start gap-4">
@@ -127,35 +283,21 @@ const SellerProductFormPage = () => {
                     </select>
                   </div>
 
-                  <label className="flex items-start gap-3 rounded-lg bg-gray-50 p-4">
-                    <input
-                      type="checkbox"
-                      checked={form.featured}
-                      onChange={(e) =>
-                        updateField("featured", e.target.checked)
-                      }
-                      className="mt-1 h-4 w-4 accent-[#178f95]"
-                    />
-                    <div>
-                      <p className="text-sm font-medium text-gray-800">
-                        Featured Listing
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        Show this product on top in marketplace
-                      </p>
-                    </div>
-                  </label>
                 </div>
               </div>
 
               <div className="mt-6 flex justify-end gap-3">
-                <Button variant="outline">Cancel</Button>
-                <Button>Save Product</Button>
+                <Button variant="outline" onClick={() => navigate("/seller/listings")}>
+                  Cancel
+                </Button>
+                <Button onClick={handleSubmit} disabled={saving}>
+                  {saving ? "Saving..." : "Save Product"}
+                </Button>
               </div>
             </Card>
 
             <ProductPreviewCard
-              image={preview}
+              image={previews[0] || ""}
               title={form.title}
               category={form.category}
               price={form.price}
