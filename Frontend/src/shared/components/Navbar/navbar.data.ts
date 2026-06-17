@@ -13,30 +13,35 @@ const NAVLINK: NavData[] = [
     {
         id: 2,
         title: "Marketplace",
-        path: "/marketplace"
+        path: "/marketplace1"
     },
     {
         id: 3,
+        title: "Seller",
+        path: "/seller/dashboard"
+    },
+    {
+        id: 4,
         title: "Services",
         path: "/services"
     },
     {
-        id: 4,
+        id: 5,
         title: "Doctors",
         path: "/doctors"
     },
     {
-        id: 5,
+        id: 6,
         title: "AI Assistant",
         path: "/ai-assistant"
     },
     {
-        id: 6,
+        id: 7,
         title: "About",
         path: "/about"
     },
     {
-        id: 7,
+        id: 8,
         title: "Contact",
         path: "/contact"
     }

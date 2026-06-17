@@ -3,6 +3,7 @@ const authMiddleware = require('../middleware/auth.middleware');
 const authenticateRole = require('../middleware/authorizeRole.middleware');
 const petOwnerController = require('../controllers/petOwner.controller');
 const { petOwnerLimiter } = require('../middleware/rateLimiter')
+const upload = require('../config/multer.config');
 
 const Router = express.Router();
 

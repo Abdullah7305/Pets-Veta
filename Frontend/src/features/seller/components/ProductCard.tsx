@@ -1,64 +1,72 @@
 import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
+import {
+  getProductImage,
+  getProductPrice,
+  toDisplayCategory,
+  type MarketplaceProduct,
+} from "@/features/marketplace1/api/marketplace.api";
 
 type ProductCardProps = {
-  name: string;
-  category: string;
-  price: string;
-  stock: number;
-  status: string;
-  image: string;
+  product: MarketplaceProduct;
+  onEdit: () => void;
+  onDelete: () => void;
+  onView: () => void;
 };
 
 const statusClass: Record<string, string> = {
-  Active: "bg-green-100 text-green-700",
-  "Sold Out": "bg-red-100 text-red-700",
-  "Low Stock": "bg-yellow-100 text-yellow-700",
-  Draft: "bg-gray-100 text-gray-600",
+  ACTIVE: "bg-green-100 text-green-700",
+  SOLD_OUT: "bg-red-100 text-red-700",
+  DRAFT: "bg-gray-100 text-gray-600",
+  ARCHIVED: "bg-gray-100 text-gray-600",
 };
 
-const ProductCard = ({
-  name,
-  category,
-  price,
-  stock,
-  status,
-  image,
-}: ProductCardProps) => {
+const ProductCard = ({ product, onEdit, onDelete, onView }: ProductCardProps) => {
+  const image = getProductImage(product);
+  const price = getProductPrice(product);
+
   return (
     <Card className="p-0 overflow-hidden">
       <div className="relative h-44 bg-gray-50">
-        <img src={image} alt={name} className="h-full w-full object-cover" />
+        <img src={image} alt={product.title} className="h-full w-full object-cover" />
 
         <span
           className={`absolute right-3 top-3 rounded-full px-3 py-1 text-xs font-medium ${
-            statusClass[status] || "bg-gray-100 text-gray-600"
+            statusClass[product.status] || "bg-gray-100 text-gray-600"
           }`}
         >
-          {status}
+          {product.status.replace("_", " ")}
         </span>
       </div>
 
       <div className="p-4">
-        <h3 className="text-sm font-semibold text-gray-900">{name}</h3>
-        <p className="mt-1 text-xs text-gray-500">{category}</p>
+        <h3 className="text-sm font-semibold text-gray-900">{product.title}</h3>
+        <p className="mt-1 text-xs text-gray-500">
+          {toDisplayCategory(product.category)}
+        </p>
 
         <div className="mt-3 flex items-center justify-between">
-          <p className="text-sm font-semibold text-gray-900">{price}</p>
-          <p className="text-xs text-gray-500">Stock: {stock}</p>
+          <p className="text-sm font-semibold text-gray-900">
+            PKR {price.toLocaleString()}
+          </p>
+          <p className="text-xs text-gray-500">Stock: {product.stock}</p>
         </div>
 
         <div className="mt-4 grid grid-cols-2 gap-3">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={onEdit}>
             Edit
           </Button>
 
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={onDelete}>
             Delete
           </Button>
         </div>
 
-        <button className="mt-3 w-full text-center text-xs font-medium text-[#178f95]">
+        <button
+          type="button"
+          onClick={onView}
+          className="mt-3 w-full text-center text-xs font-medium text-[#178f95]"
+        >
           View in Marketplace
         </button>
       </div>

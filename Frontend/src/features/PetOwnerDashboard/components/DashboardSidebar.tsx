@@ -41,7 +41,7 @@ const sidebarItems: SidebarItem[] = [
   },
   {
     label: "Marketplace",
-    path: "/marketplace",
+    path: "/marketplace1",
     icon: <ShoppingCart size={20} />,
   },
   {

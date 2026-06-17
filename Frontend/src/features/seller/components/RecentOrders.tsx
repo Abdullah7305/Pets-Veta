@@ -1,21 +1,27 @@
 import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
-import { recentOrders } from "../data/sellerDashboard.data";
+import type { SellerOrder } from "../api/seller.api";
 
-const statusClass: Record<string, string> = {
-  Pending: "bg-yellow-100 text-yellow-700",
-  Confirmed: "bg-green-100 text-green-700",
-  Shipped: "bg-blue-100 text-blue-700",
-  Completed: "bg-emerald-100 text-emerald-700",
+type Props = {
+  orders: SellerOrder[];
+  onViewAll: () => void;
 };
 
-const RecentOrders = () => {
+const statusClass: Record<string, string> = {
+  PENDING: "bg-yellow-100 text-yellow-700",
+  CONFIRMED: "bg-green-100 text-green-700",
+  SHIPPED: "bg-blue-100 text-blue-700",
+  COMPLETED: "bg-emerald-100 text-emerald-700",
+  CANCELLED: "bg-red-100 text-red-700",
+};
+
+const RecentOrders = ({ orders, onViewAll }: Props) => {
   return (
     <Card>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-semibold text-gray-900">Recent Orders</h2>
 
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" onClick={onViewAll}>
           View all
         </Button>
       </div>
@@ -34,26 +40,37 @@ const RecentOrders = () => {
           </thead>
 
           <tbody className="divide-y divide-gray-100">
-            {recentOrders.map((order) => (
-              <tr key={order.id}>
-                <td className="py-3 font-medium text-[#178f95]">
-                  {order.id}
-                </td>
-                <td className="py-3 text-gray-700">{order.product}</td>
-                <td className="py-3 text-gray-600">{order.buyer}</td>
-                <td className="py-3 text-gray-700">{order.amount}</td>
-                <td className="py-3">
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-medium ${
-                      statusClass[order.status]
-                    }`}
-                  >
-                    {order.status}
-                  </span>
-                </td>
-                <td className="py-3 text-gray-500">{order.date}</td>
-              </tr>
-            ))}
+            {orders.map((order) => {
+              const product = order.items[0]?.product;
+              const amount = Number(order.totalAmount || 0);
+
+              return (
+                <tr key={order.id}>
+                  <td className="py-3 font-medium text-[#178f95]">
+                    {order.orderNumber}
+                  </td>
+                  <td className="py-3 text-gray-700">{product?.title || "Product"}</td>
+                  <td className="py-3 text-gray-600">
+                    {order.buyer?.fullName || order.buyer?.email || "Buyer"}
+                  </td>
+                  <td className="py-3 text-gray-700">
+                    PKR {amount.toLocaleString()}
+                  </td>
+                  <td className="py-3">
+                    <span
+                      className={`rounded-full px-3 py-1 text-xs font-medium ${
+                        statusClass[order.status] || "bg-gray-100 text-gray-600"
+                      }`}
+                    >
+                      {order.status.replace("_", " ")}
+                    </span>
+                  </td>
+                  <td className="py-3 text-gray-500">
+                    {new Date(order.createdAt).toLocaleDateString()}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

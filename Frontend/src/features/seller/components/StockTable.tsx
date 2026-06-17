@@ -1,25 +1,16 @@
-import { useState } from "react";
 import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
-import { stockProducts } from "../data/sellerOrdersStock.data";
+import {
+  getProductImage,
+  type MarketplaceProduct,
+} from "@/features/marketplace1/api/marketplace.api";
 
-const StockTable = () => {
-  const [products, setProducts] = useState(stockProducts);
+type Props = {
+  products: MarketplaceProduct[];
+  onStockChange: (productId: string, stock: number) => void;
+};
 
-  const updateStock = (id: number, type: "inc" | "dec") => {
-    setProducts((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              stock:
-                type === "inc" ? item.stock + 1 : Math.max(item.stock - 1, 0),
-            }
-          : item
-      )
-    );
-  };
-
+const StockTable = ({ products, onStockChange }: Props) => {
   return (
     <Card className="overflow-hidden p-0">
       <div className="grid grid-cols-[1.6fr_100px_120px_150px] border-b border-gray-100 px-5 py-4 text-xs font-semibold text-gray-500">
@@ -31,7 +22,8 @@ const StockTable = () => {
 
       <div className="divide-y divide-gray-100">
         {products.map((item) => {
-          const isLowStock = item.stock <= 3;
+          const isOut = item.stock <= 0 || item.status === "SOLD_OUT";
+          const isLowStock = item.stock > 0 && item.stock <= 3;
 
           return (
             <div
@@ -40,13 +32,13 @@ const StockTable = () => {
             >
               <div className="flex min-w-0 items-center gap-3">
                 <img
-                  src={item.image}
-                  alt={item.product}
+                  src={getProductImage(item)}
+                  alt={item.title}
                   className="h-12 w-12 shrink-0 rounded-lg object-cover"
                 />
 
                 <p className="truncate text-sm font-medium text-gray-900">
-                  {item.product}
+                  {item.title}
                 </p>
               </div>
 
@@ -57,12 +49,14 @@ const StockTable = () => {
               <div className="flex justify-center">
                 <span
                   className={`rounded-full px-3 py-1 text-xs font-medium ${
-                    isLowStock
-                      ? "bg-yellow-100 text-yellow-700"
-                      : "bg-green-100 text-green-700"
+                    isOut
+                      ? "bg-red-100 text-red-700"
+                      : isLowStock
+                        ? "bg-yellow-100 text-yellow-700"
+                        : "bg-green-100 text-green-700"
                   }`}
                 >
-                  {isLowStock ? "Low Stock" : "In Stock"}
+                  {isOut ? "Out" : isLowStock ? "Low" : "In Stock"}
                 </span>
               </div>
 
@@ -71,7 +65,7 @@ const StockTable = () => {
                   variant="outline"
                   size="sm"
                   className="h-9 w-9 px-0"
-                  onClick={() => updateStock(item.id, "dec")}
+                  onClick={() => onStockChange(item.id, Math.max(item.stock - 1, 0))}
                 >
                   -
                 </Button>
@@ -84,7 +78,7 @@ const StockTable = () => {
                   variant="outline"
                   size="sm"
                   className="h-9 w-9 px-0"
-                  onClick={() => updateStock(item.id, "inc")}
+                  onClick={() => onStockChange(item.id, item.stock + 1)}
                 >
                   +
                 </Button>

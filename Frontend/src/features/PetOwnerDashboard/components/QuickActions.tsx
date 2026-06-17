@@ -1,6 +1,5 @@
 import {
   ArrowRight,
-  Bell,
   CalendarPlus,
   FileText,
   HeartPulse,
@@ -31,13 +30,6 @@ const quickActions = [
     icon: <HeartPulse size={26} />,
     iconClass: "bg-blue-50 text-blue-600",
     path: "/pet-owner/reports",
-  },
-  {
-    title: "Reminders",
-    description: "Set reminders for meds and checkups",
-    icon: <Bell size={26} />,
-    iconClass: "bg-purple-50 text-purple-600",
-    path: "/pet-owner/reminders",
   },
 ];
 

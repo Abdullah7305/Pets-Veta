@@ -1,0 +1,196 @@
+const sellerService = require("../services/seller.service");
+const { uploadToCloudinary } = require("../utils/cloudinary.utils");
+
+const getUserId = (req) => {
+  return req.user?.id || req.user?.userId;
+};
+
+const uploadProductImages = async (files = []) => {
+  const uploadedImages = [];
+
+  for (const file of files) {
+    const uploadedImage = await uploadToCloudinary(
+      file.buffer,
+      "pets-veta/marketplace-products"
+    );
+
+    uploadedImages.push({
+      publicUrl: uploadedImage.secure_url,
+      publicId: uploadedImage.public_id,
+    });
+  }
+
+  return uploadedImages;
+};
+
+exports.createOrUpdateSellerProfile = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized user",
+      });
+    }
+
+    const profile = await sellerService.createOrUpdateSellerProfile(
+      userId,
+      req.body
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Seller profile saved successfully",
+      data: profile,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.getMySellerProfile = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+
+    const profile = await sellerService.getMySellerProfile(userId);
+
+    return res.status(200).json({
+      success: true,
+      data: profile,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.createProduct = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+    const uploadedImages = await uploadProductImages(req.files);
+    const payload = req.body || {};
+
+    const product = await sellerService.createProduct(userId, {
+      ...payload,
+      images: uploadedImages,
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Product created successfully",
+      data: product,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.getMyProducts = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+
+    const products = await sellerService.getMyProducts(userId);
+
+    return res.status(200).json({
+      success: true,
+      data: products,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.updateProduct = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+    const { id } = req.params;
+    const uploadedImages = await uploadProductImages(req.files);
+    const payload = req.body || {};
+
+    const product = await sellerService.updateProduct(userId, id, {
+      ...payload,
+      images: uploadedImages,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Product updated successfully",
+      data: product,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.deleteProduct = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+    const { id } = req.params;
+
+    await sellerService.deleteProduct(userId, id);
+
+    return res.status(200).json({
+      success: true,
+      message: "Product deleted successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.updateProductStock = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+    const { id } = req.params;
+    const { stock } = req.body;
+
+    const product = await sellerService.updateProductStock(userId, id, stock);
+
+    return res.status(200).json({
+      success: true,
+      message: "Stock updated successfully",
+      data: product,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.getSellerOrders = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+
+    const orders = await sellerService.getSellerOrders(userId);
+
+    return res.status(200).json({
+      success: true,
+      data: orders,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

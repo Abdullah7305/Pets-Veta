@@ -42,23 +42,29 @@ const Navbar = () => {
         <div className="hidden items-center gap-3 lg:flex">
           {isPetOwner ? (
             /* Authenticated PetOwner View */
-            <NavLink to={'/pet-owner/profile'}
-              className="flex cursor-pointer items-center gap-3 rounded-full bg-gray-50 border border-gray-100 py-1.5 pl-2 pr-4 transition hover:bg-gray-100">
-              {user.data.image ? (
-                <img
-                  src="user"
-                  alt={user.data.username}
-                  className="h-8 w-8 rounded-full object-cover border border-[#178f95]/20"
-                />
-              ) : (
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#178f95]/10 text-[#178f95]">
-                  <User size={18} />
-                </div>
-              )}
-              <span className="text-sm font-semibold text-gray-700 select-none">
-                {user.data.username}
-              </span>
-            </NavLink>
+            <>
+              <Button href="/seller/dashboard" variant="outline" size="sm">
+                Seller Dashboard
+              </Button>
+
+              <NavLink to={'/pet-owner/profile'}
+                className="flex cursor-pointer items-center gap-3 rounded-full bg-gray-50 border border-gray-100 py-1.5 pl-2 pr-4 transition hover:bg-gray-100">
+                {user.data.image ? (
+                  <img
+                    src="user"
+                    alt={user.data.username}
+                    className="h-8 w-8 rounded-full object-cover border border-[#178f95]/20"
+                  />
+                ) : (
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#178f95]/10 text-[#178f95]">
+                    <User size={18} />
+                  </div>
+                )}
+                <span className="text-sm font-semibold text-gray-700 select-none">
+                  {user.data.username}
+                </span>
+              </NavLink>
+            </>
           ) : (
             /* Guest / Unauthenticated View */
             <>

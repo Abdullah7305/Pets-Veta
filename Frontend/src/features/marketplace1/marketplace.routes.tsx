@@ -9,6 +9,10 @@ export const marketplaceRoutes = [
     element: <MarketplacePage />,
   },
   {
+    path: "/marketplace",
+    element: <MarketplacePage />,
+  },
+  {
     path: "/marketplace/product/:id",
     element: <MarketplaceProductDetailPage />,
   },

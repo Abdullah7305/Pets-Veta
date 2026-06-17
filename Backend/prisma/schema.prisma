@@ -7,8 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ==============================================
-
 enum VerificationStatus {
   PENDING
   APPROVED
@@ -32,9 +30,37 @@ enum PetCategory {
   OTHER
 }
 
+enum ProductCategory {
+  PETS
+  FOOD
+  MEDICINE
+  ACCESSORIES
+}
+
+enum ProductStatus {
+  ACTIVE
+  DRAFT
+  SOLD_OUT
+  ARCHIVED
+}
+
+enum PetGender {
+  MALE
+  FEMALE
+  UNKNOWN
+}
+
 enum AppointmentStatus {
   PENDING
   CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+enum MarketplaceOrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
   COMPLETED
   CANCELLED
 }
@@ -54,18 +80,19 @@ enum PaymentStatus {
 }
 
 model User {
-  id                String             @id @default(uuid())
-  fullName          String
-  username          String
-  email             String             @unique
-  isEmailVerified   Boolean            @default(false)
-  password          String?
-  phone             String             @default("")
-  profileImageUrl   String             @default("Enter your Image")
-  isActive          Boolean            @default(true)
-  refreshToken      String?
-  otp               String?
-  createdAt         DateTime           @default(now())
+  id              String   @id @default(uuid())
+  fullName        String
+  username        String
+  email           String   @unique
+  isEmailVerified Boolean  @default(false)
+  password        String?
+  phone           String   @default("")
+  profileImageUrl String   @default("Enter your Image")
+  isActive        Boolean  @default(true)
+  refreshToken    String?
+  otp             String?
+  createdAt       DateTime @default(now())
+
   userRole          UserRole?
   doctors           Doctor?
   admin             Admin?
@@ -74,20 +101,25 @@ model User {
   petIssueReports   PetIssueReport[]
   doctorSkills      DoctorSkill[]
 
+  sellerProfile          SellerProfile?
+  savedListings          SavedListing[]
+  marketplaceBuyerOrders MarketplaceOrder[] @relation("MarketplaceBuyerOrders")
+
   @@index([fullName])
 }
 
 model Doctor {
-  id              String             @id @default(uuid())
-  userId          String             @unique
-  isAvailable     Boolean            @default(false)
-  education       String
-  specialization  String
-  address         String
-  experience      Int
-  fees            Int
-  isVerified      VerificationStatus @default(PENDING)
-  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String             @id @default(uuid())
+  userId         String             @unique
+  isAvailable    Boolean            @default(false)
+  education      String
+  specialization String
+  address        String
+  experience     Int
+  fees           Int
+  isVerified     VerificationStatus @default(PENDING)
+
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   doctorSchedules DoctorSchedule[]
   appointments    Appointment[]
 
@@ -103,7 +135,8 @@ model DoctorCertificate {
   userId    String @unique
   publicUrl String
   publicId  String
-  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model DoctorSkill {
@@ -111,30 +144,34 @@ model DoctorSkill {
   userId String
   skill  String
   price  String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Admin {
   id        String   @id @default(uuid())
   userId    String   @unique
   createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
+
+  user User @relation(fields: [userId], references: [id])
 }
 
 model UserRole {
   id     String @id @default(uuid())
   userId String @unique
   role   String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model DoctorSchedule {
-  id          String       @id @default(uuid())
-  doctorId    String
-  date        DateTime
-  startTime   DateTime
-  endTime     DateTime
-  isBooked    Boolean      @default(false)
+  id        String   @id @default(uuid())
+  doctorId  String
+  date      DateTime
+  startTime DateTime
+  endTime   DateTime
+  isBooked  Boolean  @default(false)
+
   doctor      Doctor       @relation(fields: [doctorId], references: [id])
   appointment Appointment?
 
@@ -142,12 +179,13 @@ model DoctorSchedule {
 }
 
 model Pet {
-  id              String           @id @default(uuid())
-  petOwnerId      String
-  name            String
-  age             Decimal          @db.Decimal(10, 2)
-  breed           String
-  category        PetCategory
+  id         String      @id @default(uuid())
+  petOwnerId String
+  name       String
+  age        Decimal     @db.Decimal(10, 2)
+  breed      String
+  category   PetCategory
+
   user            User             @relation(fields: [petOwnerId], references: [id])
   petIssueReports PetIssueReport[]
   petPictures     PetPicture[]
@@ -158,14 +196,16 @@ model PetPicture {
   publicUrl String
   publicId  String
   petId     String
-  pet       Pet    @relation(fields: [petId], references: [id])
+
+  pet Pet @relation(fields: [petId], references: [id])
 }
 
 model PetIssueReport {
-  id           String        @id @default(uuid())
-  petOwnerId   String
-  petId        String
-  issue        String
+  id         String @id @default(uuid())
+  petOwnerId String
+  petId      String
+  issue      String
+
   pet          Pet           @relation(fields: [petId], references: [id])
   user         User          @relation(fields: [petOwnerId], references: [id])
   appointments Appointment[]
@@ -181,7 +221,145 @@ model Appointment {
   stripeSessionId  String?
   checkupTime      DateTime
   status           AppointmentStatus @default(PENDING)
-  petIssueReport   PetIssueReport    @relation(fields: [petIssueReportId], references: [id])
-  doctor           Doctor            @relation(fields: [doctorId], references: [id])
-  doctorSchedule   DoctorSchedule    @relation(fields: [scheduleId], references: [id])
+
+  petIssueReport PetIssueReport @relation(fields: [petIssueReportId], references: [id])
+  doctor         Doctor         @relation(fields: [doctorId], references: [id])
+  doctorSchedule DoctorSchedule @relation(fields: [scheduleId], references: [id])
+}
+
+model SellerProfile {
+  id     String @id @default(uuid())
+  userId String @unique
+
+  businessName     String?
+  businessAddress  String?
+  phoneNumber      String?
+  city             String?
+  storeDescription String?
+  storeLogo        String?
+  isActive         Boolean @default(true)
+  isVerified       Boolean @default(false)
+
+  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  products     MarketplaceProduct[]
+  sellerOrders MarketplaceOrder[]   @relation("MarketplaceSellerOrders")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([isActive])
+}
+
+model MarketplaceProduct {
+  id       String @id @default(uuid())
+  sellerId String
+
+  title       String
+  description String?
+  category    ProductCategory
+  status      ProductStatus   @default(ACTIVE)
+
+  price    Decimal @db.Decimal(10, 2)
+  stock    Int     @default(0)
+  location String?
+
+  breed      String?
+  age        String?
+  gender     PetGender?
+  vaccinated Boolean?
+
+  brand  String?
+  weight String?
+  size   String?
+  sku    String?
+
+  seller     SellerProfile             @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  images     MarketplaceProductImage[]
+  savedBy    SavedListing[]
+  orderItems MarketplaceOrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sellerId])
+  @@index([category])
+  @@index([status])
+  @@index([location])
+  @@index([category, status])
+}
+
+model MarketplaceProductImage {
+  id        String  @id @default(uuid())
+  publicUrl String
+  publicId  String?
+  productId String
+
+  product MarketplaceProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+}
+
+model SavedListing {
+  id        String @id @default(uuid())
+  userId    String
+  productId String
+
+  user    User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product MarketplaceProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+  @@index([userId])
+  @@index([productId])
+}
+
+model MarketplaceOrder {
+  id          String @id @default(uuid())
+  orderNumber String @unique
+
+  buyerId  String
+  sellerId String
+
+  status        MarketplaceOrderStatus @default(PENDING)
+  paymentStatus PaymentStatus          @default(PENDING)
+
+  totalAmount Decimal  @db.Decimal(10, 2)
+  deliveryFee Decimal? @db.Decimal(10, 2)
+  discount    Decimal? @db.Decimal(10, 2)
+
+  shippingAddress String?
+  phoneNumber     String?
+
+  buyer  User                   @relation("MarketplaceBuyerOrders", fields: [buyerId], references: [id], onDelete: Cascade)
+  seller SellerProfile          @relation("MarketplaceSellerOrders", fields: [sellerId], references: [id], onDelete: Cascade)
+  items  MarketplaceOrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([buyerId])
+  @@index([sellerId])
+  @@index([status])
+  @@index([paymentStatus])
+}
+
+model MarketplaceOrderItem {
+  id        String @id @default(uuid())
+  orderId   String
+  productId String
+
+  quantity Int
+  price    Decimal @db.Decimal(10, 2)
+
+  order   MarketplaceOrder   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product MarketplaceProduct @relation(fields: [productId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+  @@index([productId])
 }
