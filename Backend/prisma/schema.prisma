@@ -34,7 +34,23 @@ enum PetCategory {
 
 enum AppointmentStatus {
   PENDING
+  CONFIRMED
   COMPLETED
+  CANCELLED
+}
+
+enum AppointmentPayment {
+  PENDING
+  COMPLETED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELLED
+  REFUNDED
+  SUCCEEDED
 }
 
 model User {
@@ -113,13 +129,15 @@ model UserRole {
 }
 
 model DoctorSchedule {
-  id          String   @id @default(uuid())
+  id          String       @id @default(uuid())
   doctorId    String
   date        DateTime
-  day         WeekDays
   startTime   DateTime
   endTime     DateTime
-  doctor      Doctor   @relation(fields: [doctorId], references: [id])
+  isBooked    Boolean      @default(false)
+  doctor      Doctor       @relation(fields: [doctorId], references: [id])
+  appointment Appointment? 
+  @@unique([doctorId,startTime])
 }
 
 model Pet {
@@ -134,22 +152,26 @@ model Pet {
 }
 
 model PetIssueReport {
-  id              String                 @id @default(uuid())
-  petOwnerId      String
-  petId           String
-  issue           String
-  pet             Pet                    @relation(fields: [petId], references: [id])
-  user            User                   @relation(fields: [petOwnerId], references: [id])
-  appointments    Appointment[]
+  id           String        @id @default(uuid())
+  petOwnerId   String
+  petId        String
+  issue        String
+  pet          Pet           @relation(fields: [petId], references: [id])
+  user         User          @relation(fields: [petOwnerId], references: [id])
+  appointments Appointment[]
 }
 
 model Appointment {
   id               String            @id @default(uuid())
   doctorId         String
   petIssueReportId String
+  scheduleId       String            @unique 
   fees             Int
+  paymentStatus    PaymentStatus     @default(PENDING)
+  stripeSessionId  String?
   checkupTime      DateTime
   status           AppointmentStatus @default(PENDING)
   petIssueReport   PetIssueReport    @relation(fields: [petIssueReportId], references: [id])
   doctor           Doctor            @relation(fields: [doctorId], references: [id])
+  doctorSchedule   DoctorSchedule    @relation(fields: [scheduleId], references: [id])
 }

@@ -1,37 +1,23 @@
-const express = require("express");
-
-const doctorController = require("../controllers/doctor.controller");
-const doctorScheduleController = require("../controllers/doctorSchedule.controller");
-
-const authMiddlware = require("../middleware/auth.middleware");
-const authenticateRole = require("../middleware/authorizeRole.middleware");
-const upload = require("../config/multer.config");
+const express = require('express');
+const authMiddlware = require('../middleware/auth.middleware');
+const authenticateRole = require('../middleware/authorizeRole.middleware');
+const doctorController = require('../controllers/doctor.controller');
+const doctorScheduleController = require('../controllers/doctorSchedule.controller');
+const { doctorLimiter } = require('../middleware/rateLimiter')
 
 const Router = express.Router();
 
 Router
     .route("/add/service")
-    .post(
-        authMiddlware.protect,
-        authenticateRole.authenticateUserRole("Doctor"),
-        doctorController.createDoctorServicePricing
-    );
+    .post(doctorLimiter, authMiddlware.protect, authenticateRole.authenticateUserRole('Doctor'), doctorController.createDoctorServicePricing);
 
 Router
-    .route("/get/services")
-    .get(
-        authMiddlware.protect,
-        authenticateRole.authenticateUserRole("Doctor"),
-        doctorController.fetchDoctorServices
-    );
+    .route('/get/services')
+    .get(doctorLimiter, authMiddlware.protect, authenticateRole.authenticateUserRole('Doctor'), doctorController.fetchDoctorServices);
 
 Router
-    .route("/edit/service")
-    .patch(
-        authMiddlware.protect,
-        authenticateRole.authenticateUserRole("Doctor"),
-        doctorController.updateDoctorService
-    );
+    .route('/edit/service')
+    .patch(doctorLimiter, authMiddlware.protect, authenticateRole.authenticateUserRole('Doctor'), doctorController.updateDoctorService);
 
 Router
     .route("/delete/service")
@@ -42,26 +28,8 @@ Router
     );
 
 Router
-    .route("/appointments")
-    .get(
-        authMiddlware.protect,
-        authenticateRole.authenticateUserRole("Doctor"),
-        doctorController.fetchDoctorAppointments
-    );
-
-Router
-    .route("/profile")
-    .get(
-        authMiddlware.protect,
-        authenticateRole.authenticateUserRole("Doctor"),
-        doctorController.getDoctorProfile
-    )
-    .patch(
-        authMiddlware.protect,
-        authenticateRole.authenticateUserRole("Doctor"),
-        upload.single("profileImage"),
-        doctorController.updateDoctorProfile
-    );
+    .route('/appointments')
+    .get(doctorLimiter, authMiddlware.protect, authenticateRole.authenticateUserRole('Doctor'), doctorController.fetchDoctorAppointments);
 
 Router
     .route("/schedule")
@@ -83,17 +51,5 @@ Router
     .route("/schedule/doctor/:doctorId")
     .get(doctorScheduleController.getDoctorSchedulesByDoctorId);
 
-Router
-    .route("/schedule/:id")
-    .put(
-        authMiddlware.protect,
-        authenticateRole.authenticateUserRole("Doctor"),
-        doctorScheduleController.updateDoctorSchedule
-    )
-    .delete(
-        authMiddlware.protect,
-        authenticateRole.authenticateUserRole("Doctor"),
-        doctorScheduleController.deleteDoctorSchedule
-    );
 
 module.exports = Router;

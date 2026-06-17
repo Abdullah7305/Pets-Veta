@@ -9,11 +9,15 @@ const catchAsync = require('../utils/CatchAsync')
 const sendResponse = require('../utils/SendResponse')
 
 const createDoctorSchedule = catchAsync(async (req, res) => {
-
+    console.log("Doctor Request is ", req.body);
     const schedule = await createDoctorScheduleService(req);
 
-    return sendResponse(res, 201, "Doctor schedule created successfully", schedule)
+    if (schedule) {
+        console.log("Schedule is ", schedule);
+        return sendResponse(res, 201, "Doctor schedule created successfully", schedule)
+    }
 
+    return sendResponse(res, 400, "Error in Creating Doctor Schedule", schedule)
 })
 
 const getDoctorSchedule = catchAsync(async (req, res) => {
@@ -24,23 +28,7 @@ const getDoctorSchedule = catchAsync(async (req, res) => {
 
 })
 
-const updateDoctorSchedule = catchAsync(async (req, res) => {
 
-    const updatedSchedule = await updateDoctorScheduleService(req);
-
-    return sendResponse(res, 200, "Doctor schedule updated successfully", updatedSchedule)
-
-
-});
-
-const deleteDoctorSchedule = catchAsync(async (req, res) => {
-
-    const result = await deleteDoctorScheduleService(req);
-
-    return sendResponse(res, 200, "Success", result.message)
-
-
-});
 
 const getDoctorSchedulesByDoctorId = catchAsync(async (req, res) => {
 
@@ -54,7 +42,5 @@ const getDoctorSchedulesByDoctorId = catchAsync(async (req, res) => {
 module.exports = {
     createDoctorSchedule,
     getDoctorSchedule,
-    updateDoctorSchedule,
-    deleteDoctorSchedule,
     getDoctorSchedulesByDoctorId,
 };

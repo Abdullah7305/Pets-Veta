@@ -10,105 +10,50 @@ export const categories = [
     "Training & Behavior",
 ];
 
-export const products = [
-    {
-        id: 1,
-        name: "Royal Canin Puppy Dry Food 3kg",
-        category: "Pet Food",
-        price: 28.99,
-        oldPrice: 34.99,
-        rating: 4.8,
-        reviews: 256,
-        image:
-            "https://images.unsplash.com/photo-1583512603806-077998240c7a?q=80&w=1200&auto=format&fit=crop",
-        badge: "Best Seller",
-    },
+export const products = Array.from({ length: 100 }, (_, index) => {
+    const categories = [
+        "Pet Food",
+        "Toys & Accessories",
+        "Supplements",
+        "Beds & Furniture",
+        "Collars & Leashes",
+        "Grooming",
+        "Health & Medicine",
+        "Training",
+        "Travel",
+        "Cat Supplies",
+    ];
 
-    {
-        id: 2,
-        name: "Chewable Octopus Plush Toy",
-        category: "Toys & Accessories",
-        price: 12.99,
-        oldPrice: 16.99,
-        rating: 4.6,
-        reviews: 189,
-        image:
-            "https://images.unsplash.com/photo-1587300003388-59208cc962cb?q=80&w=1200&auto=format&fit=crop",
-        badge: "20% OFF",
-    },
+    const productNames = [
+        "Premium Dog Food",
+        "Interactive Pet Toy",
+        "Vitamin Supplement",
+        "Luxury Pet Bed",
+        "Adjustable Collar",
+        "Pet Shampoo",
+        "Dental Care Kit",
+        "Training Clicker",
+        "Travel Carrier",
+        "Cat Scratching Post",
+    ];
 
-    {
-        id: 3,
-        name: "Calcium Supplement for Dogs",
-        category: "Supplements",
-        price: 15.99,
-        oldPrice: 19.99,
-        rating: 4.7,
-        reviews: 108,
-        image:
-            "https://images.unsplash.com/photo-1601758125946-6ec2ef64daf8?q=80&w=1200&auto=format&fit=crop",
-    },
-
-    {
-        id: 4,
-        name: "Soft Cozy Pet Bed",
-        category: "Beds & Furniture",
-        price: 32.99,
-        oldPrice: 39.99,
-        rating: 4.9,
-        reviews: 143,
-        image:
-            "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=1200&auto=format&fit=crop",
-    },
-
-    {
-        id: 5,
-        name: "Reflective Dog Collar",
-        category: "Collars & Leashes",
-        price: 8.99,
-        oldPrice: 11.99,
-        rating: 4.5,
-        reviews: 210,
-        image:
-            "https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80&w=1200&auto=format&fit=crop",
-    },
-
-    {
-        id: 6,
-        name: "Pet Grooming Brush",
-        category: "Grooming",
-        price: 9.99,
-        oldPrice: 12.99,
-        rating: 4.6,
-        reviews: 167,
-        image:
-            "https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80&w=1200&auto=format&fit=crop",
-    },
-
-    {
-        id: 7,
-        name: "Flea & Tick Control",
-        category: "Health & Medicine",
-        price: 18.99,
-        oldPrice: 22.99,
-        rating: 4.4,
-        reviews: 120,
-        image:
-            "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?q=80&w=1200&auto=format&fit=crop",
-    },
-
-    {
-        id: 8,
-        name: "Me-O Cat Food Ocean Fish",
-        category: "Pet Food",
-        price: 10.49,
-        oldPrice: 14.49,
-        rating: 4.7,
-        reviews: 310,
-        image:
-            "https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80&w=1200&auto=format&fit=crop",
-    },
-];
+    return {
+        id: index + 1,
+        name: `${productNames[index % productNames.length]} ${index + 1}`,
+        category: categories[index % categories.length],
+        price: +(Math.random() * 50 + 5).toFixed(2),
+        oldPrice: +(Math.random() * 60 + 10).toFixed(2),
+        rating: +(Math.random() * 1 + 4).toFixed(1), // 4.0 - 5.0
+        reviews: Math.floor(Math.random() * 500) + 50,
+        image: `https://picsum.photos/seed/pet${index + 1}/600/600`,
+        badge:
+            index % 5 === 0
+                ? "Best Seller"
+                : index % 3 === 0
+                    ? "20% OFF"
+                    : "",
+    };
+});
 
 export const benefits = [
     {

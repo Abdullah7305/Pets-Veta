@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { CheckCircle2, ArrowLeft } from "lucide-react";
 import PetForm from "../../Pet Owner/pet details/components/PetForm";
 import PetIssueReportForm from "../../Pet Owner/pet details/components/PetIssueReportForm";
 import Button from "../../../shared/components/Button/Button";
+import { useAuth } from "@/features/Auth/hooks/authhook";
 
 type CreatedPet = {
   id: string;
@@ -13,6 +14,7 @@ type CreatedPet = {
 const BookAppointmentPage = () => {
   const { id: doctorId } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
+  const { user } = useAuth()
   const navigate = useNavigate();
   const selectedCheckupTime = searchParams.get("checkupTime") || "";
 
@@ -33,7 +35,7 @@ const BookAppointmentPage = () => {
   const handleCancel = () => {
     navigate(-1);
   };
-
+  
   if (step === 3) {
     return (
       <main className="min-h-screen bg-gradient-to-br from-[#f8fafc] to-[#f1f5f9] px-4 py-12 flex flex-col items-center justify-center font-sans">
@@ -75,11 +77,10 @@ const BookAppointmentPage = () => {
           {/* Step 1 */}
           <div className="flex items-center gap-2">
             <div
-              className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 ${
-                step >= 1
-                  ? "bg-[#6D3DD9] text-white"
-                  : "bg-slate-100 text-slate-400"
-              }`}
+              className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 ${step >= 1
+                ? "bg-[#6D3DD9] text-white"
+                : "bg-slate-100 text-slate-400"
+                }`}
             >
               1
             </div>
@@ -94,11 +95,10 @@ const BookAppointmentPage = () => {
           {/* Step 2 */}
           <div className="flex items-center gap-2">
             <div
-              className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 ${
-                step >= 2
-                  ? "bg-[#0B8F5A] text-white"
-                  : "bg-slate-100 text-slate-400"
-              }`}
+              className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 ${step >= 2
+                ? "bg-[#0B8F5A] text-white"
+                : "bg-slate-100 text-slate-400"
+                }`}
             >
               2
             </div>

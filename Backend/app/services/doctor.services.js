@@ -1,4 +1,6 @@
-const { default: prisma } = require('../config/prisma');
+const { default: prisma } = require('../config/prisma')
+const { PaymentStatus } = require('@prisma/client')
+
 
 const addDoctorService = async (skills, userId) => {
     console.log("Skills are ", skills, userId);
@@ -31,6 +33,7 @@ const addDoctorService = async (skills, userId) => {
     return newSkills;
 };
 
+
 const deleteDoctorService = async (serviceId) => {
     const deletedSkill = await prisma.doctorSkill.delete({
         where: {
@@ -40,6 +43,7 @@ const deleteDoctorService = async (serviceId) => {
 
     return deletedSkill;
 };
+
 
 const getDoctorServices = async (userId) => {
     const services = await prisma.doctorSkill?.findMany({
@@ -69,7 +73,9 @@ const updateDoctorServices = async (serviceId, skill, price) => {
     return updatedService;
 };
 
+
 const getDoctorAppointments = async (userId) => {
+
     const doctor = await prisma.doctor.findUnique({
         where: {
             userId,
@@ -86,6 +92,7 @@ const getDoctorAppointments = async (userId) => {
     return prisma.appointment.findMany({
         where: {
             doctorId: doctor.id,
+            paymentStatus: PaymentStatus.SUCCEEDED
         },
         orderBy: {
             checkupTime: "asc",
@@ -121,6 +128,7 @@ const getDoctorAppointments = async (userId) => {
         },
     });
 };
+
 
 const getDoctorProfile = async (userId) => {
     const doctorProfile = await prisma.user.findUnique({

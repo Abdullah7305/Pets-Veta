@@ -1,5 +1,4 @@
 import axios from "axios";
-
 import { api } from "../../api interface/axios.interface";
 
 export type WeekDay =
@@ -17,21 +16,21 @@ export type DoctorSchedule = {
   day: WeekDay;
   startTime: string;
   endTime: string;
+  isBooked: boolean;
 };
 
 export type DoctorSchedulePayload = {
-  day: WeekDay;
-  startTime: string;
-  endTime: string;
+  date: string;      
+  startTime: string;  
+  endTime: string;    
 };
-
 type ApiResponse<T> = {
   success: boolean;
   message: string;
   data: T;
 };
 
-export const handleAxiosError = (error: unknown) => {
+export const handleAxiosError = (error: unknown): void => {
   if (axios.isAxiosError(error)) {
     if (error.response) {
       console.log("Status Code", error.response?.status);
@@ -46,40 +45,31 @@ export const handleAxiosError = (error: unknown) => {
   }
 };
 
-export const getDoctorAvailability = async () => {
+export const getDoctorAvailability = async (): Promise<ApiResponse<DoctorSchedule[]> | undefined> => {
   try {
-    const response =
-      await api.get<ApiResponse<DoctorSchedule[]>>("doctor/schedule/me");
-
+    const response = await api.get<ApiResponse<DoctorSchedule[]>>("doctor/schedule/me");
     return response.data;
   } catch (error) {
     handleAxiosError(error);
+    return undefined;
   }
 };
 
+
+
 export const createDoctorAvailabilitySlot = async (
   payload: DoctorSchedulePayload,
-) => {
+): Promise<ApiResponse<DoctorSchedule> | undefined> => {
   try {
     const response = await api.post<ApiResponse<DoctorSchedule>>(
       "doctor/schedule",
       payload,
     );
-
     return response.data;
   } catch (error) {
     handleAxiosError(error);
+    return undefined;
   }
 };
 
-export const deleteDoctorAvailabilitySlot = async (scheduleId: string) => {
-  try {
-    const response = await api.delete<ApiResponse<null>>(
-      `doctor/schedule/${scheduleId}`,
-    );
 
-    return response.data;
-  } catch (error) {
-    handleAxiosError(error);
-  }
-};

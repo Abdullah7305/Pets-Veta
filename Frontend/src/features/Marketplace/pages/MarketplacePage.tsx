@@ -8,12 +8,9 @@ import MarketplaceCTA from "../components/MarketplaceCTA";
 const MarketplacePage = () => {
     return (
         <>
-            <MarketplaceHero />
-            <MarketplaceBenefits />
             <MarketplaceCategories />
             <ProductsGrid />
-            <MarketplaceBanner />
-            <MarketplaceCTA />
+
         </>
     );
 };

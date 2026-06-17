@@ -11,7 +11,7 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 import Button from "../../../../shared/components/Button/Button";
 import {
   petIssueReportSchema,
@@ -47,6 +47,7 @@ const PetIssueReportForm = ({
   const [loadSlotsError, setLoadSlotsError] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [availableSlots, setAvailableSlots] = useState<BookableSlot[]>([]);
+  const navigate = useNavigate();
 
   const {
     register,
@@ -148,7 +149,9 @@ const PetIssueReportForm = ({
         reset();
         if (onSubmitSuccess) {
           onSubmitSuccess(result);
+          navigate(result.checkoutUrl);
         }
+
       } else {
         setSubmitError("Failed to submit issue report.");
       }
@@ -267,11 +270,10 @@ const PetIssueReportForm = ({
                     key={`${slot.scheduleId}-${slot.startDateTime}`}
                     type="button"
                     onClick={() => setValue("checkupTime", slot.startDateTime)}
-                    className={`rounded-xl border p-3 text-left text-xs font-black transition ${
-                      selectedCheckupTime === slot.startDateTime
-                        ? "border-[#0B8F5A] bg-emerald-50 text-[#0B8F5A]"
-                        : "border-slate-200 bg-white text-slate-600 hover:border-[#0B8F5A]"
-                    }`}
+                    className={`rounded-xl border p-3 text-left text-xs font-black transition ${selectedCheckupTime === slot.startDateTime
+                      ? "border-[#0B8F5A] bg-emerald-50 text-[#0B8F5A]"
+                      : "border-slate-200 bg-white text-slate-600 hover:border-[#0B8F5A]"
+                      }`}
                   >
                     <span className="block text-[11px] uppercase text-slate-400">
                       {slot.day}
@@ -370,11 +372,10 @@ const PetIssueReportForm = ({
             <button
               type="button"
               onClick={() => setValue("appointmentType", "NORMAL_CHECKUP")}
-              className={`w-full rounded-xl border p-3 text-left transition ${
-                appointmentType === "NORMAL_CHECKUP"
-                  ? "border-[#0B8F5A] bg-white"
-                  : "border-slate-200 bg-white"
-              }`}
+              className={`w-full rounded-xl border p-3 text-left transition ${appointmentType === "NORMAL_CHECKUP"
+                ? "border-[#0B8F5A] bg-white"
+                : "border-slate-200 bg-white"
+                }`}
             >
               <div className="flex items-start gap-3">
                 <Stethoscope size={26} className="text-[#0B8F5A]" />
