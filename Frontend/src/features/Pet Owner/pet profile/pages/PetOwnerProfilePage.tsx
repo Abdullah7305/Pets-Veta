@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import PetForm from "../../pet details/components/PetForm";
 import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
 
@@ -29,6 +29,7 @@ const PetOwnerProfilePage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState("");
+  const [openPetForm, setOpenPetForm] = useState<boolean>(false);
 
   const fetchProfileData = useCallback(async () => {
     try {
@@ -39,7 +40,6 @@ const PetOwnerProfilePage = () => {
         getPetOwnerProfileApi(),
         getMyPetsApi(),
       ]);
-
       setProfile(profileResponse.data);
       setPets(petsResponse.data);
     } catch (fetchError) {
@@ -51,8 +51,20 @@ const PetOwnerProfilePage = () => {
   }, []);
 
   useEffect(() => {
-    void fetchProfileData();
+    fetchProfileData();
   }, [fetchProfileData]);
+
+  // Lock body scroll when the modal form is active
+  useEffect(() => {
+    if (openPetForm) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [openPetForm]);
 
   const handleDeletePet = async () => {
     if (!selectedPet) return;
@@ -75,12 +87,16 @@ const PetOwnerProfilePage = () => {
     }
   };
 
+  const handlePetAddedSuccess = () => {
+    setOpenPetForm(false);
+    void fetchProfileData();
+  };
+
   if (isLoading) {
     return (
       <main className="min-h-screen bg-[#F8FAFA] px-4 py-6 sm:px-6 lg:px-10">
         <section className="mx-auto max-w-7xl space-y-6">
           <div className="h-64 animate-pulse rounded-3xl bg-slate-200" />
-
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {[1, 2, 3].map((item) => (
               <div
@@ -101,11 +117,9 @@ const PetOwnerProfilePage = () => {
           <h1 className="text-xl font-black text-[#101b3d]">
             Unable to load profile
           </h1>
-
           <p className="mt-2 text-sm font-medium text-slate-500">
             {error}
           </p>
-
           <Button
             type="button"
             className="mx-auto mt-5 w-auto px-6"
@@ -139,7 +153,7 @@ const PetOwnerProfilePage = () => {
 
           <MyPetsSection
             pets={pets}
-            onAddPet={() => navigate("/pet-owner/pets/add")}
+            onAddPet={() => setOpenPetForm(true)}
             onEditPet={(petId) =>
               navigate(`/pet-owner/pets/${petId}/edit`)
             }
@@ -151,17 +165,24 @@ const PetOwnerProfilePage = () => {
         </section>
       </main>
 
-      <DeletePetModal
-        isOpen={Boolean(selectedPet)}
-        petName={selectedPet?.name ?? ""}
-        isDeleting={isDeleting}
-        onClose={() => {
-          if (!isDeleting) {
-            setSelectedPet(null);
-          }
-        }}
-        onConfirm={() => void handleDeletePet()}
-      />
+      {/* Lightweight, High-Performance Scroll-Trapped Overlay */}
+      {openPetForm && (
+        <div 
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 overscroll-contain text-center"
+          role="dialog" 
+          aria-modal="true"
+        >
+          {/* Outer flex container wraps the custom scroll scope */}
+          <div className="flex min-h-[100dvh] items-center justify-center p-4 sm:p-6">
+            <div className="w-full max-w-md my-8 text-left">
+              <PetForm
+                onSubmitSuccess={handlePetAddedSuccess}
+                onCancel={() => setOpenPetForm(false)}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

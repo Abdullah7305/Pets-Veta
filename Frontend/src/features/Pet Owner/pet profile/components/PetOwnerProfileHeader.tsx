@@ -60,7 +60,7 @@ const PetOwnerProfileHeader = ({
           </div>
 
           <p className="mt-2 text-sm font-bold text-slate-500">
-            @{profile.username}
+            {profile.username}
           </p>
 
           <p className="mt-5 max-w-2xl text-sm font-medium leading-7 text-slate-600">
@@ -69,15 +69,7 @@ const PetOwnerProfileHeader = ({
           </p>
 
           <div className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm font-semibold text-slate-600 md:justify-start">
-            <ProfileMeta
-              icon={<Mail size={18} />}
-              value={profile.email}
-            />
 
-            <ProfileMeta
-              icon={<Phone size={18} />}
-              value={profile.phone || "Phone not added"}
-            />
 
             <ProfileMeta
               icon={<UserRound size={18} />}

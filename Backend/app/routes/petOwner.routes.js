@@ -6,16 +6,24 @@ const { petOwnerLimiter } = require('../middleware/rateLimiter')
 
 const Router = express.Router();
 
+Router
+    .route('/my-pets')
+    .get(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.getPetsData)
+
+Router
+    .route('/pet-profile')
+    .get(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.getPetOwnerById);
 
 
 Router
-    .route('/submit/pet-data')
-    .post(petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.registerPet)
+  .route("/submit/pet-data")
+  .post(
+    petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole("PetOwner"), upload.any(),petOwnerController.registerPet);
 
 Router
     .route('/submit/pet-issue')
-    .post(petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.registerPetIssue)
-
+    .post(
+        petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), upload.any(), petOwnerController.registerPetIssue);
 Router
     .route('/petOwner-data')
     .get(petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.getPetOwnerById)

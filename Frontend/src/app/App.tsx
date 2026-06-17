@@ -9,17 +9,19 @@ function App() {
 
   return (
     <>
-      <SmoothScroll>
-        <QueryProvider>
 
-          <AuthContextProvider>
+      <QueryProvider>
+
+        <AuthContextProvider>
+          <SmoothScroll>
 
             <RouterProvider router={Router} />
+          </SmoothScroll>
 
-          </AuthContextProvider>
+        </AuthContextProvider>
 
-        </QueryProvider>
-      </SmoothScroll>
+      </QueryProvider>
+
     </>
   )
 }

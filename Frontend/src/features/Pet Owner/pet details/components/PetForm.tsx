@@ -1,7 +1,7 @@
-import { Calendar, List, PawPrint, Shield, User } from "lucide-react";
+import { Calendar, List, PawPrint, Shield, User, ImagePlus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Input from "../../../../shared/components/Input/Input";
 import Button from "../../../../shared/components/Button/Button";
@@ -21,11 +21,13 @@ interface PetFormProps {
 const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
   const { user } = useAuth();
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [previews, setPreviews] = useState<string[]>([]);
 
   const {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<PetFormInput, unknown, PetFormData>({
     resolver: zodResolver(petSchema),
@@ -37,6 +39,26 @@ const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
     },
   });
 
+  // Watch the photos field to trigger preview generation
+  const selectedPhotos = watch("photos");
+
+  useEffect(() => {
+    if (!selectedPhotos || selectedPhotos.length === 0) {
+      setPreviews([]);
+      return;
+    }
+
+    const objectUrls = Array.from(selectedPhotos).map((file) =>
+      URL.createObjectURL(file as File)
+    );
+
+    setPreviews(objectUrls);
+
+    return () => {
+      objectUrls.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [selectedPhotos]);
+
   const onSubmit = async (data: PetFormData) => {
     setSubmitError(null);
     console.log("Pet Form Data:", data);
@@ -47,6 +69,8 @@ const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
     }
 
     try {
+      // NOTE: If your backend expects a FormData object for file uploads (like with Multer), 
+      // you will need to map `data` into a new FormData() instance inside `submitPetData`.
       const newPet = await submitPetData({
         ...data,
         age: Number(data.age),
@@ -55,6 +79,7 @@ const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
 
       if (newPet) {
         reset();
+        setPreviews([]); // Clear previews on success
         if (onSubmitSuccess) {
           onSubmitSuccess(newPet);
         }
@@ -88,6 +113,45 @@ const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
               {submitError}
             </div>
           )}
+
+          {/* Photo Upload Section mapped to your theme */}
+          <div>
+            <label className="mb-2 block text-sm font-black">
+              Pet Photos
+            </label>
+            <label className="flex flex-col items-center justify-center w-full h-32 rounded-xl border-2 border-dashed border-purple-200 bg-[#F6F0FF]/50 hover:bg-[#F4ECFF] transition-colors cursor-pointer focus-within:border-[#6D3DD9] focus-within:ring-4 focus-within:ring-purple-100">
+              <div className="flex flex-col items-center justify-center pt-5 pb-6 text-[#6D3DD9]">
+                <ImagePlus size={28} className="mb-2 opacity-80" />
+                <p className="text-xs font-semibold">
+                  Click to upload <span className="font-normal text-slate-500">or drag and drop</span>
+                </p>
+              </div>
+              <input
+                type="file"
+                multiple
+                className="hidden"
+                accept="image/*"
+                {...register("photos")}
+              />
+            </label>
+
+            {/* Previews Grid */}
+            {previews.length > 0 && (
+              <div className="mt-3 grid grid-cols-4 sm:grid-cols-5 gap-2">
+                {previews.map((src, i) => (
+                  <div key={src} className="relative aspect-square rounded-lg overflow-hidden border border-purple-100 shadow-sm">
+                    <img src={src} alt={`preview-${i}`} className="object-cover w-full h-full" />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {errors.photos && (
+              <p className="mt-1 text-xs font-semibold text-red-500">
+                {errors.photos.message as string}
+              </p>
+            )}
+          </div>
 
           <Input
             label="Pet Name"
@@ -161,6 +225,7 @@ const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
               className="border-[#6D3DD9]/35 text-[#6D3DD9]"
               onClick={() => {
                 reset();
+                setPreviews([]); // Clear previews on cancel
                 if (onCancel) onCancel();
               }}
             >

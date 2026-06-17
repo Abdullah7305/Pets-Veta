@@ -13,6 +13,7 @@ import {
 
 import Button from "../../../shared/components/Button/Button";
 import img from "@/assets/shared/images/dog2.jpeg"
+import { NavLink } from "react-router-dom";
 
 const services = [
   {
@@ -32,6 +33,7 @@ const services = [
       "Grooming essentials",
     ],
     button: "Explore Marketplace",
+    url:"/marketplace"
   },
   {
     title: "Vet Consultation",
@@ -50,6 +52,7 @@ const services = [
       "Health records & prescriptions",
     ],
     button: "Book a Consultation",
+    url:"/doctors"
   },
   {
     title: "AI Assistant",
@@ -68,6 +71,7 @@ const services = [
       "Care tips & reminders",
     ],
     button: "Ask AI Assistant",
+    url:"/ai-assistant"
   },
 ];
 
@@ -162,14 +166,13 @@ const Services = () => {
                 />
               </div>
 
-              <Button
-                variant="primary"
-                size="md"
-                className={`inline-flex items-center gap-3 !rounded-xl !text-white hover:!text-white ${service.btn}`}
+              <NavLink
+                to={service.url}
+                className={`inline-flex items-center gap-3 p-3 !rounded-xl !text-white hover:!text-white ${service.btn}`}
               >
-                {service.button}
+                {service.button}hh
                 <FaArrowRight />
-              </Button>
+              </NavLink>
             </div>
           ))}
         </div>
