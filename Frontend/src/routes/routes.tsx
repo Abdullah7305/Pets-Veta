@@ -7,15 +7,13 @@ import { doctorRoutes } from "../features/Appointment/appointment.routes";
 import adminRoutes from "../features/Admin/admin.route";
 import { doctorAppointmentRoutes } from "../features/Doctorcart/doctorAppointment.route";
 import { petsRoutes } from "../features/Pet Owner/pet details/pets.route";
-import { marketplaceRoutes } from "@/features/Marketplace/marketplace.route";
 import { aiAssistantRoutes } from "@/features/AiAssistance/aiAssistant.route";
 import { selectPetRoutes } from "@/features/Pet Owner/SelectPet/selectPet.route";
 import { petProfileRoutes } from "@/features/Pet Owner/pet profile/petProfile.route";
 import { petOwnerDashboardRoutes } from "@/features/PetOwnerDashboard/petOwnerDashboard.route";
-
-// 1. Import your newly defined paymentRoutes
-import { paymentRoutes } from "../features/Payment/payment.routes";
-
+import { sellerRoutes } from "@/features/seller/seller.routes";
+import { marketplaceRoutes } from "@/features/marketplace1/marketplace.routes";
+import { cartRoutes } from "@/features/cart/cart.routes";
 const Router = createBrowserRouter([
   ...LandingPageRoutes,
   ...AuthRouter,
@@ -24,15 +22,14 @@ const Router = createBrowserRouter([
   ...doctorDashboardRoutes,
   ...adminRoutes,
   ...petsRoutes,
-  ...marketplaceRoutes,
+  // ...marketplaceRoutes,
   ...aiAssistantRoutes,
   ...selectPetRoutes,
   ...petProfileRoutes,
   ...petOwnerDashboardRoutes,
-
-  // 2. Inject the payment routes into the master collection
-  ...paymentRoutes,
-
+  ...sellerRoutes,
+  ...marketplaceRoutes,
+  ...cartRoutes,
   {
     path: "*",
     element: <Notfound />,

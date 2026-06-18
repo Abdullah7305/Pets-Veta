@@ -22,6 +22,7 @@ const MyPetsSection = ({
   onDeletePet,
   onBookAppointment,
 }: MyPetsSectionProps) => {
+
   return (
     <section className="mt-8">
       <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -70,7 +71,8 @@ const MyPetsSection = ({
       ) : (
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {pets.map((pet) => (
-            <PetProfileCard
+            console.log("Pets in loop are ", pets),
+            < PetProfileCard
               key={pet.id}
               pet={pet}
               onEdit={onEditPet}

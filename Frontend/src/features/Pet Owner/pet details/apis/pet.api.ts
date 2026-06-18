@@ -29,7 +29,7 @@ export const submitPetData = async (data: PetFormData & { petOwnerId: string }):
 };
 
 export const submitPetIssue = async (
-  data: PetIssueReportFormData & { petOwnerId: string; doctorId: string },
+  data: { petId: string; issue: string, doctorId: string | null, scheduleId: string | null },
 ): Promise<SubmitIssueResponse> => {
   try {
     const response = await api.post("petOwner/submit/pet-issue", data);

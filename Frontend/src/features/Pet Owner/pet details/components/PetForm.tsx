@@ -47,7 +47,7 @@ const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
     }
 
     try {
-      // 1. Convert data to multipart FormData format for file uploads
+
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("age", String(data.age));
@@ -55,7 +55,7 @@ const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
       formData.append("category", data.category);
       formData.append("petOwnerId", petOwnerId);
 
-      // 2. Append files explicitly to match backend expectations (e.g., Multer array('photos'))
+
       if (data.photos && data.photos.length > 0) {
         Array.from(data.photos).forEach((file) => {
           formData.append("photos", file as File);
@@ -67,7 +67,7 @@ const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
 
       // 3. Send the structured multipart data payload
       const newPet = await submitPetData(formData);
-
+      console.log("Pet Form Response is ", newPet)
       if (newPet) {
         reset();
         // Revoke preview URLs to clear memory leaks
@@ -79,6 +79,9 @@ const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
       } else {
         setSubmitError("Failed to save pet. Please check inputs.");
       }
+      formData.forEach((data) => {
+        console.log(data)
+      })
     } catch (err: any) {
       setSubmitError(err?.response?.data?.message || "An error occurred while saving the pet.");
     }

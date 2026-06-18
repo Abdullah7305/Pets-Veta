@@ -44,7 +44,7 @@ const createDoctorScheduleService = async (req) => {
             date: new Date(`${date}T00:00:00Z`),
             startTime: slotStart,
             endTime: slotEnd,
-            isBooked: false,
+    
         };
     });
 

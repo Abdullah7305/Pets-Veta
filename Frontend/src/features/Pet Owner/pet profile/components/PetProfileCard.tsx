@@ -49,11 +49,16 @@ const PetProfileCard = ({
     <Card className="overflow-visible p-3">
       <div className="flex flex-col gap-4 sm:flex-row xl:flex-col">
         <div className="h-52 w-full shrink-0 overflow-hidden rounded-2xl bg-[#EAF7F5] sm:w-48 xl:w-full">
-          <img
-            src={categoryImages[pet.category]}
-            alt={pet.name}
-            className="h-full w-full object-cover transition duration-300 hover:scale-105"
-          />
+          {
+            pet.petPictures.map((picture, index) => (
+              <img
+                key={index}
+                src={picture.publicUrl}
+                alt={pet.name}
+                className="h-full w-full object-cover transition duration-300 hover:scale-105"
+              />
+            ))
+          }
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col px-1 py-1">
@@ -64,9 +69,8 @@ const PetProfileCard = ({
               </h3>
 
               <span
-                className={`mt-3 inline-flex rounded-full px-3 py-1 text-[11px] font-black ${
-                  categoryStyles[pet.category]
-                }`}
+                className={`mt-3 inline-flex rounded-full px-3 py-1 text-[11px] font-black ${categoryStyles[pet.category]
+                  }`}
               >
                 {formatCategory(pet.category)}
               </span>

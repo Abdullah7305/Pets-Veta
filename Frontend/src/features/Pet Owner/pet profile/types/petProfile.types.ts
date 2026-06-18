@@ -1,5 +1,9 @@
 export type PetCategory = "DOG" | "CAT" | "REPTILE" | "OTHER";
 
+export type PetPicture = {
+  publicUrl: string;
+};
+
 export type PetOwnerProfile = {
   id: string;
   fullName: string;
@@ -11,11 +15,12 @@ export type PetOwnerProfile = {
 
 export type Pet = {
   id: string;
-  petOwnerId: string;
+  petOwnerId?: string;
   name: string;
   age: number | string;
   breed: string;
   category: PetCategory;
+  petPictures: PetPicture[];
 };
 
 export type PetOwnerProfileResponse = {

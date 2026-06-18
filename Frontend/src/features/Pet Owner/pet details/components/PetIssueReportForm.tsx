@@ -2,7 +2,6 @@ import {
   Calendar,
   ClipboardPlus,
   Info,
-  PawPrint,
   Pencil,
   Send,
   ShieldPlus,
@@ -18,7 +17,7 @@ import {
   type PetIssueReportFormData,
 } from "../schemas/petIssueReport.schema";
 import { useAuth } from "@/features/Auth/hooks/authhook";
-import { getPetsData, submitPetIssue, type PetResponse } from "../apis/pet.api";
+import { submitPetIssue } from "../apis/pet.api";
 import {
   getDoctorProfileData,
   type BookableSlot,
@@ -40,10 +39,7 @@ const PetIssueReportForm = ({
   onCancel,
 }: PetIssueReportFormProps) => {
   const { user } = useAuth();
-  const [pets, setPets] = useState<PetResponse[]>([]);
-  const [loadingPets, setLoadingPets] = useState(false);
   const [loadingSlots, setLoadingSlots] = useState(false);
-  const [loadPetsError, setLoadPetsError] = useState<string | null>(null);
   const [loadSlotsError, setLoadSlotsError] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [availableSlots, setAvailableSlots] = useState<BookableSlot[]>([]);
@@ -59,27 +55,12 @@ const PetIssueReportForm = ({
   } = useForm<PetIssueReportFormData>({
     resolver: zodResolver(petIssueReportSchema),
     defaultValues: {
-      petId: preselectedPetId,
+      petId: localStorage.getItem("petPatientId") || preselectedPetId,
       issue: "",
       appointmentType: "NORMAL_CHECKUP",
       checkupTime: preselectedCheckupTime,
     },
   });
-
-  const fetchPets = async () => {
-    setLoadingPets(true);
-    setLoadPetsError(null);
-    try {
-      const data = await getPetsData();
-      if (data) {
-        setPets(data);
-      }
-    } catch {
-      setLoadPetsError("Failed to load your pets. Please retry.");
-    } finally {
-      setLoadingPets(false);
-    }
-  };
 
   const fetchDoctorSlots = async () => {
     if (!doctorId) {
@@ -101,16 +82,13 @@ const PetIssueReportForm = ({
   };
 
   useEffect(() => {
-    fetchPets();
-  }, []);
-
-  useEffect(() => {
     fetchDoctorSlots();
   }, [doctorId]);
 
   useEffect(() => {
-    if (preselectedPetId) {
-      setValue("petId", preselectedPetId);
+    const savedPetId = localStorage.getItem("petPatientId") || preselectedPetId;
+    if (savedPetId) {
+      setValue("petId", savedPetId);
     }
   }, [preselectedPetId, setValue]);
 
@@ -125,9 +103,11 @@ const PetIssueReportForm = ({
   const selectedCheckupTime = watch("checkupTime");
 
   const onSubmit = async (data: PetIssueReportFormData) => {
+    console.log("Working....")
     setSubmitError(null);
     console.log("Pet issue report:", data);
     const petOwnerId = user?.data?.id;
+
     if (!petOwnerId) {
       setSubmitError("You must be logged in to report a pet issue.");
       return;
@@ -135,6 +115,11 @@ const PetIssueReportForm = ({
 
     if (!doctorId) {
       setSubmitError("Please select a doctor before booking an appointment.");
+      return;
+    }
+
+    if (!data.petId) {
+      setSubmitError("No pet identity found. Please go back and select a pet.");
       return;
     }
 
@@ -150,11 +135,9 @@ const PetIssueReportForm = ({
         if (onSubmitSuccess) {
           onSubmitSuccess(result);
           window.location.href = result.data.checkoutUrl;
+        } else {
+          setSubmitError("Failed to initiate checkout session. Please try again");
         }
-        else {
-          setSubmitError("Failed to initiate chackout session.Please try again")
-        }
-
       } else {
         setSubmitError("Failed to submit issue report.");
       }
@@ -178,8 +161,7 @@ const PetIssueReportForm = ({
           <div className="relative z-10 mt-5">
             <h1 className="text-2xl font-black">Report Pet Issue</h1>
             <p className="mt-2 max-w-[250px] text-sm leading-5 text-slate-600">
-              Tell us about your pet&apos;s health issue so we can assist you
-              better
+              Tell us about your pet&apos;s health issue so we can assist you better
             </p>
           </div>
 
@@ -195,110 +177,16 @@ const PetIssueReportForm = ({
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 px-5 py-6">
-          {submitError && (
+          {(submitError || errors.petId) && (
             <div className="rounded-xl border border-red-100 bg-red-50 p-3 text-sm font-semibold text-red-600">
-              {submitError}
+              {submitError || errors.petId?.message || "A valid pet must be selected."}
             </div>
           )}
 
-          <div>
-            <label className="mb-2 block text-sm font-black">
-              Select Pet <span className="text-red-500">*</span>
-            </label>
+          {/* Hidden field containing the auto-selected pet Patient ID from localStorage */}
+          <input type="hidden" {...register("petId")} />
 
-            {loadPetsError && (
-              <div className="mb-2 flex items-center justify-between rounded-xl bg-red-55 text-red-600 p-2 text-xs font-semibold border border-red-100">
-                <span>{loadPetsError}</span>
-                <button
-                  type="button"
-                  onClick={fetchPets}
-                  className="rounded-lg bg-red-100 px-2 py-1 text-xs font-bold text-red-700 hover:bg-red-200 transition"
-                >
-                  Retry
-                </button>
-              </div>
-            )}
 
-            <div className="flex h-14 items-center rounded-xl border border-slate-200 bg-white px-4 transition focus-within:border-[#0B8F5A] focus-within:ring-4 focus-within:ring-emerald-100">
-              <span className="mr-3 flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-50 text-[#0B8F5A]">
-                <PawPrint size={18} />
-              </span>
-
-              <select
-                {...register("petId")}
-                className="h-full w-full bg-transparent text-sm font-semibold text-slate-500 outline-none"
-              >
-                <option value="">{loadingPets ? "Loading pets..." : "Choose your pet"}</option>
-                {pets.map((pet) => (
-                  <option key={pet.id} value={pet.id}>
-                    {pet.name} - {pet.category} ({pet.breed})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {errors.petId && (
-              <p className="mt-1 text-xs font-semibold text-red-500">
-                {errors.petId.message}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label className="mb-2 block text-sm font-black">
-              Appointment Slot <span className="text-red-500">*</span>
-            </label>
-
-            {loadSlotsError && (
-              <div className="mb-2 flex items-center justify-between rounded-xl border border-red-100 bg-red-50 p-2 text-xs font-semibold text-red-600">
-                <span>{loadSlotsError}</span>
-                <button
-                  type="button"
-                  onClick={fetchDoctorSlots}
-                  className="rounded-lg bg-red-100 px-2 py-1 text-xs font-bold text-red-700 transition hover:bg-red-200"
-                >
-                  Retry
-                </button>
-              </div>
-            )}
-
-            {loadingSlots ? (
-              <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm font-semibold text-slate-500">
-                Loading available slots...
-              </div>
-            ) : availableSlots.length > 0 ? (
-              <div className="grid grid-cols-2 gap-2">
-                {availableSlots.slice(0, 10).map((slot) => (
-                  <button
-                    key={`${slot.scheduleId}-${slot.startDateTime}`}
-                    type="button"
-                    onClick={() => setValue("checkupTime", slot.startDateTime)}
-                    className={`rounded-xl border p-3 text-left text-xs font-black transition ${selectedCheckupTime === slot.startDateTime
-                      ? "border-[#0B8F5A] bg-emerald-50 text-[#0B8F5A]"
-                      : "border-slate-200 bg-white text-slate-600 hover:border-[#0B8F5A]"
-                      }`}
-                  >
-                    <span className="block text-[11px] uppercase text-slate-400">
-                      {slot.day}
-                    </span>
-                    {slot.startTime} - {slot.endTime}
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <p className="rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-500">
-                No appointment slots available for this doctor.
-              </p>
-            )}
-
-            <input type="hidden" {...register("checkupTime")} />
-
-            {errors.checkupTime && (
-              <p className="mt-1 text-xs font-semibold text-red-500">
-                {errors.checkupTime.message}
-              </p>
-            )}
-          </div>
 
           <div>
             <label className="mb-2 block text-sm font-black">

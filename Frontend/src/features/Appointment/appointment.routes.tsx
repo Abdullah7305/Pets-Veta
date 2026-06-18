@@ -8,7 +8,7 @@ export const doctorRoutes = [
         element: <DoctorProfilePage />
     },
     {
-        path: '/book-appointment/:id',
+        path: '/book-appointment',
         element: (
             <ProtectedRoutes>
                 <BookAppointmentPage />

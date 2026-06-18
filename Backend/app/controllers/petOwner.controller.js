@@ -72,88 +72,22 @@ const registerPet = catchAsync(async (req, res) => {
 
 const registerPetIssue = catchAsync(async (req, res) => {
     const petOwnerId = req.user?.id;
-
-    if (!petOwnerId) {
-        return sendResponse(res, 401, 'Please login first', {});
-    }
-
-    requireFields(['petId', 'issue', 'doctorId', 'checkupTime'], req.body);
-
-    const { petId, issue, doctorId, checkupTime } = req.body;
-    const files = req.files || [];
-
-    const petOwner = await authServices.getUserById(petOwnerId);
-
-    if (!petOwner || petOwner.userRole.role !== 'PetOwner') {
-        return sendResponse(res, 403, 'Only pet owner can submit pet issue', {});
-    }
-
-    // const pet = await prisma.pet.findFirst({
-    //     where: {
-    //         id: petId,
-    //         petOwnerId,
-    //     },
-    // });
-
-    // if (!pet) {
-    //     return sendResponse(res, 404, 'Pet not found or this pet does not belong to you', {});
-    // }
-
+    requireFields(['petId', 'issue', "doctorId", "scheduleId"], req.body);
+    const { petId, issue, doctorId, scheduleId } = req.body;
     const petIssue = {
-        petOwnerId,
-        petId,
-        issue,
-        doctorId,
-        checkupTime,
-    };
-
-    const savePetIssue = await petOwnerServices.registerPetIssue(petIssue);
-
-    if (!savePetIssue || !savePetIssue.appointment || !savePetIssue.appointment.fees) {
-        return sendResponse(res, 400, 'Failed to Submit Issue', {});
+        petId: petId,
+        issue: issue,
+        doctorId: doctorId,
+        petOwnerId: petOwnerId,
+        scheduleId: scheduleId
     }
 
+    const createPetIssueReport = await petOwnerServices.registerPetIssue(petIssue);
 
-    const appointment = savePetIssue.appointment;
 
-    const session = await stripe.checkout.sessions.create({
-        mode: 'payment',
-        line_items: [
-            {
-                price_data: {
-                    currency: 'usd',
-                    unit_amount: appointment.fees * 100,
-                    product_data: {
-                        name: 'Pet Doctor Consultation',
-                    },
-                },
-                quantity: 1,
-            },
-        ],
-        success_url: `${process.env.FRONTEND_URL}/payment-success?session_id=CHECKOUT_SESSION_ID`,
-        cancel_url: `${process.env.FRONTEND_URL}/payment-cancel`,
-        metadata: {
-            appointmentId: appointment.id,
-            petOwnerId,
-            petId,
-        },
-    });
-
-    await petOwnerServices.updateAppointmentStripeId(appointment.id, session.id);
-
-    const issueWithPictures = await prisma.petIssue.findUnique({
-        where: {
-            id: savePetIssue.id,
-        },
-        include: {
-            issuePictures: true,
-            appointment: true,
-        },
-    });
-
-    return sendResponse(res, 201, 'Successfully Submitted', {
-        checkoutUrl: session.url,
-        issue: issueWithPictures,
+    return sendResponse(res, 201, 'Report created successfully. Please redirect client to the checkout url.', {
+        petIssue: createPetIssueReport.registerIssue,
+        checkoutUrl: createPetIssueReport.checkoutUrl
     });
 });
 
@@ -183,13 +117,21 @@ const getPetsData = catchAsync(async (req, res) => {
     if (!petsData) {
         return sendResponse(res, 400, 'Not Pets Data Found', petsData);
     }
-
+    console.log("======>>> ", petsData)
     return sendResponse(res, 200, 'Successfully Send Data', petsData);
 });
 
+const lockDoctorSlot = catchAsync(async (req, res) => {
+    const { userId } = req.user;
+    requireFields(["doctorId", "slotId"], req.body);
+    const { doctorId, slotId } = req.body;
+    const bookSlot = await petOwnerServices.lockUserSlot(slotId, userId);
+    return sendResponse(res, 201, "Successfully Locked Slot", bookSlot)
+})
 module.exports = {
     registerPetIssue,
     getPetOwnerById,
     registerPet,
     getPetsData,
+    lockDoctorSlot
 };
