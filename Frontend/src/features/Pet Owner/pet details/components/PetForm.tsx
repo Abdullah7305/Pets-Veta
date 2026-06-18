@@ -1,7 +1,7 @@
 import { Calendar, List, PawPrint, Shield, User, ImagePlus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import Input from "../../../../shared/components/Input/Input";
 import Button from "../../../../shared/components/Button/Button";
@@ -27,7 +27,6 @@ const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
     register,
     handleSubmit,
     reset,
-    watch,
     formState: { errors, isSubmitting },
   } = useForm<PetFormInput, unknown, PetFormData>({
     resolver: zodResolver(petSchema),
@@ -39,29 +38,8 @@ const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
     },
   });
 
-  // Watch the photos field to trigger preview generation
-  const selectedPhotos = watch("photos");
-
-  useEffect(() => {
-    if (!selectedPhotos || selectedPhotos.length === 0) {
-      setPreviews([]);
-      return;
-    }
-
-    const objectUrls = Array.from(selectedPhotos).map((file) =>
-      URL.createObjectURL(file as File)
-    );
-
-    setPreviews(objectUrls);
-
-    return () => {
-      objectUrls.forEach((url) => URL.revokeObjectURL(url));
-    };
-  }, [selectedPhotos]);
-
   const onSubmit = async (data: PetFormData) => {
     setSubmitError(null);
-    console.log("Pet Form Data:", data);
     const petOwnerId = user?.data?.id;
     if (!petOwnerId) {
       setSubmitError("You must be logged in to register a pet.");
@@ -69,17 +47,32 @@ const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
     }
 
     try {
-      // NOTE: If your backend expects a FormData object for file uploads (like with Multer), 
-      // you will need to map `data` into a new FormData() instance inside `submitPetData`.
-      const newPet = await submitPetData({
-        ...data,
-        age: Number(data.age),
-        petOwnerId,
-      });
+      // 1. Convert data to multipart FormData format for file uploads
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("age", String(data.age));
+      formData.append("breed", data.breed || "");
+      formData.append("category", data.category);
+      formData.append("petOwnerId", petOwnerId);
+
+      // 2. Append files explicitly to match backend expectations (e.g., Multer array('photos'))
+      if (data.photos && data.photos.length > 0) {
+        Array.from(data.photos).forEach((file) => {
+          formData.append("photos", file as File);
+        });
+      } else {
+        setSubmitError("At least one picture is required.");
+        return;
+      }
+
+      // 3. Send the structured multipart data payload
+      const newPet = await submitPetData(formData);
 
       if (newPet) {
         reset();
-        setPreviews([]); // Clear previews on success
+        // Revoke preview URLs to clear memory leaks
+        previews.forEach((url) => URL.revokeObjectURL(url));
+        setPreviews([]);
         if (onSubmitSuccess) {
           onSubmitSuccess(newPet);
         }
@@ -109,15 +102,15 @@ const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 px-5 py-6">
           {submitError && (
-            <div className="bg-red-50 text-red-650 p-3 rounded-2xl text-xs font-semibold border border-red-100 mb-3">
+            <div className="bg-red-50 text-red-600 p-3 rounded-2xl text-xs font-semibold border border-red-100 mb-3">
               {submitError}
             </div>
           )}
 
-          {/* Photo Upload Section mapped to your theme */}
+          {/* Photo Upload Section */}
           <div>
             <label className="mb-2 block text-sm font-black">
-              Pet Photos
+              Pet Photos <span className="text-red-500">*</span>
             </label>
             <label className="flex flex-col items-center justify-center w-full h-32 rounded-xl border-2 border-dashed border-purple-200 bg-[#F6F0FF]/50 hover:bg-[#F4ECFF] transition-colors cursor-pointer focus-within:border-[#6D3DD9] focus-within:ring-4 focus-within:ring-purple-100">
               <div className="flex flex-col items-center justify-center pt-5 pb-6 text-[#6D3DD9]">
@@ -132,6 +125,21 @@ const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
                 className="hidden"
                 accept="image/*"
                 {...register("photos")}
+                onChange={(e) => {
+                  // Connect back to React Hook Form's registration logic
+                  register("photos").onChange(e);
+
+                  // Intercept and update image previews manually
+                  const files = e.target.files;
+                  if (files && files.length > 0) {
+                    const objectUrls = Array.from(files).map((file) =>
+                      URL.createObjectURL(file)
+                    );
+                    setPreviews(objectUrls);
+                  } else {
+                    setPreviews([]);
+                  }
+                }}
               />
             </label>
 
@@ -213,8 +221,7 @@ const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
               About Pet Categories
             </h3>
             <p className="mt-1 text-xs leading-5 text-slate-600">
-              Choose the correct category to help us provide better care for your
-              pet.
+              Choose the correct category to help us provide better care for your pet.
             </p>
           </div>
 
@@ -225,7 +232,8 @@ const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
               className="border-[#6D3DD9]/35 text-[#6D3DD9]"
               onClick={() => {
                 reset();
-                setPreviews([]); // Clear previews on cancel
+                previews.forEach((url) => URL.revokeObjectURL(url));
+                setPreviews([]);
                 if (onCancel) onCancel();
               }}
             >

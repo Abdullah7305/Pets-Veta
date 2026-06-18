@@ -53,9 +53,9 @@ const registerPetIssue = async (petIssue) => {
         return;
     }
     console.log("Outside Appointment COndition here");
-
+    let createdPetIssue = ''
     const newPetIssue = await prisma.$transaction(async (tx) => {
-        const createdPetIssue = await tx.petIssueReport.create({
+        createdPetIssue = await tx.petIssueReport.create({
             data: {
                 petOwnerId: petIssue.petOwnerId,
                 petId: petIssue.petId,
@@ -66,19 +66,19 @@ const registerPetIssue = async (petIssue) => {
         const appointment = await tx.appointment.create({
             data: {
                 doctorId: petIssue.doctorId,
-                petIssueReportId: createdPetIssue.id,
                 fees: doctor.fees,
                 checkupTime,
+                petIssueReportId: createdPetIssue.id
 
 
             },
         });
-
         return {
             petIssue: createdPetIssue,
             appointment,
         };
     });
+    console.log("Issue is ====>", createdPetIssue)
 
     return newPetIssue;
 }
@@ -122,8 +122,15 @@ const updateAppointmentStripeId = async (appointmentId, sessionId) => {
 
     return result;
 };
+
+const createPetPictures = async (pet) => {
+    const pictures = await prisma.petPicture.createMany({
+        data: pet
+    })
+}
 module.exports = {
     saveUserPet,
     registerPetIssue, getUserPets,
-    updateAppointmentStripeId
+    updateAppointmentStripeId,
+    createPetPictures
 }

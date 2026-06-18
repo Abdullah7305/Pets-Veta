@@ -6,25 +6,12 @@ const sendResponse = require('../utils/SendResponse');
 const authServices = require('../services/auth.services');
 const { stripe } = require('../config/stripe');
 const prisma = require('../config/prisma');
-const cloudinary = require('../config/cloudinary');
+const cloudinary = require('../utils/cloudinary.utils');
 const streamifier = require('streamifier');
 
-const uploadBufferToCloudinary = (buffer, folder) => {
-    return new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-            {
-                folder,
-                resource_type: 'auto',
-            },
-            (error, result) => {
-                if (error) return reject(error);
-                resolve(result);
-            }
-        );
 
-        streamifier.createReadStream(buffer).pipe(stream);
-    });
-};
+
+
 
 const registerPet = catchAsync(async (req, res) => {
     const petOwnerId = req.user?.id;
@@ -43,8 +30,8 @@ const registerPet = catchAsync(async (req, res) => {
     }
 
     const petOwner = await authServices.getUserById(petOwnerId);
-
-    if (!petOwner || petOwner.role !== 'PetOwner') {
+    console.log("Pet Owner is ", petOwner);
+    if (!petOwner || petOwner.userRole.role !== 'PetOwner') {
         return sendResponse(res, 403, 'Only pet owner can register pet', {});
     }
 
@@ -62,35 +49,25 @@ const registerPet = catchAsync(async (req, res) => {
         return sendResponse(res, 400, 'Failed to create Pet', {});
     }
 
-    const uploadedPictures = [];
 
-    for (const file of files) {
-        const uploadedImage = await uploadBufferToCloudinary(
-            file.buffer,
-            `pets-veta/pets/${newPet.id}`
-        );
+    const uploadPromises = files.map(file =>
+        cloudinary.uploadToCloudinary(file.buffer, "pets")
+    );
+    console.log("Cloudinary Promises are ", uploadPromises);
+    const uploadResults = await Promise.all(uploadPromises);
+    console.log("Upload Results is ", uploadResults);
+    const uploadedPictures = uploadResults.map(result => ({
+        petId: newPet.id,
+        publicUrl: result.secure_url,
+        publicId: result.public_id
+    }));
+    console.log("Uploaded Picture data is ", uploadedPictures);
 
-        uploadedPictures.push({
-            publicUrl: uploadedImage.secure_url,
-            publicId: uploadedImage.public_id,
-            petId: newPet.id,
-        });
-    }
+    await petOwnerServices.createPetPictures(uploadedPictures);
 
-    await prisma.petPicture.createMany({
-        data: uploadedPictures,
-    });
 
-    const petWithPictures = await prisma.pet.findUnique({
-        where: {
-            id: newPet.id,
-        },
-        include: {
-            PetPicture: true,
-        },
-    });
 
-    return sendResponse(res, 201, 'Successfully created Pet', petWithPictures);
+    return sendResponse(res, 201, 'Successfully created Pet', uploadedPictures);
 });
 
 const registerPetIssue = catchAsync(async (req, res) => {
@@ -107,20 +84,20 @@ const registerPetIssue = catchAsync(async (req, res) => {
 
     const petOwner = await authServices.getUserById(petOwnerId);
 
-    if (!petOwner || petOwner.role !== 'PetOwner') {
+    if (!petOwner || petOwner.userRole.role !== 'PetOwner') {
         return sendResponse(res, 403, 'Only pet owner can submit pet issue', {});
     }
 
-    const pet = await prisma.pet.findFirst({
-        where: {
-            id: petId,
-            petOwnerId,
-        },
-    });
+    // const pet = await prisma.pet.findFirst({
+    //     where: {
+    //         id: petId,
+    //         petOwnerId,
+    //     },
+    // });
 
-    if (!pet) {
-        return sendResponse(res, 404, 'Pet not found or this pet does not belong to you', {});
-    }
+    // if (!pet) {
+    //     return sendResponse(res, 404, 'Pet not found or this pet does not belong to you', {});
+    // }
 
     const petIssue = {
         petOwnerId,
@@ -136,26 +113,6 @@ const registerPetIssue = catchAsync(async (req, res) => {
         return sendResponse(res, 400, 'Failed to Submit Issue', {});
     }
 
-    const uploadedIssuePictures = [];
-
-    for (const file of files) {
-        const uploadedImage = await uploadBufferToCloudinary(
-            file.buffer,
-            `pets-veta/pet-issues/${savePetIssue.id}`
-        );
-
-        uploadedIssuePictures.push({
-            publicUrl: uploadedImage.secure_url,
-            publicId: uploadedImage.public_id,
-            petIssueId: savePetIssue.id,
-        });
-    }
-
-    if (uploadedIssuePictures.length > 0) {
-        await prisma.petIssuePicture.createMany({
-            data: uploadedIssuePictures,
-        });
-    }
 
     const appointment = savePetIssue.appointment;
 

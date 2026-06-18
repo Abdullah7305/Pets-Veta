@@ -145,11 +145,14 @@ const PetIssueReportForm = ({
         doctorId,
       });
 
-      if (result) {
+      if (result.success && result?.data?.checkoutUrl) {
         reset();
         if (onSubmitSuccess) {
           onSubmitSuccess(result);
-          navigate(result.checkoutUrl);
+          window.location.href = result.data.checkoutUrl;
+        }
+        else {
+          setSubmitError("Failed to initiate chackout session.Please try again")
         }
 
       } else {
