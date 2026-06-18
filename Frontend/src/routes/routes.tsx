@@ -8,7 +8,6 @@ import adminRoutes from "../features/Admin/admin.route";
 import { doctorAppointmentRoutes } from "../features/Doctorcart/doctorAppointment.route";
 import { petsRoutes } from "../features/Pet Owner/pet details/pets.route";
 import { aiAssistantRoutes } from "@/features/AiAssistance/aiAssistant.route";
-// import { paymentRoutes } from "@/features/Payment/payment.routes";
 import { selectPetRoutes } from "@/features/Pet Owner/SelectPet/selectPet.route";
 import { petProfileRoutes } from "@/features/Pet Owner/pet profile/petProfile.route";
 import { petOwnerDashboardRoutes } from "@/features/PetOwnerDashboard/petOwnerDashboard.route";
@@ -25,12 +24,12 @@ const Router = createBrowserRouter([
   ...petsRoutes,
   // ...marketplaceRoutes,
   ...aiAssistantRoutes,
-    ...selectPetRoutes,
-    ...petProfileRoutes,
-    ...petOwnerDashboardRoutes,
-     ...sellerRoutes,
-      ...marketplaceRoutes,
-       ...cartRoutes,
+  ...selectPetRoutes,
+  ...petProfileRoutes,
+  ...petOwnerDashboardRoutes,
+  ...sellerRoutes,
+  ...marketplaceRoutes,
+  ...cartRoutes,
   {
     path: "*",
     element: <Notfound />,

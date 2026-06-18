@@ -44,7 +44,7 @@ const SellerSavedListingsPage = () => {
         }
 
         if (!ignore) {
-          setError("Saved listings load nahi ho sakin.");
+          setError("Unable to load saved listings. Please check your connection and try again.");
         }
       } finally {
         if (!ignore) {
@@ -65,7 +65,7 @@ const SellerSavedListingsPage = () => {
       await removeMarketplaceListing(productId);
       setProducts((prev) => prev.filter((product) => product.id !== productId));
     } catch {
-      setError("Saved listing remove nahi ho saki.");
+      setError("Unable to remove the saved listing. Please try again.");
     }
   };
 
@@ -86,7 +86,7 @@ const SellerSavedListingsPage = () => {
                 Saved Listings
               </h1>
               <p className="mt-2 text-sm text-gray-500">
-                Marketplace products jo aap ne save kiye hain.
+                Marketplace products you have saved.
               </p>
             </div>
 
@@ -113,7 +113,7 @@ const SellerSavedListingsPage = () => {
                 No saved listings
               </h2>
               <p className="mt-2 text-sm text-gray-500">
-                Marketplace products save karen, woh yahan show honge.
+                Save marketplace products to see them here.
               </p>
               <Button className="mt-5" onClick={() => navigate("/marketplace1")}>
                 Go to Marketplace

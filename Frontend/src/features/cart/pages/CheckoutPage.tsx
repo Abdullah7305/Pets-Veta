@@ -33,12 +33,12 @@ const CheckoutPage = () => {
     setError("");
 
     if (cart.length === 0) {
-      setError("Cart empty hai.");
+      setError("Your cart is empty.");
       return;
     }
 
     if (!phoneNumber.trim() || !shippingAddress.trim()) {
-      setError("Phone number aur shipping address required hain.");
+      setError("Phone number and shipping address are required.");
       return;
     }
 
@@ -67,7 +67,7 @@ const CheckoutPage = () => {
         return;
       }
 
-      setError(apiError.response?.data?.message || "Order place nahi ho saka.");
+      setError(apiError.response?.data?.message || "Unable to place the order. Please try again.");
     } finally {
       setPlacingOrder(false);
     }
@@ -115,7 +115,7 @@ const CheckoutPage = () => {
 
         <div className="mt-5 space-y-4">
           {cart.length === 0 && (
-            <p className="text-sm text-gray-500">Cart empty hai.</p>
+            <p className="text-sm text-gray-500">Your cart is empty.</p>
           )}
 
           {cart.map((item) => (

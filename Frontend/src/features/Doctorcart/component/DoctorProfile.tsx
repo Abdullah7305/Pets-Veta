@@ -172,7 +172,7 @@ const DoctorProfile = () => {
               </div>
 
               <h2 className="mt-5 text-center text-2xl font-black text-[#101b3d]">
-                {doctor.fullName}
+                {doctor.fullName} 
               </h2>
 
               <p className="mt-1 text-sm font-bold text-[#078b91]">

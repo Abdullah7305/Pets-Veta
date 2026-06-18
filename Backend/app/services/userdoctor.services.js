@@ -1,9 +1,9 @@
-const { PrismaClient, VerificationStatus } = require("@prisma/client");
+const { PrismaClient, VerificationStatus, ScheduleStatus } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const getUpcomingSlotsFilter = (currentDate) => ({
-  isBooked: false,
-  endTime: { gte: currentDate },
+  status: ScheduleStatus.AVAILABLE,
+    endTime: { gte: currentDate },
 });
 
 

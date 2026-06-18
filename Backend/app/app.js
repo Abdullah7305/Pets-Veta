@@ -18,10 +18,8 @@ const petOwnerRoutes = require("./routes/petOwner.routes");
 const sellerRouter = require("./routes/seller.routes");
 const marketplaceRouter = require("./routes/marketplace.routes");
 const marketplaceOrderRouter = require("./routes/marketplaceOrder.routes");
-// Stripe payment imports
-const paymentRouter = require("./routes/payment.routes");
-const paymentController = require("./controllers/payment.controller");
 
+const paymentController = require("./controllers/payment.controller");
 const globalErrorHandler = require("./middleware/globalErrorHandler");
 
 app.use(
@@ -31,14 +29,10 @@ app.use(
   })
 );
 
-// TODO: STRIPE PAYMENT API
+// ✅ Define the webhook BEFORE express.json() using raw parsing
+app.post("/api/v1/payment/webhook", express.raw({ type: "application/json" }), paymentController.stripeWebhook);
 
-app.post(
-  "/api/v1/payment/webhook",
-  express.raw({ type: "application/json" }),
-  paymentController.stripeWebhook
-);
-
+// Global JSON parsing now only runs for routes below this line
 app.use(express.json());
 app.use(cookieParser());
 
@@ -51,8 +45,6 @@ app.use("/api/v1/petOwner", petOwnerRoutes);
 app.use("/api/v1/seller", sellerRouter);
 app.use("/api/v1/marketplace", marketplaceRouter);
 app.use("/api/v1/orders", marketplaceOrderRouter);
-// Payment routes
-app.use("/api/v1/payment", paymentRouter);
 
 app.use(globalErrorHandler);
 

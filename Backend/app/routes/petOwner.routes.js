@@ -17,14 +17,14 @@ Router
 
 
 Router
-  .route("/submit/pet-data")
-  .post(
-    petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole("PetOwner"), upload.any(),petOwnerController.registerPet);
+    .route("/submit/pet-data")
+    .post(
+        petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole("PetOwner"), upload.array('photos', 5), petOwnerController.registerPet);
 
 Router
     .route('/submit/pet-issue')
     .post(
-        petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), upload.any(), petOwnerController.registerPetIssue);
+        petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), upload.array('image', 5), petOwnerController.registerPetIssue);
 Router
     .route('/petOwner-data')
     .get(petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.getPetOwnerById)
@@ -32,4 +32,8 @@ Router
 Router
     .route('/pets-data')
     .get(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.getPetsData)
+
+Router
+    .route('/book-slot')
+    .post(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.lockDoctorSlot)
 module.exports = Router;

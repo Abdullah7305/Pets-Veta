@@ -1,4 +1,13 @@
 -- CreateEnum
+CREATE TYPE "VerificationStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
+
+-- CreateEnum
+CREATE TYPE "WeekDays" AS ENUM ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY');
+
+-- CreateEnum
+CREATE TYPE "PetCategory" AS ENUM ('DOG', 'CAT', 'REPTILE', 'OTHER');
+
+-- CreateEnum
 CREATE TYPE "ProductCategory" AS ENUM ('PETS', 'FOOD', 'MEDICINE', 'ACCESSORIES');
 
 -- CreateEnum
@@ -8,7 +17,116 @@ CREATE TYPE "ProductStatus" AS ENUM ('ACTIVE', 'DRAFT', 'SOLD_OUT', 'ARCHIVED');
 CREATE TYPE "PetGender" AS ENUM ('MALE', 'FEMALE', 'UNKNOWN');
 
 -- CreateEnum
+CREATE TYPE "AppointmentStatus" AS ENUM ('PENDING', 'CONFIRMED', 'COMPLETED', 'CANCELLED');
+
+-- CreateEnum
 CREATE TYPE "MarketplaceOrderStatus" AS ENUM ('PENDING', 'CONFIRMED', 'SHIPPED', 'COMPLETED', 'CANCELLED');
+
+-- CreateEnum
+CREATE TYPE "AppointmentPayment" AS ENUM ('PENDING', 'COMPLETED');
+
+-- CreateEnum
+CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'PAID', 'FAILED', 'CANCELLED', 'REFUNDED', 'SUCCEEDED');
+
+-- CreateEnum
+CREATE TYPE "ScheduleStatus" AS ENUM ('AVAILABLE', 'PENDING_PAYMENT', 'BOOKED');
+
+-- CreateTable
+CREATE TABLE "User" (
+    "id" TEXT NOT NULL,
+    "fullName" TEXT NOT NULL,
+    "username" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "isEmailVerified" BOOLEAN NOT NULL DEFAULT false,
+    "password" TEXT,
+    "phone" TEXT NOT NULL DEFAULT '',
+    "profileImageUrl" TEXT NOT NULL DEFAULT 'Enter your Image',
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "refreshToken" TEXT,
+    "otp" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Doctor" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "isAvailable" BOOLEAN NOT NULL DEFAULT false,
+    "education" TEXT NOT NULL,
+    "specialization" TEXT NOT NULL,
+    "address" TEXT NOT NULL,
+    "experience" INTEGER NOT NULL,
+    "fees" INTEGER NOT NULL,
+    "isVerified" "VerificationStatus" NOT NULL DEFAULT 'PENDING',
+
+    CONSTRAINT "Doctor_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "DoctorCertificate" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "publicUrl" TEXT NOT NULL,
+    "publicId" TEXT NOT NULL,
+
+    CONSTRAINT "DoctorCertificate_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "DoctorSkill" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "skill" TEXT NOT NULL,
+    "price" TEXT NOT NULL,
+
+    CONSTRAINT "DoctorSkill_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Admin" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Admin_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "UserRole" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "role" TEXT NOT NULL,
+
+    CONSTRAINT "UserRole_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "DoctorSchedule" (
+    "id" TEXT NOT NULL,
+    "doctorId" TEXT NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL,
+    "startTime" TIMESTAMP(3) NOT NULL,
+    "endTime" TIMESTAMP(3) NOT NULL,
+    "status" "ScheduleStatus" NOT NULL DEFAULT 'AVAILABLE',
+    "lockedAt" TIMESTAMP(3),
+    "lockedByUserId" TEXT,
+
+    CONSTRAINT "DoctorSchedule_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Pet" (
+    "id" TEXT NOT NULL,
+    "petOwnerId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "age" DECIMAL(10,2) NOT NULL,
+    "breed" TEXT NOT NULL,
+    "category" "PetCategory" NOT NULL,
+
+    CONSTRAINT "Pet_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "PetPicture" (
@@ -18,6 +136,32 @@ CREATE TABLE "PetPicture" (
     "petId" TEXT NOT NULL,
 
     CONSTRAINT "PetPicture_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "PetIssueReport" (
+    "id" TEXT NOT NULL,
+    "petOwnerId" TEXT NOT NULL,
+    "petId" TEXT NOT NULL,
+    "issue" TEXT NOT NULL,
+
+    CONSTRAINT "PetIssueReport_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Appointment" (
+    "id" TEXT NOT NULL,
+    "doctorId" TEXT NOT NULL,
+    "petOwnerId" TEXT NOT NULL,
+    "petIssueReportId" TEXT NOT NULL,
+    "scheduleId" TEXT NOT NULL,
+    "fees" INTEGER NOT NULL,
+    "paymentStatus" "PaymentStatus" NOT NULL DEFAULT 'PENDING',
+    "stripeSessionId" TEXT,
+    "checkupTime" TIMESTAMP(3) NOT NULL,
+    "status" "AppointmentStatus" NOT NULL DEFAULT 'PENDING',
+
+    CONSTRAINT "Appointment_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -116,6 +260,45 @@ CREATE TABLE "MarketplaceOrderItem" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE INDEX "User_fullName_idx" ON "User"("fullName");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Doctor_userId_key" ON "Doctor"("userId");
+
+-- CreateIndex
+CREATE INDEX "Doctor_userId_idx" ON "Doctor"("userId");
+
+-- CreateIndex
+CREATE INDEX "Doctor_specialization_idx" ON "Doctor"("specialization");
+
+-- CreateIndex
+CREATE INDEX "Doctor_fees_idx" ON "Doctor"("fees");
+
+-- CreateIndex
+CREATE INDEX "Doctor_isAvailable_idx" ON "Doctor"("isAvailable");
+
+-- CreateIndex
+CREATE INDEX "Doctor_specialization_fees_isAvailable_idx" ON "Doctor"("specialization", "fees", "isAvailable");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "DoctorCertificate_userId_key" ON "DoctorCertificate"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Admin_userId_key" ON "Admin"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "UserRole_userId_key" ON "UserRole"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "DoctorSchedule_doctorId_startTime_key" ON "DoctorSchedule"("doctorId", "startTime");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Appointment_scheduleId_key" ON "Appointment"("scheduleId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "SellerProfile_userId_key" ON "SellerProfile"("userId");
 
 -- CreateIndex
@@ -173,7 +356,43 @@ CREATE INDEX "MarketplaceOrderItem_orderId_idx" ON "MarketplaceOrderItem"("order
 CREATE INDEX "MarketplaceOrderItem_productId_idx" ON "MarketplaceOrderItem"("productId");
 
 -- AddForeignKey
+ALTER TABLE "Doctor" ADD CONSTRAINT "Doctor_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "DoctorCertificate" ADD CONSTRAINT "DoctorCertificate_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "DoctorSkill" ADD CONSTRAINT "DoctorSkill_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Admin" ADD CONSTRAINT "Admin_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserRole" ADD CONSTRAINT "UserRole_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "DoctorSchedule" ADD CONSTRAINT "DoctorSchedule_doctorId_fkey" FOREIGN KEY ("doctorId") REFERENCES "Doctor"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Pet" ADD CONSTRAINT "Pet_petOwnerId_fkey" FOREIGN KEY ("petOwnerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "PetPicture" ADD CONSTRAINT "PetPicture_petId_fkey" FOREIGN KEY ("petId") REFERENCES "Pet"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "PetIssueReport" ADD CONSTRAINT "PetIssueReport_petId_fkey" FOREIGN KEY ("petId") REFERENCES "Pet"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "PetIssueReport" ADD CONSTRAINT "PetIssueReport_petOwnerId_fkey" FOREIGN KEY ("petOwnerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Appointment" ADD CONSTRAINT "Appointment_petIssueReportId_fkey" FOREIGN KEY ("petIssueReportId") REFERENCES "PetIssueReport"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Appointment" ADD CONSTRAINT "Appointment_doctorId_fkey" FOREIGN KEY ("doctorId") REFERENCES "Doctor"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Appointment" ADD CONSTRAINT "Appointment_scheduleId_fkey" FOREIGN KEY ("scheduleId") REFERENCES "DoctorSchedule"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "SellerProfile" ADD CONSTRAINT "SellerProfile_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

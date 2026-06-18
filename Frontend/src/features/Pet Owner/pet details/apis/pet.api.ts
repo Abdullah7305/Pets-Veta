@@ -10,6 +10,14 @@ export interface PetResponse {
   category: string;
 }
 
+export interface SubmitIssueResponse {
+  success: boolean,
+  message: string,
+  data: {
+    checkoutUrl: string
+  }
+}
+
 export const submitPetData = async (data: PetFormData & { petOwnerId: string }): Promise<PetResponse | undefined> => {
   try {
     const response = await api.post("petOwner/submit/pet-data", data);
@@ -21,8 +29,8 @@ export const submitPetData = async (data: PetFormData & { petOwnerId: string }):
 };
 
 export const submitPetIssue = async (
-  data: PetIssueReportFormData & { petOwnerId: string; doctorId: string },
-): Promise<unknown> => {
+  data: { petId: string; issue: string, doctorId: string | null, scheduleId: string | null },
+): Promise<SubmitIssueResponse> => {
   try {
     const response = await api.post("petOwner/submit/pet-issue", data);
     return response.data;

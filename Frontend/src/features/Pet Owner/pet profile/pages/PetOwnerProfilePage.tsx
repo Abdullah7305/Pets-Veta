@@ -40,6 +40,7 @@ const PetOwnerProfilePage = () => {
         getPetOwnerProfileApi(),
         getMyPetsApi(),
       ]);
+   
       setProfile(profileResponse.data);
       setPets(petsResponse.data);
     } catch (fetchError) {
@@ -162,14 +163,15 @@ const PetOwnerProfilePage = () => {
               navigate(`/doctors?petId=${petId}`)
             }
           />
+
         </section>
       </main>
 
       {/* Lightweight, High-Performance Scroll-Trapped Overlay */}
       {openPetForm && (
-        <div 
+        <div
           className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 overscroll-contain text-center"
-          role="dialog" 
+          role="dialog"
           aria-modal="true"
         >
           {/* Outer flex container wraps the custom scroll scope */}

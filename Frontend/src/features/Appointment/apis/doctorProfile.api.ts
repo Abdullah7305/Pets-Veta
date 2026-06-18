@@ -37,7 +37,17 @@ export type ApiResponse = {
 export const getDoctorProfileData = async (id: string) => {
     try {
         const response = await api.get(`http://localhost:8000/api/v1/user/doctor-profile?doctorId=${id}`);
+        console.log("Doctor Profile Data ", response)
         return response.data?.data;
+    } catch (error) {
+        handleAxiosError(error)
+    }
+}
+
+export const getUserPets = async () => {
+    try {
+        const response = await api.get("http://localhost:8000/api/v1/petOwner/my-pets")
+        return response.data.data
     } catch (error) {
         handleAxiosError(error)
     }
