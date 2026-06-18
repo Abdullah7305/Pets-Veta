@@ -45,7 +45,7 @@ const SellerProductsPage = () => {
         }
 
         if (!ignore) {
-          setError("Seller products load nahi ho sake.");
+          setError("Unable to load seller products. Please check your connection and try again.");
         }
       } finally {
         if (!ignore) {
@@ -84,7 +84,7 @@ const SellerProductsPage = () => {
       await deleteSellerProduct(id);
       setProducts((prev) => prev.filter((product) => product.id !== id));
     } catch {
-      setError("Product delete nahi ho saka.");
+      setError("Unable to delete the product. Please try again.");
     }
   };
 

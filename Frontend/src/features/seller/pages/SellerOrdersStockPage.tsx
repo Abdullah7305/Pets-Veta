@@ -58,7 +58,7 @@ const SellerOrdersStockPage = () => {
         }
 
         if (!ignore) {
-          setError("Seller orders/stock load nahi ho sake.");
+          setError("Unable to load seller orders and stock. Please check your connection and try again.");
         }
       } finally {
         if (!ignore) {
@@ -97,7 +97,7 @@ const SellerOrdersStockPage = () => {
         )
       );
     } catch {
-      setError("Stock update nahi ho saka.");
+      setError("Unable to update stock. Please try again.");
     }
   };
 

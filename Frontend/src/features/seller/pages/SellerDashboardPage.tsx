@@ -50,7 +50,7 @@ const SellerDashboardPage = () => {
         }
 
         if (!ignore) {
-          setError("Seller dashboard load nahi ho saka.");
+          setError("Unable to load the seller dashboard. Please check your connection and try again.");
         }
       } finally {
         if (!ignore) {
