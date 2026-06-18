@@ -77,7 +77,7 @@ const SellerProductFormPage = () => {
         const product = products.find((item) => item.id === id);
 
         if (!product) {
-          setError("Product nahi mila.");
+          setError("Product not found.");
           return;
         }
 
@@ -102,7 +102,7 @@ const SellerProductFormPage = () => {
         }
 
         if (!ignore) {
-          setError("Product edit ke liye load nahi ho saka.");
+          setError("Unable to load the product for editing. Please try again.");
         }
       }
     };
@@ -125,7 +125,7 @@ const SellerProductFormPage = () => {
       setMessage("");
 
       if (!form.title.trim() || !form.price || Number(form.price) <= 0) {
-        setError("Product title aur valid price required hain.");
+        setError("Product title and a valid price are required.");
         return;
       }
 
@@ -158,7 +158,7 @@ const SellerProductFormPage = () => {
         return;
       }
 
-      setError(apiError.response?.data?.message || "Product save nahi ho saka.");
+      setError(apiError.response?.data?.message || "Unable to save the product. Please try again.");
     } finally {
       setSaving(false);
     }

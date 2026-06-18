@@ -74,7 +74,7 @@ const MarketplacePage = () => {
         });
       } catch {
         if (!ignore) {
-          setError("Marketplace products load nahi ho sake.");
+          setError("Unable to load marketplace products. Please check your connection and try again.");
         }
       } finally {
         if (!ignore) {
