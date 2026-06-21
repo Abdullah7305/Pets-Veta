@@ -2,4 +2,4 @@ const { PrismaClient } = require("@prisma/client")
 
 const prisma = new PrismaClient();
 
-module.exports = { default: prisma };
+module.exports = prisma 

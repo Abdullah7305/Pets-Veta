@@ -1,12 +1,13 @@
-const express = require('express');
+const express = require("express");
 const Router = express.Router();
-const paymentController = require('../controllers/payment.controller');
 
+const paymentController = require("../controllers/payment.controller");
+const { protect } = require("../middleware/auth.middleware");
 
 Router.post(
-    '/webhook',
-    express.raw({ type: 'application/json' }),
-    paymentController.stripeWebhook
+    "/appointments/:appointmentId/create-payment-intent",
+    protect,
+    paymentController.createPaymentIntent
 );
 
 module.exports = Router;

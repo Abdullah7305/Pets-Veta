@@ -14,6 +14,7 @@ import { petOwnerDashboardRoutes } from "@/features/PetOwnerDashboard/petOwnerDa
 import { sellerRoutes } from "@/features/seller/seller.routes";
 import { marketplaceRoutes } from "@/features/marketplace1/marketplace.routes";
 import { cartRoutes } from "@/features/cart/cart.routes";
+import { paymentRoutes } from "@/features/Payment/payment.routes";
 const Router = createBrowserRouter([
   ...LandingPageRoutes,
   ...AuthRouter,
@@ -23,6 +24,7 @@ const Router = createBrowserRouter([
   ...adminRoutes,
   ...petsRoutes,
   // ...marketplaceRoutes,
+  ...paymentRoutes,
   ...aiAssistantRoutes,
   ...selectPetRoutes,
   ...petProfileRoutes,

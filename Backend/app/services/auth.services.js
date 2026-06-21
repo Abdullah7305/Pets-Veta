@@ -1,4 +1,4 @@
-const { default: prisma, userRole } = require('../config/prisma');
+const prisma  = require('../config/prisma');
 const { getGoogleProfileToken } = require('../utils/googleAuth');
 const { createAuthTokens } = require('../services/authToken.services')
 const jwt = require('jsonwebtoken');

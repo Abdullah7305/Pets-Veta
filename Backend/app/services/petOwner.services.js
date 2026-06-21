@@ -1,7 +1,11 @@
-const { default: prisma, } = require('../config/prisma');
+const prisma = require('../config/prisma');
 const AppError = require('../utils/AppError');
-const { ScheduleStatus } = require('@prisma/client')
-const stripeService = require('./stripe.service');
+const {
+    ScheduleStatus,
+    AppointmentStatus,
+    PaymentStatus
+} = require('@prisma/client');
+
 
 
 const saveUserPet = async (pet) => {
@@ -19,55 +23,114 @@ const saveUserPet = async (pet) => {
 
 const registerPetIssue = async (petIssue) => {
     if (!petIssue) {
-        throw new AppError("Registeration Data Not Found ", 400)
+        throw new AppError("Registration data not found", 400);
     }
-    const validDoctor = await prisma.doctor.findFirst({
-        where: {
-            id: petIssue.doctorId
+
+    const { appointmentId, petId, issue, petOwnerId } = petIssue;
+
+    if (!appointmentId || !petId || !issue || !petOwnerId) {
+        throw new AppError("Appointment, pet, issue, or user id is missing", 400);
+    }
+
+    const result = await prisma.$transaction(async (tx) => {
+        const appointment = await tx.appointment.findFirst({
+            where: {
+                id: appointmentId,
+                petOwnerId
+            },
+            include: {
+                doctorSchedule: true
+            }
+        });
+
+        if (!appointment) {
+            throw new AppError("Appointment not found", 404);
         }
-    });
-    const schedule = await prisma.doctorSchedule.findFirst({
-        where: {
-            id: petIssue.scheduleId,
-            doctorId: petIssue.doctorId
+
+        if (
+            appointment.status !== AppointmentStatus.PENDING_DETAILS &&
+            appointment.status !== AppointmentStatus.PENDING_REPORT &&
+            appointment.status !== AppointmentStatus.PENDING_PAYMENT
+        ) {
+            throw new AppError("This appointment is not available for report submission", 400);
         }
+
+        if (appointment.expiresAt && appointment.expiresAt < new Date()) {
+            throw new AppError("This appointment hold has expired. Please select the slot again.", 400);
+        }
+
+        if (
+            appointment.doctorSchedule.status !== ScheduleStatus.HELD ||
+            appointment.doctorSchedule.lockedByAppointmentId !== appointment.id
+        ) {
+            throw new AppError("This slot is no longer held for your appointment", 400);
+        }
+
+        const pet = await tx.pet.findFirst({
+            where: {
+                id: petId,
+                petOwnerId
+            }
+        });
+
+        if (!pet) {
+            throw new AppError("Invalid pet selected", 400);
+        }
+
+        let registerIssue;
+
+        if (appointment.petIssueReportId) {
+            registerIssue = await tx.petIssueReport.findUnique({
+                where: {
+                    id: appointment.petIssueReportId
+                }
+            });
+        } else {
+            registerIssue = await tx.petIssueReport.create({
+                data: {
+                    petOwnerId,
+                    petId,
+                    issue
+                }
+            });
+        }
+
+        if (!registerIssue) {
+            throw new AppError("Issue in creating pet report", 400);
+        }
+
+        const updatedAppointment = await tx.appointment.update({
+            where: {
+                id: appointment.id
+            },
+            data: {
+                petId,
+                petIssueReportId: registerIssue.id,
+                status: AppointmentStatus.PENDING_PAYMENT
+            },
+            select: {
+                id: true,
+                doctorId: true,
+                petOwnerId: true,
+                petId: true,
+                petIssueReportId: true,
+                scheduleId: true,
+                fees: true,
+                currency: true,
+                status: true,
+                paymentStatus: true,
+                expiresAt: true
+            }
+        });
+
+        return {
+            registerIssue,
+            appointment: updatedAppointment
+        };
     });
 
-    if (!schedule) {
-        throw new AppError("The selected doctor schedule slot could not be found.", 404);
-    }
-    if (!validDoctor) {
-        throw new AppError("Doctor is not Valid ", 400);
-    }
-    const registerIssue = await prisma.petIssueReport.create({
-        data: {
-            petOwnerId: petIssue.petOwnerId,
-            petId: petIssue.petId,
-            issue: petIssue.issue,
-        },
-    });
-    const user = await prisma.user.findFirst({
-        where: {
-            id: validDoctor.userId
-        },
-        select: {
-            fullName: true
-        }
-    })
-    console.log("Issue is ", registerIssue.id);
-    if (!registerIssue) {
-        throw new AppError("Issue in Creating Pet Report ", 400);
-    }
-    const checkoutUrl = await stripeService.createCheckoutSession({
-        scheduleId: schedule.id,
-        petOwnerId: petIssue.petOwnerId,
-        doctorId: schedule.doctorId,
-        issueReportId: registerIssue.id,
-        fees: validDoctor.fees,
-        doctorName: user.fullName
-    })
-    return { registerIssue, checkoutUrl };
-}
+    return result;
+};
 
 const registerPetAppointment = async () => {
 
@@ -99,20 +162,7 @@ const getUserPets = async (userId) => {
     return pets;
 }
 
-const updateAppointmentStripeId = async (appointmentId, sessionId) => {
-    if (!appointmentId || !sessionId) {
-        throw new AppError("Appointment or Session Id is Invalid", 400);
-    }
 
-    const result = await prisma.appointment.update({
-        where: { id: appointmentId },
-        data: {
-            stripeSessionId: sessionId,
-        },
-    });
-
-    return result;
-};
 
 const createPetPictures = async (pet) => {
     const pictures = await prisma.petPicture.createMany({
@@ -120,77 +170,133 @@ const createPetPictures = async (pet) => {
     })
 }
 
-const lockUserSlot = async (scheduleId, petOwnerId) => {
-    const schedule = await prisma.doctorSchedule.findUnique({
-        where: {
-            id: scheduleId
-        }
-    });
-    if (!schedule) {
-        throw new AppError("Schedule not found ", 404);
+const lockUserSlot = async ({ scheduleId, doctorId, petOwnerId }) => {
+    
+    if (!scheduleId || !doctorId || !petOwnerId) {
+        throw new AppError("Schedule, doctor, or user id is missing", 400);
     }
-    if (schedule.status !== 'AVAILABLE') {
-        throw new AppError("Schedule is not Available ", 400)
-    }
-    const startOfDay = new Date(schedule.date);
-    startOfDay.setHours(0, 0, 0, 0);
 
-    const endOfDay = new Date(schedule.date);
-    endOfDay.setHours(23, 59, 59, 999);
+    const holdMinutes = Number(process.env.APPOINTMENT_HOLD_MINUTES || 15);
 
-    const isAppointmentExist = await prisma.appointment.findFirst({
-        where: {
-            doctorId: schedule.doctorId,
-            petOwnerId: petOwnerId,
-            status: {
-                in: ['PENDING', 'COMPLETED']
-            },
-            checkupTime: {
-                gte: startOfDay,
-                lte: endOfDay
-            }
-        }
-    });
-    const isSlotExist = await prisma.doctorSchedule.findFirst({
-        where: {
-            doctorId: schedule.doctorId,
-            petOwnerId: petOwnerId,
-            status: 'PENDING_PAYMENT',
-            date: {
-                gte: startOfDay,
-                lte: endOfDay
-            }
-        }
-    })
-    if (isSlotExist) {
-        throw new AppError("You already have a slot pending payment for this doctor today.", 400);
-    }
-    if (isAppointmentExist) {
-        throw new AppError("Appointment  already Exist ", 400);
-    }
-    try {
-        const bookSlot = await prisma.doctorSchedule.update({
+    const result = await prisma.$transaction(async (tx) => {
+        const schedule = await tx.doctorSchedule.findFirst({
             where: {
                 id: scheduleId,
-                status: ScheduleStatus.AVAILABLE
+                doctorId
             },
-            data: {
-                lockedByUserId: petOwnerId,
-                lockedAt: new Date(),
-                status: ScheduleStatus.PENDING_PAYMENT
+            include: {
+                doctor: true
             }
         });
 
-        return bookSlot;
-    } catch (error) {
+        if (!schedule) {
+            throw new AppError("The selected doctor schedule slot could not be found.", 404);
+        }
 
-        throw new AppError("This slot was just locked by another user. Please try another slot.", 400);
-    }
-}
+        if (schedule.status !== ScheduleStatus.AVAILABLE) {
+            throw new AppError("Schedule is not available", 400);
+        }
+
+        const validDoctor = schedule.doctor;
+
+        if (!validDoctor) {
+            throw new AppError("Doctor is not valid", 400);
+        }
+
+        const startOfDay = new Date(schedule.date);
+        startOfDay.setHours(0, 0, 0, 0);
+
+        const endOfDay = new Date(schedule.date);
+        endOfDay.setHours(23, 59, 59, 999);
+
+        const existingActiveAppointment = await tx.appointment.findFirst({
+            where: {
+                doctorId: schedule.doctorId,
+                petOwnerId,
+                status: {
+                    in: [
+                        AppointmentStatus.PENDING_DETAILS,
+                        AppointmentStatus.PENDING_REPORT,
+                        AppointmentStatus.PENDING_PAYMENT,
+                        AppointmentStatus.PAYMENT_PROCESSING,
+                        AppointmentStatus.CONFIRMED
+                    ]
+                },
+                checkupTime: {
+                    gte: startOfDay,
+                    lte: endOfDay
+                },
+                OR: [
+                    { expiresAt: null },
+                    { expiresAt: { gt: new Date() } }
+                ]
+            }
+        });
+
+        if (existingActiveAppointment) {
+            throw new AppError("You already have an active or pending appointment with this doctor today.", 400);
+        }
+
+        const lockedSchedule = await tx.doctorSchedule.updateMany({
+            where: {
+                id: scheduleId,
+                doctorId,
+                status: ScheduleStatus.AVAILABLE
+            },
+            data: {
+                status: ScheduleStatus.HELD,
+                lockedByUserId: petOwnerId,
+                lockedAt: new Date()
+            }
+        });
+
+        if (lockedSchedule.count === 0) {
+            throw new AppError("This slot was just locked by another user. Please try another slot.", 400);
+        }
+
+        const expiresAt = new Date(Date.now() + holdMinutes * 60 * 1000);
+
+        const appointment = await tx.appointment.create({
+            data: {
+                doctorId: schedule.doctorId,
+                petOwnerId,
+                scheduleId: schedule.id,
+                fees: validDoctor.fees,
+                currency: "pkr",
+                checkupTime: schedule.startTime,
+                expiresAt,
+                status: AppointmentStatus.PENDING_DETAILS,
+                paymentStatus: PaymentStatus.PENDING
+            }
+        });
+
+        await tx.doctorSchedule.update({
+            where: {
+                id: scheduleId
+            },
+            data: {
+                lockedByAppointmentId: appointment.id
+            }
+        });
+
+        return {
+            appointmentId: appointment.id,
+            scheduleId: schedule.id,
+            doctorId: schedule.doctorId,
+            status: appointment.status,
+            scheduleStatus: ScheduleStatus.HELD,
+            expiresAt: appointment.expiresAt,
+            fees: appointment.fees,
+            currency: appointment.currency
+        };
+    });
+
+    return result;
+};
 module.exports = {
     saveUserPet,
-    registerPetIssue, getUserPets,
-    updateAppointmentStripeId,
+    registerPetIssue,
+    getUserPets,
     createPetPictures,
     lockUserSlot
 }

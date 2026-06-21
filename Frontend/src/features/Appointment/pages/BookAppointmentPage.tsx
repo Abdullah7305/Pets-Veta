@@ -14,7 +14,7 @@ import { submitPetIssue } from "../../Pet Owner/pet details/apis/pet.api";
 
 const BookAppointmentPage = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<1 | 2 >(1);
   const [issue, setIssue] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -37,19 +37,21 @@ const BookAppointmentPage = () => {
 
   const handleSubmit = async () => {
     const petId = localStorage.getItem("petPatientId");
-    const doctorId = localStorage.getItem('doctorId');
-    const scheduleId = localStorage.getItem('scheduleId');
+    const appointmentId = localStorage.getItem("appointmentId");
+
     const trimmedIssue = issue.trim();
+
+    if (!appointmentId) {
+      setError("Appointment is missing. Please select the slot again.");
+      return;
+    }
 
     if (!petId) {
       setError("Please select a pet first.");
       setStep(1);
       return;
     }
-    if (!doctorId || !scheduleId) {
-      setError("Id Missing From Storages");
-      return;
-    }
+
     if (!trimmedIssue) {
       setError("Please describe the issue your pet is facing.");
       return;
@@ -65,19 +67,20 @@ const BookAppointmentPage = () => {
       setError("");
 
       const result = await submitPetIssue({
+        appointmentId,
         petId,
         issue: trimmedIssue,
-        doctorId: doctorId,
-        scheduleId: scheduleId
       });
-      console.log("Report and Checkout Url Data is ", result);
-      if (result.success) {
+
+      console.log("Report submit result is:", result);
+
+      if (result?.success) {
         localStorage.removeItem("petPatientId");
 
         setIssue("");
-        setStep(3);
-        window.location.href = result.data.checkoutUrl;
 
+        // Report submit ho gayi, ab payment page par jao
+        navigate(`/payment?appointmentId=${appointmentId}`);
       } else {
         setError("Failed to submit issue report.");
       }

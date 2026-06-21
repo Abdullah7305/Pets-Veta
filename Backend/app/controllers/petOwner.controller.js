@@ -65,29 +65,35 @@ const registerPet = catchAsync(async (req, res) => {
 
     await petOwnerServices.createPetPictures(uploadedPictures);
 
-
+    console.log("Error hitting ===>")
 
     return sendResponse(res, 201, 'Successfully created Pet', uploadedPictures);
 });
 
 const registerPetIssue = catchAsync(async (req, res) => {
     const petOwnerId = req.user?.id;
-    requireFields(['petId', 'issue', "doctorId", "scheduleId"], req.body);
-    const { petId, issue, doctorId, scheduleId } = req.body;
-    const petIssue = {
-        petId: petId,
-        issue: issue,
-        doctorId: doctorId,
-        petOwnerId: petOwnerId,
-        scheduleId: scheduleId
+
+    if (!petOwnerId) {
+        return sendResponse(res, 401, 'Please login first', {});
     }
+
+    requireFields(['appointmentId', 'petId', 'issue'], req.body);
+
+    const { appointmentId, petId, issue } = req.body;
+
+    const petIssue = {
+        appointmentId,
+        petId,
+        issue,
+        petOwnerId
+    };
 
     const createPetIssueReport = await petOwnerServices.registerPetIssue(petIssue);
 
-
-    return sendResponse(res, 201, 'Report created successfully. Please redirect client to the checkout url.', {
+    return sendResponse(res, 201, 'Report created successfully. Please continue to payment.', {
         petIssue: createPetIssueReport.registerIssue,
-        checkoutUrl: createPetIssueReport.checkoutUrl
+        appointment: createPetIssueReport.appointment,
+        redirectToPayment: true
     });
 });
 
@@ -122,12 +128,24 @@ const getPetsData = catchAsync(async (req, res) => {
 });
 
 const lockDoctorSlot = catchAsync(async (req, res) => {
-    const { userId } = req.user;
+    const petOwnerId = req.user?.id;
+
+    if (!petOwnerId) {
+        return sendResponse(res, 401, "Please login first", {});
+    }
+
     requireFields(["doctorId", "slotId"], req.body);
+
     const { doctorId, slotId } = req.body;
-    const bookSlot = await petOwnerServices.lockUserSlot(slotId, userId);
-    return sendResponse(res, 201, "Successfully Locked Slot", bookSlot)
-})
+
+    const bookSlot = await petOwnerServices.lockUserSlot({
+        scheduleId: slotId,
+        doctorId,
+        petOwnerId
+    });
+
+    return sendResponse(res, 201, "Successfully locked slot", bookSlot);
+});
 module.exports = {
     registerPetIssue,
     getPetOwnerById,

@@ -61,24 +61,45 @@ const DoctorProfilePage = () => {
 
     const handleConfirmBooking = async (scheduleId: string) => {
         console.log("Confirmed booking for Schedule ID:", scheduleId);
+
         if (!scheduleId || !doctor?.id) {
             console.log("IDs not found");
             return;
         }
+
         const schedule = {
             slotId: scheduleId,
-            doctorId: doctor?.id,
-        }
-        const response = await bookDoctorSlot(schedule);
-        localStorage.setItem('doctorId', doctor.id);
-        localStorage.setItem('scheduleId', scheduleId);
-        if (response) {
-            navigate('/book-appointment')
-        }
-        console.log("SLot Result is ", response);
-        setIsModalOpen(false);
-        setSelectedSlot(null);
+            doctorId: doctor.id,
+        };
 
+        try {
+            const response = await bookDoctorSlot(schedule);
+
+            console.log("Slot lock response is:", response);
+
+            if (!response?.success || !response?.data?.appointmentId) {
+                console.log("Failed to lock slot");
+                return;
+            }
+
+            // Pehle old booking data clear kar do taake stale data issue na aaye
+            localStorage.removeItem("doctorId");
+            localStorage.removeItem("scheduleId");
+            localStorage.removeItem("appointmentId");
+            localStorage.removeItem("petPatientId");
+
+            // New booking data save karo
+            localStorage.setItem("doctorId", doctor.id);
+            localStorage.setItem("scheduleId", scheduleId);
+            localStorage.setItem("appointmentId", response.data.appointmentId);
+
+            setIsModalOpen(false);
+            setSelectedSlot(null);
+
+            navigate("/book-appointment");
+        } catch (error) {
+            console.log("Slot booking error:", error);
+        }
     };
 
     if (!doctor) {

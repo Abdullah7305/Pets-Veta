@@ -1,67 +1,34 @@
-import { useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { CheckCircle2, Calendar, CreditCard, ShieldCheck } from "lucide-react";
-import Button from "../../../shared/components/Button/Button";
+import { useSearchParams, Link } from "react-router-dom";
 
 const PaymentSuccessPage = () => {
-    const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
-    const sessionId = searchParams.get("session_id");
+  const [searchParams] = useSearchParams();
+  const appointmentId = searchParams.get("appointmentId");
 
-    useEffect(() => {
-        // Optionally: You can trigger a quick query here to your backend to verify 
-        // the payment locally before showing confirmation, if required.
-        console.log("Payment processed for Stripe Session ID:", sessionId);
-    }, [sessionId]);
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-emerald-50 px-4">
+      <section className="w-full max-w-md rounded-3xl bg-white p-8 text-center shadow-xl">
+        <h1 className="text-2xl font-extrabold text-emerald-600">
+          Payment Submitted
+        </h1>
 
-    return (
-        <main className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
-            <div className="w-full max-w-md bg-white rounded-3xl p-8 border border-slate-100 shadow-xl text-center">
-                {/* Success Icon */}
-                <div className="mx-auto w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mb-6 text-emerald-500">
-                    <CheckCircle2 size={48} />
-                </div>
+        <p className="mt-3 text-sm text-slate-500">
+          Your payment has been submitted. We are confirming your appointment.
+        </p>
 
-                <h1 className="text-3xl font-black text-slate-800 mb-2">
-                    Payment Confirmed
-                </h1>
+        <div className="mt-5 rounded-xl bg-slate-50 p-4 text-left text-xs">
+          <p className="font-bold text-slate-500">Appointment ID:</p>
+          <p className="mt-1 break-all text-slate-700">{appointmentId}</p>
+        </div>
 
-                <p className="text-sm font-semibold text-[#078b91] uppercase tracking-wider mb-6">
-                    Thank you for your order!
-                </p>
-
-                <p className="text-slate-500 mb-8 leading-relaxed text-sm">
-                    Your payment was successfully received and your appointment is confirmed.
-                    The veterinary doctor has been notified of your pet's issue report.
-                </p>
-
-                {/* Small Details Block */}
-                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100 text-left space-y-3 mb-8">
-                    <div className="flex items-center gap-3 text-slate-600 text-xs">
-                        <CreditCard size={16} className="text-[#078b91]" />
-                        <span className="font-medium text-slate-500">Payment Status:</span>
-                        <span className="ml-auto font-black text-emerald-600">Succeeded</span>
-                    </div>
-
-                    <div className="flex items-center gap-3 text-slate-600 text-xs">
-                        <ShieldCheck size={16} className="text-[#078b91]" />
-                        <span className="font-medium text-slate-500">Secure Session:</span>
-                        <span className="ml-auto font-mono text-slate-400 max-w-[150px] truncate">
-                            {sessionId || "N/A"}
-                        </span>
-                    </div>
-                </div>
-
-                {/* Action Button */}
-                <Button
-                    onClick={() => navigate("/pet-owner/dashboard")}
-                    className="w-full bg-[#15265d] hover:bg-[#101f4d] text-white py-3.5 rounded-xl font-bold"
-                >
-                    Go to Dashboard
-                </Button>
-            </div>
-        </main>
-    );
+        <Link
+          to="/doctors"
+          className="mt-6 inline-flex rounded-xl bg-[#0B8F5A] px-5 py-3 text-sm font-bold text-white"
+        >
+          Back to Doctors
+        </Link>
+      </section>
+    </main>
+  );
 };
 
 export default PaymentSuccessPage;

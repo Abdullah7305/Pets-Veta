@@ -27,18 +27,20 @@ export const submitPetData = async (data: PetFormData & { petOwnerId: string }):
     throw error;
   }
 };
-
-export const submitPetIssue = async (
-  data: { petId: string; issue: string, doctorId: string | null, scheduleId: string | null },
-): Promise<SubmitIssueResponse> => {
+export const submitPetIssue = async (payload: {
+  appointmentId: string;
+  petId: string;
+  issue: string;
+}) => {
   try {
-    const response = await api.post("petOwner/submit/pet-issue", data);
+    const response = await api.post("petOwner/submit/pet-issue", payload);
     return response.data;
   } catch (error) {
     handleAxiosError(error);
-    throw error;
   }
 };
+
+
 
 export const getPetsData = async (): Promise<PetResponse[] | undefined> => {
   try {
