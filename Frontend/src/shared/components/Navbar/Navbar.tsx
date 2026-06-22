@@ -10,6 +10,10 @@ const Navbar = () => {
   const { user } = useAuth();
 
   const isPetOwner = user?.data.role === "PetOwner";
+  const profileImageUrl = user?.data.profileImageUrl;
+  const hasProfileImage =
+    profileImageUrl &&
+    !profileImageUrl.toLowerCase().includes("enter your image");
 
   return (
     /* Changed 'sticky top-0' to 'relative' to make it completely static */
@@ -43,15 +47,11 @@ const Navbar = () => {
           {isPetOwner ? (
             /* Authenticated PetOwner View */
             <>
-              <Button href="/seller/dashboard" variant="outline" size="sm">
-                Seller Dashboard
-              </Button>
-
               <NavLink to={'/pet-owner/profile'}
                 className="flex cursor-pointer items-center gap-3 rounded-full bg-gray-50 border border-gray-100 py-1.5 pl-2 pr-4 transition hover:bg-gray-100">
-                {user.data.image ? (
+                {hasProfileImage ? (
                   <img
-                    src="user"
+                    src={profileImageUrl}
                     alt={user.data.username}
                     className="h-8 w-8 rounded-full object-cover border border-[#178f95]/20"
                   />

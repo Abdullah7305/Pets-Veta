@@ -1,20 +1,14 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { CheckCircle2, ArrowLeft } from "lucide-react";
 import PetForm from "../../Pet Owner/pet details/components/PetForm";
 import PetIssueReportForm from "../../Pet Owner/pet details/components/PetIssueReportForm";
 import Button from "../../../shared/components/Button/Button";
-import { useAuth } from "@/features/Auth/hooks/authhook";
-
-type CreatedPet = {
-  id: string;
-  name: string;
-};
+import type { CreatedPet } from "../types/appointment.types";
 
 const BookAppointmentPage = () => {
   const { id: doctorId } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
-  const { user } = useAuth()
   const navigate = useNavigate();
   const selectedCheckupTime = searchParams.get("checkupTime") || "";
 

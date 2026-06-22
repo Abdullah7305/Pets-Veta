@@ -15,6 +15,10 @@ export const petSchema = z.object({
   category: z.enum(["DOG", "CAT", "REPTILE", "OTHER"], {
     message: "Please select pet category",
   }),
+
+  photos: z
+    .custom<FileList>()
+    .refine((files) => files && files.length > 0, "At least one pet photo is required"),
 });
 
 export type PetFormInput = z.input<typeof petSchema>;

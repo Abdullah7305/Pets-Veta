@@ -1,7 +1,7 @@
 import { Calendar, List, PawPrint, Shield, User, ImagePlus } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import Input from "../../../../shared/components/Input/Input";
 import Button from "../../../../shared/components/Button/Button";
@@ -12,22 +12,17 @@ import {
 } from "../schemas/pet.schema";
 import { useAuth } from "@/features/Auth/hooks/authhook";
 import { submitPetData } from "../apis/pet.api";
-
-interface PetFormProps {
-  onSubmitSuccess?: (newPet: any) => void;
-  onCancel?: () => void;
-}
+import type { PetFormProps } from "../types/petDetails.types";
 
 const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
   const { user } = useAuth();
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [previews, setPreviews] = useState<string[]>([]);
 
   const {
     register,
     handleSubmit,
     reset,
-    watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<PetFormInput, unknown, PetFormData>({
     resolver: zodResolver(petSchema),
@@ -40,24 +35,26 @@ const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
   });
 
   // Watch the photos field to trigger preview generation
-  const selectedPhotos = watch("photos");
+  const selectedPhotos = useWatch({
+    control,
+    name: "photos",
+  });
 
-  useEffect(() => {
+  const previews = useMemo(() => {
     if (!selectedPhotos || selectedPhotos.length === 0) {
-      setPreviews([]);
-      return;
+      return [];
     }
 
-    const objectUrls = Array.from(selectedPhotos).map((file) =>
+    return Array.from(selectedPhotos).map((file) =>
       URL.createObjectURL(file as File)
     );
-
-    setPreviews(objectUrls);
-
-    return () => {
-      objectUrls.forEach((url) => URL.revokeObjectURL(url));
-    };
   }, [selectedPhotos]);
+
+  useEffect(() => {
+    return () => {
+      previews.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [previews]);
 
   const onSubmit = async (data: PetFormData) => {
     setSubmitError(null);
@@ -79,15 +76,28 @@ const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
 
       if (newPet) {
         reset();
-        setPreviews([]); // Clear previews on success
         if (onSubmitSuccess) {
           onSubmitSuccess(newPet);
         }
       } else {
         setSubmitError("Failed to save pet. Please check inputs.");
       }
-    } catch (err: any) {
-      setSubmitError(err?.response?.data?.message || "An error occurred while saving the pet.");
+    } catch (err: unknown) {
+      const message =
+        err &&
+        typeof err === "object" &&
+        "response" in err &&
+        typeof err.response === "object" &&
+        err.response &&
+        "data" in err.response &&
+        typeof err.response.data === "object" &&
+        err.response.data &&
+        "message" in err.response.data &&
+        typeof err.response.data.message === "string"
+          ? err.response.data.message
+          : "An error occurred while saving the pet.";
+
+      setSubmitError(message);
     }
   };
 
@@ -225,7 +235,6 @@ const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
               className="border-[#6D3DD9]/35 text-[#6D3DD9]"
               onClick={() => {
                 reset();
-                setPreviews([]); // Clear previews on cancel
                 if (onCancel) onCancel();
               }}
             >

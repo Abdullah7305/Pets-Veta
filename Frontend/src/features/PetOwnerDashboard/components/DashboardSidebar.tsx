@@ -11,14 +11,9 @@ import {
 } from "lucide-react";
 
 import { NavLink, useNavigate } from "react-router-dom";
+import type { DashboardSidebarItem } from "../types/petOwnerDashboard.types";
 
-type SidebarItem = {
-  label: string;
-  path: string;
-  icon: React.ReactNode;
-};
-
-const sidebarItems: SidebarItem[] = [
+const sidebarItems: DashboardSidebarItem[] = [
   {
     label: "Dashboard",
     path: "/pet-owner/dashboard",
@@ -42,6 +37,11 @@ const sidebarItems: SidebarItem[] = [
   {
     label: "Marketplace",
     path: "/marketplace1",
+    icon: <ShoppingCart size={20} />,
+  },
+  {
+    label: "Cart",
+    path: "/cart",
     icon: <ShoppingCart size={20} />,
   },
   {

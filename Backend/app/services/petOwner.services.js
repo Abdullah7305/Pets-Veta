@@ -108,6 +108,49 @@ const getUserPets = async (userId) => {
     return pets;
 }
 
+const updatePetOwnerProfile = async (userId, profileData) => {
+    if (!userId) {
+        return false;
+    }
+
+    const { fullName, username, phone, profileImageUrl } = profileData;
+
+    const existingUsername = await prisma.user.findFirst({
+        where: {
+            username,
+            NOT: {
+                id: userId,
+            },
+        },
+    });
+
+    if (existingUsername) {
+        throw new AppError("Username is already taken", 400);
+    }
+
+    const updatedProfile = await prisma.user.update({
+        where: {
+            id: userId,
+        },
+        data: {
+            fullName,
+            username,
+            phone,
+            ...(profileImageUrl ? { profileImageUrl } : {}),
+        },
+        select: {
+            id: true,
+            fullName: true,
+            username: true,
+            email: true,
+            phone: true,
+            profileImageUrl: true,
+        },
+    });
+
+    return updatedProfile;
+}
+
 const updateAppointmentStripeId = async (appointmentId, sessionId) => {
     if (!appointmentId || !sessionId) {
         throw new AppError("Appointment or Session Id is Invalid", 400);
@@ -125,5 +168,6 @@ const updateAppointmentStripeId = async (appointmentId, sessionId) => {
 module.exports = {
     saveUserPet,
     registerPetIssue, getUserPets,
+    updatePetOwnerProfile,
     updateAppointmentStripeId
 }

@@ -13,7 +13,8 @@ Router
 
 Router
     .route('/pet-profile')
-    .get(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.getPetOwnerById);
+    .get(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.getPetOwnerById)
+    .patch(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), upload.single('profileImage'), petOwnerController.updatePetOwnerProfile);
 
 
 Router

@@ -8,31 +8,9 @@ import {
 } from "react-icons/fa";
 import { User } from 'lucide-react'
 
-import { getDoctorProfileData, type BookableSlot } from "../apis/doctorProfile.api";
+import { getDoctorProfileData } from "../apis/doctorProfile.api";
 import { useEffect, useState } from "react";
-
-type DoctorType = {
-    id: string;
-    name: string;
-    image: string;
-    status: string;
-    specialty: string;
-    experience: number;
-    rating: number;
-    reviews: number;
-    location: string;
-    fees: number;
-    tags: string[];
-    about: string;
-    education: string;
-    qualification: string;
-    certification: string;
-    nextSlot: string;
-    specialization: string;
-    availableSlots: BookableSlot[];
-    todaySlots: BookableSlot[];
-    nextAvailable: BookableSlot | null;
-} | null;
+import type { DoctorProfileViewData } from "../types/appointment.types";
 
 
 const DoctorProfilePage = () => {
@@ -40,7 +18,7 @@ const DoctorProfilePage = () => {
     const { id } = useParams();
     console.log("Id is ", id);
 
-    const [doctor, setDoctor] = useState<DoctorType>(null);
+    const [doctor, setDoctor] = useState<DoctorProfileViewData>(null);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {

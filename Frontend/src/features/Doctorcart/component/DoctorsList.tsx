@@ -1,11 +1,5 @@
-import { type Doctor } from "../apis/getDoctors.api";
 import DoctorCard from "./DoctorCard";
-
-interface DoctorsListProps {
-    doctors: Doctor[];
-    loading: boolean;
-    onBookAppointment: (doctorId: string, checkupTime?: string) => void;
-}
+import type { DoctorsListProps } from "../types/doctorcart.types";
 
 const DoctorsList = ({
     doctors,

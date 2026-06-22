@@ -1,28 +1,21 @@
 import { useState, useEffect } from "react";
 import { Edit2, Trash2, ShieldAlert, Activity } from "lucide-react";
 import { getDoctorServices } from "../api/doctorServices";
-import { type ItemType } from "./DoctorSkill";
 import DeleteModal from "./DeleteModal";
-type Data = {
-    id: string,
-    userId: string,
-    price: string,
-    skill: string
-}
+import type {
+    DoctorServiceData,
+    DoctorServicesTableProps,
+} from "../doctor.types";
 
-const DoctorServicesTable = ({ onEdit, onDelete }: {
-    onEdit: (item: ItemType) => void | Promise<void>,
-    onDelete: (itemId: string) => Promise<void>,
-
-}) => {
-    const [services, setServices] = useState<Data[] | undefined>(undefined)
+const DoctorServicesTable = ({ onEdit, onDelete }: DoctorServicesTableProps) => {
+    const [services, setServices] = useState<DoctorServiceData[] | undefined>(undefined)
     const [loading, setLoading] = useState(true);
     const [fetchError, setFetchError] = useState('');
     const [isDeleteModal, setDeleteModal] = useState(false);
     const [deleteItem, setDeleteItem] = useState<{ id: string; skill: string; price: string } | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const openDeleteModal = (item: Data) => {
+    const openDeleteModal = (item: DoctorServiceData) => {
         setDeleteItem(item);
         setDeleteModal(true);
     }

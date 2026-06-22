@@ -11,7 +11,7 @@ import {
   FaArrowRight,
 } from "react-icons/fa";
 
-import img from "@/assets/shared/images/dog2.jpeg"
+import img from "@/assets/shared/images/bannerImage.png"
 import { NavLink } from "react-router-dom";
 
 const services = [

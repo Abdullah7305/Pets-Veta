@@ -1,44 +1,46 @@
 import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import Button from "@/shared/components/Button/Button";
 import Input from "@/shared/components/Input/Input";
 import Card from "@/shared/components/Card/Card";
 import { clearCart, getCartItems } from "../utils/cartStorage";
 import { api } from "@/features/api interface/axios.interface";
-
-type ApiError = {
-  response?: {
-    status?: number;
-    data?: {
-      message?: string;
-    };
-  };
-};
+import {
+  checkoutSchema,
+  type CheckoutFormData,
+} from "../schemas/checkout.schema";
+import type { CartApiError } from "../types/cart.types";
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const [cart, setCart] = useState(getCartItems());
 
-  const [shippingAddress, setShippingAddress] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
   const [error, setError] = useState("");
   const [placingOrder, setPlacingOrder] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CheckoutFormData>({
+    resolver: zodResolver(checkoutSchema),
+    defaultValues: {
+      phoneNumber: "",
+      shippingAddress: "",
+    },
+  });
 
   const total = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
 
-  const handlePlaceOrder = async () => {
+  const handlePlaceOrder = async (data: CheckoutFormData) => {
     setError("");
 
     if (cart.length === 0) {
       setError("Your cart is empty.");
-      return;
-    }
-
-    if (!phoneNumber.trim() || !shippingAddress.trim()) {
-      setError("Phone number and shipping address are required.");
       return;
     }
 
@@ -47,8 +49,8 @@ const CheckoutPage = () => {
         productId: item.productId,
         quantity: item.quantity,
       })),
-      shippingAddress,
-      phoneNumber,
+      shippingAddress: data.shippingAddress,
+      phoneNumber: data.phoneNumber,
     };
 
     try {
@@ -58,7 +60,7 @@ const CheckoutPage = () => {
       setCart([]);
       navigate("/marketplace1");
     } catch (err) {
-      const apiError = err as ApiError;
+      const apiError = err as CartApiError;
 
       if (apiError.response?.status === 401) {
         navigate("/login", {
@@ -79,6 +81,7 @@ const CheckoutPage = () => {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,560px)_360px]">
       <Card>
+        <form onSubmit={handleSubmit(handlePlaceOrder)}>
         {error && (
           <p className="mb-4 rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-600">
             {error}
@@ -87,27 +90,28 @@ const CheckoutPage = () => {
 
         <Input
           label="Phone Number"
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
           placeholder="03000000000"
+          error={errors.phoneNumber?.message}
+          {...register("phoneNumber")}
         />
 
         <div className="mt-4">
           <Input
             label="Shipping Address"
-            value={shippingAddress}
-            onChange={(e) => setShippingAddress(e.target.value)}
             placeholder="Lahore, Pakistan"
+            error={errors.shippingAddress?.message}
+            {...register("shippingAddress")}
           />
         </div>
 
         <Button
           className="mt-6 w-full"
-          onClick={handlePlaceOrder}
+          type="submit"
           disabled={placingOrder}
         >
           {placingOrder ? "Placing Order..." : "Place Order"}
         </Button>
+        </form>
       </Card>
 
       <Card>

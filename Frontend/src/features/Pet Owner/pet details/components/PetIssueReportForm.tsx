@@ -23,14 +23,7 @@ import {
   getDoctorProfileData,
   type BookableSlot,
 } from "@/features/Appointment/apis/doctorProfile.api";
-
-interface PetIssueReportFormProps {
-  preselectedPetId?: string;
-  doctorId?: string;
-  preselectedCheckupTime?: string;
-  onSubmitSuccess?: (data: unknown) => void;
-  onCancel?: () => void;
-}
+import type { PetIssueReportFormProps } from "../types/petDetails.types";
 
 const PetIssueReportForm = ({
   preselectedPetId = "",

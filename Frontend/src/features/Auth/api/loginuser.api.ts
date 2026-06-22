@@ -4,9 +4,11 @@ import { api } from "@/features/api interface/axios.interface";
 
 type Data = {
     id: string,
+    name?: string,
     email: string,
     role: string,
-    username: string
+    username: string,
+    profileImageUrl?: string
 }
 
 export type ApiResponse = {
@@ -23,7 +25,7 @@ export const userLogin = async<T>(data: LoginFormData): Promise<T> => {
         if (axios.isAxiosError(error)) {
             if (error.response) {
                 if (error.response.status == 429) {
-                    throw new Error("Please wait for a minute")
+                    throw new Error("Please wait for a minute", { cause: error })
                 }
                 console.log("Status Code", error.response?.status);
                 console.log("Response Data", error.response?.data)

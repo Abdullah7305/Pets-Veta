@@ -18,25 +18,7 @@ import {
 
 import { useNavigate } from "react-router-dom";
 import Button from "../../../shared/components/Button/Button";
-
-type DoctorProfileData = {
-  fullName: string;
-  email: string;
-  phone: string;
-  profileImageUrl: string;
-  specialization: string;
-  education: string;
-  experience: number;
-  fees: number;
-  rating: number;
-  reviews: number;
-  licenseNumber: string;
-  languages: string;
-  address: string;
-  about: string;
-  isVerified: boolean;
-  isAvailable: boolean;
-};
+import type { DoctorProfileData } from "../types/doctorcart.types";
 
 const doctor: DoctorProfileData = {
   fullName: "Dr. Ayesha Khan",

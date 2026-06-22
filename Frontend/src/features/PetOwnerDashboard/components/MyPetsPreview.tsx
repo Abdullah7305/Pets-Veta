@@ -9,13 +9,9 @@ import { useNavigate } from "react-router-dom";
 import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
 
-import type { Pet } from "../types/petOwnerDashboard.types";
+import type { MyPetsPreviewProps } from "../types/petOwnerDashboard.types";
 
 import PetPreviewCard from "./PetPreviewCard";
-
-type MyPetsPreviewProps = {
-  pets: Pet[];
-};
 
 const MyPetsPreview = ({ pets }: MyPetsPreviewProps) => {
   const navigate = useNavigate();

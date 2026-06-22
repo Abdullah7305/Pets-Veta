@@ -1,5 +1,5 @@
 import Button from "@/shared/components/Button/Button";
-import img from "@/assets/shared/images/dog2.jpeg"
+import img from "@/assets/shared/images/bannerImage.png"
 
 const CTA = () => {
     return (

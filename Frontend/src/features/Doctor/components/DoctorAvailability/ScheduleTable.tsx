@@ -1,19 +1,6 @@
-import React from "react";
+import type { ScheduleTableProps } from "../../doctor.types";
 
-interface BackendScheduleItem {
-    id: string;
-    doctorId: string;
-    date: string;
-    startTime: string;
-    endTime: string;
-    isBooked: boolean;
-}
-
-interface ScheduleTableProps {
-    schedules: BackendScheduleItem[];
-}
-
-const ScheduleTable: React.FC<ScheduleTableProps> = ({ schedules }) => {
+const ScheduleTable = ({ schedules }: ScheduleTableProps) => {
 
     // 1. Helper to format dates cleanly (e.g., "Jun 12, 2026")
     const formatDate = (dateStr: string) => {

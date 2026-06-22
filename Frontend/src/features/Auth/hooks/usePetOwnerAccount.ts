@@ -5,13 +5,10 @@ import { type ApiResponse } from '../api/petOwner.api'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from './authhook'
 import { AxiosError } from 'axios'
-
-type ApiErrorRespone = {
-    message: string
-}
+import type { ApiErrorResponse } from '../types/auth.types'
 
 
-export const usePetOwnerHook = (options: UseMutationOptions<ApiResponse, AxiosError<ApiErrorRespone>, PetOwnerFormData>) => {
+export const usePetOwnerHook = (options: UseMutationOptions<ApiResponse, AxiosError<ApiErrorResponse>, PetOwnerFormData>) => {
 
     const { setUser, setIsAuthenticateUser } = useAuth();
     const navigate = useNavigate();

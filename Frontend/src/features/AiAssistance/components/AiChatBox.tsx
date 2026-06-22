@@ -2,17 +2,12 @@ import { useState } from "react";
 import { FaPaperPlane, FaRobot, FaUser, FaPaw } from "react-icons/fa";
 
 import Button from "../../../shared/components/Button";
-
-type Message = {
-    id: number;
-    sender: "user" | "ai";
-    text: string;
-};
+import type { AiMessage } from "../types/aiAssistance.types";
 
 const AiChatBox = () => {
     const [message, setMessage] = useState("");
 
-    const [messages, setMessages] = useState<Message[]>([
+    const [messages, setMessages] = useState<AiMessage[]>([
         {
             id: 1,
             sender: "ai",
@@ -23,13 +18,13 @@ const AiChatBox = () => {
     const handleSendMessage = () => {
         if (!message.trim()) return;
 
-        const userMessage: Message = {
+        const userMessage: AiMessage = {
             id: Date.now(),
             sender: "user",
             text: message,
         };
 
-        const aiReply: Message = {
+        const aiReply: AiMessage = {
             id: Date.now() + 1,
             sender: "ai",
             text: "Thanks for sharing. Based on the symptoms, please monitor your pet closely and consult a verified veterinary doctor if the issue continues.",

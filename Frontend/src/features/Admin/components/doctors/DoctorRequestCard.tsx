@@ -12,14 +12,7 @@ import {
 import doctorLogo from "../../../../assets/icons/doctor.png";
 import { InfoPill } from "./InfoPill";
 import { ContactRow } from "./ContactRow";
-import { type DoctorData } from "../../apis/doctorquery.api";
-
-type DoctorRequestCardProps = {
-  doctor: DoctorData;
-  onApprove: (doctorId: string) => void;
-  onReject: (doctorId: string) => void;
-  doctorRequestProceed: boolean;
-};
+import type { DoctorRequestCardProps } from "../../types/admin.types";
 
 const DoctorRequestCard = ({
   doctor,

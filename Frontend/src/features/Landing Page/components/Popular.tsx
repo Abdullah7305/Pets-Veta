@@ -1,5 +1,5 @@
 import { FaArrowRight, FaStar } from "react-icons/fa";
-import img from "@/assets/shared/images/dog2.jpeg"
+import img from "@/assets/shared/images/bannerImage.png"
 
 const products = [
     {

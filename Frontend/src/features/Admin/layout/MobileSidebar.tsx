@@ -1,11 +1,7 @@
 import Sidebar from "./Sidebar";
+import type { MobileSidebarProps } from "../types/admin.types";
 
-interface Props {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-const MobileSidebar = ({ open, setOpen }: Props) => {
+const MobileSidebar = ({ open, setOpen }: MobileSidebarProps) => {
   return <Sidebar sidebarOpen={open} setSidebarOpen={setOpen} />;
 };
 

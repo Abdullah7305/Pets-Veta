@@ -1,15 +1,6 @@
 import Input from "@/shared/components/Input/Input";
 import Button from "@/shared/components/Button/Button";
-
-type Props = {
-  search: string;
-  category: string;
-  location: string;
-  onSearch: (value: string) => void;
-  onCategory: (value: string) => void;
-  onLocation: (value: string) => void;
-  onClear: () => void;
-};
+import type { MarketplaceFiltersProps } from "../types/marketplace.types";
 
 const MarketplaceFilters = ({
   search,
@@ -19,7 +10,7 @@ const MarketplaceFilters = ({
   onCategory,
   onLocation,
   onClear,
-}: Props) => {
+}: MarketplaceFiltersProps) => {
   return (
     <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
       <div className="grid gap-4 md:grid-cols-4">

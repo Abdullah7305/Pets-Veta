@@ -1,14 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import PetForm from "../../pet details/components/PetForm";
 import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
+import { useAuth } from "@/features/Auth/hooks/authhook";
 
-import DeletePetModal from "../components/DeletePetModal";
+import EditPetOwnerProfileModal from "../components/EditPetOwnerProfileModal";
 import MyPetsSection from "../components/MyPetsSection";
 import PetOwnerProfileHeader from "../components/PetOwnerProfileHeader";
 
-import { getPetOwnerProfileApi } from "../api/petOwnerProfile.api";
+import {
+  getPetOwnerProfileApi,
+  updatePetOwnerProfileApi,
+} from "../api/petOwnerProfile.api";
 import {
   deletePetApi,
   getMyPetsApi,
@@ -18,9 +23,11 @@ import type {
   Pet,
   PetOwnerProfile,
 } from "../types/petProfile.types";
+import type { PetOwnerProfileFormData } from "../schemas/petOwnerProfile.schema";
 
 const PetOwnerProfilePage = () => {
   const navigate = useNavigate();
+  const { setUser } = useAuth();
 
   const [profile, setProfile] = useState<PetOwnerProfile | null>(null);
   const [pets, setPets] = useState<Pet[]>([]);
@@ -28,8 +35,11 @@ const PetOwnerProfilePage = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [error, setError] = useState("");
+  const [profileError, setProfileError] = useState("");
   const [openPetForm, setOpenPetForm] = useState<boolean>(false);
+  const [openProfileForm, setOpenProfileForm] = useState(false);
 
   const fetchProfileData = useCallback(async () => {
     try {
@@ -51,7 +61,7 @@ const PetOwnerProfilePage = () => {
   }, []);
 
   useEffect(() => {
-    fetchProfileData();
+    void Promise.resolve().then(fetchProfileData);
   }, [fetchProfileData]);
 
   // Lock body scroll when the modal form is active
@@ -90,6 +100,49 @@ const PetOwnerProfilePage = () => {
   const handlePetAddedSuccess = () => {
     setOpenPetForm(false);
     void fetchProfileData();
+  };
+
+  const handleProfileUpdate = async (data: PetOwnerProfileFormData) => {
+    if (!profile) return;
+
+    try {
+      setIsSavingProfile(true);
+      setProfileError("");
+
+      const response = await updatePetOwnerProfileApi({
+        fullName: data.fullName,
+        username: data.username,
+        phone: data.phone,
+        profileImage: data.profileImage,
+      });
+
+      setProfile(response.data);
+      setUser((currentUser) =>
+        currentUser
+          ? {
+              ...currentUser,
+              data: {
+                ...currentUser.data,
+                name: response.data.fullName,
+                username: response.data.username,
+                profileImageUrl: response.data.profileImageUrl,
+              },
+            }
+          : currentUser,
+      );
+      setOpenProfileForm(false);
+    } catch (updateError) {
+      console.error("Pet owner profile update error:", updateError);
+      const message =
+        axios.isAxiosError(updateError) &&
+        typeof updateError.response?.data?.message === "string"
+          ? updateError.response.data.message
+          : "Unable to update your profile. Please try again.";
+
+      setProfileError(message);
+    } finally {
+      setIsSavingProfile(false);
+    }
   };
 
   if (isLoading) {
@@ -145,9 +198,7 @@ const PetOwnerProfilePage = () => {
           {profile && (
             <PetOwnerProfileHeader
               profile={profile}
-              onEditProfile={() =>
-                navigate("/pet-owner/profile/edit")
-              }
+              onEditProfile={() => setOpenProfileForm(true)}
             />
           )}
 
@@ -181,6 +232,58 @@ const PetOwnerProfilePage = () => {
               />
             </div>
           </div>
+        </div>
+      )}
+
+      {openProfileForm && profile && (
+        <EditPetOwnerProfileModal
+          profile={profile}
+          isSaving={isSavingProfile}
+          error={profileError}
+          onCancel={() => {
+            setOpenProfileForm(false);
+            setProfileError("");
+          }}
+          onSubmit={handleProfileUpdate}
+        />
+      )}
+
+      {selectedPet && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4"
+          role="dialog"
+          aria-modal="true"
+        >
+          <Card className="w-full max-w-md p-6 text-center">
+            <h2 className="text-2xl font-black text-[#101b3d]">
+              Delete {selectedPet.name}?
+            </h2>
+            <p className="mt-3 text-sm font-medium leading-6 text-slate-500">
+              This pet will be removed from your profile.
+            </p>
+
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-center">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full sm:w-auto"
+                onClick={() => setSelectedPet(null)}
+                disabled={isDeleting}
+              >
+                Cancel
+              </Button>
+
+              <Button
+                type="button"
+                className="w-full !border-red-500 !bg-red-500 !text-white hover:!bg-red-600 hover:!text-white sm:w-auto"
+                loading={isDeleting}
+                loadingText="Deleting..."
+                onClick={() => void handleDeletePet()}
+              >
+                Delete Pet
+              </Button>
+            </div>
+          </Card>
         </div>
       )}
     </>
