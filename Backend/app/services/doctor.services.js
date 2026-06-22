@@ -1,4 +1,4 @@
-const { default: prisma } = require('../config/prisma')
+const  prisma  = require('../config/prisma')
 const { PaymentStatus } = require('@prisma/client')
 
 

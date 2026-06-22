@@ -11,3 +11,15 @@ export const createAppointmentPaymentIntent = async (appointmentId: string) => {
         handleAxiosError(error);
     }
 };
+
+export const getAppointmentPaymentStatus = async (appointmentId: string) => {
+    try {
+        const response = await api.get(
+            `/payment/appointments/${appointmentId}/status`
+        );
+
+        return response.data;
+    } catch (error) {
+        handleAxiosError(error);
+    }
+};

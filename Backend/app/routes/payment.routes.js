@@ -10,4 +10,10 @@ Router.post(
     paymentController.createPaymentIntent
 );
 
+Router.get(
+    "/appointments/:appointmentId/status",
+    protect,
+    paymentController.getPaymentStatus
+);
+
 module.exports = Router;

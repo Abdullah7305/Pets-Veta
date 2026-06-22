@@ -73,7 +73,7 @@ const createAppointmentPaymentIntent = async ({ appointmentId, petOwnerId }) => 
   const stripeAmount = appointment.fees * 100;
   const currency = appointment.currency || "pkr";
 
-  // Agar pehle se PaymentIntent bana hua hai to same clientSecret return karo.
+  
   if (
     appointment.payment &&
     appointment.payment.stripePaymentIntentId &&
@@ -111,9 +111,8 @@ const createAppointmentPaymentIntent = async ({ appointmentId, petOwnerId }) => 
       automatic_payment_methods: {
         enabled: true,
       },
-      description: `Veterinary appointment with Dr. ${
-        appointment.doctor?.user?.fullName || "Doctor"
-      }`,
+      description: `Veterinary appointment with Dr. ${appointment.doctor?.user?.fullName || "Doctor"
+        }`,
       metadata,
     },
     {
@@ -164,6 +163,104 @@ const createAppointmentPaymentIntent = async ({ appointmentId, petOwnerId }) => 
   };
 };
 
+
+const getAppointmentPaymentStatus = async ({ appointmentId, petOwnerId }) => {
+  if (!appointmentId || !petOwnerId) {
+    throw new AppError("Appointment ID or user ID is missing", 400);
+  }
+
+  const appointment = await prisma.appointment.findFirst({
+    where: {
+      id: appointmentId,
+      petOwnerId,
+    },
+    select: {
+      id: true,
+      doctorId: true,
+      petOwnerId: true,
+      petId: true,
+      petIssueReportId: true,
+      scheduleId: true,
+
+      fees: true,
+      currency: true,
+
+      status: true,
+      paymentStatus: true,
+
+      checkupTime: true,
+      expiresAt: true,
+      confirmedAt: true,
+      createdAt: true,
+      updatedAt: true,
+
+      doctor: {
+        select: {
+          id: true,
+          specialization: true,
+          user: {
+            select: {
+              fullName: true,
+              email: true,
+            },
+          },
+        },
+      },
+
+      doctorSchedule: {
+        select: {
+          id: true,
+          status: true,
+          date: true,
+          startTime: true,
+          endTime: true,
+          lockedByAppointmentId: true,
+        },
+      },
+
+      pet: {
+        select: {
+          id: true,
+          name: true,
+          breed: true,
+          category: true,
+        },
+      },
+
+      petIssueReport: {
+        select: {
+          id: true,
+          issue: true,
+          createdAt: true,
+        },
+      },
+
+      payment: {
+        select: {
+          id: true,
+          stripePaymentIntentId: true,
+          stripeChargeId: true,
+          amount: true,
+          currency: true,
+          status: true,
+          receiptUrl: true,
+          failureReason: true,
+          paidAt: true,
+          cancelledAt: true,
+          refundedAt: true,
+        },
+      },
+    },
+  });
+
+  if (!appointment) {
+    throw new AppError("Appointment not found", 404);
+  }
+
+  return appointment;
+};
+
 module.exports = {
   createAppointmentPaymentIntent,
+  getAppointmentPaymentStatus,
 };

@@ -32,6 +32,27 @@ const createPaymentIntent = catchAsync(async (req, res) => {
   return sendResponse(res, 200, "Payment intent created successfully", result);
 });
 
+const getPaymentStatus = catchAsync(async (req, res) => {
+  const petOwnerId = req.user?.id;
+
+  if (!petOwnerId) {
+    return sendResponse(res, 401, "Please login first", {});
+  }
+
+  const { appointmentId } = req.params;
+
+  if (!appointmentId) {
+    return sendResponse(res, 400, "Appointment ID is required", {});
+  }
+
+  const result = await stripeService.getAppointmentPaymentStatus({
+    appointmentId,
+    petOwnerId,
+  });
+
+  return sendResponse(res, 200, "Appointment payment status fetched", result);
+});
+
 const stripeWebhook = async (req, res) => {
   let event;
 
@@ -395,5 +416,6 @@ const handlePaymentIntentCanceled = async (paymentIntent, paymentEventId) => {
 
 module.exports = {
   createPaymentIntent,
+  getPaymentStatus,
   stripeWebhook,
 };

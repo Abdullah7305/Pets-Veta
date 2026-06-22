@@ -98,6 +98,8 @@ const registerPetIssue = async (petIssue) => {
         if (!registerIssue) {
             throw new AppError("Issue in creating pet report", 400);
         }
+        const holdMinutes = Number(process.env.APPOINTMENT_HOLD_MINUTES || 15);
+        const newExpiresAt = new Date(Date.now() + holdMinutes * 60 * 1000);
 
         const updatedAppointment = await tx.appointment.update({
             where: {
@@ -106,7 +108,8 @@ const registerPetIssue = async (petIssue) => {
             data: {
                 petId,
                 petIssueReportId: registerIssue.id,
-                status: AppointmentStatus.PENDING_PAYMENT
+                status: AppointmentStatus.PENDING_PAYMENT,
+                expiresAt: newExpiresAt,
             },
             select: {
                 id: true,
@@ -171,7 +174,7 @@ const createPetPictures = async (pet) => {
 }
 
 const lockUserSlot = async ({ scheduleId, doctorId, petOwnerId }) => {
-    
+
     if (!scheduleId || !doctorId || !petOwnerId) {
         throw new AppError("Schedule, doctor, or user id is missing", 400);
     }
