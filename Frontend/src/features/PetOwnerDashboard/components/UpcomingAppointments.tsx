@@ -10,12 +10,8 @@ import { useNavigate } from "react-router-dom";
 import Card from "@/shared/components/Card/Card";
 
 import type {
-  DashboardAppointment,
+  UpcomingAppointmentsProps,
 } from "../types/petOwnerDashboard.types";
-
-type UpcomingAppointmentsProps = {
-  appointments: DashboardAppointment[];
-};
 
 const petImages = [
   "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=200&q=80",

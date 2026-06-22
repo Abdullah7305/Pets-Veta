@@ -6,6 +6,8 @@ import { AuthSuccess } from "./components/AuthSuccess";
 import ForgotPasswordPage from "./pages/forgot-password";
 import VerifyOtpPage from "./pages/verify-otp";
 import ResetPasswordPage from "./pages/reset-password";
+import DashboardChoicePage from "./pages/DashboardChoicePage";
+import { ProtectedRoutes } from "@/ProtectedRoutes/ProtectedRoutes";
 
 
 const AuthRouter = [
@@ -40,6 +42,14 @@ const AuthRouter = [
   {
     path: "/reset-password",
     element: <ResetPasswordPage />,
+  },
+  {
+    path: "/choose-dashboard",
+    element: (
+      <ProtectedRoutes>
+        <DashboardChoicePage />
+      </ProtectedRoutes>
+    ),
   }
 ];
 

@@ -7,12 +7,7 @@ import {
 import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
 
-import type { ExistingPet } from "../types/selectPet.types";
-
-type ExistingPetCardProps = {
-  pet: ExistingPet;
-  onSelect: (pet: ExistingPet) => void;
-};
+import type { ExistingPet, ExistingPetCardProps } from "../types/selectPet.types";
 
 const formatCategory = (category: ExistingPet["category"]) => {
   return (

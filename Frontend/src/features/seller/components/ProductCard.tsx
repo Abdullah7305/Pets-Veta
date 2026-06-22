@@ -4,15 +4,8 @@ import {
   getProductImage,
   getProductPrice,
   toDisplayCategory,
-  type MarketplaceProduct,
 } from "@/features/marketplace1/api/marketplace.api";
-
-type ProductCardProps = {
-  product: MarketplaceProduct;
-  onEdit: () => void;
-  onDelete: () => void;
-  onView: () => void;
-};
+import type { ProductCardProps } from "../types/seller.types";
 
 const statusClass: Record<string, string> = {
   ACTIVE: "bg-green-100 text-green-700",

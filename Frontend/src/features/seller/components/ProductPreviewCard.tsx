@@ -1,17 +1,7 @@
 import { FaMapMarkerAlt, FaShoppingBag } from "react-icons/fa";
 import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
-
-type ProductPreviewCardProps = {
-  image: string;
-  title: string;
-  category: string;
-  price: string;
-  stock: string;
-  location: string;
-  description: string;
-  status: string;
-};
+import type { ProductPreviewCardProps } from "../types/seller.types";
 
 const ProductPreviewCard = ({
   image,

@@ -1,12 +1,7 @@
 import Card from "@/shared/components/Card/Card";
 
-import type { ExistingPet } from "../types/selectPet.types";
+import type { ExistingPetsSectionProps } from "../types/selectPet.types";
 import ExistingPetCard from "./ExistingPetCard";
-
-type ExistingPetsSectionProps = {
-  pets: ExistingPet[];
-  onSelectPet: (pet: ExistingPet) => void;
-};
 
 const ExistingPetsSection = ({
   pets,

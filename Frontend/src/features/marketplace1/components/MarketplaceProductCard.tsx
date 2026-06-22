@@ -15,22 +15,15 @@ import {
   getProductPrice,
   getSellerName,
   toDisplayCategory,
-  type MarketplaceProduct,
 } from "../api/marketplace.api";
-
-type Props = {
-  product: MarketplaceProduct;
-  saved: boolean;
-  onSave: () => void;
-  onDetails: () => void;
-};
+import type { MarketplaceProductCardProps } from "../types/marketplace.types";
 
 const MarketplaceProductCard = ({
   product,
   saved,
   onSave,
   onDetails,
-}: Props) => {
+}: MarketplaceProductCardProps) => {
   const navigate = useNavigate();
   const [cartError, setCartError] = useState("");
 
@@ -62,11 +55,18 @@ const MarketplaceProductCard = ({
   return (
     <Card className="overflow-hidden p-0">
       <div className="relative h-48 bg-gray-50">
-        <img
-          src={image}
-          alt={product.title}
-          className="h-full w-full object-cover"
-        />
+        <button
+          type="button"
+          onClick={() => navigate(`/marketplace/product/${product.id}`)}
+          className="block h-full w-full overflow-hidden text-left"
+          aria-label={`View details for ${product.title}`}
+        >
+          <img
+            src={image}
+            alt={product.title}
+            className="h-full w-full object-cover transition duration-300 hover:scale-105"
+          />
+        </button>
 
         <span className="absolute left-3 top-3 rounded-md bg-[#e8f7f7] px-3 py-1 text-xs font-semibold text-[#178f95]">
           {toDisplayCategory(product.category)}

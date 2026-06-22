@@ -8,12 +8,10 @@ import {
 
 import Card from "@/shared/components/Card/Card";
 
-import type { PetOwnerProfile } from "../types/petProfile.types";
-
-type PetOwnerProfileHeaderProps = {
-  profile: PetOwnerProfile;
-  onEditProfile: () => void;
-};
+import type {
+  PetOwnerProfileHeaderProps,
+  ProfileMetaProps,
+} from "../types/petProfile.types";
 
 const PetOwnerProfileHeader = ({
   profile,
@@ -21,6 +19,11 @@ const PetOwnerProfileHeader = ({
 }: PetOwnerProfileHeaderProps) => {
   const fallbackProfileImage =
     "https://ui-avatars.com/api/?name=Pet+Owner&background=EAF7F5&color=078b91";
+  const profileImage =
+    profile.profileImageUrl &&
+    !profile.profileImageUrl.toLowerCase().includes("enter your image")
+      ? profile.profileImageUrl
+      : fallbackProfileImage;
 
   return (
     <Card className="p-5 sm:p-7 lg:p-8">
@@ -28,7 +31,7 @@ const PetOwnerProfileHeader = ({
         <div className="relative mx-auto shrink-0 md:mx-0">
           <div className="h-36 w-36 overflow-hidden rounded-full border-4 border-white bg-[#EAF7F5] shadow-lg sm:h-40 sm:w-40">
             <img
-              src={profile.profileImageUrl || fallbackProfileImage}
+              src={profileImage}
               alt={profile.fullName}
               className="h-full w-full object-cover"
               onError={(event) => {
@@ -69,7 +72,17 @@ const PetOwnerProfileHeader = ({
           </p>
 
           <div className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm font-semibold text-slate-600 md:justify-start">
+            <ProfileMeta
+              icon={<Mail size={18} />}
+              value={profile.email}
+            />
 
+            {profile.phone && (
+              <ProfileMeta
+                icon={<Phone size={18} />}
+                value={profile.phone}
+              />
+            )}
 
             <ProfileMeta
               icon={<UserRound size={18} />}
@@ -85,10 +98,7 @@ const PetOwnerProfileHeader = ({
 const ProfileMeta = ({
   icon,
   value,
-}: {
-  icon: React.ReactNode;
-  value: string;
-}) => {
+}: ProfileMetaProps) => {
   return (
     <div className="flex items-center gap-2">
       <span className="text-[#078b91]">{icon}</span>

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { type Doctor } from "../apis/getDoctors.api";
 import { useApprovedDoctors } from "../hooks/useGetDoctors";
 import DoctorsList from "./DoctorsList";
 import FilterSidebar from "./FilterSidebar";

@@ -1,11 +1,4 @@
-import type { IconType } from "react-icons";
-
-type ServiceCardProps = {
-  title: string;
-  description: string;
-  icon: IconType;
-  color: string;
-};
+import type { ServiceCardProps } from "../types/services.types";
 
 const ServiceCard = ({
   title,

@@ -12,6 +12,10 @@ import {
 
 
 import { usePetOwnerHook } from "../hooks/usePetOwnerAccount";
+import type {
+  PetOwnerFormFieldProps,
+  PetOwnerPasswordFieldProps,
+} from "../types/auth.types";
 
 const PawIcon = () => (
   <svg
@@ -244,15 +248,6 @@ export default function PetOwnerForm() {
   );
 }
 
-type FormFieldProps = {
-  label: string;
-  placeholder: string;
-  type?: string;
-  error?: string;
-  icon: React.ReactNode;
-  inputProps: React.InputHTMLAttributes<HTMLInputElement>;
-};
-
 const FormField = ({
   label,
   placeholder,
@@ -260,7 +255,7 @@ const FormField = ({
   error,
   icon,
   inputProps,
-}: FormFieldProps) => {
+}: PetOwnerFormFieldProps) => {
   return (
     <div>
       <label className="mb-1.5 block text-[13px] font-bold text-[#17233f]">
@@ -295,15 +290,6 @@ const FormField = ({
   );
 };
 
-type PasswordFieldProps = {
-  label: string;
-  placeholder: string;
-  showPassword: boolean;
-  onTogglePassword: () => void;
-  error?: string;
-  inputProps: React.InputHTMLAttributes<HTMLInputElement>;
-};
-
 const PasswordField = ({
   label,
   placeholder,
@@ -311,7 +297,7 @@ const PasswordField = ({
   onTogglePassword,
   error,
   inputProps,
-}: PasswordFieldProps) => {
+}: PetOwnerPasswordFieldProps) => {
   return (
     <div>
       <label className="mb-1.5 block text-[13px] font-bold text-[#17233f]">

@@ -16,15 +16,13 @@ import {
   getSellerName,
   saveMarketplaceListing,
   toDisplayCategory,
-  type MarketplaceProduct,
 } from "../api/marketplace.api";
+import type { MarketplaceDetailPanelProps } from "../types/marketplace.types";
 
-type Props = {
-  product: MarketplaceProduct;
-  onClose: () => void;
-};
-
-const MarketplaceDetailPanel = ({ product, onClose }: Props) => {
+const MarketplaceDetailPanel = ({
+  product,
+  onClose,
+}: MarketplaceDetailPanelProps) => {
   const navigate = useNavigate();
   const [cartError, setCartError] = useState("");
 

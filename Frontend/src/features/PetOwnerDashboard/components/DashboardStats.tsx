@@ -9,12 +9,9 @@ import { useNavigate } from "react-router-dom";
 import Card from "@/shared/components/Card/Card";
 
 import type {
-  DashboardCounts,
+  DashboardStatsProps,
+  StatusCountProps,
 } from "../types/petOwnerDashboard.types";
-
-type DashboardStatsProps = {
-  counts: DashboardCounts;
-};
 
 const DashboardStats = ({
   counts,
@@ -132,11 +129,7 @@ const StatusCount = ({
   label,
   value,
   className = "",
-}: {
-  label: string;
-  value: number;
-  className?: string;
-}) => {
+}: StatusCountProps) => {
   return (
     <div className={className}>
       <p className="text-xs font-bold">{label}</p>

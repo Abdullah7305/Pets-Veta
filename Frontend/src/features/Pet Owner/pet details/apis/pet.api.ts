@@ -20,7 +20,18 @@ export interface SubmitIssueResponse {
 
 export const submitPetData = async (data: PetFormData & { petOwnerId: string }): Promise<PetResponse | undefined> => {
   try {
-    const response = await api.post("petOwner/submit/pet-data", data);
+    const formData = new FormData();
+
+    formData.append("name", data.name);
+    formData.append("age", String(data.age));
+    formData.append("breed", data.breed);
+    formData.append("category", data.category);
+
+    Array.from(data.photos).forEach((photo) => {
+      formData.append("photos", photo);
+    });
+
+    const response = await api.post("petOwner/submit/pet-data", formData);
     return response.data?.data;
   } catch (error) {
     handleAxiosError(error);

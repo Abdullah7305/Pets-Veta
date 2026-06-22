@@ -1,9 +1,5 @@
 import { useNavigate } from "react-router-dom";
-
-type DoctorProfileButtonProps = {
-  name: string;
-  image?: string;
-};
+import type { DoctorProfileButtonProps } from "../doctor.types";
 
 const DoctorProfileButton = ({ name, image }: DoctorProfileButtonProps) => {
   const navigate = useNavigate();

@@ -1,11 +1,9 @@
 import Button from "../../../shared/components/Button/Button";
 import SearchBar from "../../../shared/components/SearchBar/SearchBar";
-
-interface FilterSidebarProps {
-    search: string;
-    onSearchChange: (value: string) => void;
-    onReset: () => void;
-}
+import type {
+    FilterSidebarProps,
+    SearchInputChangeEvent,
+} from "../types/doctorcart.types";
 
 const FilterSidebar = ({
     search,
@@ -31,7 +29,7 @@ const FilterSidebar = ({
                     <SearchBar
                         placeholder="Search doctor..."
                         value={search}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        onChange={(e: SearchInputChangeEvent) => {
                             onSearchChange(e.target.value);
                         }}
                     />

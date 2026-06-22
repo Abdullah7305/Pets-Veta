@@ -1,7 +1,10 @@
+import type { Dispatch, ElementType, SetStateAction } from "react";
+import type { DoctorData } from "../apis/doctorquery.api";
+
 export interface SidebarItemType {
   id: number;
   title: string;
-  icon: React.ElementType;
+  icon: ElementType;
 }
 
 export interface StatsCardType {
@@ -10,7 +13,7 @@ export interface StatsCardType {
   total: number;
   subtitle: string;
   color: string;
-  icon: React.ElementType;
+  icon: ElementType;
 }
 
 export interface DoctorType {
@@ -23,3 +26,28 @@ export interface DoctorType {
   status: string;
   image: string;
 }
+
+export type AdminNavbarProps = {
+  onMenuClick: () => void;
+};
+
+export type SidebarProps = {
+  sidebarOpen: boolean;
+  setSidebarOpen: (open: boolean) => void;
+};
+
+export interface MobileSidebarProps {
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+}
+
+export interface DoctorStatusBadgeProps {
+  status: string;
+}
+
+export type DoctorRequestCardProps = {
+  doctor: DoctorData;
+  onApprove: (doctorId: string) => void;
+  onReject: (doctorId: string) => void;
+  doctorRequestProceed: boolean;
+};

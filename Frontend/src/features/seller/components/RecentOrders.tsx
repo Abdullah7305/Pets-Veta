@@ -1,11 +1,6 @@
 import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
-import type { SellerOrder } from "../api/seller.api";
-
-type Props = {
-  orders: SellerOrder[];
-  onViewAll: () => void;
-};
+import type { RecentOrdersProps } from "../types/seller.types";
 
 const statusClass: Record<string, string> = {
   PENDING: "bg-yellow-100 text-yellow-700",
@@ -15,7 +10,7 @@ const statusClass: Record<string, string> = {
   CANCELLED: "bg-red-100 text-red-700",
 };
 
-const RecentOrders = ({ orders, onViewAll }: Props) => {
+const RecentOrders = ({ orders, onViewAll }: RecentOrdersProps) => {
   return (
     <Card>
       <div className="mb-4 flex items-center justify-between">

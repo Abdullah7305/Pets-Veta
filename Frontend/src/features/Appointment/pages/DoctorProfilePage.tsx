@@ -7,7 +7,7 @@ import {
 } from "react-icons/fa";
 import { User } from 'lucide-react'
 
-import { getDoctorProfileData, type BookableSlot } from "../apis/doctorProfile.api";
+import { getDoctorProfileData } from "../apis/doctorProfile.api";
 import { useEffect, useState } from "react";
 import BookingModal from "../components/BookSlotModal";
 import { bookDoctorSlot } from "../apis/bookSlot";
@@ -33,12 +33,13 @@ type DoctorType = {
     todaySlots: BookableSlot[];
     nextAvailable: BookableSlot | null;
 } | null;
+import type { DoctorProfileViewData } from "../types/appointment.types";
 
 
 const DoctorProfilePage = () => {
     const { id } = useParams();
 
-    const [doctor, setDoctor] = useState<DoctorType>(null);
+    const [doctor, setDoctor] = useState<DoctorProfileViewData>(null);
     const [loading, setLoading] = useState(false);
 
 

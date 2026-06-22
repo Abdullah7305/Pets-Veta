@@ -3,11 +3,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { sidebarItems } from "../data/sidebar.data";
 import { LogOut, X } from 'lucide-react'
 import { logoutAdmin } from '../apis/adminlogin.api'
-
-type SidebarProps = {
-  sidebarOpen: boolean;
-  setSidebarOpen: (open: boolean) => void;
-};
+import type { SidebarProps } from "../types/admin.types";
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const navigate = useNavigate();

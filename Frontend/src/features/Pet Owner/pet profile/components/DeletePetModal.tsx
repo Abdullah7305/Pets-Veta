@@ -5,12 +5,7 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react";
-
-type PetActionsMenuProps = {
-  petName: string;
-  onEdit: () => void;
-  onDelete: () => void;
-};
+import type { PetActionsMenuProps } from "../types/petProfile.types";
 
 const PetActionsMenu = ({
   petName,

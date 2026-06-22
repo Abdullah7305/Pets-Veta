@@ -1,8 +1,6 @@
-interface Props {
-  status: string;
-}
+import type { DoctorStatusBadgeProps } from "../../types/admin.types";
 
-const DoctorStatusBadge = ({ status }: Props) => {
+const DoctorStatusBadge = ({ status }: DoctorStatusBadgeProps) => {
   return (
     <span
       className={`px-3 py-1 rounded-full text-sm font-medium

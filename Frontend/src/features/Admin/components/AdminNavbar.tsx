@@ -1,10 +1,7 @@
 import { memo } from 'react';
 import { Bell, Menu } from 'lucide-react'
 import { useAuth } from '@/features/Auth/hooks/authhook';
-
-type AdminNavbarProps = {
-    onMenuClick: () => void;
-};
+import type { AdminNavbarProps } from "../types/admin.types";
 
 const AdminNavbar = ({ onMenuClick }: AdminNavbarProps) => {
     const { user } = useAuth();

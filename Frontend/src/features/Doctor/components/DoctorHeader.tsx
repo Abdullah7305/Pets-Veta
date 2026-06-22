@@ -1,9 +1,6 @@
 import { Plus } from "lucide-react";
 import Button from "../../../shared/components/Button/Button";
-
-type DoctorHeaderProps = {
-  onOpenModal: () => void;
-};
+import type { DoctorHeaderProps } from "../doctor.types";
 
 const DoctorHeader = ({ onOpenModal }: DoctorHeaderProps) => {
   return (

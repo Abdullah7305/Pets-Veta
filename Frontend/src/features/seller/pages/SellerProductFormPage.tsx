@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, useWatch } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import Button from "@/shared/components/Button/Button";
 import Input from "@/shared/components/Input/Input";
@@ -16,15 +18,11 @@ import {
   fetchSellerProducts,
   updateSellerProduct,
 } from "../api/seller.api";
-
-type ApiError = {
-  response?: {
-    status?: number;
-    data?: {
-      message?: string;
-    };
-  };
-};
+import {
+  sellerProductSchema,
+  type SellerProductFormData,
+} from "../schemas/sellerProduct.schema";
+import type { SellerApiError } from "../types/seller.types";
 
 const toBackendStatus = (status: string) => {
   const map: Record<string, string> = {
@@ -46,6 +44,16 @@ const toDisplayStatus = (status: string) => {
   return map[status] || status;
 };
 
+const productFormDefaultValues: SellerProductFormData = {
+  title: "",
+  category: "Food",
+  price: "",
+  stock: "1",
+  location: "",
+  description: "",
+  status: "Active",
+};
+
 const SellerProductFormPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -54,15 +62,17 @@ const SellerProductFormPage = () => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({
-    title: "",
-    category: "Food",
-    price: "",
-    stock: "1",
-    location: "",
-    description: "",
-    status: "Active",
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm<SellerProductFormData>({
+    resolver: zodResolver(sellerProductSchema),
+    defaultValues: productFormDefaultValues,
   });
+  const form = useWatch({ control });
 
   const isEditMode = Boolean(id);
 
@@ -82,19 +92,19 @@ const SellerProductFormPage = () => {
         }
 
         if (!ignore) {
-          setForm({
+          reset({
             title: product.title,
-            category: toDisplayCategory(product.category),
+            category: toDisplayCategory(product.category) as SellerProductFormData["category"],
             price: String(product.price),
             stock: String(product.stock),
             location: product.location || "",
             description: product.description || "",
-            status: toDisplayStatus(product.status),
+            status: toDisplayStatus(product.status) as SellerProductFormData["status"],
           });
           setPreviews(product.images?.map((image) => image.publicUrl) || []);
         }
       } catch (err) {
-        const apiError = err as ApiError;
+        const apiError = err as SellerApiError;
 
         if (apiError.response?.status === 401) {
           navigate("/login", { state: { redirectTo: `/seller/edit-product/${id}` } });
@@ -112,31 +122,22 @@ const SellerProductFormPage = () => {
     return () => {
       ignore = true;
     };
-  }, [id, navigate]);
+  }, [id, navigate, reset]);
 
-  const updateField = (name: string, value: string | boolean) => {
-    setForm((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async () => {
+  const onSubmit = async (data: SellerProductFormData) => {
     try {
       setSaving(true);
       setError("");
       setMessage("");
 
-      if (!form.title.trim() || !form.price || Number(form.price) <= 0) {
-        setError("Product title and a valid price are required.");
-        return;
-      }
-
       const payload = new FormData();
-      payload.append("title", form.title);
-      payload.append("description", form.description);
-      payload.append("category", toBackendCategory(form.category));
-      payload.append("status", toBackendStatus(form.status));
-      payload.append("price", form.price);
-      payload.append("stock", form.stock);
-      payload.append("location", form.location);
+      payload.append("title", data.title);
+      payload.append("description", data.description || "");
+      payload.append("category", toBackendCategory(data.category));
+      payload.append("status", toBackendStatus(data.status));
+      payload.append("price", data.price);
+      payload.append("stock", data.stock);
+      payload.append("location", data.location || "");
 
       imageFiles.forEach((file) => {
         payload.append("images", file);
@@ -151,7 +152,7 @@ const SellerProductFormPage = () => {
       setMessage(isEditMode ? "Product updated successfully." : "Product saved successfully.");
       navigate("/seller/listings");
     } catch (err) {
-      const apiError = err as ApiError;
+      const apiError = err as SellerApiError;
 
       if (apiError.response?.status === 401) {
         navigate("/login", { state: { redirectTo: "/seller/add-product" } });
@@ -199,11 +200,12 @@ const SellerProductFormPage = () => {
                 </p>
               )}
 
+              <form onSubmit={handleSubmit(onSubmit)}>
               <div className="grid gap-4 md:grid-cols-2">
                 <Input
                   label="Product Title"
-                  value={form.title}
-                  onChange={(e) => updateField("title", e.target.value)}
+                  error={errors.title?.message}
+                  {...register("title")}
                 />
 
                 <div>
@@ -211,8 +213,7 @@ const SellerProductFormPage = () => {
                     Category
                   </label>
                   <select
-                    value={form.category}
-                    onChange={(e) => updateField("category", e.target.value)}
+                    {...register("category")}
                     className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-[#178f95]"
                   >
                     <option>Food</option>
@@ -225,23 +226,23 @@ const SellerProductFormPage = () => {
                   label="Price (PKR)"
                   type="number"
                   min="1"
-                  value={form.price}
-                  onChange={(e) => updateField("price", e.target.value)}
+                  error={errors.price?.message}
+                  {...register("price")}
                 />
 
                 <Input
                   label="Stock Quantity"
                   type="number"
                   min="0"
-                  value={form.stock}
-                  onChange={(e) => updateField("stock", e.target.value)}
+                  error={errors.stock?.message}
+                  {...register("stock")}
                 />
 
                 <div className="md:col-span-2">
                   <Input
                     label="Location"
-                    value={form.location}
-                    onChange={(e) => updateField("location", e.target.value)}
+                    error={errors.location?.message}
+                    {...register("location")}
                   />
                 </div>
 
@@ -251,12 +252,14 @@ const SellerProductFormPage = () => {
                   </label>
                   <textarea
                     rows={4}
-                    value={form.description}
-                    onChange={(e) =>
-                      updateField("description", e.target.value)
-                    }
+                    {...register("description")}
                     className="w-full resize-none rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#178f95]"
                   />
+                  {errors.description && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.description.message}
+                    </p>
+                  )}
                 </div>
 
                 <ProductImageUpload
@@ -273,8 +276,7 @@ const SellerProductFormPage = () => {
                       Status
                     </label>
                     <select
-                      value={form.status}
-                      onChange={(e) => updateField("status", e.target.value)}
+                      {...register("status")}
                       className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-[#178f95]"
                     >
                       <option>Active</option>
@@ -290,21 +292,22 @@ const SellerProductFormPage = () => {
                 <Button variant="outline" onClick={() => navigate("/seller/listings")}>
                   Cancel
                 </Button>
-                <Button onClick={handleSubmit} disabled={saving}>
+                <Button type="submit" disabled={saving}>
                   {saving ? "Saving..." : "Save Product"}
                 </Button>
               </div>
+              </form>
             </Card>
 
             <ProductPreviewCard
               image={previews[0] || ""}
-              title={form.title}
-              category={form.category}
-              price={form.price}
-              stock={form.stock}
-              location={form.location}
-              description={form.description}
-              status={form.status}
+              title={form.title || ""}
+              category={form.category || ""}
+              price={form.price || ""}
+              stock={form.stock || ""}
+              location={form.location || ""}
+              description={form.description || ""}
+              status={form.status || ""}
             />
           </div>
         </section>

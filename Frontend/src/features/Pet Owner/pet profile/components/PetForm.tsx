@@ -1,5 +1,5 @@
 import { Calendar, List, PawPrint, Shield, User, ImagePlus } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 
@@ -11,14 +11,10 @@ import {
   type PetFormData,
 } from "../schemas/pet.schema";
 import { useAuth } from "@/features/Auth/hooks/authhook";
+import type { PetFormProps } from "../types/petProfile.types";
+// import { type submitPetData } from "../apis/pet.api";
 
-
-interface PetFormProps {
-  onSubmitSuccess?: (newPet: any) => void;
-  onCancel?: () => void;
-}
-
-const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
+const PetForm = ({ onCancel }: PetFormProps) => {
   const { user } = useAuth();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [previews, setPreviews] = useState<string[]>([]);
@@ -27,7 +23,7 @@ const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
     register,
     handleSubmit,
     reset,
-    watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<PetFormInput, unknown, PetFormData>({
     resolver: zodResolver(petSchema),
@@ -39,7 +35,8 @@ const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
     },
   });
 
-  const selectedPhotos = watch("photos");
+  // Watch the photos field to trigger preview generation
+  const selectedPhotos = useWatch({ control, name: "photos" });
 
   useEffect(() => {
     if (!selectedPhotos || selectedPhotos.length === 0) {

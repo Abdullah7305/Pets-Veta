@@ -9,13 +9,9 @@ import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
 
 import type {
-  Pet,
   PetCategory,
+  PetPreviewCardProps,
 } from "../types/petOwnerDashboard.types";
-
-type PetPreviewCardProps = {
-  pet: Pet;
-};
 
 const categoryImages: Record<PetCategory, string> = {
   DOG: "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=700&q=80",

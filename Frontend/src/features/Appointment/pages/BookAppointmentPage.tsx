@@ -14,7 +14,7 @@ import { submitPetIssue } from "../../Pet Owner/pet details/apis/pet.api";
 
 const BookAppointmentPage = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState<1 | 2 >(1);
+  const [step, setStep] = useState<1 | 2>(1);
   const [issue, setIssue] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -91,29 +91,29 @@ const BookAppointmentPage = () => {
     }
   };
 
-  if (step === 3) {
-    return (
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-[#f8fafc] to-[#f1f5f9] px-4 py-12">
-        <div className="flex w-full max-w-md flex-col items-center rounded-3xl border border-slate-100 bg-white p-8 text-center shadow-[0_15px_40px_rgba(15,23,42,0.06)]">
-          <div className="mb-6 flex h-20 w-20 animate-bounce items-center justify-center rounded-full bg-emerald-50 text-emerald-500">
-            <CheckCircle2 size={48} />
-          </div>
-          <h2 className="mb-3 text-3xl font-extrabold text-slate-800">
-            Issue Submitted!
-          </h2>
-          <p className="mb-8 max-w-sm leading-relaxed text-slate-500">
-            Your pet&apos;s issue has been submitted successfully.
-          </p>
-          <Button
-            onClick={() => navigate("/doctors")}
-            className="w-full rounded-2xl bg-[#0B8F5A] py-4 font-bold text-white hover:bg-[#097b4d]"
-          >
-            Return to Doctors List
-          </Button>
-        </div>
-      </main>
-    );
-  }
+  // if (step === 3) {
+  //   return (
+  //     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-[#f8fafc] to-[#f1f5f9] px-4 py-12">
+  //       <div className="flex w-full max-w-md flex-col items-center rounded-3xl border border-slate-100 bg-white p-8 text-center shadow-[0_15px_40px_rgba(15,23,42,0.06)]">
+  //         <div className="mb-6 flex h-20 w-20 animate-bounce items-center justify-center rounded-full bg-emerald-50 text-emerald-500">
+  //           <CheckCircle2 size={48} />
+  //         </div>
+  //         <h2 className="mb-3 text-3xl font-extrabold text-slate-800">
+  //           Issue Submitted!
+  //         </h2>
+  //         <p className="mb-8 max-w-sm leading-relaxed text-slate-500">
+  //           Your pet&apos;s issue has been submitted successfully.
+  //         </p>
+  //         <Button
+  //           onClick={() => navigate("/doctors")}
+  //           className="w-full rounded-2xl bg-[#0B8F5A] py-4 font-bold text-white hover:bg-[#097b4d]"
+  //         >
+  //           Return to Doctors List
+  //         </Button>
+  //       </div>
+  //     </main>
+  //   );
+  // }
 
   return (
     <div className="flex min-h-screen flex-col">

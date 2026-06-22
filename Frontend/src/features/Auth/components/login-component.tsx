@@ -29,6 +29,22 @@ const PawIcon = () => (
   </svg>
 );
 
+const getPostLoginPath = (role: string) => {
+  if (role === "Admin") {
+    return "/admin-dashboard";
+  }
+
+  if (role === "Doctor") {
+    return "/doctor-dashboard";
+  }
+
+  if (role === "PetOwner" || role === "Seller") {
+    return "/choose-dashboard";
+  }
+
+  return "/";
+};
+
 export default function LoginComponent() {
 
   const [showPassword, setShowPassword] = useState(false);
@@ -62,15 +78,7 @@ export default function LoginComponent() {
   useEffect(() => {
     console.log("Wokring")
     if (isAuthenticatedUser && user?.data) {
-      if (user.data.role === "Admin") {
-        navigate("/admin-dashboard", { replace: true });
-      }
-      else if (user.data.role === "Doctor") {
-        navigate("/doctor-dashboard", { replace: true });
-      }
-      else {
-        navigate("/", { replace: true });
-      }
+      navigate(getPostLoginPath(user.data.role), { replace: true });
     }
   }, [isAuthenticatedUser, user, navigate]);
 

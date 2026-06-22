@@ -15,14 +15,9 @@ import {
   updateSellerProductStock,
   type SellerOrder,
 } from "../api/seller.api";
+import type { SellerApiError } from "../types/seller.types";
 
 const orderTabs = ["All", "Pending", "Confirmed", "Shipped", "Completed", "Cancelled"];
-
-type ApiError = {
-  response?: {
-    status?: number;
-  };
-};
 
 const SellerOrdersStockPage = () => {
   const navigate = useNavigate();
@@ -50,7 +45,7 @@ const SellerOrdersStockPage = () => {
           setOrders(orderData);
         }
       } catch (err) {
-        const apiError = err as ApiError;
+        const apiError = err as SellerApiError;
 
         if (apiError.response?.status === 401) {
           navigate("/login", { state: { redirectTo: location.pathname } });

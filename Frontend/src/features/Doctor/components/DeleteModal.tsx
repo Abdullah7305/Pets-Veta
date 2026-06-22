@@ -1,14 +1,5 @@
 import { AlertTriangle } from "lucide-react";
-
-type DeleteModalProps = {
-    isOpen: boolean;
-    serviceName: string;
-    price: string;
-    itemId: string;
-    onCancel: () => void;
-    onConfirmDelete: (itemId: string) => void;
-    isLoading?: boolean;
-}
+import type { DeleteModalProps } from "../doctor.types";
 
 const DeleteModal = ({
     isOpen,

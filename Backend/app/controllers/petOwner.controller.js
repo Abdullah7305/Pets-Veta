@@ -106,13 +106,47 @@ const getPetOwnerById = catchAsync(async (req, res) => {
     }
 
     const user = {
+        id: getPetOwner.id,
+        fullName: getPetOwner.fullName,
         username: getPetOwner.username,
         email: getPetOwner.email,
-        address: getPetOwner.phone || '',
-        role: 'PetOwner',
+        phone: getPetOwner.phone || '',
+        profileImageUrl: getPetOwner.profileImageUrl,
     };
 
     return sendResponse(res, 200, 'Successfully Send User', user);
+});
+
+const updatePetOwnerProfile = catchAsync(async (req, res) => {
+    const { id } = req.user;
+    const { fullName, username, phone } = req.body || {};
+
+    requireFields(['fullName', 'username'], req.body);
+
+    let profileImageUrl = req.body?.profileImageUrl;
+
+    if (req.file) {
+        const uploadedImage = await uploadToCloudinary(
+            req.file.buffer,
+            `pets-veta/profile-images/${id}`
+        );
+
+        profileImageUrl = uploadedImage.secure_url;
+    }
+
+    const updatedProfile = await petOwnerServices.updatePetOwnerProfile(id, {
+        fullName,
+        username,
+        phone: phone || '',
+        profileImageUrl,
+    });
+
+    return sendResponse(
+        res,
+        200,
+        'Profile updated successfully',
+        updatedProfile
+    );
 });
 
 const getPetsData = catchAsync(async (req, res) => {
@@ -149,6 +183,7 @@ const lockDoctorSlot = catchAsync(async (req, res) => {
 module.exports = {
     registerPetIssue,
     getPetOwnerById,
+    updatePetOwnerProfile,
     registerPet,
     getPetsData,
     lockDoctorSlot

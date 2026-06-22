@@ -1,11 +1,6 @@
 import { CalendarDays, GraduationCap, ShieldCheck, User } from "lucide-react";
-import { type Doctor } from "../apis/getDoctors.api";
 import { NavLink } from "react-router-dom";
-
-interface DoctorCardProps {
-    doctor: Doctor;
-    onBookAppointment: (doctorId: string, checkupTime?: string) => void;
-}
+import type { DoctorCardProps } from "../types/doctorcart.types";
 
 const DoctorCard = ({ doctor }: DoctorCardProps) => {
     return (
