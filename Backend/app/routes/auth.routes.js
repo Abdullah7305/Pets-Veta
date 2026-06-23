@@ -63,10 +63,4 @@ Router
     .route('/password-resets')
     .post(authLimiter, authMiddleware.protectOtp, authController.resetUserPassword)
 
-
-
-
-
-
-
 module.exports = Router;

@@ -1,3 +1,4 @@
+
 import AuthRouter from "../features/Auth/auth.route";
 import { createBrowserRouter } from "react-router-dom";
 import type { RouteObject } from "react-router-dom";

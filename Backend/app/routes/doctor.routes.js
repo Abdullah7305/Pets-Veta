@@ -42,7 +42,6 @@ Router
 Router
     .route("/schedule/me")
     .get(
-        doctorLimiter,
         authMiddlware.protect,
         authenticateRole.authenticateUserRole("Doctor"),
         doctorScheduleController.getDoctorSchedule
@@ -51,7 +50,6 @@ Router
 Router
     .route("/schedule/doctor/:doctorId")
     .get(doctorScheduleController.getDoctorSchedulesByDoctorId);
-
 
 
 module.exports = Router;

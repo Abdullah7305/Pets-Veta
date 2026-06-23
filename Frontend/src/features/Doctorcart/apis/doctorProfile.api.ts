@@ -49,10 +49,13 @@ export type DoctorProfileApiResponse = {
   data: DoctorProfileData;
 };
 
+type UpdateDoctorProfilePayload = DoctorProfileFormData | FormData;
+
 const mapDoctorProfile = (
   response: BackendDoctorProfileResponse
 ): DoctorProfileApiResponse => {
-  const doctor = response.data.doctors;
+  const user = response.data;
+  const doctor = user.doctors;
 
   if (!doctor) {
     throw new Error("Doctor data not found");
@@ -63,18 +66,18 @@ const mapDoctorProfile = (
     message: response.message,
     data: {
       id: doctor.id,
-      userId: response.data.id,
-      fullName: response.data.fullName || "",
-      username: response.data.username || "",
-      email: response.data.email || "",
-      phone: response.data.phone || "",
-      profileImageUrl: response.data.profileImageUrl || "",
+      userId: user.id,
+      fullName: user.fullName || "",
+      username: user.username || "",
+      email: user.email || "",
+      phone: user.phone || "",
+      profileImageUrl: user.profileImageUrl || "",
       specialization: doctor.specialization || "",
       education: doctor.education || "",
       address: doctor.address || "",
       experience: doctor.experience || 0,
       fees: doctor.fees || 0,
-      isAvailable: doctor.isAvailable ?? true,
+      isAvailable: doctor.isAvailable ?? false,
       isVerified: doctor.isVerified,
     },
   };
@@ -83,7 +86,7 @@ const mapDoctorProfile = (
 export const getDoctorProfileApi = async () => {
   try {
     const response = await api.get<BackendDoctorProfileResponse>(
-      "doctor/profile"
+      "/doctor/profile"
     );
 
     return mapDoctorProfile(response.data);
@@ -94,12 +97,21 @@ export const getDoctorProfileApi = async () => {
 };
 
 export const updateDoctorProfileApi = async (
-  payload: DoctorProfileFormData
+  payload: UpdateDoctorProfilePayload
 ) => {
   try {
+    const isFormData = payload instanceof FormData;
+
     const response = await api.patch<BackendDoctorProfileResponse>(
-      "doctor/profile",
-      payload
+      "/doctor/profile",
+      payload,
+      isFormData
+        ? {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        : undefined
     );
 
     return mapDoctorProfile(response.data);
