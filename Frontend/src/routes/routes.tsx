@@ -1,6 +1,9 @@
+
 import AuthRouter from "../features/Auth/auth.route";
 import { createBrowserRouter } from "react-router-dom";
+import type { RouteObject } from "react-router-dom";
 import LandingPageRoutes from "../features/Landing Page/routes";
+import DashboardHomeMenu from "@/features/Landing Page/components/DashboardHomeMenu";
 import Notfound from "../shared/components/Notfound/Notfound";
 import { doctorDashboardRoutes } from "../features/Doctor/doctor.route";
 import { doctorRoutes } from "../features/Appointment/appointment.routes";
@@ -14,6 +17,19 @@ import { petOwnerDashboardRoutes } from "@/features/PetOwnerDashboard/petOwnerDa
 import { sellerRoutes } from "@/features/seller/seller.routes";
 import { marketplaceRoutes } from "@/features/marketplace1/marketplace.routes";
 import { cartRoutes } from "@/features/cart/cart.routes";
+import { paymentRoutes } from "@/features/Payment/payment.routes";
+
+const withDashboardMenu = (routes: RouteObject[]): RouteObject[] =>
+  routes.map((route) => ({
+    ...route,
+    element: (
+      <>
+        {route.element}
+        <DashboardHomeMenu />
+      </>
+    ),
+  }));
+
 const Router = createBrowserRouter([
   ...LandingPageRoutes,
   ...AuthRouter,
@@ -21,8 +37,9 @@ const Router = createBrowserRouter([
   ...doctorRoutes,
   ...doctorDashboardRoutes,
   ...adminRoutes,
-  ...petsRoutes,
+  ...withDashboardMenu(petsRoutes),
   // ...marketplaceRoutes,
+  ...paymentRoutes,
   ...aiAssistantRoutes,
   ...selectPetRoutes,
   ...petProfileRoutes,
@@ -30,6 +47,12 @@ const Router = createBrowserRouter([
   ...sellerRoutes,
   ...marketplaceRoutes,
   ...cartRoutes,
+  ...withDashboardMenu(selectPetRoutes),
+  ...withDashboardMenu(petProfileRoutes),
+  ...withDashboardMenu(petOwnerDashboardRoutes),
+  ...withDashboardMenu(sellerRoutes),
+  ...withDashboardMenu(marketplaceRoutes),
+  ...withDashboardMenu(cartRoutes),
   {
     path: "*",
     element: <Notfound />,

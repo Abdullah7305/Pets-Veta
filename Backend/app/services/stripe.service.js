@@ -1,46 +1,266 @@
-const { stripe } = require('../config/stripe');
+const { stripe } = require("../config/stripe");
+const prisma = require("../config/prisma");
+const AppError = require("../utils/AppError");
 
-const createCheckoutSession = async ({ scheduleId, petOwnerId, doctorId, issueReportId, fees, doctorName }) => {
-    console.log({
-        sechduleId: scheduleId,
-        petOwnerId: petOwnerId,
-        doctorId: doctorId,
-        issueReportId: issueReportId,
-        fees: fees,
-        doctorName: doctorName
-    })
-    const expiresAt = Math.floor(Date.now() / 1000) + (30 * 60);
-    const session = await stripe.checkout.sessions.create({
-        mode: 'payment',
-        expires_at: expiresAt,
-        line_items: [
-            {
-                price_data: {
-                    currency: 'usd',
-                    unit_amount: fees * 100,
-                    product_data: {
-                        name: `Veterinary Consultation - Dr. ${doctorName || 'Expert'}`,
-                        description: `Secure checkout hold for slot verification`
-                    },
-                },
-                quantity: 1,
+const {
+  PaymentStatus,
+  AppointmentStatus,
+  ScheduleStatus,
+} = require("@prisma/client");
+
+const createAppointmentPaymentIntent = async ({ appointmentId, petOwnerId }) => {
+  if (!appointmentId || !petOwnerId) {
+    throw new AppError("Appointment ID or user ID is missing", 400);
+  }
+
+  const appointment = await prisma.appointment.findFirst({
+    where: {
+      id: appointmentId,
+      petOwnerId,
+    },
+    include: {
+      doctor: {
+        include: {
+          user: {
+            select: {
+              fullName: true,
             },
-        ],
-        success_url: `${process.env.FRONTEND_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${process.env.FRONTEND_URL}/payment-cancel`,
-
-        metadata: {
-            scheduleId,
-            petOwnerId,
-            doctorId,
-            issueReportId,
-            fees: fees.toString()
+          },
         },
-    });
+      },
+      doctorSchedule: true,
+      payment: true,
+    },
+  });
 
-    return session.url;
-}
+  if (!appointment) {
+    throw new AppError("Appointment not found", 404);
+  }
+
+  if (appointment.status !== AppointmentStatus.PENDING_PAYMENT) {
+    throw new AppError(
+      `Appointment is not ready for payment. Current status is ${appointment.status}`,
+      400
+    );
+  }
+
+  if (appointment.paymentStatus === PaymentStatus.SUCCEEDED) {
+    throw new AppError("Payment is already completed for this appointment", 400);
+  }
+
+  if (appointment.expiresAt && appointment.expiresAt < new Date()) {
+    throw new AppError(
+      "Appointment hold has expired. Please select slot again.",
+      400
+    );
+  }
+
+  if (!appointment.petId) {
+    throw new AppError("Pet is missing from appointment", 400);
+  }
+
+  if (!appointment.petIssueReportId) {
+    throw new AppError("Pet issue report is missing from appointment", 400);
+  }
+
+  if (
+    appointment.doctorSchedule.status !== ScheduleStatus.HELD ||
+    appointment.doctorSchedule.lockedByAppointmentId !== appointment.id
+  ) {
+    throw new AppError("This slot is no longer held for this appointment", 400);
+  }
+
+  const stripeAmount = appointment.fees * 100;
+  const currency = appointment.currency || "pkr";
+
+  
+  if (
+    appointment.payment &&
+    appointment.payment.stripePaymentIntentId &&
+    appointment.payment.stripeClientSecret &&
+    [
+      PaymentStatus.PENDING,
+      PaymentStatus.REQUIRES_PAYMENT_METHOD,
+      PaymentStatus.REQUIRES_ACTION,
+      PaymentStatus.PROCESSING,
+    ].includes(appointment.payment.status)
+  ) {
+    return {
+      appointmentId: appointment.id,
+      paymentId: appointment.payment.id,
+      clientSecret: appointment.payment.stripeClientSecret,
+      amount: appointment.payment.amount,
+      currency: appointment.payment.currency,
+      reused: true,
+    };
+  }
+
+  const metadata = {
+    appointmentId: appointment.id,
+    doctorId: appointment.doctorId,
+    petOwnerId: appointment.petOwnerId,
+    petId: appointment.petId,
+    petIssueReportId: appointment.petIssueReportId,
+    scheduleId: appointment.scheduleId,
+  };
+
+  const paymentIntent = await stripe.paymentIntents.create(
+    {
+      amount: stripeAmount,
+      currency,
+      automatic_payment_methods: {
+        enabled: true,
+      },
+      description: `Veterinary appointment with Dr. ${appointment.doctor?.user?.fullName || "Doctor"
+        }`,
+      metadata,
+    },
+    {
+      idempotencyKey: `appointment-payment-${appointment.id}`,
+    }
+  );
+
+  const payment = await prisma.payment.upsert({
+    where: {
+      appointmentId: appointment.id,
+    },
+    update: {
+      stripePaymentIntentId: paymentIntent.id,
+      stripeClientSecret: paymentIntent.client_secret,
+      amount: stripeAmount,
+      currency,
+      status: PaymentStatus.REQUIRES_PAYMENT_METHOD,
+      metadata,
+    },
+    create: {
+      appointmentId: appointment.id,
+      userId: petOwnerId,
+      stripePaymentIntentId: paymentIntent.id,
+      stripeClientSecret: paymentIntent.client_secret,
+      amount: stripeAmount,
+      currency,
+      status: PaymentStatus.REQUIRES_PAYMENT_METHOD,
+      metadata,
+    },
+  });
+
+  await prisma.appointment.update({
+    where: {
+      id: appointment.id,
+    },
+    data: {
+      paymentStatus: PaymentStatus.REQUIRES_PAYMENT_METHOD,
+    },
+  });
+
+  return {
+    appointmentId: appointment.id,
+    paymentId: payment.id,
+    clientSecret: paymentIntent.client_secret,
+    amount: stripeAmount,
+    currency,
+    reused: false,
+  };
+};
+
+
+const getAppointmentPaymentStatus = async ({ appointmentId, petOwnerId }) => {
+  if (!appointmentId || !petOwnerId) {
+    throw new AppError("Appointment ID or user ID is missing", 400);
+  }
+
+  const appointment = await prisma.appointment.findFirst({
+    where: {
+      id: appointmentId,
+      petOwnerId,
+    },
+    select: {
+      id: true,
+      doctorId: true,
+      petOwnerId: true,
+      petId: true,
+      petIssueReportId: true,
+      scheduleId: true,
+
+      fees: true,
+      currency: true,
+
+      status: true,
+      paymentStatus: true,
+
+      checkupTime: true,
+      expiresAt: true,
+      confirmedAt: true,
+      createdAt: true,
+      updatedAt: true,
+
+      doctor: {
+        select: {
+          id: true,
+          specialization: true,
+          user: {
+            select: {
+              fullName: true,
+              email: true,
+            },
+          },
+        },
+      },
+
+      doctorSchedule: {
+        select: {
+          id: true,
+          status: true,
+          date: true,
+          startTime: true,
+          endTime: true,
+          lockedByAppointmentId: true,
+        },
+      },
+
+      pet: {
+        select: {
+          id: true,
+          name: true,
+          breed: true,
+          category: true,
+        },
+      },
+
+      petIssueReport: {
+        select: {
+          id: true,
+          issue: true,
+          createdAt: true,
+        },
+      },
+
+      payment: {
+        select: {
+          id: true,
+          stripePaymentIntentId: true,
+          stripeChargeId: true,
+          amount: true,
+          currency: true,
+          status: true,
+          receiptUrl: true,
+          failureReason: true,
+          paidAt: true,
+          cancelledAt: true,
+          refundedAt: true,
+        },
+      },
+    },
+  });
+
+  if (!appointment) {
+    throw new AppError("Appointment not found", 404);
+  }
+
+  return appointment;
+};
 
 module.exports = {
-    createCheckoutSession
-}
+  createAppointmentPaymentIntent,
+  getAppointmentPaymentStatus,
+};

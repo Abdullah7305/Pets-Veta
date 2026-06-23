@@ -11,3 +11,13 @@ export type ExistingPet = {
 };
 
 export type SelectPetAction = "report-issue" | "book-appointment";
+
+export type ExistingPetsSectionProps = {
+  pets: ExistingPet[];
+  onSelectPet: (pet: ExistingPet) => void;
+};
+
+export type ExistingPetCardProps = {
+  pet: ExistingPet;
+  onSelect: (pet: ExistingPet) => void;
+};

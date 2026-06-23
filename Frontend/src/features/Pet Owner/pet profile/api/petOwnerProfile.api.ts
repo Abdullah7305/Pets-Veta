@@ -1,6 +1,9 @@
 import { api } from "@/features/api interface/axios.interface";
 
-import type { PetOwnerProfileResponse } from "../types/petProfile.types";
+import type {
+  PetOwnerProfileResponse,
+  UpdatePetOwnerProfilePayload,
+} from "../types/petProfile.types";
 
 export const getPetOwnerProfileApi =
   async (): Promise<PetOwnerProfileResponse> => {
@@ -10,3 +13,24 @@ export const getPetOwnerProfileApi =
 
     return response.data;
   };
+
+export const updatePetOwnerProfileApi = async (
+  payload: UpdatePetOwnerProfilePayload,
+): Promise<PetOwnerProfileResponse> => {
+  const formData = new FormData();
+
+  formData.append("fullName", payload.fullName);
+  formData.append("username", payload.username);
+  formData.append("phone", payload.phone || "");
+
+  if (payload.profileImage) {
+    formData.append("profileImage", payload.profileImage);
+  }
+
+  const response = await api.patch<PetOwnerProfileResponse>(
+    "/petOwner/pet-profile",
+    formData,
+  );
+
+  return response.data;
+};

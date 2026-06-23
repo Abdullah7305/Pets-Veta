@@ -2,22 +2,10 @@ import { useEffect, useState, type ChangeEvent } from "react";
 import ScheduleModal from "./ScheduleModal";
 import ScheduleTable from "./ScheduleTable";
 import { createDoctorAvailabilitySlot, getDoctorAvailability } from "../../api/doctorAvailabilityServices";
-
-interface ScheduleFormData {
-  date: string;
-  startTime: string;
-  endTime: string;
-}
-
-
-interface BackendScheduleItem {
-  id: string;
-  doctorId: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  isBooked: boolean;
-}
+import type {
+  BackendScheduleItem,
+  ScheduleFormData,
+} from "../../doctor.types";
 
 const DoctorAvailability = () => {
   

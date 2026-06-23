@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@lottiefiles/react-lottie-player": "^3.6.0",
+    "@stripe/react-stripe-js": "^6.6.0",
     "@stripe/stripe-js": "^9.8.0",
     "@studio-freight/lenis": "^1.0.42",
     "@tailwindcss/vite": "^4.3.0",

@@ -1,16 +1,14 @@
-import { Bell, ChevronDown } from "lucide-react";
+import { Bell } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 import type {
-  DashboardUser,
+  DashboardHeaderProps,
 } from "../types/petOwnerDashboard.types";
-
-type DashboardHeaderProps = {
-  user: DashboardUser;
-};
 
 const DashboardHeader = ({
   user,
 }: DashboardHeaderProps) => {
+  const navigate = useNavigate();
   const firstName =
     user.fullName.split(" ")[0] || user.fullName;
 
@@ -39,25 +37,18 @@ const DashboardHeader = ({
           </span>
         </button>
 
-        <div className="h-12 w-12 overflow-hidden rounded-full bg-[#EAF7F5]">
+        <button
+          type="button"
+          onClick={() => navigate("/pet-owner/profile")}
+          className="flex h-12 w-12 overflow-hidden rounded-full bg-[#EAF7F5] transition hover:ring-4 hover:ring-[#078b91]/10"
+          aria-label="Open pet owner profile"
+        >
           <img
             src={user.profileImageUrl}
             alt={user.fullName}
             className="h-full w-full object-cover"
           />
-        </div>
-
-        <div className="hidden sm:block">
-          <p className="text-sm font-black text-[#101b3d]">
-            {user.fullName}
-          </p>
-
-          <p className="text-xs font-semibold text-slate-500">
-            Pet Parent
-          </p>
-        </div>
-
-        <ChevronDown size={18} className="text-[#101b3d]" />
+        </button>
       </div>
     </header>
   );

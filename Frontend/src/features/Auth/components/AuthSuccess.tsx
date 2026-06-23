@@ -2,6 +2,22 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+const getPostLoginPath = (role?: string) => {
+    if (role === 'Admin') {
+        return '/admin-dashboard';
+    }
+
+    if (role === 'Doctor') {
+        return '/doctor-dashboard';
+    }
+
+    if (role === 'PetOwner' || role === 'Seller') {
+        return '/choose-dashboard';
+    }
+
+    return '/';
+};
+
 export const AuthSuccess = () => {
     const navigate = useNavigate();
 
@@ -14,8 +30,7 @@ export const AuthSuccess = () => {
                 });
 
                 if (response.data.success) {
-
-                    navigate('/');
+                    navigate(getPostLoginPath(response.data.data?.role));
                 }
             } catch (error) {
                 console.error("Session verification failed", error);

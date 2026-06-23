@@ -1,11 +1,7 @@
 import { CalendarDays, DollarSignIcon, Home, LogOut, Users, X } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import Logo from "@/shared/components/Logo/Logo";
-
-type DoctorSidebarProps = {
-    sidebarOpen: boolean;
-    setSidebarOpen: (open: boolean) => void;
-};
+import type { DoctorSidebarProps } from "../doctor.types";
 
 export const DoctorSidebar = ({ sidebarOpen, setSidebarOpen }: DoctorSidebarProps) => {
     const sidebarLinks = [

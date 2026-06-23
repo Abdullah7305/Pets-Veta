@@ -1,4 +1,4 @@
-const { default: prisma } = require("../config/prisma");
+const   prisma  = require("../config/prisma");
 const requireFields = require('../utils/validateRequest')
 const AppError = require('../utils/AppError')
 

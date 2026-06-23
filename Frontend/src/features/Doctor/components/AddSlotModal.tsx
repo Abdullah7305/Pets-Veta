@@ -1,19 +1,8 @@
-import React from "react";
 import { X } from "lucide-react";
 import Button from "../../../shared/components/Button/Button";
-import type { SlotForm, WeekDay } from "./DoctorTypes";
+import type { WeekDay } from "./DoctorTypes";
 import { weekDays } from "./DoctorTypes";
-
-interface AddSlotModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    slotForm: SlotForm;
-    setSlotForm: React.Dispatch<React.SetStateAction<SlotForm>>;
-    handleAddSlot: () => void;
-    error: string | null;
-    resetSlotForm: () => void;
-    setError: (error: string | null) => void; // Added setError prop to update state directly from the modal if needed
-}
+import type { AddSlotModalProps } from "../doctor.types";
 
 const AddSlotModal = ({
     isOpen,

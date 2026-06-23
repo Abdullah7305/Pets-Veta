@@ -13,12 +13,7 @@ import {
   fetchSellerProducts,
   type SellerOrder,
 } from "../api/seller.api";
-
-type ApiError = {
-  response?: {
-    status?: number;
-  };
-};
+import type { SellerApiError } from "../types/seller.types";
 
 const SellerDashboardPage = () => {
   const navigate = useNavigate();
@@ -42,7 +37,7 @@ const SellerDashboardPage = () => {
           setOrders(orderData);
         }
       } catch (err) {
-        const apiError = err as ApiError;
+        const apiError = err as SellerApiError;
 
         if (apiError.response?.status === 401) {
           navigate("/login", { state: { redirectTo: "/seller/dashboard" } });

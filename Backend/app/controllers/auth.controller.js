@@ -22,9 +22,11 @@ const verifyUser = catchAsync(async (req, res) => {
     }
     const user = {
         id: userData.id,
+        name: userData.fullName,
         email: userData.email,
         username: userData.username,
-        role: userData.userRole.role
+        role: userData.userRole.role,
+        profileImageUrl: userData.profileImageUrl
     }
     return sendResponse(res, 200, "Success", user);
 
@@ -316,7 +318,8 @@ const loginUserAccount = catchAsync(async (req, res) => {
         name: user.fullName,
         email: user.email,
         username: user.username,
-        role: user.userRole.role
+        role: user.userRole.role,
+        profileImageUrl: user.profileImageUrl
 
     }
 

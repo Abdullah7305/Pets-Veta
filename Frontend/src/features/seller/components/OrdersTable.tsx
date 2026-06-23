@@ -2,11 +2,7 @@ import { FaEllipsisV } from "react-icons/fa";
 import Card from "@/shared/components/Card/Card";
 import Button from "@/shared/components/Button/Button";
 import { getProductImage } from "@/features/marketplace1/api/marketplace.api";
-import type { SellerOrder } from "../api/seller.api";
-
-type Props = {
-  orders: SellerOrder[];
-};
+import type { OrdersTableProps } from "../types/seller.types";
 
 const statusClass: Record<string, string> = {
   PENDING: "bg-yellow-100 text-yellow-700",
@@ -16,7 +12,7 @@ const statusClass: Record<string, string> = {
   CANCELLED: "bg-red-100 text-red-700",
 };
 
-const OrdersTable = ({ orders }: Props) => {
+const OrdersTable = ({ orders }: OrdersTableProps) => {
   return (
     <Card className="p-0 overflow-hidden">
       <div className="max-h-[310px] overflow-y-auto">

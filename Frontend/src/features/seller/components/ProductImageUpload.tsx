@@ -1,9 +1,5 @@
 import { FaCloudUploadAlt } from "react-icons/fa";
-
-type ProductImageUploadProps = {
-  previews: string[];
-  onImageChange: (files: File[]) => void;
-};
+import type { ProductImageUploadProps } from "../types/seller.types";
 
 const ProductImageUpload = ({
   previews,

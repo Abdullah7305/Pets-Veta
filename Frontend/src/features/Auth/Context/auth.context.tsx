@@ -1,19 +1,14 @@
-import React, { useState, createContext, useEffect, type SetStateAction } from 'react'
+import { useState, createContext, useEffect } from 'react'
 import { type ApiResponse, verifyUser } from '../api/loginuser.api';
+import type {
+    AuthContextProviderProps,
+    AuthContextType,
+} from "../types/auth.types";
 
-
-type AuthContextType = {
-    isAuthenticatedUser: boolean,
-    setIsAuthenticateUser: React.Dispatch<SetStateAction<boolean>>,
-    user: ApiResponse | undefined,
-    setUser: React.Dispatch<SetStateAction<ApiResponse | undefined>>,
-    isLoading: boolean,
-    setIsLoading: React.Dispatch<SetStateAction<boolean>>
-}
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
+export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
     const [isAuthenticatedUser, setIsAuthenticateUser] = useState<boolean>(false);
     const [user, setUser] = useState<ApiResponse | undefined>(undefined);

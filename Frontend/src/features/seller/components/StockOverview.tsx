@@ -1,11 +1,7 @@
 import Card from "@/shared/components/Card/Card";
-import type { MarketplaceProduct } from "@/features/marketplace1/api/marketplace.api";
+import type { StockOverviewProps } from "../types/seller.types";
 
-type Props = {
-  products: MarketplaceProduct[];
-};
-
-const StockOverview = ({ products }: Props) => {
+const StockOverview = ({ products }: StockOverviewProps) => {
   const total = products.length;
   const lowStock = products.filter(
     (product) => product.stock > 0 && product.stock <= 3

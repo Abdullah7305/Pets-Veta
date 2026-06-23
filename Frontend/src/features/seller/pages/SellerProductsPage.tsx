@@ -10,12 +10,7 @@ import ProductCard from "../components/ProductCard";
 import { productTabs } from "../data/sellerProducts.data";
 import { fetchSellerProducts, deleteSellerProduct } from "../api/seller.api";
 import type { MarketplaceProduct } from "@/features/marketplace1/api/marketplace.api";
-
-type ApiError = {
-  response?: {
-    status?: number;
-  };
-};
+import type { SellerApiError } from "../types/seller.types";
 
 const SellerProductsPage = () => {
   const navigate = useNavigate();
@@ -37,7 +32,7 @@ const SellerProductsPage = () => {
           setProducts(data);
         }
       } catch (err) {
-        const apiError = err as ApiError;
+        const apiError = err as SellerApiError;
 
         if (apiError.response?.status === 401) {
           navigate("/login", { state: { redirectTo: "/seller/listings" } });

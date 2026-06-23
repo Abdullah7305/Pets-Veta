@@ -3,17 +3,9 @@ import { PawPrint, Plus } from "lucide-react";
 import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
 
-import type { Pet } from "../types/petProfile.types";
+import type { MyPetsSectionProps } from "../types/petProfile.types";
 
 import PetProfileCard from "./PetProfileCard";
-
-type MyPetsSectionProps = {
-  pets: Pet[];
-  onAddPet: () => void;
-  onEditPet: (petId: string) => void;
-  onDeletePet: (pet: Pet) => void;
-  onBookAppointment: (petId: string) => void;
-};
 
 const MyPetsSection = ({
   pets,

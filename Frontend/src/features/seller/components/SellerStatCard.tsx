@@ -1,12 +1,7 @@
 import Card from "@/shared/components/Card/Card";
+import type { SellerStatCardProps } from "../types/seller.types";
 
-type Props = {
-  title: string;
-  value: string;
-  subtitle: string;
-};
-
-const SellerStatCard = ({ title, value, subtitle }: Props) => {
+const SellerStatCard = ({ title, value, subtitle }: SellerStatCardProps) => {
   return (
     <Card>
       <p className="text-sm font-medium text-gray-500">{title}</p>

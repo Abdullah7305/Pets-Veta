@@ -10,12 +10,7 @@ import {
   removeMarketplaceListing,
   type MarketplaceProduct,
 } from "@/features/marketplace1/api/marketplace.api";
-
-type ApiError = {
-  response?: {
-    status?: number;
-  };
-};
+import type { SellerApiError } from "../types/seller.types";
 
 const SellerSavedListingsPage = () => {
   const navigate = useNavigate();
@@ -34,7 +29,7 @@ const SellerSavedListingsPage = () => {
           setProducts(listings.map((listing) => listing.product).filter(Boolean));
         }
       } catch (err) {
-        const apiError = err as ApiError;
+        const apiError = err as SellerApiError;
 
         if (apiError.response?.status === 401) {
           navigate("/login", {

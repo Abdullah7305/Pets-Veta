@@ -10,8 +10,9 @@ import {
   FaPaw,
 } from "react-icons/fa";
 
-import img from "@/assets/shared/images/dog2.jpeg";
+import img from "@/assets/shared/images/bannerImage.png";
 import Button from "../../../shared/components/Button/Button";
+import DashboardHomeMenu from "./DashboardHomeMenu";
 
 export const Banner = () => {
   return (
@@ -96,6 +97,8 @@ export const Banner = () => {
           className="relative z-10 w-full max-w-[620px] object-contain"
         />
       </div>
+
+      <DashboardHomeMenu />
     </section>
   );
 };

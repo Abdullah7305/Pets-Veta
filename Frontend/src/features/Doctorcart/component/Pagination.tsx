@@ -1,9 +1,4 @@
-interface PaginationProps {
-    page: number;
-    totalPages: number;
-    onPrevious: () => void;
-    onNext: () => void;
-}
+import type { PaginationProps } from "../types/doctorcart.types";
 
 const Pagination = ({
     page,

@@ -51,10 +51,17 @@ enum PetGender {
 }
 
 enum AppointmentStatus {
-  PENDING
+  PENDING_DETAILS
+  PENDING_REPORT
+  PENDING_PAYMENT
+  PAYMENT_PROCESSING
   CONFIRMED
-  COMPLETED
+  PAYMENT_FAILED
+  EXPIRED
   CANCELLED
+  COMPLETED
+  REFUNDED
+  NO_SHOW
 }
 
 enum MarketplaceOrderStatus {
@@ -65,24 +72,22 @@ enum MarketplaceOrderStatus {
   CANCELLED
 }
 
-enum AppointmentPayment {
-  PENDING
-  COMPLETED
-}
-
 enum PaymentStatus {
   PENDING
-  PAID
+  REQUIRES_PAYMENT_METHOD
+  REQUIRES_ACTION
+  PROCESSING
+  SUCCEEDED
   FAILED
   CANCELLED
   REFUNDED
-  SUCCEEDED
 }
 
 enum ScheduleStatus {
   AVAILABLE
-  PENDING_PAYMENT
+  HELD
   BOOKED
+  CANCELLED
 }
 
 model User {
@@ -106,6 +111,9 @@ model User {
   pets              Pet[]
   petIssueReports   PetIssueReport[]
   doctorSkills      DoctorSkill[]
+
+  appointments Appointment[] @relation("PetOwnerAppointments")
+  payments     Payment[]
 
   sellerProfile          SellerProfile?
   savedListings          SavedListing[]
@@ -171,19 +179,27 @@ model UserRole {
 }
 
 model DoctorSchedule {
-  id             String         @id @default(uuid())
-  doctorId       String
-  date           DateTime
-  startTime      DateTime
-  endTime        DateTime
-  status         ScheduleStatus @default(AVAILABLE)
-  lockedAt       DateTime?
-  lockedByUserId String?
+  id        String         @id @default(uuid())
+  doctorId  String
+  date      DateTime
+  startTime DateTime
+  endTime   DateTime
+  status    ScheduleStatus @default(AVAILABLE)
 
-  doctor      Doctor       @relation(fields: [doctorId], references: [id])
-  appointment Appointment?
+  lockedAt              DateTime?
+  lockedByUserId        String?
+  lockedByAppointmentId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  doctor       Doctor        @relation(fields: [doctorId], references: [id])
+  appointments Appointment[]
 
   @@unique([doctorId, startTime])
+  @@index([doctorId])
+  @@index([status])
+  @@index([lockedByAppointmentId])
 }
 
 model Pet {
@@ -197,6 +213,9 @@ model Pet {
   user            User             @relation(fields: [petOwnerId], references: [id])
   petIssueReports PetIssueReport[]
   petPictures     PetPicture[]
+  appointments    Appointment[]
+
+  @@index([petOwnerId])
 }
 
 model PetPicture {
@@ -209,31 +228,150 @@ model PetPicture {
 }
 
 model PetIssueReport {
-  id           String        @id @default(uuid())
-  petOwnerId   String
-  petId        String
-  issue        String
-  createdAt    DateTime      @default(now())
-  pet          Pet           @relation(fields: [petId], references: [id])
-  user         User          @relation(fields: [petOwnerId], references: [id])
+  id         String   @id @default(uuid())
+  petOwnerId String
+  petId      String
+  issue      String
+  createdAt  DateTime @default(now())
+
+  pet  Pet  @relation(fields: [petId], references: [id])
+  user User @relation(fields: [petOwnerId], references: [id])
+
   appointments Appointment[]
+
+  @@index([petOwnerId])
+  @@index([petId])
 }
 
 model Appointment {
-  id               String            @id @default(uuid())
+  id String @id @default(uuid())
+
   doctorId         String
   petOwnerId       String
-  petIssueReportId String
-  scheduleId       String            @unique
-  fees             Int
-  paymentStatus    PaymentStatus     @default(PENDING)
-  stripeSessionId  String?
-  checkupTime      DateTime
-  status           AppointmentStatus @default(PENDING)
+  petId            String?
+  petIssueReportId String?
+  scheduleId       String
 
-  petIssueReport PetIssueReport @relation(fields: [petIssueReportId], references: [id])
-  doctor         Doctor         @relation(fields: [doctorId], references: [id])
-  doctorSchedule DoctorSchedule @relation(fields: [scheduleId], references: [id])
+  fees     Int
+  currency String @default("pkr")
+
+  status        AppointmentStatus @default(PENDING_DETAILS)
+  paymentStatus PaymentStatus     @default(PENDING)
+
+  checkupTime DateTime
+  expiresAt   DateTime?
+
+  confirmedAt DateTime?
+  cancelledAt DateTime?
+  completedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  doctor         Doctor          @relation(fields: [doctorId], references: [id])
+  petOwner       User            @relation("PetOwnerAppointments", fields: [petOwnerId], references: [id])
+  pet            Pet?            @relation(fields: [petId], references: [id])
+  petIssueReport PetIssueReport? @relation(fields: [petIssueReportId], references: [id])
+  doctorSchedule DoctorSchedule  @relation(fields: [scheduleId], references: [id])
+
+  payment Payment?
+
+  @@index([doctorId])
+  @@index([petOwnerId])
+  @@index([petId])
+  @@index([petIssueReportId])
+  @@index([scheduleId])
+  @@index([status])
+  @@index([paymentStatus])
+  @@index([expiresAt])
+}
+
+model Payment {
+  id String @id @default(uuid())
+
+  appointmentId String @unique
+  userId        String
+
+  stripePaymentIntentId String? @unique
+  stripeClientSecret    String?
+  stripeChargeId        String?
+
+  amount   Int
+  currency String @default("pkr")
+
+  status PaymentStatus @default(PENDING)
+
+  paymentMethod String?
+  receiptUrl    String?
+  failureReason String?
+
+  metadata Json?
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  paidAt      DateTime?
+  cancelledAt DateTime?
+  refundedAt  DateTime?
+
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  events  PaymentEvent[]
+  refunds Refund[]
+
+  @@index([appointmentId])
+  @@index([userId])
+  @@index([stripePaymentIntentId])
+  @@index([status])
+}
+
+model PaymentEvent {
+  id String @id @default(uuid())
+
+  stripeEventId String? @unique
+  eventType     String
+
+  paymentId     String?
+  appointmentId String?
+
+  stripePaymentIntentId String?
+
+  payload         Json
+  processed       Boolean @default(false)
+  processingError String?
+
+  createdAt   DateTime  @default(now())
+  processedAt DateTime?
+
+  payment Payment? @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+
+  @@index([paymentId])
+  @@index([appointmentId])
+  @@index([stripePaymentIntentId])
+  @@index([eventType])
+  @@index([processed])
+}
+
+model Refund {
+  id String @id @default(uuid())
+
+  paymentId     String
+  appointmentId String
+
+  stripeRefundId String? @unique
+  amount         Int
+  currency       String  @default("pkr")
+  reason         String?
+  status         String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  @@index([paymentId])
+  @@index([appointmentId])
+  @@index([stripeRefundId])
 }
 
 model SellerProfile {

@@ -1,12 +1,11 @@
 import Button from "@/shared/components/Button/Button";
+import type { MarketplacePaginationProps } from "../types/marketplace.types";
 
-type Props = {
-  page: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-};
-
-const MarketplacePagination = ({ page, totalPages, onPageChange }: Props) => {
+const MarketplacePagination = ({
+  page,
+  totalPages,
+  onPageChange,
+}: MarketplacePaginationProps) => {
   return (
     <div className="mt-10 flex items-center justify-center gap-3">
       <Button

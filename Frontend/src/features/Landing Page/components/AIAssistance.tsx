@@ -2,7 +2,7 @@ import { FaPaw, FaPaperPlane } from "react-icons/fa";
 
 import Button from "@/shared/components/Button/Button";
 import Input from "@/shared/components/Input/Input";
-import img from "@/assets/shared/images/dog2.jpeg"
+import img from "@/assets/shared/images/bannerImage.png"
 
 const AIAssistantBanner = () => {
     return (

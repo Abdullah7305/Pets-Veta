@@ -1,9 +1,5 @@
 import { CalendarClock, Mail, PawPrint, Phone, Wallet } from "lucide-react";
-import type { DoctorAppointment } from "../api/doctorAppointments.api";
-
-type PatientCardProps = {
-  appointment: DoctorAppointment;
-};
+import type { PatientCardProps } from "../doctor.types";
 
 const formatDateTime = (value: string) => {
   return new Date(value).toLocaleString("en-US", {

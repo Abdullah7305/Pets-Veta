@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 export type PetCategory = "DOG" | "CAT" | "REPTILE" | "OTHER";
 
 export type Pet = {
@@ -52,4 +54,36 @@ export type PetOwnerDashboardResponse = {
   success: boolean;
   message: string;
   data: PetOwnerDashboardData;
+};
+
+export type DashboardHeaderProps = {
+  user: DashboardUser;
+};
+
+export type DashboardStatsProps = {
+  counts: DashboardCounts;
+};
+
+export type StatusCountProps = {
+  label: string;
+  value: number;
+  className?: string;
+};
+
+export type DashboardSidebarItem = {
+  label: string;
+  path: string;
+  icon: ReactNode;
+};
+
+export type UpcomingAppointmentsProps = {
+  appointments: DashboardAppointment[];
+};
+
+export type PetPreviewCardProps = {
+  pet: Pet;
+};
+
+export type MyPetsPreviewProps = {
+  pets: Pet[];
 };

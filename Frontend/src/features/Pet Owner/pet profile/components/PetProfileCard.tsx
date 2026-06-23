@@ -4,18 +4,11 @@ import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
 
 import type {
-  Pet,
   PetCategory,
+  PetProfileCardProps,
 } from "../types/petProfile.types";
 
 import PetActionsMenu from "./PetActionsMenu";
-
-type PetProfileCardProps = {
-  pet: Pet;
-  onEdit: (petId: string) => void;
-  onDelete: (pet: Pet) => void;
-  onBookAppointment: (petId: string) => void;
-};
 
 const categoryImages: Record<PetCategory, string> = {
   DOG: "https://images.unsplash.com/photo-1568572933382-74d440642117?auto=format&fit=crop&w=700&q=80",

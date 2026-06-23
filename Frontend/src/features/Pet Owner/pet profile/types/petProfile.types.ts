@@ -1,3 +1,6 @@
+import type { InputHTMLAttributes, ReactNode } from "react";
+import type { PetOwnerProfileFormData } from "../schemas/petOwnerProfile.schema";
+
 export type PetCategory = "DOG" | "CAT" | "REPTILE" | "OTHER";
 
 export type PetPicture = {
@@ -29,6 +32,14 @@ export type PetOwnerProfileResponse = {
   data: PetOwnerProfile;
 };
 
+export type UpdatePetOwnerProfilePayload = {
+  fullName: string;
+  username: string;
+  phone?: string;
+  profileImage?: File | null;
+  profileImageUrl?: string;
+};
+
 export type PetsResponse = {
   success: boolean;
   message: string;
@@ -40,3 +51,53 @@ export type PetResponse = {
   message: string;
   data: Pet;
 };
+
+export type EditPetOwnerProfileModalProps = {
+  profile: PetOwnerProfile;
+  isSaving: boolean;
+  error?: string;
+  onCancel: () => void;
+  onSubmit: (data: PetOwnerProfileFormData) => void;
+};
+
+export type PetOwnerProfileFieldProps = {
+  label: string;
+  error?: string;
+  inputProps: InputHTMLAttributes<HTMLInputElement>;
+};
+
+export type PetActionsMenuProps = {
+  petName: string;
+  onEdit: () => void;
+  onDelete: () => void;
+};
+
+export type MyPetsSectionProps = {
+  pets: Pet[];
+  onAddPet: () => void;
+  onEditPet: (petId: string) => void;
+  onDeletePet: (pet: Pet) => void;
+  onBookAppointment: (petId: string) => void;
+};
+
+export type PetProfileCardProps = {
+  pet: Pet;
+  onEdit: (petId: string) => void;
+  onDelete: (pet: Pet) => void;
+  onBookAppointment: (petId: string) => void;
+};
+
+export type PetOwnerProfileHeaderProps = {
+  profile: PetOwnerProfile;
+  onEditProfile: () => void;
+};
+
+export type ProfileMetaProps = {
+  icon: ReactNode;
+  value: string;
+};
+
+export interface PetFormProps {
+  onSubmitSuccess?: (newPet: PetResponse) => void;
+  onCancel?: () => void;
+}

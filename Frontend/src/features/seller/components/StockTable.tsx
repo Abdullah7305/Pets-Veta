@@ -2,15 +2,10 @@ import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
 import {
   getProductImage,
-  type MarketplaceProduct,
 } from "@/features/marketplace1/api/marketplace.api";
+import type { StockTableProps } from "../types/seller.types";
 
-type Props = {
-  products: MarketplaceProduct[];
-  onStockChange: (productId: string, stock: number) => void;
-};
-
-const StockTable = ({ products, onStockChange }: Props) => {
+const StockTable = ({ products, onStockChange }: StockTableProps) => {
   return (
     <Card className="overflow-hidden p-0">
       <div className="grid grid-cols-[1.6fr_100px_120px_150px] border-b border-gray-100 px-5 py-4 text-xs font-semibold text-gray-500">
