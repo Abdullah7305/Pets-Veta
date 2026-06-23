@@ -1,7 +1,7 @@
 import { Calendar, List, PawPrint, Shield, User, ImagePlus } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import Input from "../../../../shared/components/Input/Input";
 import Button from "../../../../shared/components/Button/Button";
@@ -10,14 +10,19 @@ import {
   type PetFormInput,
   type PetFormData,
 } from "../schemas/pet.schema";
-import { useAuth } from "@/features/Auth/hooks/authhook";
 import type { PetFormProps } from "../types/petProfile.types";
-// import { type submitPetData } from "../apis/pet.api";
+import { createPetApi } from "../api/pets.api";
 
-const PetForm = ({ onCancel }: PetFormProps) => {
-  const { user } = useAuth();
+const PetForm = ({
+  title = "Register Pet",
+  description = "Please enter your pet details",
+  defaultValues,
+  isSaving = false,
+  onSubmit,
+  onSubmitSuccess,
+  onCancel,
+}: PetFormProps) => {
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [previews, setPreviews] = useState<string[]>([]);
 
   const {
     register,
@@ -32,36 +37,65 @@ const PetForm = ({ onCancel }: PetFormProps) => {
       age: "",
       breed: "",
       category: undefined,
+      ...defaultValues,
     },
   });
 
   // Watch the photos field to trigger preview generation
   const selectedPhotos = useWatch({ control, name: "photos" });
 
-  useEffect(() => {
+  const previews = useMemo(() => {
     if (!selectedPhotos || selectedPhotos.length === 0) {
-      setPreviews([]);
+      return [];
+    }
+
+    return Array.from(selectedPhotos).map((file) =>
+      URL.createObjectURL(file as File)
+    );
+  }, [selectedPhotos]);
+
+  useEffect(() => {
+    return () => {
+      previews.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [previews]);
+
+  const handleFormSubmit = async (data: PetFormData) => {
+    setSubmitError(null);
+
+    if (!defaultValues && (!data.photos || data.photos.length === 0)) {
+      setSubmitError("At least one pet photo is required.");
       return;
     }
 
-    const objectUrls = Array.from(selectedPhotos).map((file) =>
-      URL.createObjectURL(file as File)
-    );
+    try {
+      if (onSubmit) {
+        await onSubmit(data);
+        return;
+      }
 
-    setPreviews(objectUrls);
+      const newPet = await createPetApi(data);
 
-    return () => {
-      objectUrls.forEach((url) => URL.revokeObjectURL(url));
-    };
-  }, [selectedPhotos]);
+      reset();
+      if (onSubmitSuccess) {
+        onSubmitSuccess(newPet);
+      }
+    } catch (err: unknown) {
+      const message =
+        err &&
+          typeof err === "object" &&
+          "response" in err &&
+          typeof err.response === "object" &&
+          err.response &&
+          "data" in err.response &&
+          typeof err.response.data === "object" &&
+          err.response.data &&
+          "message" in err.response.data &&
+          typeof err.response.data.message === "string"
+          ? err.response.data.message
+          : "Unable to save pet. Please try again.";
 
-  const onSubmit = async (data: PetFormData) => {
-    setSubmitError(null);
-    console.log("Pet Form Data:", data);
-    const petOwnerId = user?.data?.id;
-    if (!petOwnerId) {
-      setSubmitError("You must be logged in to register a pet.");
-      return;
+      setSubmitError(message);
     }
   };
 
@@ -69,10 +103,10 @@ const PetForm = ({ onCancel }: PetFormProps) => {
     <section className="w-full max-w-2xl overflow-hidden rounded-3xl bg-white shadow-2xl shadow-purple-200/60 text-[#1F1F2E]">
       <div className="relative h-36 bg-gradient-to-br from-[#F4ECFF] to-[#E9DDFF] px-6 flex flex-col justify-center">
         <h1 className="text-2xl font-black tracking-tight text-[#4c249f] sm:text-3xl">
-          Register Pet
+          {title}
         </h1>
         <p className="mt-1 text-sm font-semibold text-[#8B64D7]">
-          Please enter your pet details
+          {description}
         </p>
 
         <span className="absolute right-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-[#6D3DD9] shadow-lg shadow-purple-100">
@@ -80,7 +114,7 @@ const PetForm = ({ onCancel }: PetFormProps) => {
         </span>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 px-6 py-6">
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-5 px-6 py-6">
         {submitError && (
           <div className="bg-red-50 text-red-650 p-3 rounded-2xl text-xs font-semibold border border-red-100 mb-3">
             {submitError}
@@ -205,7 +239,6 @@ const PetForm = ({ onCancel }: PetFormProps) => {
             className="border-[#6D3DD9]/35 text-[#6D3DD9]"
             onClick={() => {
               reset();
-              setPreviews([]);
               if (onCancel) onCancel();
             }}
           >
@@ -214,7 +247,7 @@ const PetForm = ({ onCancel }: PetFormProps) => {
 
           <Button
             type="submit"
-            isSubmitting={isSubmitting}
+            isSubmitting={isSubmitting || isSaving}
             className="bg-[#6D3DD9] hover:bg-[#5630B2] hover:text-white"
           >
             Save Pet

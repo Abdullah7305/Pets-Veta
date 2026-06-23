@@ -7,6 +7,7 @@ import {
   FaPlusCircle,
   FaShoppingCart,
   FaStore,
+  FaUserCircle,
   FaUser,
 } from "react-icons/fa";
 
@@ -19,6 +20,7 @@ const links = [
   { label: "Saved Listings", icon: FaHeart, path: "/seller/saved-listings" },
   { label: "Marketplace", icon: FaStore, path: "/marketplace1" },
   { label: "Profile", icon: FaUser, path: "/seller/profile" },
+  { label: "Switch to Pet Owner", icon: FaUserCircle, path: "/pet-owner/dashboard" },
 ];
 
 const SellerSidebar = () => {

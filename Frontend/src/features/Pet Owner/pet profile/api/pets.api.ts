@@ -24,7 +24,28 @@ export const getPetByIdApi = async (
 export const createPetApi = async (
   payload: PetFormData,
 ): Promise<PetResponse> => {
-  const response = await api.post<PetResponse>("/pets", payload);
+  const formData = new FormData();
+
+  formData.append("name", payload.name);
+  formData.append("age", String(payload.age));
+  formData.append("breed", payload.breed);
+  formData.append("category", payload.category);
+
+  if (payload.photos) {
+    Array.from(payload.photos).forEach((photo) => {
+      formData.append("photos", photo);
+    });
+  }
+
+  const response = await api.post<PetResponse>(
+    "/petOwner/submit/pet-data",
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    },
+  );
 
   return response.data;
 };

@@ -1,4 +1,4 @@
-import { data, Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
     FaArrowLeft,
     FaCheckCircle,
@@ -8,31 +8,10 @@ import {
 import { User } from 'lucide-react'
 
 import { getDoctorProfileData } from "../apis/doctorProfile.api";
+import type { BookableSlot } from "../apis/doctorProfile.api";
 import { useEffect, useState } from "react";
 import BookingModal from "../components/BookSlotModal";
 import { bookDoctorSlot } from "../apis/bookSlot";
-type DoctorType = {
-    id: string;
-    name: string;
-    image: string;
-    status: string;
-    specialty: string;
-    experience: number;
-    rating: number;
-    reviews: number;
-    location: string;
-    fees: number;
-    tags: string[];
-    about: string;
-    education: string;
-    qualification: string;
-    certification: string;
-    nextSlot: string;
-    specialization: string;
-    availableSlots: BookableSlot[];
-    todaySlots: BookableSlot[];
-    nextAvailable: BookableSlot | null;
-} | null;
 import type { DoctorProfileViewData } from "../types/appointment.types";
 
 

@@ -101,7 +101,7 @@ const MarketplaceProductDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f7fbfb] p-10">
+      <div className="mt-20 min-h-screen bg-[#f7fbfb] p-10">
         <h1 className="text-2xl font-semibold text-gray-900">
           Loading product...
         </h1>
@@ -111,7 +111,7 @@ const MarketplaceProductDetailPage = () => {
 
   if (!product || error) {
     return (
-      <div className="min-h-screen bg-[#f7fbfb] p-10">
+      <div className="mt-20 min-h-screen bg-[#f7fbfb] p-10">
         <h1 className="text-2xl font-semibold text-gray-900">
           {error || "Product not found"}
         </h1>
@@ -125,7 +125,7 @@ const MarketplaceProductDetailPage = () => {
   const displayCategory = toDisplayCategory(product.category);
 
   return (
-    <main className="min-h-screen bg-[#f7fbfb] px-5 py-8 lg:px-12">
+    <main className="mt-20 min-h-screen bg-[#f7fbfb] px-5 py-8 lg:px-12">
       <p className="mb-5 text-sm text-gray-500">
         Marketplace / {displayCategory} / {product.title}
       </p>

@@ -26,8 +26,9 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
         // 3. Patch the standard history pushState to catch programmatic route clicks
         const originalPushState = history.pushState;
         history.pushState = function (...args) {
-            originalPushState.apply(this, args);
+            const result = originalPushState.apply(this, args);
             handleScrollToTop(); // Trigger scroll up when a new page is pushed
+            return result;
         };
 
         let rafId: number;

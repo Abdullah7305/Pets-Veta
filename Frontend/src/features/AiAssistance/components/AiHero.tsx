@@ -7,7 +7,7 @@ import {
 
 const AiHero = () => {
     return (
-        <section className="bg-gradient-to-br from-[#f5fbff] via-white to-[#d9f7f6] px-5 py-16 lg:px-16">
+        <section className="mt-20 bg-gradient-to-br from-[#f5fbff] via-white to-[#d9f7f6] px-5 py-16 lg:px-16">
             <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-2">
                 <div>
                     <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-[#009f9d] shadow-sm">

@@ -78,7 +78,7 @@ export default function LoginComponent() {
   useEffect(() => {
     console.log("Wokring")
     if (isAuthenticatedUser && user?.data) {
-      navigate(getPostLoginPath(user.data.role), { replace: true });
+      navigate(getPostLoginPath(user.data.role));
     }
   }, [isAuthenticatedUser, user, navigate]);
 

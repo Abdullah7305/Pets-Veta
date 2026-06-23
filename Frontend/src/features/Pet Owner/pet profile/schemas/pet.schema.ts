@@ -23,6 +23,8 @@ export const petSchema = z.object({
   category: z.enum(["DOG", "CAT", "REPTILE", "OTHER"], {
     message: "Please select a category",
   }),
+
+  photos: z.custom<FileList>().optional(),
 });
 
 export type PetFormInput = z.input<typeof petSchema>;

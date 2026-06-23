@@ -6,6 +6,7 @@ import {
   Settings,
   ShoppingCart,
   Stethoscope,
+  Store,
   UserRound,
   FileText,
 } from "lucide-react";
@@ -48,6 +49,11 @@ const sidebarItems: DashboardSidebarItem[] = [
     label: "Profile",
     path: "/pet-owner/profile",
     icon: <UserRound size={20} />,
+  },
+  {
+    label: "Switch to Seller",
+    path: "/seller/dashboard",
+    icon: <Store size={20} />,
   },
   {
     label: "Settings",
