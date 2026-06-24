@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   FaBox,
   FaChartPie,
@@ -24,12 +24,18 @@ const links = [
 ];
 
 const SellerSidebar = () => {
+  const navigate = useNavigate();
+
   return (
     <aside className="flex min-h-screen w-64 flex-col border-r border-gray-100 bg-white px-5 py-6">
-      <div className="mb-10">
+      <button
+        type="button"
+        onClick={() => navigate("/")}
+        className="mb-10 text-left"
+      >
         <h2 className="text-xl font-bold text-[#178f95]">Pets Veta</h2>
         <p className="text-xs text-gray-400">Care. Love. Trust.</p>
-      </div>
+      </button>
 
       <nav className="flex-1 space-y-2">
         {links.map(({ label, icon: Icon, path }) => (

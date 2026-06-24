@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
+  FaArrowLeft,
   FaHeart,
   FaMapMarkerAlt,
   FaStar,
@@ -31,6 +32,15 @@ const MarketplaceProductDetailPage = () => {
   const [error, setError] = useState("");
   const [saveMessage, setSaveMessage] = useState("");
   const [cartError, setCartError] = useState("");
+
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    navigate("/marketplace1");
+  };
 
   useEffect(() => {
     let ignore = false;
@@ -102,6 +112,9 @@ const MarketplaceProductDetailPage = () => {
   if (loading) {
     return (
       <div className="mt-20 min-h-screen bg-[#f7fbfb] p-10">
+        <div className="mb-5">
+          <BackToMarketplaceButton onClick={handleBack} />
+        </div>
         <h1 className="text-2xl font-semibold text-gray-900">
           Loading product...
         </h1>
@@ -112,6 +125,9 @@ const MarketplaceProductDetailPage = () => {
   if (!product || error) {
     return (
       <div className="mt-20 min-h-screen bg-[#f7fbfb] p-10">
+        <div className="mb-5">
+          <BackToMarketplaceButton onClick={handleBack} />
+        </div>
         <h1 className="text-2xl font-semibold text-gray-900">
           {error || "Product not found"}
         </h1>
@@ -126,9 +142,13 @@ const MarketplaceProductDetailPage = () => {
 
   return (
     <main className="mt-20 min-h-screen bg-[#f7fbfb] px-5 py-8 lg:px-12">
-      <p className="mb-5 text-sm text-gray-500">
-        Marketplace / {displayCategory} / {product.title}
-      </p>
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <BackToMarketplaceButton onClick={handleBack} />
+
+        <p className="text-sm text-gray-500">
+          Marketplace / {displayCategory} / {product.title}
+        </p>
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_430px]">
         <Card className="overflow-hidden p-0">
@@ -220,5 +240,16 @@ const MarketplaceProductDetailPage = () => {
     </main>
   );
 };
+
+const BackToMarketplaceButton = ({ onClick }: { onClick: () => void }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className="inline-flex w-fit items-center gap-2 rounded-full border border-[#d8eeee] bg-white px-4 py-2 text-sm font-semibold text-[#078b91] shadow-sm transition hover:border-[#078b91] hover:bg-[#f2fbfa]"
+  >
+    <FaArrowLeft />
+    Back to Marketplace
+  </button>
+);
 
 export default MarketplaceProductDetailPage;

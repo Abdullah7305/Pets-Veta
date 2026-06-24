@@ -1,4 +1,5 @@
 import PetOwnerForm from "../components/pets-owner";
+import { useNavigate } from "react-router-dom";
 
 const PawIcon = () => (
   <svg
@@ -38,6 +39,8 @@ const StatCard = ({
 };
 
 const PetOwnerSignupPage = () => {
+  const navigate = useNavigate();
+
   return (
     <main className="relative h-screen w-full overflow-hidden bg-[#f8f2ed] text-[#101b3d]">
       {/* Background */}
@@ -76,9 +79,13 @@ const PetOwnerSignupPage = () => {
               <div className="relative z-10">
                 <h1 className="max-w-[610px] text-[64px] font-extrabold leading-[1.13] tracking-[-0.055em] text-[#101b3d]">
                   Join{" "}
-                  <span className="bg-gradient-to-r from-[#178f95] to-[#0c7b84] bg-clip-text text-transparent">
+                  <button
+                    type="button"
+                    onClick={() => navigate("/")}
+                    className="bg-gradient-to-r from-[#178f95] to-[#0c7b84] bg-clip-text text-transparent transition hover:opacity-80"
+                  >
                     PetsVeta
-                  </span>
+                  </button>
                 </h1>
 
                 <p className="mt-8 max-w-[600px] text-[22px] font-medium leading-[1.6] text-[#2f405f]">
