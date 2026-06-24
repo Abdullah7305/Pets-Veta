@@ -3,9 +3,11 @@ import { FaPaperPlane, FaRobot, FaUser, FaPaw } from "react-icons/fa";
 
 import Button from "../../../shared/components/Button";
 import type { AiMessage } from "../types/aiAssistance.types";
+import { sendAiAssistantMessage } from "../api/aiAssistant.api";
 
 const AiChatBox = () => {
     const [message, setMessage] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     const [messages, setMessages] = useState<AiMessage[]>([
         {
@@ -15,23 +17,44 @@ const AiChatBox = () => {
         },
     ]);
 
-    const handleSendMessage = () => {
-        if (!message.trim()) return;
+    const handleSendMessage = async () => {
+        if (!message.trim() || isLoading) return;
+
+        const currentMessage = message;
 
         const userMessage: AiMessage = {
             id: Date.now(),
             sender: "user",
-            text: message,
+            text: currentMessage,
         };
 
-        const aiReply: AiMessage = {
-            id: Date.now() + 1,
-            sender: "ai",
-            text: "Thanks for sharing. Based on the symptoms, please monitor your pet closely and consult a verified veterinary doctor if the issue continues.",
-        };
-
-        setMessages((prev) => [...prev, userMessage, aiReply]);
+        setMessages((prev) => [...prev, userMessage]);
         setMessage("");
+        setIsLoading(true);
+
+        try {
+            const aiText = await sendAiAssistantMessage(currentMessage);
+
+            const aiReply: AiMessage = {
+                id: Date.now() + 1,
+                sender: "ai",
+                text:
+                    aiText ||
+                    "Sorry, I could not generate a response. Please try again.",
+            };
+
+            setMessages((prev) => [...prev, aiReply]);
+        } catch {
+            const errorReply: AiMessage = {
+                id: Date.now() + 1,
+                sender: "ai",
+                text: "Something went wrong. Please login first or try again later.",
+            };
+
+            setMessages((prev) => [...prev, errorReply]);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -63,14 +86,14 @@ const AiChatBox = () => {
                             >
                                 <div
                                     className={`flex max-w-[85%] gap-3 rounded-3xl p-4 ${item.sender === "user"
-                                        ? "bg-[#07182c] text-white"
-                                        : "bg-[#eefafa] text-[#07182c]"
+                                            ? "bg-[#07182c] text-white"
+                                            : "bg-[#eefafa] text-[#07182c]"
                                         }`}
                                 >
                                     <div
                                         className={`mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${item.sender === "user"
-                                            ? "bg-white/15"
-                                            : "bg-white text-[#009f9d]"
+                                                ? "bg-white/15"
+                                                : "bg-white text-[#009f9d]"
                                             }`}
                                     >
                                         {item.sender === "user" ? <FaUser /> : <FaRobot />}
@@ -80,6 +103,18 @@ const AiChatBox = () => {
                                 </div>
                             </div>
                         ))}
+
+                        {isLoading && (
+                            <div className="flex justify-start">
+                                <div className="flex max-w-[85%] gap-3 rounded-3xl bg-[#eefafa] p-4 text-[#07182c]">
+                                    <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white text-[#009f9d]">
+                                        <FaRobot />
+                                    </div>
+
+                                    <p className="text-sm leading-6">AI is typing...</p>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     <div className="mt-5 grid gap-3 rounded-3xl bg-white p-4 md:grid-cols-[1fr_auto]">
@@ -88,16 +123,18 @@ const AiChatBox = () => {
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
                             placeholder="Example: My dog is vomiting and not eating..."
-                            className="resize-none rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#009f9d] focus:ring-2 focus:ring-[#009f9d]/20"
+                            disabled={isLoading}
+                            className="resize-none rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#009f9d] focus:ring-2 focus:ring-[#009f9d]/20 disabled:cursor-not-allowed disabled:bg-slate-100"
                         />
 
                         <Button
                             type="button"
                             onClick={handleSendMessage}
+                            disabled={isLoading}
                             className="flex items-center justify-center gap-2"
                         >
                             <FaPaperPlane />
-                            Send
+                            {isLoading ? "Sending..." : "Send"}
                         </Button>
                     </div>
                 </div>
@@ -134,7 +171,8 @@ const AiChatBox = () => {
                                     key={item}
                                     type="button"
                                     onClick={() => setMessage(item)}
-                                    className="w-full rounded-2xl bg-[#f5fbff] px-4 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-[#eefafa] hover:text-[#009f9d]"
+                                    disabled={isLoading}
+                                    className="w-full rounded-2xl bg-[#f5fbff] px-4 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-[#eefafa] hover:text-[#009f9d] disabled:cursor-not-allowed disabled:opacity-60"
                                 >
                                     {item}
                                 </button>
@@ -143,13 +181,11 @@ const AiChatBox = () => {
                     </div>
 
                     <div className="rounded-3xl bg-[#07182c] p-6 text-white">
-                        <h3 className="text-lg font-extrabold">
-                            Emergency Reminder
-                        </h3>
+                        <h3 className="text-lg font-extrabold">Emergency Reminder</h3>
 
                         <p className="mt-3 text-sm leading-6 text-white/75">
-                            If your pet has breathing problems, bleeding, seizures, poisoning,
-                            or extreme weakness, contact a vet immediately.
+                            If your pet has breathing problems, bleeding, seizures,
+                            poisoning, or extreme weakness, contact a vet immediately.
                         </p>
                     </div>
                 </aside>
