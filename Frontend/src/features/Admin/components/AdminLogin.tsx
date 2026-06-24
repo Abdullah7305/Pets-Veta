@@ -68,7 +68,13 @@ const AdminLoginPage = () => {
                 </div>
 
                 <h1 className="mt-8 max-w-md text-5xl font-black leading-tight">
+                  <button
+                    type="button"
+                    onClick={() => navigate("/")}
+                    className="text-left transition hover:text-[#F9C5A8]"
+                  >
                   PetsVeta Admin Panel
+                  </button>
                 </h1>
 
                 <p className="mt-5 max-w-md text-sm leading-7 text-white/75">

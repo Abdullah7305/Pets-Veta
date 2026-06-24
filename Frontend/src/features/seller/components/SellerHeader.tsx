@@ -1,16 +1,21 @@
 import { FaBell, FaChevronDown } from "react-icons/fa";
 import Input from "@/shared/components/Input/Input";
+import Logo from "@/shared/components/Logo/Logo";
 
 const SellerHeader = () => {
   return (
     <header className="flex items-center justify-between border-b border-gray-100 bg-white px-7 py-4">
-      <div>
-        <h1 className="text-lg font-semibold text-gray-900">
-          Welcome back, Furries Store
-        </h1>
-        <p className="text-sm text-gray-500">
-          Here's what's happening with your store today.
-        </p>
+      <div className="flex items-center gap-4">
+        <Logo />
+
+        <div>
+          <h1 className="text-lg font-semibold text-gray-900">
+            Welcome back, Furries Store
+          </h1>
+          <p className="text-sm text-gray-500">
+            Here's what's happening with your store today.
+          </p>
+        </div>
       </div>
 
       <div className="flex items-center gap-4">

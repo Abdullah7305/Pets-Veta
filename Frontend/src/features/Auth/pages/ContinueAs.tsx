@@ -8,9 +8,13 @@ const ContinueAsPage = () => {
     <section className="min-h-screen bg-gradient-to-br from-[#f4fbff] via-white to-[#e8fbfa] flex items-center justify-center px-6 py-12">
       <div className="w-full max-w-5xl">
         <div className="text-center mb-10">
-          <span className="inline-block px-5 py-2 rounded-full bg-white shadow text-[#178f95] font-semibold mb-4">
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+            className="mb-4 inline-block rounded-full bg-white px-5 py-2 font-semibold text-[#178f95] shadow transition hover:bg-[#e8fbfa]"
+          >
             Join Pets Veta
-          </span>
+          </button>
 
           <h1 className="text-3xl md:text-5xl font-bold text-[#17233f] mb-4">
             Continue as

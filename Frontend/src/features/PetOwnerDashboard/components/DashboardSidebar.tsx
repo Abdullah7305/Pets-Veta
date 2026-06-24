@@ -73,7 +73,11 @@ const DashboardSidebar = () => {
   return (
     <aside className="fixed left-0 top-0 hidden h-screen w-[260px] border-r border-slate-200 bg-white lg:flex lg:flex-col">
       {/* Logo */}
-      <div className="flex items-center gap-3 border-b border-slate-100 px-7 py-6">
+      <button
+        type="button"
+        onClick={() => navigate("/")}
+        className="flex w-full items-center gap-3 border-b border-slate-100 px-7 py-6 text-left"
+      >
         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EAF7F5] text-[#078b91]">
           <PawPrint size={27} />
         </div>
@@ -87,7 +91,7 @@ const DashboardSidebar = () => {
             Care • Love • Heal
           </p>
         </div>
-      </div>
+      </button>
 
       {/* Navigation */}
       <nav className="flex-1 space-y-2 px-4 py-6">
