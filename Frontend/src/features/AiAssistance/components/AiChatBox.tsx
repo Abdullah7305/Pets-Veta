@@ -86,14 +86,14 @@ const AiChatBox = () => {
                             >
                                 <div
                                     className={`flex max-w-[85%] gap-3 rounded-3xl p-4 ${item.sender === "user"
-                                        ? "bg-[#07182C] text-white"
-                                        : "bg-[#EEFAFA] text-[#07182C]"
+                                        ? "bg-[#07182c] text-white"
+                                        : "bg-[#eefafa] text-[#07182c]"
                                         }`}
                                 >
                                     <div
                                         className={`mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${item.sender === "user"
                                             ? "bg-white/15"
-                                            : "bg-white text-[#009F9D]"
+                                            : "bg-white text-[#009f9d]"
                                             }`}
                                     >
                                         {item.sender === "user" ? <FaUser /> : <FaRobot />}
@@ -106,8 +106,8 @@ const AiChatBox = () => {
 
                         {isLoading && (
                             <div className="flex justify-start">
-                                <div className="flex max-w-[85%] gap-3 rounded-3xl bg-[#EEFAFA] p-4 text-[#07182C]">
-                                    <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white text-[#009F9D]">
+                                <div className="flex max-w-[85%] gap-3 rounded-3xl bg-[#eefafa] p-4 text-[#07182c]">
+                                    <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white text-[#009f9d]">
                                         <FaRobot />
                                     </div>
 
@@ -124,7 +124,7 @@ const AiChatBox = () => {
                             onChange={(e) => setMessage(e.target.value)}
                             placeholder="Example: My dog is vomiting and not eating..."
                             disabled={isLoading}
-                            className="resize-none rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#009F9D] focus:ring-2 focus:ring-[#009F9D]/20 disabled:cursor-not-allowed disabled:bg-slate-100"
+                            className="resize-none rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#009f9d] focus:ring-2 focus:ring-[#009f9d]/20 disabled:cursor-not-allowed disabled:bg-slate-100"
                         />
 
                         <Button
@@ -172,7 +172,7 @@ const AiChatBox = () => {
                                     type="button"
                                     onClick={() => setMessage(item)}
                                     disabled={isLoading}
-                                    className="w-full rounded-2xl bg-[#F5FBFF] px-4 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-[#EEFAFA] hover:text-[#009F9D] disabled:cursor-not-allowed disabled:opacity-60"
+                                    className="w-full rounded-2xl bg-[#f5fbff] px-4 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-[#eefafa] hover:text-[#009f9d] disabled:cursor-not-allowed disabled:opacity-60"
                                 >
                                     {item}
                                 </button>
@@ -180,7 +180,7 @@ const AiChatBox = () => {
                         </div>
                     </div>
 
-                    <div className="rounded-3xl bg-[#07182C] p-6 text-white">
+                    <div className="rounded-3xl bg-[#07182c] p-6 text-white">
                         <h3 className="text-lg font-extrabold">Emergency Reminder</h3>
 
                         <p className="mt-3 text-sm leading-6 text-white/75">
@@ -194,4 +194,4 @@ const AiChatBox = () => {
     );
 };
 
-export default AiChatBox;
+export default AiChatBox; 
