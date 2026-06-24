@@ -1,7 +1,7 @@
 import { Calendar, List, PawPrint, Shield, User, ImagePlus } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import Input from "../../../../shared/components/Input/Input";
 import Button from "../../../../shared/components/Button/Button";
@@ -25,7 +25,6 @@ const PetForm = ({
 }: PetFormProps) => {
   const { user } = useAuth();
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [previews, setPreviews] = useState<string[]>([]);
 
   const {
     register,
@@ -53,23 +52,21 @@ const PetForm = ({
   // Watch the photos field to generate live previews
   const selectedPhotos = useWatch({ control, name: "photos" });
 
-  useEffect(() => {
+  const previews = useMemo(() => {
     if (!selectedPhotos || selectedPhotos.length === 0) {
-      setPreviews([]);
-      return;
+      return [];
     }
 
-    // Generate blob preview URLs for selected files
-    const objectUrls = Array.from(selectedPhotos).map((file) =>
+    return Array.from(selectedPhotos).map((file) =>
       URL.createObjectURL(file as File)
     );
-
-    setPreviews(objectUrls);
-
-    return () => {
-      objectUrls.forEach((url) => URL.revokeObjectURL(url));
-    };
   }, [selectedPhotos]);
+
+  useEffect(() => {
+    return () => {
+      previews.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [previews]);
 
   const handleFormSubmit = async (data: PetFormData) => {
     setSubmitError(null);
@@ -88,6 +85,12 @@ const PetForm = ({
     const petOwnerId = user?.data?.id;
     if (!petOwnerId) {
       setSubmitError("You must be logged in to register a pet.");
+      return;
+    }
+
+    // Photo validation for self-contained creation mode
+    if (!defaultValues && (!data.photos || data.photos.length === 0)) {
+      setSubmitError("At least one pet photo is required.");
       return;
     }
 
@@ -242,7 +245,6 @@ const PetForm = ({
             className="border-[#6D3DD9]/35 text-[#6D3DD9]"
             onClick={() => {
               reset();
-              setPreviews([]);
               if (onCancel) onCancel();
             }}
           >

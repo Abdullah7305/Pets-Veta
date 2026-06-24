@@ -1,5 +1,6 @@
 import { Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import Logo from "@/shared/components/Logo/Logo";
 
 import type {
   DashboardHeaderProps,
@@ -14,14 +15,20 @@ const DashboardHeader = ({
 
   return (
     <header className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-      <div>
-        <h1 className="text-3xl font-black tracking-[-0.04em] text-[#101b3d]">
-          Hi, {firstName}!
-        </h1>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+        <div className="lg:hidden">
+          <Logo />
+        </div>
 
-        <p className="mt-2 text-sm font-medium text-slate-500">
-          Here&apos;s what&apos;s happening with your pets today.
-        </p>
+        <div>
+          <h1 className="text-3xl font-black tracking-[-0.04em] text-[#101b3d]">
+            Hi, {firstName}!
+          </h1>
+
+          <p className="mt-2 text-sm font-medium text-slate-500">
+            Here&apos;s what&apos;s happening with your pets today.
+          </p>
+        </div>
       </div>
 
       <div className="flex items-center gap-4">

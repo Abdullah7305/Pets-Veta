@@ -3,6 +3,7 @@ import { User } from "lucide-react"; // Lightweight default user icon
 import NAVLINK from "./navbar.data";
 import Button from "../Button/Button";
 import { useAuth } from "@/features/Auth/hooks/authhook";
+import Logo from "../Logo/Logo";
 
 const Navbar = () => {
   // Assuming useAuth returns { user, isAuthenticated } or similar based on standard patterns
@@ -19,9 +20,7 @@ const Navbar = () => {
     /* Changed 'sticky top-0' to 'relative' to make it completely static */
     <nav className="fixed top-0 left-0 w-full  z-50 border-b border-gray-100 bg-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <NavLink to="/" className="text-2xl font-bold text-sky-900">
-          Pets Veta
-        </NavLink>
+        <Logo />
 
         {/* Desktop Navigation Links */}
         <ul className="hidden items-center gap-7 lg:flex">

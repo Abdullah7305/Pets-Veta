@@ -133,7 +133,7 @@ const MarketplacePage = () => {
 
   return (
     <main className="min-h-screen bg-[#f7fbfb] px-6 py-8 lg:px-12">
-      <section className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <section className="mb-6 mt-20 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <h1 className="text-4xl font-bold text-[#07182c]">
             Pet Marketplace

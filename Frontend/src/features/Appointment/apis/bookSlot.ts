@@ -26,7 +26,12 @@ export type Data = {
 }
 
 
-export const bookDoctorSlot = async (schedule) => {
+type BookDoctorSlotPayload = {
+    slotId: string;
+    doctorId: string;
+};
+
+export const bookDoctorSlot = async (schedule: BookDoctorSlotPayload) => {
     try {
         const response = await api.post("http://localhost:8000/api/v1/petOwner/book-slot", schedule);
         return response.data

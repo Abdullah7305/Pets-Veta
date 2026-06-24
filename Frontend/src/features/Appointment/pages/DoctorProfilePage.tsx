@@ -8,10 +8,10 @@ import {
 import { User } from 'lucide-react'
 
 import { getDoctorProfileData } from "../apis/doctorProfile.api";
+import type { BookableSlot } from "../apis/doctorProfile.api";
 import { useEffect, useState } from "react";
 import BookingModal from "../components/BookSlotModal";
 import { bookDoctorSlot } from "../apis/bookSlot";
-import { type BookableSlot } from "../apis/doctorProfile.api";
 import type { DoctorProfileViewData } from "../types/appointment.types";
 
 

@@ -1,5 +1,5 @@
 import DoctorDashboardPage from "./pages/DoctorDashboardPage";
-import DoctorProfilePage from "./pages/DoctorProfilePage";
+import DoctorProfilePage from "../Doctorcart/pages/EditDoctorProfilePage";
 import { DoctorProtectedRoute } from "@/ProtectedRoutes/DoctorProtectedRoutes";
 import DoctorSkill from "./pages/SkillPricing";
 import { DoctorLayout } from "./Layout/doctor.layout";
@@ -20,7 +20,7 @@ export const doctorDashboardRoutes = [
         element: <DoctorDashboardPage />,
       },
       {
-        path: "doctor-dashboard-profile",
+        path: "doctor-profile",
         element: <DoctorProfilePage />,
       },
       {

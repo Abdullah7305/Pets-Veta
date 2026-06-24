@@ -4,6 +4,7 @@ const { PaymentStatus } = require('@prisma/client')
 
 const addDoctorService = async (skills, userId) => {
     console.log("Skills are ", skills, userId);
+
     let isExisting = false;
 
     const doSkillExist = await prisma.doctorSkill.findFirst({
@@ -15,6 +16,7 @@ const addDoctorService = async (skills, userId) => {
             }
         }
     });
+
     if (doSkillExist) {
         isExisting = true;
         return isExisting;
@@ -26,9 +28,10 @@ const addDoctorService = async (skills, userId) => {
             price: skills.price,
             userId: userId
         },
-    })
+    });
+
     return newSkills;
-}
+};
 
 
 const deleteDoctorService = async (serviceId) => {
@@ -36,24 +39,25 @@ const deleteDoctorService = async (serviceId) => {
         where: {
             id: serviceId
         }
-    })
+    });
+
     return deletedSkill;
-}
+};
 
 
 const getDoctorServices = async (userId) => {
-
     const services = await prisma.doctorSkill?.findMany({
         where: {
             userId: userId
         }
-    })
+    });
+
     if (!services) {
         return false;
     }
-    return services;
-}
 
+    return services;
+};
 
 const updateDoctorServices = async (serviceId, skill, price) => {
     const updatedService = await prisma.doctorSkill.update({
@@ -64,10 +68,10 @@ const updateDoctorServices = async (serviceId, skill, price) => {
             price: price,
             skill: skill
         }
-    })
+    });
 
     return updatedService;
-}
+};
 
 
 const getDoctorAppointments = async (userId) => {
@@ -123,7 +127,7 @@ const getDoctorAppointments = async (userId) => {
             },
         },
     });
-}
+};
 
 
 const getDoctorProfile = async (userId) => {
@@ -157,7 +161,6 @@ const getDoctorProfile = async (userId) => {
     return doctorProfile;
 };
 
-
 const updateDoctorProfile = async (userId, profileData) => {
     const {
         fullName,
@@ -172,15 +175,35 @@ const updateDoctorProfile = async (userId, profileData) => {
         isAvailable,
     } = profileData;
 
+    const existingUsername = await prisma.user.findFirst({
+        where: {
+            username,
+            NOT: {
+                id: userId,
+            },
+        },
+    });
+
+    if (existingUsername) {
+        throw new Error("Username already exists");
+    }
+
+    const userUpdateData = {
+        fullName,
+        username,
+        phone,
+    };
+
+    if (profileImageUrl) {
+        userUpdateData.profileImageUrl = profileImageUrl;
+    }
+
     const updatedProfile = await prisma.user.update({
         where: {
             id: userId,
         },
         data: {
-            fullName,
-            username,
-            phone,
-            profileImageUrl,
+            ...userUpdateData,
 
             doctors: {
                 update: {
@@ -189,7 +212,7 @@ const updateDoctorProfile = async (userId, profileData) => {
                     experience: Number(experience),
                     fees: Number(fees),
                     address,
-                    isAvailable,
+                    isAvailable: isAvailable === true || isAvailable === "true",
                 },
             },
         },

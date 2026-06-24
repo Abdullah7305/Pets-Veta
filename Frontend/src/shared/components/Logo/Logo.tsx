@@ -1,8 +1,17 @@
+import { useNavigate } from "react-router-dom";
+
 const logoUrl = "https://res.cloudinary.com/dqoeyomtf/image/upload/v1779458623/logo_tctgtx.png";
 
 const Logo = () => {
+  const navigate = useNavigate();
+
   return (
-    <div className="flex items-center">
+    <button
+      type="button"
+      onClick={() => navigate("/")}
+      className="flex items-center text-left"
+      aria-label="Go to home"
+    >
       <div className="w-15 h-15 overflow-hidden">
         <img
           src={logoUrl}
@@ -14,7 +23,7 @@ const Logo = () => {
         <h1 className="font-bold text-sky-800 text-xl">PetsVeta</h1>
         <p>Care, Connect, Cure</p>
       </div>
-    </div>
+    </button>
   );
 };
 

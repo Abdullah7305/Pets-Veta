@@ -1,4 +1,5 @@
 import LoginComponent from "../components/login-component";
+import { useNavigate } from "react-router-dom";
 
 const PawIcon = () => (
   <svg
@@ -38,6 +39,8 @@ const StatCard = ({
 };
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+
   return (
     <main className="relative h-screen w-full overflow-hidden bg-[#f8f2ed] text-[#101b3d]">
       {/* Background */}
@@ -75,9 +78,13 @@ const LoginPage = () => {
                   Welcome <br />
                   Back <br />
                   to{" "}
-                  <span className="bg-gradient-to-r from-[#178f95] to-[#0c7b84] bg-clip-text text-transparent">
+                  <button
+                    type="button"
+                    onClick={() => navigate("/")}
+                    className="bg-gradient-to-r from-[#178f95] to-[#0c7b84] bg-clip-text text-transparent transition hover:opacity-80"
+                  >
                     PetsVeta
-                  </span>
+                  </button>
                 </h1>
 
                 <p className="mt-8 max-w-[550px] text-[21px] font-medium leading-[1.65] text-[#2f405f]">

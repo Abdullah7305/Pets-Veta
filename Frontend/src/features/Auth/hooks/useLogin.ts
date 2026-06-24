@@ -31,7 +31,7 @@ export const useLogin = (options: UseMutationOptions<ApiResponse, Error, LoginFo
             console.log("Login Success", data)
             setUser(data);
             setIsAuthenticateUser(true);
-            navigate(getPostLoginPath(data.data.role), { replace: true });
+            navigate(getPostLoginPath(data.data.role));
         },
 
         onError: (error) => {

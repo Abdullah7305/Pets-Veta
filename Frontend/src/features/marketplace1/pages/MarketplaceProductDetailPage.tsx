@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "@/features/Auth/hooks/authhook";
 import {
+  FaArrowLeft,
   FaHeart,
   FaMapMarkerAlt,
   FaStar,
@@ -34,6 +35,15 @@ const MarketplaceProductDetailPage = () => {
   const [saveMessage, setSaveMessage] = useState("");
   const [cartError, setCartError] = useState("");
   const { user } = useAuth();
+
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    navigate("/marketplace1");
+  };
 
   useEffect(() => {
     let ignore = false;
@@ -123,7 +133,10 @@ const MarketplaceProductDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f7fbfb] p-10">
+      <div className="mt-20 min-h-screen bg-[#f7fbfb] p-10">
+        <div className="mb-5">
+          <BackToMarketplaceButton onClick={handleBack} />
+        </div>
         <h1 className="text-2xl font-semibold text-gray-900">
           Loading product...
         </h1>
@@ -133,7 +146,10 @@ const MarketplaceProductDetailPage = () => {
 
   if (!product || error) {
     return (
-      <div className="min-h-screen bg-[#f7fbfb] p-10">
+      <div className="mt-20 min-h-screen bg-[#f7fbfb] p-10">
+        <div className="mb-5">
+          <BackToMarketplaceButton onClick={handleBack} />
+        </div>
         <h1 className="text-2xl font-semibold text-gray-900">
           {error || "Product not found"}
         </h1>

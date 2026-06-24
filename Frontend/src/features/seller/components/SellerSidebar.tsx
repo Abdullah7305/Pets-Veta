@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   FaBox,
   FaChartPie,
@@ -7,6 +7,7 @@ import {
   FaPlusCircle,
   FaShoppingCart,
   FaStore,
+  FaUserCircle,
   FaUser,
 } from "react-icons/fa";
 
@@ -19,15 +20,22 @@ const links = [
   { label: "Saved Listings", icon: FaHeart, path: "/seller/saved-listings" },
   { label: "Marketplace", icon: FaStore, path: "/marketplace1" },
   { label: "Profile", icon: FaUser, path: "/seller/profile" },
+  { label: "Switch to Pet Owner", icon: FaUserCircle, path: "/pet-owner/dashboard" },
 ];
 
 const SellerSidebar = () => {
+  const navigate = useNavigate();
+
   return (
     <aside className="flex min-h-screen w-64 flex-col border-r border-gray-100 bg-white px-5 py-6">
-      <div className="mb-10">
+      <button
+        type="button"
+        onClick={() => navigate("/")}
+        className="mb-10 text-left"
+      >
         <h2 className="text-xl font-bold text-[#178f95]">Pets Veta</h2>
         <p className="text-xs text-gray-400">Care. Love. Trust.</p>
-      </div>
+      </button>
 
       <nav className="flex-1 space-y-2">
         {links.map(({ label, icon: Icon, path }) => (

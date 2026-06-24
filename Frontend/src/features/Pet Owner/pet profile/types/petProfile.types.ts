@@ -1,5 +1,6 @@
 import type { InputHTMLAttributes, ReactNode } from "react";
 import type { PetOwnerProfileFormData } from "../schemas/petOwnerProfile.schema";
+import type { PetFormData, PetFormInput } from "../schemas/pet.schema";
 
 import type { PetFormData, PetFormInput } from "../schemas/pet.schema";
 
@@ -109,6 +110,11 @@ export type ProfileMetaProps = {
 };
 
 export interface PetFormProps {
+  title?: string;
+  description?: string;
+  defaultValues?: PetFormInput;
+  isSaving?: boolean;
+  onSubmit?: (data: PetFormData) => void | Promise<void>;
   onSubmitSuccess?: (newPet: PetResponse) => void;
   onCancel?: () => void;
 }
