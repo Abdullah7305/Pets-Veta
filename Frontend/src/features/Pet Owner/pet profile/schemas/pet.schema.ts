@@ -23,6 +23,9 @@ export const petSchema = z.object({
   category: z.enum(["DOG", "CAT", "REPTILE", "OTHER"], {
     message: "Please select a category",
   }),
+
+  // 💡 Added: Informs TypeScript that photos exist in the schema
+  photos: z.any().optional(),
 });
 
 export type PetFormInput = z.input<typeof petSchema>;

@@ -9,7 +9,34 @@ export type SellerApiError = {
     };
   };
 };
+export type SellerProfile = {
+  id: string;
+  userId: string;
+  businessName: string | null;
+  businessAddress: string | null;
+  phoneNumber: string | null;
+  city: string | null;
+  storeDescription: string | null;
+  storeLogo: string | null;
+  isActive: boolean;
+  isVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
+  user?: {
+    id: string;
+    fullName: string;
+    username: string;
+    email: string;
+    phone: string | null;
+    profileImageUrl: string | null;
+  };
+  products?: MarketplaceProduct[];
+};
 
+export type SellerProfileResponse = {
+  success: boolean;
+  data: SellerProfile;
+};
 export type ProductPreviewCardProps = {
   image: string;
   title: string;

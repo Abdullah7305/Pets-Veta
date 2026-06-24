@@ -47,9 +47,14 @@ Backend/app/controllers/admin.controller.js
 Backend/app/controllers/auth.controller.js
 Backend/app/controllers/doctor.controller.js
 Backend/app/controllers/doctorSchedule.controller.js
+Backend/app/controllers/marketplace.controller.js
+Backend/app/controllers/marketplaceOrder.controller.js
 Backend/app/controllers/payment.controller.js
 Backend/app/controllers/petOwner.controller.js
+Backend/app/controllers/seller.controller.js
 Backend/app/controllers/userdoctor.controller.js
+Backend/app/jobs/appointmentCleanup.job.js
+Backend/app/jobs/scheduleCleanup.js
 Backend/app/middleware/auth.middleware.js
 Backend/app/middleware/authorizeRole.middleware.js
 Backend/app/middleware/globalErrorHandler.js
@@ -58,19 +63,30 @@ Backend/app/middleware/zod.middleware.js
 Backend/app/routes/admin.routes.js
 Backend/app/routes/auth.routes.js
 Backend/app/routes/doctor.routes.js
+Backend/app/routes/marketplace.routes.js
+Backend/app/routes/marketplaceOrder.routes.js
 Backend/app/routes/payment.routes.js
 Backend/app/routes/petOwner.routes.js
+Backend/app/routes/seller.routes.js
 Backend/app/routes/userdoctor.route.js
 Backend/app/schema/zod.schema.js
+Backend/app/scripts/runCleanupOnce.js
+Backend/app/scripts/runScheduleCleanupOnce.js
 Backend/app/server.js
 Backend/app/services/admin.services.js
+Backend/app/services/appointmentCleanup.service.js
 Backend/app/services/auth.services.js
 Backend/app/services/authCookies.services.js
 Backend/app/services/authToken.services.js
 Backend/app/services/doctor.services.js
 Backend/app/services/doctorSchedule.service.js
+Backend/app/services/marketplace.service.js
+Backend/app/services/marketplaceOrder.service.js
 Backend/app/services/payment.service.js
 Backend/app/services/petOwner.services.js
+Backend/app/services/scheduleCleanup.service.js
+Backend/app/services/seller.service.js
+Backend/app/services/stripe.service.js
 Backend/app/services/userdoctor.services.js
 Backend/app/utils/AppError.js
 Backend/app/utils/auth.utils.js
@@ -83,17 +99,7 @@ Backend/app/utils/SendResponse.js
 Backend/app/utils/validateRequest.js
 Backend/package.json
 Backend/prisma/dbClear.js
-Backend/prisma/migrations/20260522163130_y/migration.sql
-Backend/prisma/migrations/20260525234038_y/migration.sql
-Backend/prisma/migrations/20260529162714_y/migration.sql
-Backend/prisma/migrations/20260601125329_y/migration.sql
-Backend/prisma/migrations/20260602141932_patient_appointment_type/migration.sql
-Backend/prisma/migrations/20260602142224_remove_emergency_from_doctor_schedule/migration.sql
-Backend/prisma/migrations/20260602163310_y/migration.sql
-Backend/prisma/migrations/20260610154859_y/migration.sql
-Backend/prisma/migrations/20260610160207/migration.sql
-Backend/prisma/migrations/20260611134421/migration.sql
-Backend/prisma/migrations/20260611135922/migration.sql
+Backend/prisma/migrations/20260619151141_y/migration.sql
 Backend/prisma/migrations/migration_lock.toml
 Backend/prisma/schema.prisma
 Backend/prisma/seed.js
@@ -115,7 +121,8 @@ Frontend/src/assets/icons/Gemini_Generated_Image_34da4a34da4a34da-removebg-previ
 Frontend/src/assets/icons/user-profile-1.jpg
 Frontend/src/assets/icons/user-profile-2.jpg
 Frontend/src/assets/shared/images/bannerImage.png
-Frontend/src/assets/shared/images/dog2.jpeg
+Frontend/src/assets/shared/images/dashboard-choice/pet-owner-choice.png
+Frontend/src/assets/shared/images/dashboard-choice/seller-choice.png
 Frontend/src/assets/shared/images/femaleDoctor1.webp
 Frontend/src/assets/shared/images/femaleDoctor2.webp
 Frontend/src/assets/shared/images/femaleDoctor3.webp
@@ -175,11 +182,19 @@ Frontend/src/features/AiAssistance/components/AiFeatures.tsx
 Frontend/src/features/AiAssistance/components/AiHero.tsx
 Frontend/src/features/AiAssistance/components/AiHowItWorks.tsx
 Frontend/src/features/AiAssistance/pages/AiAssistantPage.tsx
+Frontend/src/features/AiAssistance/types/aiAssistance.types.ts
 Frontend/src/features/api interface/axios.interface.ts
+Frontend/src/features/Appointment/apis/bookSlot.ts
 Frontend/src/features/Appointment/apis/doctorProfile.api.ts
+Frontend/src/features/Appointment/apis/type.ts
 Frontend/src/features/Appointment/appointment.routes.tsx
+Frontend/src/features/Appointment/components/BookSlotModal.tsx
+Frontend/src/features/Appointment/components/PerCard.tsx
+Frontend/src/features/Appointment/components/PetListModal.tsx
+Frontend/src/features/Appointment/components/SelectPetComponent.tsx
 Frontend/src/features/Appointment/pages/BookAppointmentPage.tsx
 Frontend/src/features/Appointment/pages/DoctorProfilePage.tsx
+Frontend/src/features/Appointment/types/appointment.types.ts
 Frontend/src/features/Auth/api/doctor.api.ts
 Frontend/src/features/Auth/api/loginuser.api.ts
 Frontend/src/features/Auth/api/petOwner.api.ts
@@ -204,6 +219,7 @@ Frontend/src/features/Auth/hooks/usePetOwnerAccount.ts
 Frontend/src/features/Auth/hooks/useResendOtp.ts
 Frontend/src/features/Auth/hooks/useResetPassword.ts
 Frontend/src/features/Auth/pages/ContinueAs.tsx
+Frontend/src/features/Auth/pages/DashboardChoicePage.tsx
 Frontend/src/features/Auth/pages/doctor-signup.tsx
 Frontend/src/features/Auth/pages/forgot-password.tsx
 Frontend/src/features/Auth/pages/login.tsx
@@ -218,6 +234,13 @@ Frontend/src/features/Auth/schemas/login.schema.tsx
 Frontend/src/features/Auth/schemas/petowner.schema.tsx
 Frontend/src/features/Auth/schemas/reset-password.schema.tsx
 Frontend/src/features/Auth/schemas/verify-otp.schema.tsx
+Frontend/src/features/Auth/types/auth.types.ts
+Frontend/src/features/cart/cart.routes.tsx
+Frontend/src/features/cart/pages/CartPage.tsx
+Frontend/src/features/cart/pages/CheckoutPage.tsx
+Frontend/src/features/cart/schemas/checkout.schema.ts
+Frontend/src/features/cart/types/cart.types.ts
+Frontend/src/features/cart/utils/cartStorage.ts
 Frontend/src/features/Contact/components/ContactCTA.tsx
 Frontend/src/features/Contact/components/ContactFAQ.tsx
 Frontend/src/features/Contact/components/ContactForm.tsx
@@ -272,11 +295,13 @@ Frontend/src/features/Doctorcart/pages/DoctorProfilePage.tsx
 Frontend/src/features/Doctorcart/pages/EditDoctorProfilePage.tsx
 Frontend/src/features/Doctorcart/pages/FindDoctorPage.tsx
 Frontend/src/features/Doctorcart/schemas/doctorProfile.schema.ts
+Frontend/src/features/Doctorcart/types/doctorcart.types.ts
 Frontend/src/features/Landing Page/components/About.tsx
 Frontend/src/features/Landing Page/components/AIAssistance.tsx
 Frontend/src/features/Landing Page/components/Banner.tsx
 Frontend/src/features/Landing Page/components/ChooseUs.tsx
 Frontend/src/features/Landing Page/components/CTA.tsx
+Frontend/src/features/Landing Page/components/DashboardHomeMenu.tsx
 Frontend/src/features/Landing Page/components/Popular.tsx
 Frontend/src/features/Landing Page/components/Services.tsx
 Frontend/src/features/Landing Page/components/Testimonials.tsx
@@ -286,18 +311,18 @@ Frontend/src/features/Landing Page/data/team.data.ts
 Frontend/src/features/Landing Page/data/testimonial.data.ts
 Frontend/src/features/Landing Page/pages/LandingPage.tsx
 Frontend/src/features/Landing Page/routes.tsx
-Frontend/src/features/Marketplace/components/MarketplaceBanner.tsx
-Frontend/src/features/Marketplace/components/MarketplaceBenefits.tsx
-Frontend/src/features/Marketplace/components/MarketplaceCategories.tsx
-Frontend/src/features/Marketplace/components/MarketplaceCTA.tsx
-Frontend/src/features/Marketplace/components/MarketplaceFilters.tsx
-Frontend/src/features/Marketplace/components/MarketplaceHero.tsx
-Frontend/src/features/Marketplace/components/ProductCard.tsx
-Frontend/src/features/Marketplace/components/ProductsGrid.tsx
-Frontend/src/features/Marketplace/data/marketplace.data.ts
-Frontend/src/features/Marketplace/marketplace.route.tsx
-Frontend/src/features/Marketplace/pages/MarketplacePage.tsx
+Frontend/src/features/marketplace1/api/marketplace.api.ts
+Frontend/src/features/marketplace1/components/MarketplaceDetailPanel.tsx
+Frontend/src/features/marketplace1/components/MarketplaceFilters.tsx
+Frontend/src/features/marketplace1/components/MarketplacePagination.tsx
+Frontend/src/features/marketplace1/components/MarketplaceProductCard.tsx
+Frontend/src/features/marketplace1/data/marketplace.data.ts
+Frontend/src/features/marketplace1/marketplace.routes.tsx
+Frontend/src/features/marketplace1/pages/MarketplacePage.tsx
+Frontend/src/features/marketplace1/pages/MarketplaceProductDetailPage.tsx
+Frontend/src/features/marketplace1/types/marketplace.types.ts
 Frontend/src/features/Payment/api/payment.api.ts
+Frontend/src/features/Payment/components/AppointmentPayment.tsx
 Frontend/src/features/Payment/components/PaymentSummaryCard.tsx
 Frontend/src/features/Payment/page/AppointmentPaymentPage.tsx
 Frontend/src/features/Payment/page/PaymentCancelPage.tsx
@@ -311,9 +336,11 @@ Frontend/src/features/Pet Owner/pet details/pages/PetIssueReportPage.tsx
 Frontend/src/features/Pet Owner/pet details/pets.route.tsx
 Frontend/src/features/Pet Owner/pet details/schemas/pet.schema.ts
 Frontend/src/features/Pet Owner/pet details/schemas/petIssueReport.schema.ts
+Frontend/src/features/Pet Owner/pet details/types/petDetails.types.ts
 Frontend/src/features/Pet Owner/pet profile/api/petOwnerProfile.api.ts
 Frontend/src/features/Pet Owner/pet profile/api/pets.api.ts
 Frontend/src/features/Pet Owner/pet profile/components/DeletePetModal.tsx
+Frontend/src/features/Pet Owner/pet profile/components/EditPetOwnerProfileModal.tsx
 Frontend/src/features/Pet Owner/pet profile/components/MyPetsSection.tsx
 Frontend/src/features/Pet Owner/pet profile/components/PetActionsMenu.tsx
 Frontend/src/features/Pet Owner/pet profile/components/PetForm.tsx
@@ -324,6 +351,7 @@ Frontend/src/features/Pet Owner/pet profile/pages/EditPetPage.tsx
 Frontend/src/features/Pet Owner/pet profile/pages/PetOwnerProfilePage.tsx
 Frontend/src/features/Pet Owner/pet profile/petProfile.route.tsx
 Frontend/src/features/Pet Owner/pet profile/schemas/pet.schema.ts
+Frontend/src/features/Pet Owner/pet profile/schemas/petOwnerProfile.schema.ts
 Frontend/src/features/Pet Owner/pet profile/types/petProfile.types.ts
 Frontend/src/features/Pet Owner/SelectPet/components/AddNewPetCard.tsx
 Frontend/src/features/Pet Owner/SelectPet/components/ExistingPetCard.tsx
@@ -346,6 +374,28 @@ Frontend/src/features/PetOwnerDashboard/data/dashboard.data.ts
 Frontend/src/features/PetOwnerDashboard/pages/PetOwnerDashboardPage.tsx
 Frontend/src/features/PetOwnerDashboard/petOwnerDashboard.route.tsx
 Frontend/src/features/PetOwnerDashboard/types/petOwnerDashboard.types.ts
+Frontend/src/features/seller/api/seller.api.ts
+Frontend/src/features/seller/components/OrdersTable.tsx
+Frontend/src/features/seller/components/ProductCard.tsx
+Frontend/src/features/seller/components/ProductImageUpload.tsx
+Frontend/src/features/seller/components/ProductPreviewCard.tsx
+Frontend/src/features/seller/components/RecentOrders.tsx
+Frontend/src/features/seller/components/SellerHeader.tsx
+Frontend/src/features/seller/components/SellerSidebar.tsx
+Frontend/src/features/seller/components/SellerStatCard.tsx
+Frontend/src/features/seller/components/StockOverview.tsx
+Frontend/src/features/seller/components/StockTable.tsx
+Frontend/src/features/seller/data/sellerDashboard.data.ts
+Frontend/src/features/seller/data/sellerOrdersStock.data.ts
+Frontend/src/features/seller/data/sellerProducts.data.ts
+Frontend/src/features/seller/pages/SellerDashboardPage.tsx
+Frontend/src/features/seller/pages/SellerOrdersStockPage.tsx
+Frontend/src/features/seller/pages/SellerProductFormPage.tsx
+Frontend/src/features/seller/pages/SellerProductsPage.tsx
+Frontend/src/features/seller/pages/SellerSavedListingsPage.tsx
+Frontend/src/features/seller/schemas/sellerProduct.schema.ts
+Frontend/src/features/seller/seller.routes.tsx
+Frontend/src/features/seller/types/seller.types.ts
 Frontend/src/features/Services/components/Banner.tsx
 Frontend/src/features/Services/components/ServiceCard.tsx
 Frontend/src/features/Services/components/ServicesCTA.tsx
@@ -356,6 +406,7 @@ Frontend/src/features/Services/data/services.data.ts
 Frontend/src/features/Services/index.tsx
 Frontend/src/features/Services/pages/ServicesPage.tsx
 Frontend/src/features/Services/service.route.tsx
+Frontend/src/features/Services/types/services.types.ts
 Frontend/src/Global Provider/SmoothScroller.tsx
 Frontend/src/index.css
 Frontend/src/layout/landing.layout.tsx
@@ -392,6 +443,497 @@ Frontend/vite.config.ts
 ```
 
 # Files
+
+## File: Frontend/src/features/Appointment/apis/bookSlot.ts
+````typescript
+import { api, handleAxiosError } from "@/features/api interface/axios.interface";
+
+export type BookableSlot = {
+    scheduleId: string;
+    date: string;
+    day: string;
+    startTime: string;
+    endTime: string;
+    startDateTime: string;
+    endDateTime: string;
+}
+export type Data = {
+    id: string;
+    name: string;
+    image: string;
+    specialization: string;
+    specialty?: string;
+    education: string;
+    experience: number;
+    fees: number;
+    status: string;
+    availableDays: string[];
+    availableSlots: BookableSlot[];
+    todaySlots: BookableSlot[];
+    nextAvailable: BookableSlot | null;
+}
+
+
+export const bookDoctorSlot = async (schedule) => {
+    try {
+        const response = await api.post("http://localhost:8000/api/v1/petOwner/book-slot", schedule);
+        return response.data
+    } catch (error) {
+        handleAxiosError(error)
+    }
+}
+````
+
+## File: Frontend/src/features/Appointment/apis/type.ts
+````typescript
+export interface Pet {
+  id: string;
+  name: string;
+  breed: string;
+  category: "DOG" | "CAT" | "REPTILE" | "OTHER" | string;
+  age: number;
+  photoUrl?: string;
+}
+
+export interface SelectPetStepProps {
+  selectedPet: Pet | null; // Null if no pet has been selected yet
+  onSelectPet: (pet: Pet) => void; // Triggered when a pet is successfully selected or created
+}
+````
+
+## File: Frontend/src/features/Appointment/components/BookSlotModal.tsx
+````typescript
+import { FaTimes } from "react-icons/fa";
+import { type BookableSlot } from "../apis/bookSlot"; // Adjust path if needed
+
+interface BookingModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onConfirm: (scheduleId: string) => void;
+    slot: BookableSlot | null;
+}
+
+const BookingModal = ({ isOpen, onClose, onConfirm, slot }: BookingModalProps) => {
+    if (!isOpen || !slot) return null;
+
+
+    const formattedDate = new Date(slot.date).toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+    });
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm transition-opacity">
+            <div className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl">
+                {/* Header */}
+                <div className="mb-5 flex items-center justify-between">
+                    <h3 className="text-xl font-extrabold text-[#07182c]">
+                        Confirm Appointment
+                    </h3>
+                    <button
+                        onClick={onClose}
+                        className="rounded-full bg-slate-100 p-2 text-slate-500 transition hover:bg-slate-200 hover:text-slate-800"
+                    >
+                        <FaTimes />
+                    </button>
+                </div>
+
+                {/* Slot Details */}
+                <div className="mb-6 rounded-2xl bg-[#f5fbff] p-5 text-center shadow-inner">
+                    <p className="text-sm font-semibold uppercase tracking-wider text-slate-500">
+                        Selected Slot
+                    </p>
+                    <p className="mt-2 text-xl font-extrabold text-[#07182c]">
+                        {formattedDate}
+                    </p>
+                    <p className="mt-1 font-bold text-[#009f9d]">
+                        {slot.day}
+                    </p>
+                    <p className="mt-1 text-base font-medium text-slate-600">
+                        {slot.startTime} - {slot.endTime}
+                    </p>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-3">
+                    <button
+                        onClick={onClose}
+                        className="flex-1 rounded-xl border-2 border-slate-200 bg-white py-3 text-sm font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-800"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={() => onConfirm(slot.scheduleId)}
+                        className="flex-1 rounded-xl bg-[#009f9d] py-3 text-sm font-bold text-white transition hover:bg-[#007f7d]"
+                    >
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default BookingModal;
+````
+
+## File: Frontend/src/features/Appointment/components/PerCard.tsx
+````typescript
+// PetCard.tsx
+import { PawPrint } from "lucide-react";
+import Button from "@/shared/components/Button/Button";
+
+interface PetCardProps {
+    id: string;
+    name: string;
+    breed: string;
+    category: string;
+    age: string | number;
+    photos?: any[]; // Dynamic handling for the photo array from backend
+    onSelect: (name: string, photoUrl: string | undefined, id: string) => void;
+}
+
+const PetCard = ({ id, name, breed, category, age, photos, onSelect }: PetCardProps) => {
+
+   
+    const resolvePhotoUrl = (): string | undefined => {
+        if (!photos || photos.length === 0) return undefined;
+        const firstPhoto = photos[0];
+        if (typeof firstPhoto === "string") return firstPhoto;
+        if (typeof firstPhoto === "object" && firstPhoto !== null && "url" in firstPhoto) {
+            return (firstPhoto as { url: string }).url;
+        }
+        return undefined;
+    };
+
+    const currentPhotoUrl = resolvePhotoUrl();
+
+    return (
+        <div className="flex items-center justify-between gap-4 p-4 rounded-2xl border border-purple-100 bg-white shadow-sm transition-all hover:shadow-md hover:border-purple-200">
+            <div className="flex items-center gap-4">
+                {/* Pet Image Frame */}
+                {currentPhotoUrl ? (
+                    <div className="h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-purple-100">
+                        <img
+                            src={currentPhotoUrl}
+                            alt={name}
+                            className="h-full w-full object-cover"
+                        />
+                    </div>
+                ) : (
+                    <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#F6F0FF] text-[#6D3DD9]">
+                        <PawPrint size={24} />
+                    </div>
+                )}
+
+                {/* Pet Info */}
+                <div>
+                    <h4 className="text-base font-black text-slate-800">{name}</h4>
+                    <p className="text-xs font-semibold text-slate-400 mt-0.5">
+                        {breed} • {age} {Number(age) === 1 ? "Year" : "Years"} old
+                    </p>
+                </div>
+            </div>
+
+            {/* Action Button */}
+            <Button
+                type="button"
+                variant="outline"
+                onClick={() => onSelect(name, currentPhotoUrl, id)}
+                className="px-4 py-2 text-xs font-bold border-[#6D3DD9]/35 text-[#6D3DD9] hover:bg-[#6D3DD9] hover:text-white transition-all rounded-xl"
+            >
+                Select
+            </Button>
+        </div>
+    );
+};
+
+export default PetCard;
+````
+
+## File: Frontend/src/features/Appointment/components/PetListModal.tsx
+````typescript
+import { getUserPets } from "../apis/doctorProfile.api";
+import { useEffect, useState } from "react";
+import { X, Loader2, AlertCircle, PawPrint } from "lucide-react";
+import PetCard from "./PerCard";
+
+// Adjust this interface to match your exact backend response properties if needed
+interface PetListItem {
+    id: string;
+    name: string;
+    photoUrl?: string;
+}
+
+interface PetListingModalProps {
+    onClose: () => void;
+    onSelect: (name: string, photoUrl: string | undefined, id: string) => void;
+}
+
+const PetListingModal = ({ onClose, onSelect }: PetListingModalProps) => {
+    const [pets, setPets] = useState<PetListItem[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchUserPets = async () => {
+
+            setLoading(true);
+            setError(null);
+            const response = await getUserPets();
+            console.log("Response is ", response)
+            await new Promise((resolve) => setTimeout(resolve, 800));
+            const mockPetsData: PetListItem[] = [
+                { id: "1", name: "Buddy", photoUrl: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=150" },
+                { id: "2", name: "Luna", photoUrl: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=150" },
+                { id: "3", name: "Max" }, // Missing profile picture fallback test
+            ];
+            if (response) {
+                setLoading(false);
+                setPets(response);
+            }
+
+        };
+
+        fetchUserPets();
+    }, []);
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in">
+            {/* Backdrop overlay listener to close out of modal safely */}
+            <div className="absolute inset-0" onClick={onClose} />
+
+            {/* Modal Main Frame */}
+            <div className="relative w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl shadow-purple-950/20 text-[#1F1F2E] z-10 animate-scale-up">
+
+                {/* Header Block */}
+                <div className="relative border-b border-purple-50 bg-gradient-to-r from-[#F4ECFF] to-white px-6 py-5 flex items-center justify-between">
+                    <div>
+                        <h3 className="text-xl font-black tracking-tight text-[#4c249f]">
+                            Your Pets
+                        </h3>
+                        <p className="text-xs font-semibold text-[#8B64D7] mt-0.5">
+                            Choose the profile for this appointment
+                        </p>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="rounded-xl p-2 text-slate-400 hover:bg-purple-50 hover:text-slate-600 transition-colors"
+                    >
+                        <X size={20} />
+                    </button>
+                </div>
+
+                {/* Dynamic Inner Body Container */}
+                <div className="p-6 max-h-[60vh] overflow-y-auto space-y-3 custom-scrollbar">
+
+                    {/* Loading View State */}
+                    {loading && (
+                        <div className="flex flex-col items-center justify-center py-12 text-[#6D3DD9]">
+                            <Loader2 size={36} className="animate-spin opacity-80" />
+                            <p className="mt-3 text-sm font-semibold text-slate-500">Loading your pets...</p>
+                        </div>
+                    )}
+
+                    {/* Error View State */}
+                    {error && !loading && (
+                        <div className="flex items-center gap-3 bg-red-50 border border-red-100 p-4 rounded-2xl text-red-700">
+                            <AlertCircle size={20} className="shrink-0" />
+                            <p className="text-sm font-semibold">{error}</p>
+                        </div>
+                    )}
+
+                    {/* Empty View State */}
+                    {!loading && !error && pets.length === 0 && (
+                        <div className="flex flex-col items-center justify-center py-10 text-center">
+                            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 text-slate-400 mb-3">
+                                <PawPrint size={26} />
+                            </div>
+                            <p className="text-sm font-black text-slate-700">No pets registered yet</p>
+                            <p className="text-xs font-medium text-slate-400 mt-1 max-w-[240px]">
+                                Please configure a pet within your dashboard workspace profile first.
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Render Active List Items Grid */}
+                    {!loading && !error && pets.length > 0 && (
+                        <div className="flex flex-col gap-3">
+                            {pets.map((pet) => (
+                                <PetCard
+                                    key={pet.id}
+                                    id={pet.id}
+                                    name={pet.name}
+                                    photoUrl={pet.photoUrl}
+                                    onSelect={onSelect}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default PetListingModal;
+````
+
+## File: Frontend/src/features/Appointment/components/SelectPetComponent.tsx
+````typescript
+import { useState } from "react";
+import { Search, PawPrint, CheckCircle2, ArrowRight, PlusCircle } from "lucide-react";
+import { NavLink } from "react-router-dom";
+import Button from "@/shared/components/Button/Button";
+import PetListingModal from "./PetListModal"; 
+
+interface SelectedPetState {
+  id: string;
+  name: string;
+  photoUrl?: string;
+}
+
+interface SelectPetStepProps {
+  onNextStep: (petId: string) => void;
+}
+
+const SelectPetStep = ({ onNextStep }: SelectPetStepProps) => {
+  const [isSelectModalOpen, setIsSelectModalOpen] = useState(false);
+  const [selectedPet, setSelectedPet] = useState<SelectedPetState | null>(null);
+
+  const handlePetSelect = (name: string, photoUrl: string | undefined, id: string) => {
+    setSelectedPet({ id, name, photoUrl });
+    localStorage.setItem("petPatientId", id);
+    setIsSelectModalOpen(false);
+  };
+
+  const handleNextStep = () => {
+    const savedPetId = localStorage.getItem("petPatientId");
+
+    if (!savedPetId) {
+      alert("Please select a pet before proceeding to the next step.");
+      return;
+    }
+
+    onNextStep(savedPetId);
+  };
+
+  return (
+    <>
+      <section className="w-full max-w-2xl mx-auto flex flex-col gap-6 text-[#1F1F2E]">
+        <div className="mb-2">
+          <h2 className="text-2xl font-black tracking-tight text-[#4c249f]">
+            Who is this appointment for?
+          </h2>
+          <p className="text-sm font-semibold text-slate-500 mt-1">
+            Choose an existing pet from your profile or register a new one.
+          </p>
+        </div>
+
+        <div className="relative overflow-hidden rounded-3xl border-2 border-purple-100 bg-white p-6 shadow-xl shadow-purple-200/40 transition-all hover:border-purple-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-4">
+
+              {selectedPet?.photoUrl ? (
+                <div className="h-14 w-14 shrink-0 overflow-hidden rounded-2xl border-2 border-purple-200">
+                  <img
+                    src={selectedPet.photoUrl}
+                    alt={selectedPet.name}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#F4ECFF] text-[#6D3DD9]">
+                  <Search size={28} />
+                </div>
+              )}
+
+              <div>
+                <h3 className="text-lg font-black text-slate-800">
+                  Select Existing Pet
+                </h3>
+                {selectedPet ? (
+                  <div className="mt-2 flex items-center gap-2 rounded-xl bg-green-50 px-3 py-2 border border-green-100">
+                    <CheckCircle2 size={16} className="text-green-600 shrink-0" />
+                    <span className="text-sm font-semibold text-green-700">
+                      Selected: {selectedPet.name}
+                    </span>
+                  </div>
+                ) : (
+                  <p className="mt-1 text-sm font-medium text-slate-500">
+                    Pick a pet you have already registered with us.
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              onClick={() => setIsSelectModalOpen(true)}
+              className="shrink-0 bg-[#6D3DD9] hover:bg-[#5630B2] text-white shadow-md shadow-purple-200"
+            >
+              {selectedPet ? "Change Pet" : "Select Pet"}
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4 py-2">
+          <div className="h-[1px] flex-1 bg-slate-200"></div>
+          <span className="text-xs font-black uppercase tracking-wider text-slate-400">
+            OR
+          </span>
+          <div className="h-[1px] flex-1 bg-slate-200"></div>
+        </div>
+
+        <NavLink
+          to="/pet-owner/profile"
+          className="group relative flex w-full flex-col items-center justify-center gap-4 overflow-hidden rounded-3xl border-2 border-dashed border-purple-200 bg-[#F6F0FF]/50 p-8 text-center transition-all hover:border-[#6D3DD9] hover:bg-[#F4ECFF] focus:outline-none focus:ring-4 focus:ring-purple-100"
+        >
+          <div className="absolute -right-6 -top-6 text-[#6D3DD9]/5 transition-transform group-hover:scale-110 group-hover:text-[#6D3DD9]/10">
+            <PawPrint size={120} />
+          </div>
+
+          <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-md shadow-purple-200 text-[#6D3DD9] transition-transform group-hover:scale-110 group-hover:bg-[#6D3DD9] group-hover:text-white">
+            <PlusCircle size={32} />
+          </div>
+
+          <div className="relative">
+            <h3 className="text-lg font-black text-slate-800 flex items-center justify-center gap-2">
+              Create Pet in Profile
+              <ArrowRight size={18} className="text-[#6D3DD9] transition-transform group-hover:translate-x-1" />
+            </h3>
+            <p className="mt-1 text-sm font-medium text-slate-500">
+              Head over to your profile to add a new furry friend, then return here to book.
+            </p>
+          </div>
+        </NavLink>
+
+        <div className="mt-4 flex justify-end">
+          <Button
+            type="button"
+            onClick={handleNextStep}
+            className="px-8 py-3 font-black text-base bg-[#4c249f] hover:bg-[#3b1b7e] text-white rounded-2xl shadow-lg transition-all flex items-center gap-2"
+          >
+            Next
+            <ArrowRight size={18} />
+          </Button>
+        </div>
+      </section>
+
+      {isSelectModalOpen && (
+        <PetListingModal
+          onClose={() => setIsSelectModalOpen(false)}
+          onSelect={handlePetSelect}
+        />
+      )}
+    </>
+  );
+};
+
+export default SelectPetStep;
+````
 
 ## File: Backend/.gitignore
 ````
@@ -2560,43 +3102,415 @@ const upload = multer(
 module.exports = upload;
 ````
 
-## File: Backend/app/config/prisma.js
+## File: Backend/app/controllers/marketplace.controller.js
 ````javascript
-const { PrismaClient } = require("@prisma/client")
+const marketplaceService = require("../services/marketplace.service");
 
-const prisma = new PrismaClient();
+const getUserId = (req) => {
+  return req.user?.id || req.user?.userId;
+};
 
-module.exports = { default: prisma };
+exports.getMarketplaceProducts = async (req, res) => {
+  try {
+    const products = await marketplaceService.getMarketplaceProducts(req.query);
+
+    return res.status(200).json({
+      success: true,
+      data: products,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.getMarketplaceProductById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const product = await marketplaceService.getMarketplaceProductById(id);
+
+    return res.status(200).json({
+      success: true,
+      data: product,
+    });
+  } catch (error) {
+    return res.status(404).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.saveListing = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+    const { productId } = req.params;
+
+    const saved = await marketplaceService.saveListing(userId, productId);
+
+    return res.status(201).json({
+      success: true,
+      message: "Listing saved successfully",
+      data: saved,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.removeSavedListing = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+    const { productId } = req.params;
+
+    await marketplaceService.removeSavedListing(userId, productId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Listing removed successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.getSavedListings = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+
+    const listings = await marketplaceService.getSavedListings(userId);
+
+    return res.status(200).json({
+      success: true,
+      data: listings,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 ````
 
-## File: Backend/app/config/redis.config.js
+## File: Backend/app/controllers/marketplaceOrder.controller.js
 ````javascript
-const { createClient } = require('redis');
+const marketplaceOrderService = require("../services/marketplaceOrder.service");
 
-const redisClient = createClient({
-    url: process.env.REDIS_URL || 'redis://127.0.0.1:6379'
-})
+const getUserId = (req) => {
+  return req.user?.id || req.user?.userId;
+};
 
+exports.createMarketplaceOrder = async (req, res) => {
+  try {
+    const buyerId = getUserId(req);
 
-redisClient.on('connect', () => {
-    console.log("Redis Connected")
-})
-
-redisClient.on('error', (err) => {
-    console.error("Error is Redi Connection", err)
-});
-
-(async () => {
-    try {
-        await redisClient.connect();
-
-    } catch (error) {
-        console.error("Failed To Connect to Redis", error)
+    if (!buyerId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized user",
+      });
     }
-})()
+
+    const order = await marketplaceOrderService.createMarketplaceOrder(
+      buyerId,
+      req.body
+    );
+
+    return res.status(201).json({
+      success: true,
+      message: "Order placed successfully",
+      data: order,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.getMyMarketplaceOrders = async (req, res) => {
+  try {
+    const buyerId = getUserId(req);
+
+    const orders = await marketplaceOrderService.getMyMarketplaceOrders(buyerId);
+
+    return res.status(200).json({
+      success: true,
+      data: orders,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+````
+
+## File: Backend/app/controllers/seller.controller.js
+````javascript
+const sellerService = require("../services/seller.service");
+const { uploadToCloudinary } = require("../utils/cloudinary.utils");
+
+const getUserId = (req) => {
+  return req.user?.id || req.user?.userId;
+};
+
+const uploadProductImages = async (files = []) => {
+  const uploadedImages = [];
+
+  for (const file of files) {
+    const uploadedImage = await uploadToCloudinary(
+      file.buffer,
+      "pets-veta/marketplace-products"
+    );
+
+    uploadedImages.push({
+      publicUrl: uploadedImage.secure_url,
+      publicId: uploadedImage.public_id,
+    });
+  }
+
+  return uploadedImages;
+};
+
+exports.createOrUpdateSellerProfile = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized user",
+      });
+    }
+
+    const profile = await sellerService.createOrUpdateSellerProfile(
+      userId,
+      req.body
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Seller profile saved successfully",
+      data: profile,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.getMySellerProfile = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+
+    const profile = await sellerService.getMySellerProfile(userId);
+
+    return res.status(200).json({
+      success: true,
+      data: profile,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.createProduct = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+    const uploadedImages = await uploadProductImages(req.files);
+    const payload = req.body || {};
+
+    const product = await sellerService.createProduct(userId, {
+      ...payload,
+      images: uploadedImages,
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Product created successfully",
+      data: product,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.getMyProducts = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+
+    const products = await sellerService.getMyProducts(userId);
+
+    return res.status(200).json({
+      success: true,
+      data: products,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.updateProduct = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+    const { id } = req.params;
+    const uploadedImages = await uploadProductImages(req.files);
+    const payload = req.body || {};
+
+    const product = await sellerService.updateProduct(userId, id, {
+      ...payload,
+      images: uploadedImages,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Product updated successfully",
+      data: product,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.deleteProduct = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+    const { id } = req.params;
+
+    await sellerService.deleteProduct(userId, id);
+
+    return res.status(200).json({
+      success: true,
+      message: "Product deleted successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.updateProductStock = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+    const { id } = req.params;
+    const { stock } = req.body;
+
+    const product = await sellerService.updateProductStock(userId, id, stock);
+
+    return res.status(200).json({
+      success: true,
+      message: "Stock updated successfully",
+      data: product,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.getSellerOrders = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+
+    const orders = await sellerService.getSellerOrders(userId);
+
+    return res.status(200).json({
+      success: true,
+      data: orders,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+````
+
+## File: Backend/app/jobs/appointmentCleanup.job.js
+````javascript
+const cron = require('node-cron');
+const {
+    cleanupExpiredAppointments,
+} = require("../services/appointmentCleanup.service");
+
+const startAppointmentCleanupJob = () => {
+    cron.schedule('*/5 * * * *', async () => {
+        try {
+            await cleanupExpiredAppointments();
+        } catch (error) {
+            console.error(
+                "[AppointmentCleanupJob] Cron failed:",
+                error.message
+            );
+        }
+    });
+
+    console.log("[AppointmentCleanupJob] Started. Runs every 5 minutes.");
+};
 
 
-module.exports = redisClient;
+module.exports = {
+    startAppointmentCleanupJob,
+};
+````
+
+## File: Backend/app/jobs/scheduleCleanup.js
+````javascript
+const cron = require("node-cron");
+const {
+  cleanupPastUnbookedSchedules,
+} = require("../services/scheduleCleanup.service");
+
+const startScheduleCleanupJob = () => {
+  /**
+   * Har din raat 1 baje run hoga.
+   */
+  cron.schedule("0 1 * * *", async () => {
+    try {
+      await cleanupPastUnbookedSchedules();
+    } catch (error) {
+      console.error("[ScheduleCleanupJob] Cron failed:", error.message);
+    }
+  });
+
+  console.log("[ScheduleCleanupJob] Started. Runs every day at 1:00 AM.");
+};
+
+module.exports = {
+  startScheduleCleanupJob,
+};
 ````
 
 ## File: Backend/app/middleware/authorizeRole.middleware.js
@@ -2638,105 +3552,6 @@ const globalErrorHandler = (err, req, res, next) => {
 module.exports = globalErrorHandler;
 ````
 
-## File: Backend/app/middleware/rateLimiter.js
-````javascript
-const redisClient = require('../config/redis.config');
-const { RedisStore } = require('rate-limit-redis');
-const { rateLimit } = require('express-rate-limit');
-
-const authStore = new RedisStore({
-    sendCommand: (...args) => redisClient.sendCommand(args),
-    prefix: 'rl:auth:',
-});
-
-const adminStore = new RedisStore({
-    sendCommand: (...args) => redisClient.sendCommand(args),
-    prefix: 'rl:admin:'
-});
-
-const petOwnerStore = new RedisStore({
-    sendCommand: (...args) => redisClient.sendCommand(args),
-    prefix: 'rl:petOwner:'
-});
-
-const globalUserStore = new RedisStore({
-    sendCommand: (...args) => redisClient.sendCommand(args),
-    prefix: 'rl:global:'
-})
-
-const doctorStore = new RedisStore({
-    sendCommand: (...args) => redisClient.sendCommand(args),
-    prefix: 'rl:doctor:'
-})
-
-
-const authLimiter = rateLimit({
-    store: authStore,
-    windowMs: 5 * 60 * 1000,
-    limit: 10,
-    standardHeaders: 'draft-8',
-    legacyHeaders: false,
-    message: {
-        status: 429,
-        error: "To many Auth attempts"
-    }
-});
-
-const adminLimiter = rateLimit({
-    store: adminStore,
-    windowMs: 10 * 60 * 1000,
-    limit: 50,
-    standardHeaders: false,
-    message: {
-        status: 429,
-        error: "Admin resource limit reaached try again after some minutes"
-    }
-})
-
-const petOwnerLimiter = rateLimit({
-    store: petOwnerStore,
-    windowMs: 10 * 60 * 1000,
-    limit: 50,
-    standardHeaders: 'draft-8',
-    legacyHeaders: false,
-    message: {
-        status: 429,
-        error: "Resource limite Reach Wait for few second"
-    }
-});
-
-const globalUserLimiter = rateLimit({
-    store: globalUserStore,
-    windowMs: 10 * 60 * 1000,
-    limit: 150,
-    legacyHeaders: false,
-    standardHeaders: 'draft-8',
-    message: {
-        status: 429,
-        error: "Too many request from this device Please slow down"
-    }
-});
-
-const doctorLimiter = rateLimit({
-    limit: 100,
-    windowMs: 10 * 60 * 1000,
-    standardHeaders: 'draft-8',
-    legacyHeaders: false,
-    message: {
-        status: 429,
-        error: "Too many requests Please wait a minute only then proceed"
-    }
-})
-
-module.exports = {
-    adminLimiter,
-    globalUserLimiter,
-    authLimiter,
-    petOwnerLimiter,
-    doctorLimiter
-}
-````
-
 ## File: Backend/app/middleware/zod.middleware.js
 ````javascript
 const zod = require('zod');
@@ -2762,6 +3577,90 @@ const validateRequest = (schema) => {
 };
 
 module.exports = { validateRequest };
+````
+
+## File: Backend/app/routes/marketplace.routes.js
+````javascript
+const express = require("express");
+const router = express.Router();
+
+const {
+  getMarketplaceProducts,
+  getMarketplaceProductById,
+  saveListing,
+  getSavedListings,
+  removeSavedListing,
+} = require("../controllers/marketplace.controller");
+
+const { protect } = require("../middleware/auth.middleware");
+
+// Public Routes
+router.get("/products", getMarketplaceProducts);
+router.get("/product/:id", getMarketplaceProductById);
+
+// Protected Routes
+router.post("/save/:productId", protect, saveListing);
+router.delete("/save/:productId", protect, removeSavedListing);
+router.get("/saved", protect, getSavedListings);
+
+module.exports = router;
+````
+
+## File: Backend/app/routes/marketplaceOrder.routes.js
+````javascript
+const express = require("express");
+const router = express.Router();
+
+const {
+  createMarketplaceOrder,
+  getMyMarketplaceOrders,
+} = require("../controllers/marketplaceOrder.controller");
+
+const { protect } = require("../middleware/auth.middleware");
+
+// Checkout / Place Order
+router.post("/", protect, createMarketplaceOrder);
+
+// Buyer Orders
+router.get("/my-orders", protect, getMyMarketplaceOrders);
+
+module.exports = router;
+````
+
+## File: Backend/app/routes/seller.routes.js
+````javascript
+const express = require("express");
+const router = express.Router();
+
+const {
+  createOrUpdateSellerProfile,
+  getMySellerProfile,
+  createProduct,
+  getMyProducts,
+  updateProduct,
+  deleteProduct,
+  updateProductStock,
+  getSellerOrders,
+} = require("../controllers/seller.controller");
+
+const { protect } = require("../middleware/auth.middleware");
+const upload = require("../config/multer.config");
+
+// Seller Profile
+router.post("/profile", protect, createOrUpdateSellerProfile);
+router.get("/profile", protect, getMySellerProfile);
+
+// Seller Products
+router.post("/product", protect, upload.array("images", 5), createProduct);
+router.get("/products", protect, getMyProducts);
+router.patch("/product/:id", protect, upload.array("images", 5), updateProduct);
+router.delete("/product/:id", protect, deleteProduct);
+router.patch("/product/:id/stock", protect, updateProductStock);
+
+// Seller Orders
+router.get("/orders", protect, getSellerOrders);
+
+module.exports = router;
 ````
 
 ## File: Backend/app/schema/zod.schema.js
@@ -2896,15 +3795,479 @@ module.exports = {
 }
 ````
 
-## File: Backend/app/server.js
+## File: Backend/app/scripts/runCleanupOnce.js
 ````javascript
-const app = require('./app');
+require("dotenv").config();
+const {
+    cleanupExpiredAppointments,
+} = require("../services/appointmentCleanup.service");
 
-const port = process.env.PORT || 8000;
+cleanupExpiredAppointments()
+    .then((result) => {
+        console.log("Cleanup done:", result);
+        process.exit(0);
+    })
+    .catch((error) => {
+        console.error("Cleanup failed:", error);
+        process.exit(1);
+    });
+````
 
-app.listen(port, () => {
-    console.log("Server is running");
-})
+## File: Backend/app/scripts/runScheduleCleanupOnce.js
+````javascript
+const path = require("path");
+
+require("dotenv").config({
+    path: path.resolve(__dirname, "../../.env"),
+});
+
+const {
+    cleanupPastUnbookedSchedules,
+} = require("../services/scheduleCleanup.service");
+
+cleanupPastUnbookedSchedules()
+    .then((result) => {
+        console.log("Schedule cleanup done:", result);
+        process.exit(0);
+    })
+    .catch((error) => {
+        console.error("Schedule cleanup failed:", error);
+        process.exit(1);
+    });
+````
+
+## File: Backend/app/services/appointmentCleanup.service.js
+````javascript
+const prisma = require("../config/prisma");
+const { stripe } = require("../config/stripe");
+
+const {
+  AppointmentStatus,
+  PaymentStatus,
+  ScheduleStatus,
+} = require("@prisma/client");
+
+const CLEANUP_BATCH_SIZE = 50;
+
+const pendingAppointmentStatuses = [
+  AppointmentStatus.PENDING_DETAILS,
+  AppointmentStatus.PENDING_REPORT,
+  AppointmentStatus.PENDING_PAYMENT,
+  AppointmentStatus.PAYMENT_FAILED,
+  AppointmentStatus.PAYMENT_PROCESSING,
+];
+
+const cancellableStripeStatuses = [
+  "requires_payment_method",
+  "requires_confirmation",
+  "requires_action",
+  "requires_capture",
+  "processing",
+];
+
+const expireAppointmentAndReleaseSlot = async ({
+  appointment,
+  payment,
+  reason = "Appointment expired before payment completion",
+}) => {
+  await prisma.$transaction(async (tx) => {
+    await tx.appointment.update({
+      where: {
+        id: appointment.id,
+      },
+      data: {
+        status: AppointmentStatus.EXPIRED,
+        paymentStatus: payment ? PaymentStatus.CANCELLED : PaymentStatus.CANCELLED,
+      },
+    });
+
+    if (payment) {
+      await tx.payment.update({
+        where: {
+          id: payment.id,
+        },
+        data: {
+          status: PaymentStatus.CANCELLED,
+          cancelledAt: new Date(),
+          failureReason: reason,
+        },
+      });
+    }
+
+    /**
+     * updateMany use kar rahe hain taake galti se kisi aur confirmed/held slot ko release na kar dein.
+     * Sirf wahi schedule release hoga jo isi appointment ne lock kiya tha.
+     */
+    await tx.doctorSchedule.updateMany({
+      where: {
+        id: appointment.scheduleId,
+        status: ScheduleStatus.HELD,
+        lockedByAppointmentId: appointment.id,
+      },
+      data: {
+        status: ScheduleStatus.AVAILABLE,
+        lockedByUserId: null,
+        lockedByAppointmentId: null,
+        lockedAt: null,
+      },
+    });
+
+    await tx.paymentEvent.create({
+      data: {
+        eventType: "system.appointment_expired_cleanup",
+        paymentId: payment?.id || null,
+        appointmentId: appointment.id,
+        stripePaymentIntentId: payment?.stripePaymentIntentId || null,
+        payload: {
+          reason,
+          appointmentId: appointment.id,
+          scheduleId: appointment.scheduleId,
+          expiredAt: new Date().toISOString(),
+        },
+        processed: true,
+        processedAt: new Date(),
+      },
+    });
+  });
+};
+
+const confirmAppointmentFromStripePayment = async ({ appointment, payment, paymentIntent }) => {
+  await prisma.$transaction(async (tx) => {
+    /**
+     * Agar already confirmed hai to sirf safely return.
+     */
+    const latestAppointment = await tx.appointment.findUnique({
+      where: {
+        id: appointment.id,
+      },
+      include: {
+        doctorSchedule: true,
+      },
+    });
+
+    if (!latestAppointment) {
+      throw new Error(`Appointment not found during cleanup: ${appointment.id}`);
+    }
+
+    if (latestAppointment.status === AppointmentStatus.CONFIRMED) {
+      return;
+    }
+
+    /**
+     * Amount/currency verification.
+     */
+    if (payment.amount !== paymentIntent.amount) {
+      throw new Error("Payment amount mismatch during cleanup confirmation");
+    }
+
+    if (payment.currency.toLowerCase() !== paymentIntent.currency.toLowerCase()) {
+      throw new Error("Payment currency mismatch during cleanup confirmation");
+    }
+
+    /**
+     * Slot still isi appointment ke naam par HELD hona chahiye.
+     */
+    if (
+      latestAppointment.doctorSchedule.status !== ScheduleStatus.HELD ||
+      latestAppointment.doctorSchedule.lockedByAppointmentId !== latestAppointment.id
+    ) {
+      throw new Error("Schedule is not held by this appointment during cleanup confirmation");
+    }
+
+    await tx.payment.update({
+      where: {
+        id: payment.id,
+      },
+      data: {
+        status: PaymentStatus.SUCCEEDED,
+        paidAt: new Date(),
+        stripeChargeId:
+          typeof paymentIntent.latest_charge === "string"
+            ? paymentIntent.latest_charge
+            : null,
+      },
+    });
+
+    await tx.appointment.update({
+      where: {
+        id: latestAppointment.id,
+      },
+      data: {
+        status: AppointmentStatus.CONFIRMED,
+        paymentStatus: PaymentStatus.SUCCEEDED,
+        confirmedAt: new Date(),
+      },
+    });
+
+    await tx.doctorSchedule.update({
+      where: {
+        id: latestAppointment.scheduleId,
+      },
+      data: {
+        status: ScheduleStatus.BOOKED,
+        lockedByAppointmentId: latestAppointment.id,
+      },
+    });
+
+    await tx.paymentEvent.create({
+      data: {
+        eventType: "system.cleanup_confirmed_succeeded_payment",
+        paymentId: payment.id,
+        appointmentId: latestAppointment.id,
+        stripePaymentIntentId: payment.stripePaymentIntentId,
+        payload: {
+          reason: "Cleanup found Stripe PaymentIntent already succeeded",
+          appointmentId: latestAppointment.id,
+          paymentIntentId: paymentIntent.id,
+          confirmedAt: new Date().toISOString(),
+        },
+        processed: true,
+        processedAt: new Date(),
+      },
+    });
+  });
+};
+
+const markPaymentProcessing = async ({ appointment, payment, paymentIntent }) => {
+  await prisma.$transaction(async (tx) => {
+    await tx.payment.update({
+      where: {
+        id: payment.id,
+      },
+      data: {
+        status: PaymentStatus.PROCESSING,
+      },
+    });
+
+    await tx.appointment.update({
+      where: {
+        id: appointment.id,
+      },
+      data: {
+        status: AppointmentStatus.PAYMENT_PROCESSING,
+        paymentStatus: PaymentStatus.PROCESSING,
+      },
+    });
+
+    await tx.paymentEvent.create({
+      data: {
+        eventType: "system.cleanup_payment_still_processing",
+        paymentId: payment.id,
+        appointmentId: appointment.id,
+        stripePaymentIntentId: payment.stripePaymentIntentId,
+        payload: {
+          reason: "Cleanup found Stripe PaymentIntent still processing",
+          appointmentId: appointment.id,
+          paymentIntentId: paymentIntent.id,
+          checkedAt: new Date().toISOString(),
+        },
+        processed: true,
+        processedAt: new Date(),
+      },
+    });
+  });
+};
+
+const cancelStripePaymentIntentIfPossible = async (paymentIntentId) => {
+  if (!paymentIntentId) return null;
+
+  try {
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+
+    /**
+     * succeeded ko kabhi cancel nahi karna.
+     */
+    if (paymentIntent.status === "succeeded") {
+      return paymentIntent;
+    }
+
+    /**
+     * canceled already hai to same return.
+     */
+    if (paymentIntent.status === "canceled") {
+      return paymentIntent;
+    }
+
+    /**
+     * Kuch statuses cancellable hotay hain.
+     */
+    if (cancellableStripeStatuses.includes(paymentIntent.status)) {
+      return await stripe.paymentIntents.cancel(paymentIntentId);
+    }
+
+    return paymentIntent;
+  } catch (error) {
+    console.error(
+      `Failed to retrieve/cancel Stripe PaymentIntent ${paymentIntentId}:`,
+      error.message
+    );
+
+    /**
+     * Stripe error ki wajah se DB cleanup blindly nahi karna chahte.
+     * Isliye error throw kar dete hain.
+     */
+    throw error;
+  }
+};
+
+const cleanupExpiredAppointments = async () => {
+  const now = new Date();
+
+  console.log(`[AppointmentCleanup] Running cleanup at ${now.toISOString()}`);
+
+  const expiredAppointments = await prisma.appointment.findMany({
+    where: {
+      status: {
+        in: pendingAppointmentStatuses,
+      },
+      expiresAt: {
+        not: null,
+        lt: now,
+      },
+    },
+    include: {
+      payment: true,
+      doctorSchedule: true,
+    },
+    take: CLEANUP_BATCH_SIZE,
+    orderBy: {
+      expiresAt: "asc",
+    },
+  });
+
+  if (!expiredAppointments.length) {
+    console.log("[AppointmentCleanup] No expired pending appointments found.");
+    return {
+      checked: 0,
+      expired: 0,
+      confirmed: 0,
+      processing: 0,
+      failed: 0,
+    };
+  }
+
+  let expired = 0;
+  let confirmed = 0;
+  let processing = 0;
+  let failed = 0;
+
+  for (const appointment of expiredAppointments) {
+    try {
+      const payment = appointment.payment;
+
+      /**
+       * PaymentIntent nahi bani. Simple expire + release slot.
+       */
+      if (!payment || !payment.stripePaymentIntentId) {
+        await expireAppointmentAndReleaseSlot({
+          appointment,
+          payment: null,
+          reason: "Expired before PaymentIntent creation",
+        });
+
+        expired += 1;
+        continue;
+      }
+
+      /**
+       * Stripe se latest status check karo.
+       */
+      const paymentIntent = await stripe.paymentIntents.retrieve(
+        payment.stripePaymentIntentId
+      );
+
+      if (paymentIntent.status === "succeeded") {
+        await confirmAppointmentFromStripePayment({
+          appointment,
+          payment,
+          paymentIntent,
+        });
+
+        confirmed += 1;
+        continue;
+      }
+
+      /**
+       * Agar processing hai to slot release mat karo, warna paid payment lose ho sakti hai.
+       */
+      if (paymentIntent.status === "processing") {
+        await markPaymentProcessing({
+          appointment,
+          payment,
+          paymentIntent,
+        });
+
+        processing += 1;
+        continue;
+      }
+
+      /**
+       * Baqi unpaid states mein PaymentIntent cancel karke appointment expire.
+       */
+      const canceledOrLatestIntent = await cancelStripePaymentIntentIfPossible(
+        payment.stripePaymentIntentId
+      );
+
+      await expireAppointmentAndReleaseSlot({
+        appointment,
+        payment,
+        reason: `Expired cleanup. Stripe PaymentIntent status: ${canceledOrLatestIntent?.status || paymentIntent.status}`,
+      });
+
+      expired += 1;
+    } catch (error) {
+      failed += 1;
+
+      console.error(
+        `[AppointmentCleanup] Failed for appointment ${appointment.id}:`,
+        error.message
+      );
+
+      /**
+       * Failure ka log PaymentEvent mein save kar do.
+       */
+      try {
+        await prisma.paymentEvent.create({
+          data: {
+            eventType: "system.appointment_cleanup_failed",
+            paymentId: appointment.payment?.id || null,
+            appointmentId: appointment.id,
+            stripePaymentIntentId:
+              appointment.payment?.stripePaymentIntentId || null,
+            payload: {
+              error: error.message,
+              appointmentId: appointment.id,
+              failedAt: new Date().toISOString(),
+            },
+            processed: false,
+            processingError: error.message,
+          },
+        });
+      } catch (logError) {
+        console.error(
+          `[AppointmentCleanup] Failed to log cleanup error for appointment ${appointment.id}:`,
+          logError.message
+        );
+      }
+    }
+  }
+
+  const result = {
+    checked: expiredAppointments.length,
+    expired,
+    confirmed,
+    processing,
+    failed,
+  };
+
+  console.log("[AppointmentCleanup] Result:", result);
+
+  return result;
+};
+
+module.exports = {
+  cleanupExpiredAppointments,
+};
 ````
 
 ## File: Backend/app/services/authCookies.services.js
@@ -2941,6 +4304,786 @@ const createAuthTokens = (payload) => {
 
 module.exports = {
     createAuthTokens,
+};
+````
+
+## File: Backend/app/services/marketplace.service.js
+````javascript
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
+exports.getMarketplaceProducts = async (query) => {
+  const page = Number(query.page) || 1;
+  const limit = Number(query.limit) || 12;
+  const skip = (page - 1) * limit;
+
+  const search = query.search || "";
+  const category = query.category || "";
+  const location = query.location || "";
+
+  const where = {
+    status: "ACTIVE",
+    ...(search && {
+      title: {
+        contains: search,
+        mode: "insensitive",
+      },
+    }),
+    ...(category &&
+      category !== "All" && {
+        category,
+      }),
+    ...(location &&
+      location !== "All" && {
+        location: {
+          contains: location,
+          mode: "insensitive",
+        },
+      }),
+  };
+
+  const [products, total] = await Promise.all([
+    prisma.marketplaceProduct.findMany({
+      where,
+      skip,
+      take: limit,
+      include: {
+        images: true,
+        seller: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                fullName: true,
+                email: true,
+                profileImageUrl: true,
+              },
+            },
+          },
+        },
+        savedBy: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    }),
+
+    prisma.marketplaceProduct.count({ where }),
+  ]);
+
+  return {
+    products,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+};
+
+exports.getMarketplaceProductById = async (productId) => {
+  const product = await prisma.marketplaceProduct.findFirst({
+    where: {
+      id: productId,
+      status: {
+        not: "ARCHIVED",
+      },
+    },
+    include: {
+      images: true,
+      seller: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              fullName: true,
+              email: true,
+              phone: true,
+              profileImageUrl: true,
+            },
+          },
+        },
+      },
+      savedBy: true,
+    },
+  });
+
+  if (!product) {
+    throw new Error("Product not found");
+  }
+
+  return product;
+};
+
+exports.saveListing = async (userId, productId) => {
+  if (!userId) {
+    throw new Error("Unauthorized user");
+  }
+
+  const product = await prisma.marketplaceProduct.findFirst({
+    where: {
+      id: productId,
+      status: "ACTIVE",
+    },
+  });
+
+  if (!product) {
+    throw new Error("Product not found");
+  }
+
+  return prisma.savedListing.upsert({
+    where: {
+      userId_productId: {
+        userId,
+        productId,
+      },
+    },
+    update: {},
+    create: {
+      userId,
+      productId,
+    },
+  });
+};
+
+exports.removeSavedListing = async (userId, productId) => {
+  if (!userId) {
+    throw new Error("Unauthorized user");
+  }
+
+  const saved = await prisma.savedListing.findUnique({
+    where: {
+      userId_productId: {
+        userId,
+        productId,
+      },
+    },
+  });
+
+  if (!saved) {
+    throw new Error("Saved listing not found");
+  }
+
+  return prisma.savedListing.delete({
+    where: {
+      userId_productId: {
+        userId,
+        productId,
+      },
+    },
+  });
+};
+
+exports.getSavedListings = async (userId) => {
+  if (!userId) {
+    throw new Error("Unauthorized user");
+  }
+
+  return prisma.savedListing.findMany({
+    where: {
+      userId,
+    },
+    include: {
+      product: {
+        include: {
+          images: true,
+          seller: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  fullName: true,
+                  email: true,
+                  profileImageUrl: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+};
+````
+
+## File: Backend/app/services/marketplaceOrder.service.js
+````javascript
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
+const generateOrderNumber = () => {
+  return `PV-${Date.now()}`;
+};
+
+exports.createMarketplaceOrder = async (buyerId, payload) => {
+  const { items, shippingAddress, phoneNumber } = payload;
+
+  if (!items || !Array.isArray(items) || items.length === 0) {
+    throw new Error("Order items are required");
+  }
+
+  return prisma.$transaction(async (tx) => {
+    const productIds = items.map((item) => item.productId);
+
+    const products = await tx.marketplaceProduct.findMany({
+      where: {
+        id: {
+          in: productIds,
+        },
+        status: "ACTIVE",
+      },
+      include: {
+        seller: true,
+      },
+    });
+
+    if (products.length !== items.length) {
+      throw new Error("Some products are not available");
+    }
+
+    const sellerIds = [...new Set(products.map((product) => product.sellerId))];
+
+    if (sellerIds.length > 1) {
+      throw new Error("One order can contain products from one seller only");
+    }
+
+    let totalAmount = 0;
+
+    const orderItemsData = items.map((item) => {
+      const product = products.find((p) => p.id === item.productId);
+
+      if (!product) {
+        throw new Error("Product not found");
+      }
+
+      const quantity = Number(item.quantity) || 1;
+
+      if (product.stock < quantity) {
+        throw new Error(`${product.title} has only ${product.stock} stock`);
+      }
+
+      totalAmount += Number(product.price) * quantity;
+
+      return {
+        productId: product.id,
+        quantity,
+        price: product.price,
+      };
+    });
+
+    const order = await tx.marketplaceOrder.create({
+      data: {
+        orderNumber: generateOrderNumber(),
+        buyerId,
+        sellerId: sellerIds[0],
+        totalAmount,
+        shippingAddress,
+        phoneNumber,
+        items: {
+          create: orderItemsData,
+        },
+      },
+      include: {
+        buyer: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+            phone: true,
+          },
+        },
+        seller: true,
+        items: {
+          include: {
+            product: {
+              include: {
+                images: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    for (const item of items) {
+      const quantity = Number(item.quantity) || 1;
+
+      const product = products.find((p) => p.id === item.productId);
+
+      const newStock = product.stock - quantity;
+
+      await tx.marketplaceProduct.update({
+        where: {
+          id: item.productId,
+        },
+        data: {
+          stock: newStock,
+          status: newStock <= 0 ? "SOLD_OUT" : "ACTIVE",
+        },
+      });
+    }
+
+    return order;
+  });
+};
+
+exports.getMyMarketplaceOrders = async (buyerId) => {
+  return prisma.marketplaceOrder.findMany({
+    where: {
+      buyerId,
+    },
+    include: {
+      seller: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              fullName: true,
+              email: true,
+              phone: true,
+            },
+          },
+        },
+      },
+      items: {
+        include: {
+          product: {
+            include: {
+              images: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+};
+````
+
+## File: Backend/app/services/scheduleCleanup.service.js
+````javascript
+const prisma = require("../config/prisma");
+const { ScheduleStatus } = require("@prisma/client");
+
+const cleanupPastUnbookedSchedules = async () => {
+    const now = new Date();
+
+    /**
+     * startOfToday:
+     * Aaj 00:00 se pehle wali schedules past consider hongi.
+     */
+    const startOfToday = new Date(now);
+    startOfToday.setHours(0, 0, 0, 0);
+
+    console.log(
+        `[ScheduleCleanup] Running cleanup for schedules before ${startOfToday.toISOString()}`
+    );
+
+    const result = await prisma.doctorSchedule.deleteMany({
+        where: {
+            date: {
+                lt: startOfToday,
+            },
+            status: {
+                in: [ScheduleStatus.AVAILABLE, ScheduleStatus.CANCELLED],
+            },
+            appointments: {
+                none: {},
+            },
+        },
+    });
+
+    console.log(`[ScheduleCleanup] Deleted ${result.count} old unbooked schedules.`);
+
+    return {
+        deleted: result.count,
+        before: startOfToday,
+    };
+};
+
+module.exports = {
+    cleanupPastUnbookedSchedules,
+};
+````
+
+## File: Backend/app/services/seller.service.js
+````javascript
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
+const parseRequiredPrice = (price) => {
+  const finalPrice = Number(price);
+
+  if (!Number.isFinite(finalPrice) || finalPrice <= 0) {
+    throw new Error("Valid product price is required");
+  }
+
+  return finalPrice;
+};
+
+const parseStock = (stock) => {
+  const finalStock = Number(stock);
+
+  if (!Number.isFinite(finalStock) || finalStock < 0) {
+    throw new Error("Valid product stock is required");
+  }
+
+  return finalStock;
+};
+
+const getOrCreateSellerProfile = async (userId) => {
+  let sellerProfile = await prisma.sellerProfile.findUnique({
+    where: { userId },
+  });
+
+  if (!sellerProfile) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        fullName: true,
+        email: true,
+        phone: true,
+      },
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    sellerProfile = await prisma.sellerProfile.create({
+      data: {
+        userId,
+        businessName: user.fullName,
+        phoneNumber: user.phone || "",
+      },
+    });
+  }
+
+  return sellerProfile;
+};
+
+exports.createOrUpdateSellerProfile = async (userId, payload) => {
+  const existingProfile = await prisma.sellerProfile.findUnique({
+    where: { userId },
+  });
+
+  const data = {
+    businessName: payload.businessName,
+    businessAddress: payload.businessAddress,
+    phoneNumber: payload.phoneNumber,
+    city: payload.city,
+    storeDescription: payload.storeDescription,
+    storeLogo: payload.storeLogo,
+  };
+
+  if (existingProfile) {
+    return prisma.sellerProfile.update({
+      where: { userId },
+      data,
+      include: {
+        user: {
+          select: {
+            id: true,
+            fullName: true,
+            username: true,
+            email: true,
+            profileImageUrl: true,
+          },
+        },
+      },
+    });
+  }
+
+  return prisma.sellerProfile.create({
+    data: {
+      userId,
+      ...data,
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          fullName: true,
+          username: true,
+          email: true,
+          profileImageUrl: true,
+        },
+      },
+    },
+  });
+};
+
+exports.getMySellerProfile = async (userId) => {
+  const sellerProfile = await prisma.sellerProfile.findUnique({
+    where: { userId },
+    include: {
+      user: {
+        select: {
+          id: true,
+          fullName: true,
+          username: true,
+          email: true,
+          phone: true,
+          profileImageUrl: true,
+        },
+      },
+      products: {
+        include: {
+          images: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
+    },
+  });
+
+  return sellerProfile;
+};
+
+exports.createProduct = async (userId, payload = {}) => {
+  const sellerProfile = await getOrCreateSellerProfile(userId);
+
+  const {
+    title,
+    description,
+    category,
+    status,
+    price,
+    stock,
+    location,
+    breed,
+    age,
+    gender,
+    vaccinated,
+    brand,
+    weight,
+    size,
+    sku,
+    images,
+  } = payload;
+
+  if (!title || !category || price === undefined || price === "") {
+    throw new Error("Title, category and price are required");
+  }
+
+  const finalPrice = parseRequiredPrice(price);
+  const finalStock = stock === undefined || stock === "" ? 0 : parseStock(stock);
+
+  const product = await prisma.marketplaceProduct.create({
+    data: {
+      seller: {
+        connect: {
+          id: sellerProfile.id,
+        },
+      },
+      title,
+      description,
+      category,
+      status: status || "ACTIVE",
+      price: finalPrice,
+      stock: finalStock,
+      location,
+      breed,
+      age,
+      gender,
+      vaccinated,
+      brand,
+      weight,
+      size,
+      sku,
+      images: {
+        create:
+          Array.isArray(images) && images.length > 0
+            ? images.map((img) => ({
+                publicUrl: img.publicUrl,
+                publicId: img.publicId,
+              }))
+            : [],
+      },
+    },
+    include: {
+      images: true,
+      seller: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              fullName: true,
+              email: true,
+              profileImageUrl: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return product;
+};
+
+exports.getMyProducts = async (userId) => {
+  const sellerProfile = await getOrCreateSellerProfile(userId);
+
+  return prisma.marketplaceProduct.findMany({
+    where: {
+      sellerId: sellerProfile.id,
+      status: {
+        not: "ARCHIVED",
+      },
+    },
+    include: {
+      images: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+};
+
+exports.updateProduct = async (userId, productId, payload = {}) => {
+  const sellerProfile = await getOrCreateSellerProfile(userId);
+
+  const product = await prisma.marketplaceProduct.findFirst({
+    where: {
+      id: productId,
+      sellerId: sellerProfile.id,
+    },
+  });
+
+  if (!product) {
+    throw new Error("Product not found or not allowed");
+  }
+
+  const data = {
+    title: payload.title,
+    description: payload.description,
+    category: payload.category,
+    status: payload.status,
+    price:
+      payload.price !== undefined && payload.price !== ""
+        ? parseRequiredPrice(payload.price)
+        : undefined,
+    stock:
+      payload.stock !== undefined && payload.stock !== ""
+        ? parseStock(payload.stock)
+        : undefined,
+    location: payload.location,
+    breed: payload.breed,
+    age: payload.age,
+    gender: payload.gender,
+    vaccinated: payload.vaccinated,
+    brand: payload.brand,
+    weight: payload.weight,
+    size: payload.size,
+    sku: payload.sku,
+  };
+
+  if (Array.isArray(payload.images) && payload.images.length > 0) {
+    data.images = {
+      deleteMany: {},
+      create: payload.images.map((img) => ({
+        publicUrl: img.publicUrl,
+        publicId: img.publicId,
+      })),
+    };
+  }
+
+  return prisma.marketplaceProduct.update({
+    where: { id: productId },
+    data,
+    include: {
+      images: true,
+    },
+  });
+};
+
+exports.deleteProduct = async (userId, productId) => {
+  const sellerProfile = await getOrCreateSellerProfile(userId);
+
+  const product = await prisma.marketplaceProduct.findFirst({
+    where: {
+      id: productId,
+      sellerId: sellerProfile.id,
+    },
+  });
+
+  if (!product) {
+    throw new Error("Product not found or not allowed");
+  }
+
+  return prisma.marketplaceProduct.update({
+    where: { id: productId },
+    data: {
+      status: "ARCHIVED",
+    },
+  });
+};
+
+exports.updateProductStock = async (userId, productId, stock) => {
+  const sellerProfile = await getOrCreateSellerProfile(userId);
+
+  const product = await prisma.marketplaceProduct.findFirst({
+    where: {
+      id: productId,
+      sellerId: sellerProfile.id,
+    },
+  });
+
+  if (!product) {
+    throw new Error("Product not found or not allowed");
+  }
+
+  const finalStock = Number(stock);
+
+  return prisma.marketplaceProduct.update({
+    where: { id: productId },
+    data: {
+      stock: finalStock,
+      status: finalStock <= 0 ? "SOLD_OUT" : "ACTIVE",
+    },
+    include: {
+      images: true,
+    },
+  });
+};
+
+exports.getSellerOrders = async (userId) => {
+  const sellerProfile = await getOrCreateSellerProfile(userId);
+
+  return prisma.marketplaceOrder.findMany({
+    where: {
+      sellerId: sellerProfile.id,
+    },
+    include: {
+      buyer: {
+        select: {
+          id: true,
+          fullName: true,
+          email: true,
+          phone: true,
+        },
+      },
+      items: {
+        include: {
+          product: {
+            include: {
+              images: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 };
 ````
 
@@ -3139,10 +5282,37 @@ async function clearDatabase() {
 clearDatabase();
 ````
 
-## File: Backend/prisma/migrations/20260522163130_y/migration.sql
+## File: Backend/prisma/migrations/20260619151141_y/migration.sql
 ````sql
 -- CreateEnum
 CREATE TYPE "VerificationStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
+
+-- CreateEnum
+CREATE TYPE "WeekDays" AS ENUM ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY');
+
+-- CreateEnum
+CREATE TYPE "PetCategory" AS ENUM ('DOG', 'CAT', 'REPTILE', 'OTHER');
+
+-- CreateEnum
+CREATE TYPE "ProductCategory" AS ENUM ('PETS', 'FOOD', 'MEDICINE', 'ACCESSORIES');
+
+-- CreateEnum
+CREATE TYPE "ProductStatus" AS ENUM ('ACTIVE', 'DRAFT', 'SOLD_OUT', 'ARCHIVED');
+
+-- CreateEnum
+CREATE TYPE "PetGender" AS ENUM ('MALE', 'FEMALE', 'UNKNOWN');
+
+-- CreateEnum
+CREATE TYPE "AppointmentStatus" AS ENUM ('PENDING_DETAILS', 'PENDING_REPORT', 'PENDING_PAYMENT', 'PAYMENT_PROCESSING', 'CONFIRMED', 'PAYMENT_FAILED', 'EXPIRED', 'CANCELLED', 'COMPLETED', 'REFUNDED', 'NO_SHOW');
+
+-- CreateEnum
+CREATE TYPE "MarketplaceOrderStatus" AS ENUM ('PENDING', 'CONFIRMED', 'SHIPPED', 'COMPLETED', 'CANCELLED');
+
+-- CreateEnum
+CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'REQUIRES_PAYMENT_METHOD', 'REQUIRES_ACTION', 'PROCESSING', 'SUCCEEDED', 'FAILED', 'CANCELLED', 'REFUNDED');
+
+-- CreateEnum
+CREATE TYPE "ScheduleStatus" AS ENUM ('AVAILABLE', 'HELD', 'BOOKED', 'CANCELLED');
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -3170,12 +5340,31 @@ CREATE TABLE "Doctor" (
     "education" TEXT NOT NULL,
     "specialization" TEXT NOT NULL,
     "address" TEXT NOT NULL,
-    "degreeLicenseUrl" TEXT NOT NULL,
     "experience" INTEGER NOT NULL,
     "fees" INTEGER NOT NULL,
     "isVerified" "VerificationStatus" NOT NULL DEFAULT 'PENDING',
 
     CONSTRAINT "Doctor_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "DoctorCertificate" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "publicUrl" TEXT NOT NULL,
+    "publicId" TEXT NOT NULL,
+
+    CONSTRAINT "DoctorCertificate_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "DoctorSkill" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "skill" TEXT NOT NULL,
+    "price" TEXT NOT NULL,
+
+    CONSTRAINT "DoctorSkill_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -3194,6 +5383,231 @@ CREATE TABLE "UserRole" (
     "role" TEXT NOT NULL,
 
     CONSTRAINT "UserRole_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "DoctorSchedule" (
+    "id" TEXT NOT NULL,
+    "doctorId" TEXT NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL,
+    "startTime" TIMESTAMP(3) NOT NULL,
+    "endTime" TIMESTAMP(3) NOT NULL,
+    "status" "ScheduleStatus" NOT NULL DEFAULT 'AVAILABLE',
+    "lockedAt" TIMESTAMP(3),
+    "lockedByUserId" TEXT,
+    "lockedByAppointmentId" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "DoctorSchedule_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Pet" (
+    "id" TEXT NOT NULL,
+    "petOwnerId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "age" DECIMAL(10,2) NOT NULL,
+    "breed" TEXT NOT NULL,
+    "category" "PetCategory" NOT NULL,
+
+    CONSTRAINT "Pet_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "PetPicture" (
+    "id" TEXT NOT NULL,
+    "publicUrl" TEXT NOT NULL,
+    "publicId" TEXT NOT NULL,
+    "petId" TEXT NOT NULL,
+
+    CONSTRAINT "PetPicture_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "PetIssueReport" (
+    "id" TEXT NOT NULL,
+    "petOwnerId" TEXT NOT NULL,
+    "petId" TEXT NOT NULL,
+    "issue" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "PetIssueReport_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Appointment" (
+    "id" TEXT NOT NULL,
+    "doctorId" TEXT NOT NULL,
+    "petOwnerId" TEXT NOT NULL,
+    "petId" TEXT,
+    "petIssueReportId" TEXT,
+    "scheduleId" TEXT NOT NULL,
+    "fees" INTEGER NOT NULL,
+    "currency" TEXT NOT NULL DEFAULT 'pkr',
+    "status" "AppointmentStatus" NOT NULL DEFAULT 'PENDING_DETAILS',
+    "paymentStatus" "PaymentStatus" NOT NULL DEFAULT 'PENDING',
+    "checkupTime" TIMESTAMP(3) NOT NULL,
+    "expiresAt" TIMESTAMP(3),
+    "confirmedAt" TIMESTAMP(3),
+    "cancelledAt" TIMESTAMP(3),
+    "completedAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Appointment_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Payment" (
+    "id" TEXT NOT NULL,
+    "appointmentId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "stripePaymentIntentId" TEXT,
+    "stripeClientSecret" TEXT,
+    "stripeChargeId" TEXT,
+    "amount" INTEGER NOT NULL,
+    "currency" TEXT NOT NULL DEFAULT 'pkr',
+    "status" "PaymentStatus" NOT NULL DEFAULT 'PENDING',
+    "paymentMethod" TEXT,
+    "receiptUrl" TEXT,
+    "failureReason" TEXT,
+    "metadata" JSONB,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "paidAt" TIMESTAMP(3),
+    "cancelledAt" TIMESTAMP(3),
+    "refundedAt" TIMESTAMP(3),
+
+    CONSTRAINT "Payment_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "PaymentEvent" (
+    "id" TEXT NOT NULL,
+    "stripeEventId" TEXT,
+    "eventType" TEXT NOT NULL,
+    "paymentId" TEXT,
+    "appointmentId" TEXT,
+    "stripePaymentIntentId" TEXT,
+    "payload" JSONB NOT NULL,
+    "processed" BOOLEAN NOT NULL DEFAULT false,
+    "processingError" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "processedAt" TIMESTAMP(3),
+
+    CONSTRAINT "PaymentEvent_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Refund" (
+    "id" TEXT NOT NULL,
+    "paymentId" TEXT NOT NULL,
+    "appointmentId" TEXT NOT NULL,
+    "stripeRefundId" TEXT,
+    "amount" INTEGER NOT NULL,
+    "currency" TEXT NOT NULL DEFAULT 'pkr',
+    "reason" TEXT,
+    "status" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Refund_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "SellerProfile" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "businessName" TEXT,
+    "businessAddress" TEXT,
+    "phoneNumber" TEXT,
+    "city" TEXT,
+    "storeDescription" TEXT,
+    "storeLogo" TEXT,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "isVerified" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "SellerProfile_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "MarketplaceProduct" (
+    "id" TEXT NOT NULL,
+    "sellerId" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "description" TEXT,
+    "category" "ProductCategory" NOT NULL,
+    "status" "ProductStatus" NOT NULL DEFAULT 'ACTIVE',
+    "price" DECIMAL(10,2) NOT NULL,
+    "stock" INTEGER NOT NULL DEFAULT 0,
+    "location" TEXT,
+    "breed" TEXT,
+    "age" TEXT,
+    "gender" "PetGender",
+    "vaccinated" BOOLEAN,
+    "brand" TEXT,
+    "weight" TEXT,
+    "size" TEXT,
+    "sku" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "MarketplaceProduct_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "MarketplaceProductImage" (
+    "id" TEXT NOT NULL,
+    "publicUrl" TEXT NOT NULL,
+    "publicId" TEXT,
+    "productId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "MarketplaceProductImage_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "SavedListing" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "productId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "SavedListing_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "MarketplaceOrder" (
+    "id" TEXT NOT NULL,
+    "orderNumber" TEXT NOT NULL,
+    "buyerId" TEXT NOT NULL,
+    "sellerId" TEXT NOT NULL,
+    "status" "MarketplaceOrderStatus" NOT NULL DEFAULT 'PENDING',
+    "paymentStatus" "PaymentStatus" NOT NULL DEFAULT 'PENDING',
+    "totalAmount" DECIMAL(10,2) NOT NULL,
+    "deliveryFee" DECIMAL(10,2),
+    "discount" DECIMAL(10,2),
+    "shippingAddress" TEXT,
+    "phoneNumber" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "MarketplaceOrder_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "MarketplaceOrderItem" (
+    "id" TEXT NOT NULL,
+    "orderId" TEXT NOT NULL,
+    "productId" TEXT NOT NULL,
+    "quantity" INTEGER NOT NULL,
+    "price" DECIMAL(10,2) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "MarketplaceOrderItem_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -3221,109 +5635,178 @@ CREATE INDEX "Doctor_isAvailable_idx" ON "Doctor"("isAvailable");
 CREATE INDEX "Doctor_specialization_fees_isAvailable_idx" ON "Doctor"("specialization", "fees", "isAvailable");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "DoctorCertificate_userId_key" ON "DoctorCertificate"("userId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Admin_userId_key" ON "Admin"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "UserRole_userId_key" ON "UserRole"("userId");
 
+-- CreateIndex
+CREATE INDEX "DoctorSchedule_doctorId_idx" ON "DoctorSchedule"("doctorId");
+
+-- CreateIndex
+CREATE INDEX "DoctorSchedule_status_idx" ON "DoctorSchedule"("status");
+
+-- CreateIndex
+CREATE INDEX "DoctorSchedule_lockedByAppointmentId_idx" ON "DoctorSchedule"("lockedByAppointmentId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "DoctorSchedule_doctorId_startTime_key" ON "DoctorSchedule"("doctorId", "startTime");
+
+-- CreateIndex
+CREATE INDEX "Pet_petOwnerId_idx" ON "Pet"("petOwnerId");
+
+-- CreateIndex
+CREATE INDEX "PetIssueReport_petOwnerId_idx" ON "PetIssueReport"("petOwnerId");
+
+-- CreateIndex
+CREATE INDEX "PetIssueReport_petId_idx" ON "PetIssueReport"("petId");
+
+-- CreateIndex
+CREATE INDEX "Appointment_doctorId_idx" ON "Appointment"("doctorId");
+
+-- CreateIndex
+CREATE INDEX "Appointment_petOwnerId_idx" ON "Appointment"("petOwnerId");
+
+-- CreateIndex
+CREATE INDEX "Appointment_petId_idx" ON "Appointment"("petId");
+
+-- CreateIndex
+CREATE INDEX "Appointment_petIssueReportId_idx" ON "Appointment"("petIssueReportId");
+
+-- CreateIndex
+CREATE INDEX "Appointment_scheduleId_idx" ON "Appointment"("scheduleId");
+
+-- CreateIndex
+CREATE INDEX "Appointment_status_idx" ON "Appointment"("status");
+
+-- CreateIndex
+CREATE INDEX "Appointment_paymentStatus_idx" ON "Appointment"("paymentStatus");
+
+-- CreateIndex
+CREATE INDEX "Appointment_expiresAt_idx" ON "Appointment"("expiresAt");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Payment_appointmentId_key" ON "Payment"("appointmentId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Payment_stripePaymentIntentId_key" ON "Payment"("stripePaymentIntentId");
+
+-- CreateIndex
+CREATE INDEX "Payment_appointmentId_idx" ON "Payment"("appointmentId");
+
+-- CreateIndex
+CREATE INDEX "Payment_userId_idx" ON "Payment"("userId");
+
+-- CreateIndex
+CREATE INDEX "Payment_stripePaymentIntentId_idx" ON "Payment"("stripePaymentIntentId");
+
+-- CreateIndex
+CREATE INDEX "Payment_status_idx" ON "Payment"("status");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "PaymentEvent_stripeEventId_key" ON "PaymentEvent"("stripeEventId");
+
+-- CreateIndex
+CREATE INDEX "PaymentEvent_paymentId_idx" ON "PaymentEvent"("paymentId");
+
+-- CreateIndex
+CREATE INDEX "PaymentEvent_appointmentId_idx" ON "PaymentEvent"("appointmentId");
+
+-- CreateIndex
+CREATE INDEX "PaymentEvent_stripePaymentIntentId_idx" ON "PaymentEvent"("stripePaymentIntentId");
+
+-- CreateIndex
+CREATE INDEX "PaymentEvent_eventType_idx" ON "PaymentEvent"("eventType");
+
+-- CreateIndex
+CREATE INDEX "PaymentEvent_processed_idx" ON "PaymentEvent"("processed");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Refund_stripeRefundId_key" ON "Refund"("stripeRefundId");
+
+-- CreateIndex
+CREATE INDEX "Refund_paymentId_idx" ON "Refund"("paymentId");
+
+-- CreateIndex
+CREATE INDEX "Refund_appointmentId_idx" ON "Refund"("appointmentId");
+
+-- CreateIndex
+CREATE INDEX "Refund_stripeRefundId_idx" ON "Refund"("stripeRefundId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "SellerProfile_userId_key" ON "SellerProfile"("userId");
+
+-- CreateIndex
+CREATE INDEX "SellerProfile_userId_idx" ON "SellerProfile"("userId");
+
+-- CreateIndex
+CREATE INDEX "SellerProfile_isActive_idx" ON "SellerProfile"("isActive");
+
+-- CreateIndex
+CREATE INDEX "MarketplaceProduct_sellerId_idx" ON "MarketplaceProduct"("sellerId");
+
+-- CreateIndex
+CREATE INDEX "MarketplaceProduct_category_idx" ON "MarketplaceProduct"("category");
+
+-- CreateIndex
+CREATE INDEX "MarketplaceProduct_status_idx" ON "MarketplaceProduct"("status");
+
+-- CreateIndex
+CREATE INDEX "MarketplaceProduct_location_idx" ON "MarketplaceProduct"("location");
+
+-- CreateIndex
+CREATE INDEX "MarketplaceProduct_category_status_idx" ON "MarketplaceProduct"("category", "status");
+
+-- CreateIndex
+CREATE INDEX "MarketplaceProductImage_productId_idx" ON "MarketplaceProductImage"("productId");
+
+-- CreateIndex
+CREATE INDEX "SavedListing_userId_idx" ON "SavedListing"("userId");
+
+-- CreateIndex
+CREATE INDEX "SavedListing_productId_idx" ON "SavedListing"("productId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "SavedListing_userId_productId_key" ON "SavedListing"("userId", "productId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "MarketplaceOrder_orderNumber_key" ON "MarketplaceOrder"("orderNumber");
+
+-- CreateIndex
+CREATE INDEX "MarketplaceOrder_buyerId_idx" ON "MarketplaceOrder"("buyerId");
+
+-- CreateIndex
+CREATE INDEX "MarketplaceOrder_sellerId_idx" ON "MarketplaceOrder"("sellerId");
+
+-- CreateIndex
+CREATE INDEX "MarketplaceOrder_status_idx" ON "MarketplaceOrder"("status");
+
+-- CreateIndex
+CREATE INDEX "MarketplaceOrder_paymentStatus_idx" ON "MarketplaceOrder"("paymentStatus");
+
+-- CreateIndex
+CREATE INDEX "MarketplaceOrderItem_orderId_idx" ON "MarketplaceOrderItem"("orderId");
+
+-- CreateIndex
+CREATE INDEX "MarketplaceOrderItem_productId_idx" ON "MarketplaceOrderItem"("productId");
+
 -- AddForeignKey
 ALTER TABLE "Doctor" ADD CONSTRAINT "Doctor_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "DoctorCertificate" ADD CONSTRAINT "DoctorCertificate_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "DoctorSkill" ADD CONSTRAINT "DoctorSkill_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Admin" ADD CONSTRAINT "Admin_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserRole" ADD CONSTRAINT "UserRole_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-````
-
-## File: Backend/prisma/migrations/20260525234038_y/migration.sql
-````sql
-/*
-  Warnings:
-
-  - You are about to drop the column `degreeLicenseUrl` on the `Doctor` table. All the data in the column will be lost.
-
-*/
--- AlterTable
-ALTER TABLE "Doctor" DROP COLUMN "degreeLicenseUrl";
-
--- CreateTable
-CREATE TABLE "DoctorCertificate" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "publicUrl" TEXT NOT NULL,
-    "publicId" TEXT NOT NULL,
-
-    CONSTRAINT "DoctorCertificate_pkey" PRIMARY KEY ("id")
-);
-
--- CreateIndex
-CREATE UNIQUE INDEX "DoctorCertificate_userId_key" ON "DoctorCertificate"("userId");
-
--- AddForeignKey
-ALTER TABLE "DoctorCertificate" ADD CONSTRAINT "DoctorCertificate_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-````
-
-## File: Backend/prisma/migrations/20260529162714_y/migration.sql
-````sql
--- CreateEnum
-CREATE TYPE "WeekDays" AS ENUM ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY');
-
--- CreateEnum
-CREATE TYPE "PatientAppointmentType" AS ENUM ('EMERGENCY', 'NORMAL_CHECKUP');
-
--- CreateEnum
-CREATE TYPE "PetCategory" AS ENUM ('DOG', 'CAT', 'REPTILE', 'OTHER');
-
--- CreateEnum
-CREATE TYPE "AppointmentStatus" AS ENUM ('PENDING', 'COMPLETED');
-
--- CreateTable
-CREATE TABLE "DoctorSchedule" (
-    "id" TEXT NOT NULL,
-    "doctorId" TEXT NOT NULL,
-    "day" "WeekDays" NOT NULL,
-    "startTime" TIMESTAMP(3) NOT NULL,
-    "endTime" TIMESTAMP(3) NOT NULL,
-    "isEmergency" BOOLEAN NOT NULL DEFAULT false,
-
-    CONSTRAINT "DoctorSchedule_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Pet" (
-    "id" TEXT NOT NULL,
-    "petOwnerId" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "age" DECIMAL(10,2) NOT NULL,
-    "breed" TEXT NOT NULL,
-    "category" "PetCategory" NOT NULL,
-
-    CONSTRAINT "Pet_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "PetIssueReport" (
-    "id" TEXT NOT NULL,
-    "petOwnerId" TEXT NOT NULL,
-    "petId" TEXT NOT NULL,
-    "issue" TEXT NOT NULL,
-    "appointmentType" "PatientAppointmentType" NOT NULL,
-
-    CONSTRAINT "PetIssueReport_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Appointment" (
-    "id" TEXT NOT NULL,
-    "doctorId" TEXT NOT NULL,
-    "petIssueReportId" TEXT NOT NULL,
-    "fees" INTEGER NOT NULL,
-    "checkupTime" TIMESTAMP(3) NOT NULL,
-    "status" "AppointmentStatus" NOT NULL DEFAULT 'PENDING',
-
-    CONSTRAINT "Appointment_pkey" PRIMARY KEY ("id")
-);
 
 -- AddForeignKey
 ALTER TABLE "DoctorSchedule" ADD CONSTRAINT "DoctorSchedule_doctorId_fkey" FOREIGN KEY ("doctorId") REFERENCES "Doctor"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -3332,180 +5815,67 @@ ALTER TABLE "DoctorSchedule" ADD CONSTRAINT "DoctorSchedule_doctorId_fkey" FOREI
 ALTER TABLE "Pet" ADD CONSTRAINT "Pet_petOwnerId_fkey" FOREIGN KEY ("petOwnerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "PetPicture" ADD CONSTRAINT "PetPicture_petId_fkey" FOREIGN KEY ("petId") REFERENCES "Pet"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "PetIssueReport" ADD CONSTRAINT "PetIssueReport_petId_fkey" FOREIGN KEY ("petId") REFERENCES "Pet"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "PetIssueReport" ADD CONSTRAINT "PetIssueReport_petOwnerId_fkey" FOREIGN KEY ("petOwnerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Appointment" ADD CONSTRAINT "Appointment_petIssueReportId_fkey" FOREIGN KEY ("petIssueReportId") REFERENCES "PetIssueReport"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Appointment" ADD CONSTRAINT "Appointment_doctorId_fkey" FOREIGN KEY ("doctorId") REFERENCES "Doctor"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-````
-
-## File: Backend/prisma/migrations/20260601125329_y/migration.sql
-````sql
--- CreateTable
-CREATE TABLE "DoctorSkills" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "skill" TEXT NOT NULL,
-    "price" TEXT NOT NULL,
-
-    CONSTRAINT "DoctorSkills_pkey" PRIMARY KEY ("id")
-);
 
 -- AddForeignKey
-ALTER TABLE "DoctorSkills" ADD CONSTRAINT "DoctorSkills_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-````
-
-## File: Backend/prisma/migrations/20260602141932_patient_appointment_type/migration.sql
-````sql
-/*
-  Warnings:
-
-  - The values [EMERGENCY,NORMAL_CHECKUP] on the enum `PatientAppointmentType` will be removed. If these variants are still used in the database, this will fail.
-  - You are about to drop the column `isEmergency` on the `DoctorSchedule` table. All the data in the column will be lost.
-
-*/
--- AlterEnum
-BEGIN;
-CREATE TYPE "PatientAppointmentType_new" AS ENUM ('ONLINE', 'PHYSICAL');
-ALTER TABLE "PetIssueReport" ALTER COLUMN "appointmentType" TYPE "PatientAppointmentType_new" USING ("appointmentType"::text::"PatientAppointmentType_new");
-ALTER TYPE "PatientAppointmentType" RENAME TO "PatientAppointmentType_old";
-ALTER TYPE "PatientAppointmentType_new" RENAME TO "PatientAppointmentType";
-DROP TYPE "public"."PatientAppointmentType_old";
-COMMIT;
-
--- AlterTable
-ALTER TABLE "DoctorSchedule" DROP COLUMN "isEmergency";
-````
-
-## File: Backend/prisma/migrations/20260602142224_remove_emergency_from_doctor_schedule/migration.sql
-````sql
-/*
-  Warnings:
-
-  - You are about to drop the column `appointmentType` on the `PetIssueReport` table. All the data in the column will be lost.
-
-*/
--- AlterTable
-ALTER TABLE "PetIssueReport" DROP COLUMN "appointmentType";
-
--- DropEnum
-DROP TYPE "PatientAppointmentType";
-````
-
-## File: Backend/prisma/migrations/20260602163310_y/migration.sql
-````sql
-/*
-  Warnings:
-
-  - You are about to drop the `DoctorSkills` table. If the table is not empty, all the data it contains will be lost.
-  - Added the required column `date` to the `DoctorSchedule` table without a default value. This is not possible if the table is not empty.
-
-*/
--- DropForeignKey
-ALTER TABLE "DoctorSkills" DROP CONSTRAINT "DoctorSkills_userId_fkey";
-
--- AlterTable
-ALTER TABLE "DoctorSchedule" ADD COLUMN     "date" TIMESTAMP(3) NOT NULL;
-
--- DropTable
-DROP TABLE "DoctorSkills";
-
--- CreateTable
-CREATE TABLE "DoctorSkill" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "skill" TEXT NOT NULL,
-    "price" TEXT NOT NULL,
-
-    CONSTRAINT "DoctorSkill_pkey" PRIMARY KEY ("id")
-);
+ALTER TABLE "Appointment" ADD CONSTRAINT "Appointment_petOwnerId_fkey" FOREIGN KEY ("petOwnerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "DoctorSkill" ADD CONSTRAINT "DoctorSkill_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-````
+ALTER TABLE "Appointment" ADD CONSTRAINT "Appointment_petId_fkey" FOREIGN KEY ("petId") REFERENCES "Pet"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
-## File: Backend/prisma/migrations/20260610154859_y/migration.sql
-````sql
--- CreateEnum
-CREATE TYPE "AppointmentPayment" AS ENUM ('PENDING', 'COMPLETED');
-
--- CreateEnum
-CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'PAID', 'FAILED', 'CANCELLED', 'REFUNDED');
-
--- AlterEnum
--- This migration adds more than one value to an enum.
--- With PostgreSQL versions 11 and earlier, this is not possible
--- in a single migration. This can be worked around by creating
--- multiple migrations, each migration adding only one value to
--- the enum.
-
-
-ALTER TYPE "AppointmentStatus" ADD VALUE 'CONFIRMED';
-ALTER TYPE "AppointmentStatus" ADD VALUE 'CANCELLED';
-
--- AlterTable
-ALTER TABLE "Appointment" ADD COLUMN     "paymentStatus" "AppointmentPayment" NOT NULL DEFAULT 'PENDING';
-````
-
-## File: Backend/prisma/migrations/20260610160207/migration.sql
-````sql
-/*
-  Warnings:
-
-  - The `paymentStatus` column on the `Appointment` table would be dropped and recreated. This will lead to data loss if there is data in the column.
-
-*/
--- AlterEnum
-ALTER TYPE "PaymentStatus" ADD VALUE 'SUCCEEDED';
-
--- AlterTable
-ALTER TABLE "Appointment" DROP COLUMN "paymentStatus",
-ADD COLUMN     "paymentStatus" "AppointmentStatus" NOT NULL DEFAULT 'PENDING';
-````
-
-## File: Backend/prisma/migrations/20260611134421/migration.sql
-````sql
-/*
-  Warnings:
-
-  - The `paymentStatus` column on the `Appointment` table would be dropped and recreated. This will lead to data loss if there is data in the column.
-  - You are about to drop the column `day` on the `DoctorSchedule` table. All the data in the column will be lost.
-  - A unique constraint covering the columns `[scheduleId]` on the table `Appointment` will be added. If there are existing duplicate values, this will fail.
-  - Added the required column `scheduleId` to the `Appointment` table without a default value. This is not possible if the table is not empty.
-
-*/
--- AlterTable
-ALTER TABLE "Appointment" ADD COLUMN     "scheduleId" TEXT NOT NULL,
-ADD COLUMN     "stripeSessionId" TEXT,
-DROP COLUMN "paymentStatus",
-ADD COLUMN     "paymentStatus" "PaymentStatus" NOT NULL DEFAULT 'PENDING';
-
--- AlterTable
-ALTER TABLE "DoctorSchedule" DROP COLUMN "day",
-ADD COLUMN     "isBooked" BOOLEAN NOT NULL DEFAULT false;
-
--- CreateIndex
-CREATE UNIQUE INDEX "Appointment_scheduleId_key" ON "Appointment"("scheduleId");
+-- AddForeignKey
+ALTER TABLE "Appointment" ADD CONSTRAINT "Appointment_petIssueReportId_fkey" FOREIGN KEY ("petIssueReportId") REFERENCES "PetIssueReport"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Appointment" ADD CONSTRAINT "Appointment_scheduleId_fkey" FOREIGN KEY ("scheduleId") REFERENCES "DoctorSchedule"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-````
 
-## File: Backend/prisma/migrations/20260611135922/migration.sql
-````sql
-/*
-  Warnings:
+-- AddForeignKey
+ALTER TABLE "Payment" ADD CONSTRAINT "Payment_appointmentId_fkey" FOREIGN KEY ("appointmentId") REFERENCES "Appointment"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
-  - A unique constraint covering the columns `[doctorId,startTime]` on the table `DoctorSchedule` will be added. If there are existing duplicate values, this will fail.
+-- AddForeignKey
+ALTER TABLE "Payment" ADD CONSTRAINT "Payment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
-*/
--- CreateIndex
-CREATE UNIQUE INDEX "DoctorSchedule_doctorId_startTime_key" ON "DoctorSchedule"("doctorId", "startTime");
+-- AddForeignKey
+ALTER TABLE "PaymentEvent" ADD CONSTRAINT "PaymentEvent_paymentId_fkey" FOREIGN KEY ("paymentId") REFERENCES "Payment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Refund" ADD CONSTRAINT "Refund_paymentId_fkey" FOREIGN KEY ("paymentId") REFERENCES "Payment"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "SellerProfile" ADD CONSTRAINT "SellerProfile_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "MarketplaceProduct" ADD CONSTRAINT "MarketplaceProduct_sellerId_fkey" FOREIGN KEY ("sellerId") REFERENCES "SellerProfile"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "MarketplaceProductImage" ADD CONSTRAINT "MarketplaceProductImage_productId_fkey" FOREIGN KEY ("productId") REFERENCES "MarketplaceProduct"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "SavedListing" ADD CONSTRAINT "SavedListing_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "SavedListing" ADD CONSTRAINT "SavedListing_productId_fkey" FOREIGN KEY ("productId") REFERENCES "MarketplaceProduct"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "MarketplaceOrder" ADD CONSTRAINT "MarketplaceOrder_buyerId_fkey" FOREIGN KEY ("buyerId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "MarketplaceOrder" ADD CONSTRAINT "MarketplaceOrder_sellerId_fkey" FOREIGN KEY ("sellerId") REFERENCES "SellerProfile"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "MarketplaceOrderItem" ADD CONSTRAINT "MarketplaceOrderItem_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "MarketplaceOrder"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "MarketplaceOrderItem" ADD CONSTRAINT "MarketplaceOrderItem_productId_fkey" FOREIGN KEY ("productId") REFERENCES "MarketplaceProduct"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 ````
 
 ## File: Backend/prisma/migrations/migration_lock.toml
@@ -4101,35 +6471,6 @@ export const adminLoginSchema = z.object({
 export type AdminLoginFormValues = z.infer<typeof adminLoginSchema>;
 ````
 
-## File: Frontend/src/features/Admin/types/admin.types.ts
-````typescript
-export interface SidebarItemType {
-  id: number;
-  title: string;
-  icon: React.ElementType;
-}
-
-export interface StatsCardType {
-  id: number;
-  title: string;
-  total: number;
-  subtitle: string;
-  color: string;
-  icon: React.ElementType;
-}
-
-export interface DoctorType {
-  id: number;
-  name: string;
-  specialist: string;
-  experience: string;
-  email: string;
-  phone: string;
-  status: string;
-  image: string;
-}
-````
-
 ## File: Frontend/src/features/AiAssistance/aiAssistant.route.tsx
 ````typescript
 import AiAssistantPage from "./pages/AiAssistantPage";
@@ -4140,176 +6481,6 @@ export const aiAssistantRoutes = [
         element: <AiAssistantPage />,
     },
 ];
-````
-
-## File: Frontend/src/features/AiAssistance/components/AiChatBox.tsx
-````typescript
-import { useState } from "react";
-import { FaPaperPlane, FaRobot, FaUser, FaPaw } from "react-icons/fa";
-
-import Button from "../../../shared/components/Button";
-
-type Message = {
-    id: number;
-    sender: "user" | "ai";
-    text: string;
-};
-
-const AiChatBox = () => {
-    const [message, setMessage] = useState("");
-
-    const [messages, setMessages] = useState<Message[]>([
-        {
-            id: 1,
-            sender: "ai",
-            text: "Hello! I am your PetsVeta AI Assistant. Tell me your pet symptoms and I will guide you.",
-        },
-    ]);
-
-    const handleSendMessage = () => {
-        if (!message.trim()) return;
-
-        const userMessage: Message = {
-            id: Date.now(),
-            sender: "user",
-            text: message,
-        };
-
-        const aiReply: Message = {
-            id: Date.now() + 1,
-            sender: "ai",
-            text: "Thanks for sharing. Based on the symptoms, please monitor your pet closely and consult a verified veterinary doctor if the issue continues.",
-        };
-
-        setMessages((prev) => [...prev, userMessage, aiReply]);
-        setMessage("");
-    };
-
-    return (
-        <section className="bg-white px-5 py-16 lg:px-16">
-            <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1fr_380px]">
-                <div className="rounded-3xl bg-[#f5fbff] p-4 shadow-[0_10px_35px_rgba(15,23,42,0.08)] md:p-6">
-                    <div className="mb-5 flex items-center justify-between rounded-3xl bg-white p-5 shadow-sm">
-                        <div>
-                            <h2 className="text-2xl font-extrabold text-[#07182c]">
-                                Ask AI Assistant
-                            </h2>
-
-                            <p className="mt-1 text-sm text-slate-500">
-                                Describe your pet symptoms or care question.
-                            </p>
-                        </div>
-
-                        <div className="hidden h-12 w-12 items-center justify-center rounded-2xl bg-[#eefafa] text-xl text-[#009f9d] sm:flex">
-                            <FaRobot />
-                        </div>
-                    </div>
-
-                    <div className="h-[420px] space-y-4 overflow-y-auto rounded-3xl bg-white p-5">
-                        {messages.map((item) => (
-                            <div
-                                key={item.id}
-                                className={`flex ${item.sender === "user" ? "justify-end" : "justify-start"
-                                    }`}
-                            >
-                                <div
-                                    className={`flex max-w-[85%] gap-3 rounded-3xl p-4 ${item.sender === "user"
-                                        ? "bg-[#07182c] text-white"
-                                        : "bg-[#eefafa] text-[#07182c]"
-                                        }`}
-                                >
-                                    <div
-                                        className={`mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${item.sender === "user"
-                                            ? "bg-white/15"
-                                            : "bg-white text-[#009f9d]"
-                                            }`}
-                                    >
-                                        {item.sender === "user" ? <FaUser /> : <FaRobot />}
-                                    </div>
-
-                                    <p className="text-sm leading-6">{item.text}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="mt-5 grid gap-3 rounded-3xl bg-white p-4 md:grid-cols-[1fr_auto]">
-                        <textarea
-                            rows={2}
-                            value={message}
-                            onChange={(e) => setMessage(e.target.value)}
-                            placeholder="Example: My dog is vomiting and not eating..."
-                            className="resize-none rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#009f9d] focus:ring-2 focus:ring-[#009f9d]/20"
-                        />
-
-                        <Button
-                            type="button"
-                            onClick={handleSendMessage}
-                            className="flex items-center justify-center gap-2"
-                        >
-                            <FaPaperPlane />
-                            Send
-                        </Button>
-                    </div>
-                </div>
-
-                <aside className="space-y-5">
-                    <div className="rounded-3xl bg-gradient-to-br from-[#bdf0ee] to-[#fff3ec] p-6 shadow-[0_18px_50px_rgba(15,23,42,0.10)]">
-                        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl text-[#009f9d]">
-                            <FaPaw />
-                        </div>
-
-                        <h3 className="text-2xl font-extrabold text-[#07182c]">
-                            Quick Symptom Guide
-                        </h3>
-
-                        <p className="mt-3 text-sm leading-6 text-slate-600">
-                            AI can guide you, but serious symptoms should always be checked by
-                            a verified doctor.
-                        </p>
-                    </div>
-
-                    <div className="rounded-3xl bg-white p-6 shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
-                        <h3 className="text-lg font-extrabold text-[#07182c]">
-                            Try asking:
-                        </h3>
-
-                        <div className="mt-4 space-y-3">
-                            {[
-                                "My cat is not eating",
-                                "My dog is vomiting",
-                                "My pet has skin allergy",
-                                "Which doctor should I visit?",
-                            ].map((item) => (
-                                <button
-                                    key={item}
-                                    type="button"
-                                    onClick={() => setMessage(item)}
-                                    className="w-full rounded-2xl bg-[#f5fbff] px-4 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-[#eefafa] hover:text-[#009f9d]"
-                                >
-                                    {item}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="rounded-3xl bg-[#07182c] p-6 text-white">
-                        <h3 className="text-lg font-extrabold">
-                            Emergency Reminder
-                        </h3>
-
-                        <p className="mt-3 text-sm leading-6 text-white/75">
-                            If your pet has breathing problems, bleeding, seizures, poisoning,
-                            or extreme weakness, contact a vet immediately.
-                        </p>
-                    </div>
-                </aside>
-            </div>
-        </section>
-    );
-};
-
-export default AiChatBox;
 ````
 
 ## File: Frontend/src/features/AiAssistance/components/AiCTA.tsx
@@ -4619,102 +6790,46 @@ const AiAssistantPage = () => {
 export default AiAssistantPage;
 ````
 
-## File: Frontend/src/features/Auth/components/AuthSuccess.tsx
+## File: Frontend/src/features/AiAssistance/types/aiAssistance.types.ts
 ````typescript
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-
-export const AuthSuccess = () => {
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        const verifyUserSession = async () => {
-            try {
-
-                const response = await axios.get('http://localhost:8000/api/v1/auth/me', {
-                    withCredentials: true
-                });
-
-                if (response.data.success) {
-
-                    navigate('/');
-                }
-            } catch (error) {
-                console.error("Session verification failed", error);
-                navigate('/login');
-            }
-        };
-
-        verifyUserSession();
-    }, [navigate]);
-
-    return <div>Completing login, please wait...</div>;
+export type AiMessage = {
+  id: number;
+  sender: "user" | "ai";
+  text: string;
 };
 ````
 
-## File: Frontend/src/features/Auth/Context/auth.context.tsx
+## File: Frontend/src/features/Appointment/types/appointment.types.ts
 ````typescript
-import React, { useState, createContext, useEffect, type SetStateAction } from 'react'
-import { type ApiResponse, verifyUser } from '../api/loginuser.api';
+import type { BookableSlot } from "../apis/doctorProfile.api";
 
+export type DoctorProfileViewData = {
+  id: string;
+  name: string;
+  image: string;
+  status: string;
+  specialty: string;
+  experience: number;
+  rating: number;
+  reviews: number;
+  location: string;
+  fees: number;
+  tags: string[];
+  about: string;
+  education: string;
+  qualification: string;
+  certification: string;
+  nextSlot: string;
+  specialization: string;
+  availableSlots: BookableSlot[];
+  todaySlots: BookableSlot[];
+  nextAvailable: BookableSlot | null;
+} | null;
 
-type AuthContextType = {
-    isAuthenticatedUser: boolean,
-    setIsAuthenticateUser: React.Dispatch<SetStateAction<boolean>>,
-    user: ApiResponse | undefined,
-    setUser: React.Dispatch<SetStateAction<ApiResponse | undefined>>,
-    isLoading: boolean,
-    setIsLoading: React.Dispatch<SetStateAction<boolean>>
-}
-
-export const AuthContext = createContext<AuthContextType | null>(null);
-
-export const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
-
-    const [isAuthenticatedUser, setIsAuthenticateUser] = useState<boolean>(false);
-    const [user, setUser] = useState<ApiResponse | undefined>(undefined);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-
-    useEffect(() => {
-        const veirfyAuthenticatedUser = async () => {
-            try {
-                setIsLoading(true);
-                const response = await verifyUser();
-                console.log("Auth Context working....", response)
-
-                if (response.success) {
-                    setUser(response);
-                    setIsAuthenticateUser(true);
-                } else {
-                    setIsAuthenticateUser(false);
-                    setUser(undefined);
-                }
-           
-
-            } catch (error) {
-                console.log("Error in Auth Provider:", error);
-                setIsAuthenticateUser(false);
-                setUser(undefined);
-            } finally {
-                console.log("Finally works");
-                setIsLoading(false);
-            }
-        };
-
-        veirfyAuthenticatedUser();
-
-    }, [])
-
-
-
-
-    return (
-        <AuthContext.Provider value={{ user, setUser, isAuthenticatedUser, setIsAuthenticateUser, isLoading, setIsLoading }}>
-            {children}
-        </AuthContext.Provider>
-    )
-}
+export type CreatedPet = {
+  id: string;
+  name: string;
+};
 ````
 
 ## File: Frontend/src/features/Auth/hooks/authhook.ts
@@ -4753,44 +6868,6 @@ export const useForgotPassword = (options: UseMutationOptions<ApiResponse, Error
 }
 ````
 
-## File: Frontend/src/features/Auth/hooks/useLogin.ts
-````typescript
-import { useMutation, type UseMutationOptions } from '@tanstack/react-query'
-import { userLogin, type ApiResponse } from '../api/loginuser.api'
-import { type LoginFormData } from '../schemas/login.schema'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from './authhook'
-
-export const useLogin = (options: UseMutationOptions<ApiResponse, Error, LoginFormData>) => {
-    const navigate = useNavigate();
-    const { setIsAuthenticateUser, setUser } = useAuth()
-    return useMutation({
-        mutationFn: userLogin,
-        ...options,
-
-        onSuccess: (data) => {
-            console.log("Login Success", data)
-            setUser(data);
-            setIsAuthenticateUser(true);
-            if (data.data.role === "Admin") {
-                navigate("/admin-dashboard", { replace: true });
-            }
-            else if (data.data.role === "Doctor") {
-                navigate("/doctor-dashboard", { replace: true });
-            }
-            else {
-                navigate("/", { replace: true });
-            }
-        },
-
-        onError: (error) => {
-            console.log("Login Error ", error.message)
-        }
-
-    })
-}
-````
-
 ## File: Frontend/src/features/Auth/hooks/useOtp.ts
 ````typescript
 import { useMutation, type UseMutationOptions } from '@tanstack/react-query'
@@ -4810,51 +6887,6 @@ export const useOtp = (options: UseMutationOptions<ApiResponse, Error, VerifyOtp
         }
     })
 
-}
-````
-
-## File: Frontend/src/features/Auth/hooks/usePetOwnerAccount.ts
-````typescript
-import { useMutation, type UseMutationOptions } from '@tanstack/react-query'
-import { type PetOwnerFormData } from '../schemas/petowner.schema'
-import { createPetOwnerAccount } from '../api/petOwner.api'
-import { type ApiResponse } from '../api/petOwner.api'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from './authhook'
-import { AxiosError } from 'axios'
-
-type ApiErrorRespone = {
-    message: string
-}
-
-
-export const usePetOwnerHook = (options: UseMutationOptions<ApiResponse, AxiosError<ApiErrorRespone>, PetOwnerFormData>) => {
-
-    const { setUser, setIsAuthenticateUser } = useAuth();
-    const navigate = useNavigate();
-
-
-    return useMutation({
-
-        mutationFn: createPetOwnerAccount,
-
-        ...options,
-
-        onSuccess: (response) => {
-            console.log("Account Success", response)
-            setUser(response);
-            setIsAuthenticateUser(true);
-            if (response?.success) {
-                navigate('/verify-otp')
-            }
-
-        },
-
-        onError: (error) => {
-            console.log("Account Error ", error.message)
-
-        }
-    })
 }
 ````
 
@@ -4898,6 +6930,225 @@ export const useResetPassword = (options: UseMutationOptions<ApiResponse, Error,
         },
     })
 }
+````
+
+## File: Frontend/src/features/Auth/pages/DashboardChoicePage.tsx
+````typescript
+import { Bell, CheckCircle2, ChevronDown, Heart, Home, Info, PawPrint, Store, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
+import petOwnerChoice from "@/assets/shared/images/dashboard-choice/pet-owner-choice.png";
+import sellerChoice from "@/assets/shared/images/dashboard-choice/seller-choice.png";
+import userProfile from "@/assets/icons/user-profile-1.jpg";
+import Button from "@/shared/components/Button/Button";
+import Card from "@/shared/components/Card/Card";
+import type { DashboardCardProps } from "../types/auth.types";
+
+const petOwnerItems = [
+  "Book Vet Appointments",
+  "Shop Pet Products",
+  "Manage Pets",
+  "Track Orders",
+];
+
+const sellerItems = [
+  "Manage Products",
+  "View & Manage Orders",
+  "Track Earnings",
+  "Store Analytics",
+];
+
+const DashboardChoicePage = () => {
+  const navigate = useNavigate();
+
+  return (
+    <main className="min-h-screen bg-[#fbfcff] text-[#13223a]">
+      <aside className="fixed left-0 top-0 hidden h-screen w-[92px] border-r border-[#e4e7ee] bg-white lg:block">
+        <button
+          type="button"
+          onClick={() => navigate("/")}
+          aria-label="Home"
+          className="absolute left-4 top-[106px] flex h-[64px] w-[64px] items-center justify-center rounded-full bg-white text-[#5b20f2] shadow-[0_18px_40px_rgba(91,32,242,0.15)]"
+        >
+          <Home size={27} strokeWidth={2.4} />
+          <span className="absolute left-[76px] rounded-md bg-[#263348] px-3.5 py-2.5 text-[15px] font-semibold text-white shadow-lg">
+            Home
+          </span>
+        </button>
+      </aside>
+
+      <section className="lg:pl-[92px]">
+        <header className="flex min-h-[86px] items-center justify-between border-b border-[#e4e7ee] bg-white px-5 sm:px-8 lg:px-9">
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+            className="flex items-center gap-4 text-left"
+          >
+            <div className="text-[#4b14c9]">
+              <PawPrint size={46} fill="currentColor" strokeWidth={1.7} />
+            </div>
+
+            <div>
+              <h1 className="text-[25px] font-black leading-none text-[#4b14c9] sm:text-[28px]">
+                Pets Veta
+              </h1>
+              <p className="mt-1.5 text-[12px] font-bold text-[#4b14c9]">
+                Care | Love | Trust
+              </p>
+            </div>
+          </button>
+
+          <div className="flex items-center gap-5">
+            <button
+              type="button"
+              aria-label="Notifications"
+              className="relative hidden h-11 w-11 items-center justify-center rounded-full text-[#6b7288] transition hover:bg-slate-50 sm:flex"
+            >
+              <Bell size={28} strokeWidth={1.8} />
+              <span className="absolute right-2 top-2 h-3 w-3 rounded-full bg-[#5b20f2]" />
+            </button>
+
+            <img
+              src={userProfile}
+              alt="User profile"
+              className="h-[50px] w-[50px] rounded-full object-cover"
+            />
+
+            <ChevronDown size={25} className="hidden text-[#40506b] sm:block" />
+          </div>
+        </header>
+
+        <section className="mx-auto w-full max-w-[1110px] px-5 pb-6 pt-7 sm:px-8">
+          <div className="text-center">
+            <p className="text-[20px] font-black text-[#5b20f2]">
+              Welcome back!
+            </p>
+            <h2 className="mt-1.5 text-[34px] font-black leading-tight text-[#12213a] sm:text-[42px]">
+              Choose Your Dashboard
+            </h2>
+            <p className="mt-3 text-[17px] font-semibold text-[#65728a]">
+              Select how you want to continue on Pets Veta
+            </p>
+          </div>
+
+          <div className="mt-7 grid gap-6 lg:grid-cols-2">
+            <DashboardCard
+              accent="purple"
+              icon={<PawPrint size={49} fill="currentColor" strokeWidth={1.5} />}
+              image={petOwnerChoice}
+              title="Pet Owner Dashboard"
+              description="Find pet care services, book appointments, shop products, and manage your pets."
+              items={petOwnerItems}
+              buttonLabel="Go to Pet Owner Dashboard"
+              onClick={() => navigate("/pet-owner/dashboard")}
+            />
+
+            <DashboardCard
+              accent="green"
+              icon={<Store size={45} fill="currentColor" strokeWidth={1.6} />}
+              image={sellerChoice}
+              title="Seller Dashboard"
+              description="Manage your store, products, orders, and grow your pet business."
+              items={sellerItems}
+              buttonLabel="Go to Seller Dashboard"
+              onClick={() => navigate("/seller/dashboard")}
+            />
+          </div>
+
+          <div className="mt-7 flex items-center gap-4 rounded-lg border border-[#bfd7ff] bg-[#f5f9ff] px-5 py-3.5 text-[#0967f2]">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#dcebff]">
+              <Info size={24} />
+            </span>
+            <p className="text-[15px] font-semibold">
+              You can switch between dashboards anytime from your profile settings.
+            </p>
+          </div>
+
+          <footer className="pt-6 text-center text-[13px] font-semibold text-[#647086]">
+            &copy; 2024 Pets Veta. All rights reserved.
+          </footer>
+        </section>
+      </section>
+    </main>
+  );
+};
+
+const DashboardCard = ({
+  accent,
+  icon,
+  image,
+  title,
+  description,
+  items,
+  buttonLabel,
+  onClick,
+}: DashboardCardProps) => {
+  const isPurple = accent === "purple";
+  const color = isPurple ? "#5b20f2" : "#0aaa68";
+  const cardClass = isPurple
+    ? "border-[#ded1ff] bg-[#fcf9ff] shadow-[0_18px_45px_rgba(91,32,242,0.08)]"
+    : "border-[#cfeadf] bg-[#f7fffb] shadow-[0_18px_45px_rgba(10,170,104,0.08)]";
+  const buttonClass = isPurple
+    ? "bg-[#5b20f2] shadow-[0_13px_25px_rgba(91,32,242,0.24)] hover:bg-[#4c17ce]"
+    : "bg-[#08a968] shadow-[0_13px_25px_rgba(8,169,104,0.22)] hover:bg-[#07985f]";
+
+  return (
+    <Card className={`rounded-[18px] p-6 sm:p-7 ${cardClass}`}>
+      <div className="relative min-h-[190px] overflow-hidden rounded-[16px]">
+        <div
+          className="absolute left-0 top-0 z-10 flex h-[96px] w-[96px] items-center justify-center rounded-full bg-white shadow-[0_16px_35px_rgba(43,49,78,0.12)]"
+          style={{ color }}
+        >
+          {icon}
+        </div>
+
+        <img
+          src={image}
+          alt=""
+          className="ml-auto h-[195px] w-[84%] object-contain object-right"
+        />
+
+        <Heart
+          size={29}
+          fill="currentColor"
+          className="absolute right-9 top-14"
+          style={{ color, opacity: 0.78 }}
+        />
+      </div>
+
+      <h3 className="mt-5 text-[23px] font-black" style={{ color }}>
+        {title}
+      </h3>
+
+      <p className="mt-3 max-w-[390px] text-[15px] font-semibold leading-7 text-[#5f6d84]">
+        {description}
+      </p>
+
+      <ul className="mt-4 space-y-2.5">
+        {items.map((item) => (
+          <li key={item} className="flex items-center gap-3 text-[15px] font-semibold text-[#56637a]">
+            <CheckCircle2 size={17} className={isPurple ? "text-[#5b20f2]" : "text-[#0aaa68]"} />
+            {item}
+          </li>
+        ))}
+      </ul>
+
+      <Button
+        type="button"
+        variant="primary"
+        onClick={onClick}
+        fullWidth
+        className={`mt-5 h-[52px] gap-3.5 border-0 px-5 text-[16px] font-black text-white ${buttonClass}`}
+      >
+        {isPurple ? <PawPrint size={23} fill="currentColor" /> : <Store size={23} fill="currentColor" />}
+        {buttonLabel}
+        <ArrowRight size={25} />
+      </Button>
+    </Card>
+  );
+};
+
+export default DashboardChoicePage;
 ````
 
 ## File: Frontend/src/features/Auth/pages/forgot-password.tsx
@@ -5108,6 +7359,342 @@ export const verifyOtpSchema = z.object({
 export type VerifyOtpFormData = z.infer<typeof verifyOtpSchema>
 ````
 
+## File: Frontend/src/features/Auth/types/auth.types.ts
+````typescript
+import type {
+  Dispatch,
+  InputHTMLAttributes,
+  ReactNode,
+  SetStateAction,
+} from "react";
+import type { ApiResponse } from "../api/loginuser.api";
+
+export type AuthContextType = {
+  isAuthenticatedUser: boolean;
+  setIsAuthenticateUser: Dispatch<SetStateAction<boolean>>;
+  user: ApiResponse | undefined;
+  setUser: Dispatch<SetStateAction<ApiResponse | undefined>>;
+  isLoading: boolean;
+  setIsLoading: Dispatch<SetStateAction<boolean>>;
+};
+
+export type AuthContextProviderProps = {
+  children: ReactNode;
+};
+
+export type DashboardCardProps = {
+  accent: "purple" | "green";
+  icon: ReactNode;
+  image: string;
+  title: string;
+  description: string;
+  items: string[];
+  buttonLabel: string;
+  onClick: () => void;
+};
+
+export type PetOwnerFormFieldProps = {
+  label: string;
+  placeholder: string;
+  type?: string;
+  error?: string;
+  icon: ReactNode;
+  inputProps: InputHTMLAttributes<HTMLInputElement>;
+};
+
+export type PetOwnerPasswordFieldProps = {
+  label: string;
+  placeholder: string;
+  showPassword: boolean;
+  onTogglePassword: () => void;
+  error?: string;
+  inputProps: InputHTMLAttributes<HTMLInputElement>;
+};
+
+export type ApiErrorResponse = {
+  message: string;
+};
+````
+
+## File: Frontend/src/features/cart/cart.routes.tsx
+````typescript
+import CartPage from "../cart/pages/CartPage";
+import CheckoutPage from "../cart/pages/CheckoutPage";
+
+export const cartRoutes = [
+  {
+    path: "/cart",
+    element: <CartPage />,
+  },
+  {
+    path: "/checkout",
+    element: <CheckoutPage />,
+  },
+];
+````
+
+## File: Frontend/src/features/cart/pages/CartPage.tsx
+````typescript
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Button from "@/shared/components/Button/Button";
+import Card from "@/shared/components/Card/Card";
+import {
+  clearCart,
+  getCartItems,
+  removeFromCart,
+  updateCartQuantity,
+  type CartItem,
+} from "../utils/cartStorage";
+
+const CartPage = () => {
+  const navigate = useNavigate();
+  const [cart, setCart] = useState<CartItem[]>(getCartItems());
+
+  const total = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+
+  const handleQuantity = (productId: string | number, quantity: number) => {
+    updateCartQuantity(productId, quantity);
+    setCart(getCartItems());
+  };
+
+  const handleRemove = (productId: string | number) => {
+    removeFromCart(productId);
+    setCart(getCartItems());
+  };
+
+  const handleClearCart = () => {
+    clearCart();
+    setCart([]);
+  };
+
+  const handleCheckout = () => {
+    navigate("/checkout");
+  };
+
+  return (
+    <main className="min-h-screen bg-[#f7fbfb] px-6 py-8 lg:px-12">
+      <h1 className="text-3xl font-bold text-[#07182c]">Shopping Cart</h1>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_360px]">
+        <div className="space-y-4">
+          {cart.length === 0 && (
+            <Card className="text-center">
+              <h2 className="text-xl font-bold text-[#07182c]">
+                Cart is empty
+              </h2>
+              <p className="mt-2 text-sm text-gray-500">
+                Add marketplace products before checkout.
+              </p>
+              <Button className="mt-5" onClick={() => navigate("/marketplace1")}>
+                Continue Shopping
+              </Button>
+            </Card>
+          )}
+
+          {cart.map((item) => (
+            <Card
+              key={item.productId}
+              className="flex items-center justify-between gap-4"
+            >
+              <div className="flex items-center gap-4">
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="h-20 w-20 rounded-lg object-cover"
+                />
+
+                <div>
+                  <h3 className="font-semibold text-gray-900">
+                    {item.title}
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    PKR {item.price.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    handleQuantity(item.productId, item.quantity - 1)
+                  }
+                >
+                  -
+                </Button>
+
+                <span className="font-semibold">{item.quantity}</span>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    handleQuantity(item.productId, item.quantity + 1)
+                  }
+                >
+                  +
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleRemove(item.productId)}
+                >
+                  Remove
+                </Button>
+              </div>
+            </Card>
+          ))}
+        </div>
+
+        <Card>
+          <h2 className="text-xl font-bold text-[#07182c]">Order Summary</h2>
+
+          <div className="mt-5 flex justify-between">
+            <span>Total</span>
+            <span className="font-bold">PKR {total.toLocaleString()}</span>
+          </div>
+
+          <Button className="mt-6 w-full" onClick={handleCheckout}>
+            Checkout
+          </Button>
+
+          {cart.length > 0 && (
+            <Button
+              variant="outline"
+              className="mt-3 w-full"
+              onClick={handleClearCart}
+            >
+              Clear Cart
+            </Button>
+          )}
+        </Card>
+      </div>
+    </main>
+  );
+};
+
+export default CartPage;
+````
+
+## File: Frontend/src/features/cart/schemas/checkout.schema.ts
+````typescript
+import { z } from "zod";
+
+export const checkoutSchema = z.object({
+  phoneNumber: z.string().trim().min(1, "Phone number is required"),
+  shippingAddress: z.string().trim().min(1, "Shipping address is required"),
+});
+
+export type CheckoutFormData = z.infer<typeof checkoutSchema>;
+````
+
+## File: Frontend/src/features/cart/types/cart.types.ts
+````typescript
+export type CartApiError = {
+  response?: {
+    status?: number;
+    data?: {
+      message?: string;
+    };
+  };
+};
+````
+
+## File: Frontend/src/features/cart/utils/cartStorage.ts
+````typescript
+export type CartItem = {
+  productId: string | number;
+  title: string;
+  price: number;
+  image: string;
+  quantity: number;
+  sellerId?: string;
+};
+
+const CART_KEY = "pets-veta-cart";
+
+export const getCartItems = (): CartItem[] => {
+  try {
+    const cart = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+    return Array.isArray(cart) ? cart : [];
+  } catch {
+    return [];
+  }
+};
+
+export const saveCartItems = (items: CartItem[]) => {
+  localStorage.setItem(CART_KEY, JSON.stringify(items));
+};
+
+export const addToCart = (item: CartItem) => {
+  const cart = getCartItems();
+  const existingSellerId = cart.find((cartItem) => cartItem.sellerId)?.sellerId;
+
+  if (
+    existingSellerId &&
+    item.sellerId &&
+    existingSellerId !== item.sellerId
+  ) {
+    return {
+      success: false,
+      message: "One order can contain products from one seller only.",
+    };
+  }
+
+  const existing = cart.find((cartItem) => cartItem.productId === item.productId);
+
+  if (existing) {
+    const updatedCart = cart.map((cartItem) =>
+      cartItem.productId === item.productId
+        ? { ...cartItem, quantity: cartItem.quantity + item.quantity }
+        : cartItem
+    );
+
+    saveCartItems(updatedCart);
+    return {
+      success: true,
+      message: "Cart updated.",
+    };
+  }
+
+  saveCartItems([...cart, item]);
+  return {
+    success: true,
+    message: "Product added to cart.",
+  };
+};
+
+export const updateCartQuantity = (
+  productId: string | number,
+  quantity: number
+) => {
+  const cart = getCartItems();
+
+  const updatedCart = cart
+    .map((item) =>
+      item.productId === productId ? { ...item, quantity } : item
+    )
+    .filter((item) => item.quantity > 0);
+
+  saveCartItems(updatedCart);
+};
+
+export const removeFromCart = (productId: string | number) => {
+  const cart = getCartItems();
+  saveCartItems(cart.filter((item) => item.productId !== productId));
+};
+
+export const clearCart = () => {
+  localStorage.removeItem(CART_KEY);
+};
+````
+
 ## File: Frontend/src/features/Contact/components/ContactFAQ.tsx
 ````typescript
 const faqs = [
@@ -5298,256 +7885,6 @@ export const getDoctorAppointments = async () => {
 };
 ````
 
-## File: Frontend/src/features/Doctor/components/AddSlotModal.tsx
-````typescript
-import React from "react";
-import { X } from "lucide-react";
-import Button from "../../../shared/components/Button/Button";
-import type { SlotForm, WeekDay } from "./DoctorTypes";
-import { weekDays } from "./DoctorTypes";
-
-interface AddSlotModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    slotForm: SlotForm;
-    setSlotForm: React.Dispatch<React.SetStateAction<SlotForm>>;
-    handleAddSlot: () => void;
-    error: string | null;
-    resetSlotForm: () => void;
-    setError: (error: string | null) => void; // Added setError prop to update state directly from the modal if needed
-}
-
-const AddSlotModal = ({
-    isOpen,
-    onClose,
-    slotForm,
-    setSlotForm,
-    handleAddSlot,
-    error,
-    resetSlotForm,
-    setError,
-}: AddSlotModalProps) => {
-    if (!isOpen) return null;
-
-    // Helper validation function to catch past dates and times
-    const timeFilter = (dateStr: string, timeStr: string): boolean => {
-        if (!dateStr) return false;
-
-        const now = new Date();
-
-        // 1. Check if the date is strictly in the past (ignores time)
-        const selectedDateOnly = new Date(dateStr);
-        // Normalize times to midnight for an accurate date-only comparison
-        const todayDateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-        if (selectedDateOnly < todayDateOnly) {
-            setError("You cannot select a past date.");
-            return false;
-        }
-
-        // 2. If the date is today, verify the selected time hasn't passed
-        if (selectedDateOnly.getTime() === todayDateOnly.getTime() && timeStr) {
-            const [hours, minutes] = timeStr.split(":").map(Number);
-            const selectedDateTime = new Date(todayDateOnly.getTime());
-            selectedDateTime.setHours(hours, minutes, 0, 0);
-
-            if (selectedDateTime < now) {
-                setError("You cannot select a past time for today.");
-                return false;
-            }
-        }
-
-        // Clear error if validation passes
-        setError(null);
-        return true;
-    };
-
-    // Wrapper for submission to enforce the filters
-    const handleSubmission = () => {
-        const isDateValid = timeFilter(slotForm.date, slotForm.startTime);
-        if (isDateValid) {
-            handleAddSlot();
-        }
-    };
-
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4">
-            <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
-                <div className="mb-6 flex items-start justify-between gap-4">
-                    <div>
-                        <h2 className="text-2xl font-black text-[#101b3d]">Add Time Slot</h2>
-                        <p className="mt-1 text-sm text-slate-500">Select date, day, start time and end time.</p>
-                    </div>
-
-                    <button
-                        type="button"
-                        onClick={() => { resetSlotForm(); onClose(); }}
-                        className="rounded-full bg-slate-100 p-2 text-slate-500 transition hover:bg-slate-200"
-                    >
-                        <X size={20} />
-                    </button>
-                </div>
-
-                <div className="space-y-4">
-                    <div>
-                        <label className="mb-2 block text-sm font-black text-[#20263D]">Date</label>
-                        <input
-                            type="date"
-                            value={slotForm.date}
-                            onChange={(e) => {
-                                const newDate = e.target.value;
-                                setSlotForm((prev) => ({ ...prev, date: newDate }));
-                                timeFilter(newDate, slotForm.startTime);
-                            }}
-                            className="h-12 w-full rounded-xl border border-slate-200 px-4 text-sm font-semibold outline-none transition focus:border-[#078b91] focus:ring-4 focus:ring-[#D4E2E0]/60"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="mb-2 block text-sm font-black text-[#20263D]">Day</label>
-                        <select
-                            value={slotForm.day}
-                            onChange={(e) => setSlotForm((prev) => ({ ...prev, day: e.target.value as WeekDay }))}
-                            className="h-12 w-full rounded-xl border border-slate-200 px-4 text-sm font-semibold outline-none transition focus:border-[#078b91] focus:ring-4 focus:ring-[#D4E2E0]/60"
-                        >
-                            {weekDays.map((item) => (
-                                <option key={item.value} value={item.value}>{item.label}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                        <div>
-                            <label className="mb-2 block text-sm font-black text-[#20263D]">Start Time</label>
-                            <input
-                                type="time"
-                                value={slotForm.startTime}
-                                onChange={(e) => {
-                                    const newTime = e.target.value;
-                                    setSlotForm((prev) => ({ ...prev, startTime: newTime }));
-                                    timeFilter(slotForm.date, newTime);
-                                }}
-                                className="h-12 w-full rounded-xl border border-slate-200 px-4 text-sm font-semibold outline-none transition focus:border-[#078b91] focus:ring-4 focus:ring-[#D4E2E0]/60"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="mb-2 block text-sm font-black text-[#20263D]">End Time</label>
-                            <input
-                                type="time"
-                                value={slotForm.endTime}
-                                onChange={(e) => setSlotForm((prev) => ({ ...prev, endTime: e.target.value }))}
-                                className="h-12 w-full rounded-xl border border-slate-200 px-4 text-sm font-semibold outline-none transition focus:border-[#078b91] focus:ring-4 focus:ring-[#D4E2E0]/60"
-                            />
-                        </div>
-                    </div>
-
-                    {error ? (
-                        <div className="rounded-2xl bg-red-50 p-4 text-sm font-semibold text-red-600 border border-red-100">{error}</div>
-                    ) : (
-                        <div className="rounded-2xl bg-[#F0FAF7] p-4 text-sm font-semibold text-[#078b91]">This slot will be added to your appointment availability.</div>
-                    )}
-
-                    <div className="grid grid-cols-2 gap-3 pt-2">
-                        <Button type="button" variant="outline" onClick={() => { resetSlotForm(); onClose(); }}>Cancel</Button>
-                        <Button type="button" onClick={handleSubmission}>Add Slot</Button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-export default AddSlotModal;
-````
-
-## File: Frontend/src/features/Doctor/components/DeleteModal.tsx
-````typescript
-import { AlertTriangle } from "lucide-react";
-
-type DeleteModalProps = {
-    isOpen: boolean;
-    serviceName: string;
-    price: string;
-    itemId: string;
-    onCancel: () => void;
-    onConfirmDelete: (itemId: string) => void;
-    isLoading?: boolean;
-}
-
-const DeleteModal = ({
-    isOpen,
-    serviceName,
-    price,
-    itemId,
-    onCancel,
-    onConfirmDelete,
-    isLoading = false
-}: DeleteModalProps) => {
-    if (!isOpen) return null;
-
-    return (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full mx-4 animate-in fade-in zoom-in-95 duration-200">
-                {/* Icon and Title */}
-                <div className="flex items-center gap-3 mb-4">
-                    <div className="p-3 bg-red-50 rounded-full">
-                        <AlertTriangle className="w-6 h-6 text-red-600" />
-                    </div>
-                    <h2 className="text-xl font-semibold text-slate-900">Delete Service</h2>
-                </div>
-
-                {/* Content */}
-                <div className="mb-6">
-                    <p className="text-slate-600 text-sm mb-4">
-                        Are you sure you want to delete this service? This action cannot be undone.
-                    </p>
-                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
-                        <div className="flex justify-between items-center">
-                            <div>
-                                <p className="text-xs text-slate-500 mb-1">Service</p>
-                                <p className="font-medium text-slate-900">{serviceName}</p>
-                            </div>
-                            <div className="text-right">
-                                <p className="text-xs text-slate-500 mb-1">Price</p>
-                                <p className="font-semibold text-red-600">Rs. {Number(price).toLocaleString()}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex gap-3">
-                    <button
-                        onClick={onCancel}
-                        disabled={isLoading}
-                        className="flex-1 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        onClick={() => onConfirmDelete(itemId)}
-                        disabled={isLoading}
-                        className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                    >
-                        {isLoading ? (
-                            <>
-                                <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                Deleting...
-                            </>
-                        ) : (
-                            "Delete"
-                        )}
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-export default DeleteModal;
-````
-
 ## File: Frontend/src/features/Doctor/components/DoctorAvailability/index.ts
 ````typescript
 export { default } from "./DoctorAvailability";
@@ -5648,144 +7985,6 @@ const ScheduleModal = ({
 };
 
 export default ScheduleModal;
-````
-
-## File: Frontend/src/features/Doctor/components/DoctorAvailability/ScheduleTable.tsx
-````typescript
-import React from "react";
-
-interface BackendScheduleItem {
-    id: string;
-    doctorId: string;
-    date: string;
-    startTime: string;
-    endTime: string;
-    isBooked: boolean;
-}
-
-interface ScheduleTableProps {
-    schedules: BackendScheduleItem[];
-}
-
-const ScheduleTable: React.FC<ScheduleTableProps> = ({ schedules }) => {
-
-    // 1. Helper to format dates cleanly (e.g., "Jun 12, 2026")
-    const formatDate = (dateStr: string) => {
-        return new Date(dateStr).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-        });
-    };
-
-    // 2. Helper to format times cleanly (e.g., "07:30 PM")
-    const formatTime = (timeStr: string) => {
-        return new Date(timeStr).toLocaleTimeString("en-US", {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: true,
-        });
-    };
-
-    if (schedules.length === 0) {
-        return (
-            <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm font-medium text-slate-500">
-                No slots generated yet. Set a schedule block above to create availability.
-            </div>
-        );
-    }
-
-    return (
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <table className="w-full border-collapse text-left text-sm text-slate-600">
-                <thead className="bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-700 border-b border-slate-200">
-                    <tr>
-                        <th className="px-6 py-4">Date</th>
-                        <th className="px-6 py-4">Start Time</th>
-                        <th className="px-6 py-4">End Time</th>
-                        <th className="px-6 py-4">Status</th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                    {schedules.map((item) => (
-                        <tr key={item.id} className="transition hover:bg-slate-50/50">
-                            {/* Formatted Date */}
-                            <td className="white-space-nowrap px-6 py-4 font-semibold text-slate-800">
-                                {formatDate(item.date)}
-                            </td>
-
-                            {/* Formatted Start Time */}
-                            <td className="px-6 py-4 text-slate-600 font-medium">
-                                {formatTime(item.startTime)}
-                            </td>
-
-                            {/* Formatted End Time */}
-                            <td className="px-6 py-4 text-slate-600 font-medium">
-                                {formatTime(item.endTime)}
-                            </td>
-
-                            {/* Status Badge */}
-                            <td className="px-6 py-4">
-                                <span
-                                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold ${item.isBooked
-                                            ? "bg-red-50 text-red-700 border border-red-100"
-                                            : "bg-emerald-50 text-emerald-700 border border-emerald-100"
-                                        }`}
-                                >
-                                    <span className={`h-1.5 w-1.5 rounded-full ${item.isBooked ? "bg-red-500" : "bg-emerald-500"}`} />
-                                    {item.isBooked ? "Booked" : "Available"}
-                                </span>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-    );
-};
-
-export default ScheduleTable;
-````
-
-## File: Frontend/src/features/Doctor/components/DoctorProfileButton.tsx
-````typescript
-import { useNavigate } from "react-router-dom";
-
-type DoctorProfileButtonProps = {
-  name: string;
-  image?: string;
-};
-
-const DoctorProfileButton = ({ name, image }: DoctorProfileButtonProps) => {
-  const navigate = useNavigate();
-
-  const handleOpenProfile = () => {
-    navigate("/doctor/profile");
-  };
-
-  return (
-    <button
-      type="button"
-      onClick={handleOpenProfile}
-      className="rounded-full transition hover:scale-105 focus:outline-none focus:ring-4 focus:ring-teal-100"
-      title="Open Profile"
-    >
-      {image ? (
-        <img
-          src={image}
-          alt={name}
-          className="h-12 w-12 rounded-full object-cover ring-4 ring-slate-100"
-        />
-      ) : (
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#F9C5A8] text-2xl ring-4 ring-slate-100">
-          👩‍⚕️
-        </div>
-      )}
-    </button>
-  );
-};
-
-export default DoctorProfileButton;
 ````
 
 ## File: Frontend/src/features/Doctor/components/DoctorTypes.ts
@@ -6051,57 +8250,6 @@ const UpcomingRow = ({
 export default UpcomingRow;
 ````
 
-## File: Frontend/src/features/Doctor/doctor.types.ts
-````typescript
-export type AppointmentStatus = "Confirmed" | "Pending" | "Completed" | "Cancelled";
-
-export type Doctor = {
-    name: string;
-    image?: string;
-};
-
-export type DashboardStats = {
-    todayAppointments: number;
-    pendingAppointments: number;
-    totalPatients: number;
-    completedToday: number;
-};
-
-export type Appointment = {
-    id: string | number;
-    time: string;
-    petName: string;
-    petType: string;
-    ownerName: string;
-    purpose: string;
-    status: AppointmentStatus;
-};
-
-export type DashboardData = {
-    doctor: Doctor;
-    stats: DashboardStats;
-    appointments: Appointment[];
-};
-
-
-export type TimeSlot = {
-    id: string;
-    day: string;
-    startTime: string;
-    endTime: string;
-};
-
-export const DAYS_OF_WEEK = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
-];
-````
-
 ## File: Frontend/src/features/Doctor/pages/DoctorDashboardPage.tsx
 ````typescript
 import DoctorDashboard from "../components/DoctorDashboard";
@@ -6239,386 +8387,6 @@ const PatientsPage = () => {
 export default PatientsPage;
 ````
 
-## File: Frontend/src/features/Doctorcart/component/DoctorProfile.tsx
-````typescript
-import {
-  BadgeCheck,
-  BriefcaseBusiness,
-  CalendarDays,
-  CircleCheck,
-  GraduationCap,
-  Languages,
-  Mail,
-  MapPin,
-  Phone,
-  Star,
-  Stethoscope,
-  UserRound,
-  Wallet,
-  IdCard,
-  Pencil,
-} from "lucide-react";
-
-import { useNavigate } from "react-router-dom";
-import Button from "../../../shared/components/Button/Button";
-
-type DoctorProfileData = {
-  fullName: string;
-  email: string;
-  phone: string;
-  profileImageUrl: string;
-  specialization: string;
-  education: string;
-  experience: number;
-  fees: number;
-  rating: number;
-  reviews: number;
-  licenseNumber: string;
-  languages: string;
-  address: string;
-  about: string;
-  isVerified: boolean;
-  isAvailable: boolean;
-};
-
-const doctor: DoctorProfileData = {
-  fullName: "Dr. Ayesha Khan",
-  email: "ayesha.khan@gmail.com",
-  phone: "+92 300 1234567",
-  profileImageUrl:
-    "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=500&q=80",
-  specialization: "Veterinary Surgeon",
-  education: "DVM",
-  experience: 5,
-  fees: 2500,
-  rating: 4.8,
-  reviews: 128,
-  licenseNumber: "VS-PK-2021-11234",
-  languages: "English, Urdu, Punjabi",
-  address: "PetCare Clinic, Gulberg III, Lahore",
-  about:
-    "Passionate about animal care and dedicated to providing the best medical services to pets.",
-  isVerified: true,
-  isAvailable: true,
-};
-
-const DoctorProfile = () => {
-  const navigate = useNavigate();
-
-  return (
-    <main className="min-h-screen bg-[#F8FAFA] px-4 py-6 text-[#20263D] sm:px-6 lg:px-8">
-      <section className="mx-auto max-w-7xl">
-        <div className="mb-6">
-          <p className="text-xs font-black uppercase tracking-[0.25em] text-[#078b91]">
-            Doctor Panel
-          </p>
-
-          <h1 className="mt-2 text-3xl font-black tracking-[-0.03em] text-[#101b3d]">
-            Doctor Profile
-          </h1>
-
-          <p className="mt-2 text-sm font-medium text-slate-500">
-            Manage your professional information and public doctor details.
-          </p>
-        </div>
-
-        <section className="grid gap-5 xl:grid-cols-[330px_1fr]">
-          <aside className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm">
-            <div className="relative h-32 bg-gradient-to-br from-[#D4E2E0] via-[#EAF7F5] to-white">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(23,143,149,0.12),transparent_35%),radial-gradient(circle_at_80%_20%,rgba(249,197,168,0.18),transparent_38%)]" />
-            </div>
-
-            <div className="-mt-16 flex flex-col items-center px-6 pb-6">
-              <div className="relative h-32 w-32 overflow-hidden rounded-full border-4 border-white bg-slate-100 shadow-xl">
-                <img
-                  src={doctor.profileImageUrl}
-                  alt={doctor.fullName}
-                  className="h-full w-full object-cover"
-                />
-
-                <span className="absolute bottom-3 right-3 h-5 w-5 rounded-full border-2 border-white bg-green-500" />
-              </div>
-
-              <h2 className="mt-5 text-center text-2xl font-black text-[#101b3d]">
-                {doctor.fullName}
-              </h2>
-
-              <p className="mt-1 text-sm font-bold text-[#078b91]">
-                {doctor.specialization}
-              </p>
-
-              <div className="mt-5 flex flex-wrap justify-center gap-3">
-                {doctor.isVerified && (
-                  <span className="inline-flex items-center gap-2 rounded-lg bg-[#EAF7F5] px-4 py-2 text-sm font-black text-[#078b91]">
-                    <BadgeCheck size={17} />
-                    Verified
-                  </span>
-                )}
-
-                {doctor.isAvailable && (
-                  <span className="inline-flex items-center gap-2 rounded-lg bg-green-50 px-4 py-2 text-sm font-black text-green-700">
-                    <CircleCheck size={17} />
-                    Available
-                  </span>
-                )}
-              </div>
-
-              <div className="mt-6 h-px w-full bg-slate-200" />
-
-              <div className="mt-6 w-full space-y-5">
-                <ContactRow icon={<Mail size={20} />} value={doctor.email} />
-                <ContactRow icon={<Phone size={20} />} value={doctor.phone} />
-                <ContactRow icon={<MapPin size={20} />} value={doctor.address} />
-              </div>
-
-              <div className="mt-7 w-full">
-                <Button
-                  type="button"
-                  className="flex h-10 w-full items-center justify-center gap-1.5 rounded-xl px-3 py-0 text-xs font-black"
-                  onClick={() => navigate("/doctor-profile/edit")}
-                >
-                  <Pencil size={15} />
-                  Edit Profile
-                </Button>
-              </div>
-            </div>
-          </aside>
-
-          <div className="space-y-5">
-            <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              <MetricCard
-                icon={<BriefcaseBusiness size={28} />}
-                iconClass="bg-[#D4E2E0]/70 text-[#078b91]"
-                label="Experience"
-                value={`${doctor.experience}+ Years`}
-                description="Professional work"
-              />
-
-              <MetricCard
-                icon={<GraduationCap size={30} />}
-                iconClass="bg-purple-100 text-purple-600"
-                label="Education"
-                value={doctor.education}
-                description="Doctor of Veterinary Medicine"
-              />
-
-              <MetricCard
-                icon={<Wallet size={30} />}
-                iconClass="bg-orange-100 text-orange-500"
-                label="Consultation Fee"
-                value={`Rs. ${doctor.fees.toLocaleString()}`}
-                description="Per Consultation"
-              />
-
-              <MetricCard
-                icon={<Star size={30} />}
-                iconClass="bg-blue-100 text-blue-500"
-                label="Total Rating"
-                value={doctor.rating.toString()}
-                description={`(${doctor.reviews} Reviews)`}
-              />
-            </section>
-
-            <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
-              <h2 className="text-xl font-black text-[#101b3d]">
-                Professional Information
-              </h2>
-
-              <div className="mt-6 grid gap-x-8 gap-y-0 lg:grid-cols-2">
-                <InfoRow
-                  icon={<Stethoscope size={23} />}
-                  label="Specialization"
-                  value={doctor.specialization}
-                />
-
-                <InfoRow
-                  icon={<CalendarDays size={23} />}
-                  label="Experience"
-                  value={`${doctor.experience}+ Years`}
-                />
-
-                <InfoRow
-                  icon={<IdCard size={23} />}
-                  label="License Number"
-                  value={doctor.licenseNumber}
-                />
-
-                <InfoRow
-                  icon={<MapPin size={23} />}
-                  label="Clinic Address"
-                  value={doctor.address}
-                />
-
-                <InfoRow
-                  icon={<Languages size={23} />}
-                  label="Languages"
-                  value={doctor.languages}
-                />
-
-                <InfoRow
-                  icon={<UserRound size={23} />}
-                  label="About Me"
-                  value={doctor.about}
-                  noBorder
-                />
-              </div>
-            </section>
-          </div>
-        </section>
-      </section>
-    </main>
-  );
-};
-
-const ContactRow = ({
-  icon,
-  value,
-}: {
-  icon: React.ReactNode;
-  value: string;
-}) => {
-  return (
-    <div className="flex items-start gap-4 text-sm font-semibold text-slate-600">
-      <span className="mt-0.5 text-[#078b91]">{icon}</span>
-      <span className="leading-6">{value}</span>
-    </div>
-  );
-};
-
-const MetricCard = ({
-  icon,
-  iconClass,
-  label,
-  value,
-  description,
-}: {
-  icon: React.ReactNode;
-  iconClass: string;
-  label: string;
-  value: string;
-  description: string;
-}) => {
-  return (
-    <div className="rounded-[22px] border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-      <div className="flex items-center gap-4">
-        <div
-          className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-full ${iconClass}`}
-        >
-          {icon}
-        </div>
-
-        <div>
-          <p className="text-sm font-semibold text-slate-500">{label}</p>
-
-          <h3 className="mt-1 text-2xl font-black text-[#101b3d]">{value}</h3>
-
-          <p className="mt-1 text-sm font-medium leading-5 text-slate-500">
-            {description}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const InfoRow = ({
-  icon,
-  label,
-  value,
-  noBorder = false,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  noBorder?: boolean;
-}) => {
-  return (
-    <div
-      className={`flex gap-4 py-4 ${
-        noBorder ? "" : "border-b border-dashed border-slate-200"
-      }`}
-    >
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#EAF7F5] text-[#078b91]">
-        {icon}
-      </div>
-
-      <div>
-        <p className="text-sm font-semibold text-slate-500">{label}</p>
-
-        <h3 className="mt-1 text-sm font-black leading-6 text-[#101b3d]">
-          {value}
-        </h3>
-      </div>
-    </div>
-  );
-};
-
-export default DoctorProfile;
-````
-
-## File: Frontend/src/features/Doctorcart/component/FilterSidebar.tsx
-````typescript
-import Button from "../../../shared/components/Button/Button";
-import SearchBar from "../../../shared/components/SearchBar/SearchBar";
-
-interface FilterSidebarProps {
-    search: string;
-    onSearchChange: (value: string) => void;
-    onReset: () => void;
-}
-
-const FilterSidebar = ({
-    search,
-    onSearchChange,
-    onReset,
-}: FilterSidebarProps) => {
-    return (
-        <aside className="h-fit rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="flex items-center justify-between">
-                <h2 className="text-lg font-black">Filters</h2>
-
-                <button
-                    type="button"
-                    onClick={onReset}
-                    className="text-sm font-bold text-[#078b91]"
-                >
-                    Reset
-                </button>
-            </div>
-
-            <div className="mt-6 space-y-5">
-                <div className="w-full max-w-full overflow-hidden">
-                    <SearchBar
-                        placeholder="Search doctor..."
-                        value={search}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                            onSearchChange(e.target.value);
-                        }}
-                    />
-                </div>
-
-                <div>
-                    <label className="mb-2 block text-sm font-bold">
-                        Specialization
-                    </label>
-
-                    <select className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#078b91] focus:ring-4 focus:ring-[#D4E2E0]/60">
-                        <option>All Specializations</option>
-                        <option>Veterinary Surgeon</option>
-                        <option>Pet Dermatology</option>
-                        <option>Animal Nutritionist</option>
-                    </select>
-                </div>
-
-                <Button type="button">Apply Filters</Button>
-            </div>
-        </aside>
-    );
-};
-
-export default FilterSidebar;
-````
-
 ## File: Frontend/src/features/Doctorcart/component/PageHeader.tsx
 ````typescript
 const PageHeader = () => {
@@ -6633,51 +8401,6 @@ const PageHeader = () => {
 };
 
 export default PageHeader;
-````
-
-## File: Frontend/src/features/Doctorcart/component/Pagination.tsx
-````typescript
-interface PaginationProps {
-    page: number;
-    totalPages: number;
-    onPrevious: () => void;
-    onNext: () => void;
-}
-
-const Pagination = ({
-    page,
-    totalPages,
-    onPrevious,
-    onNext,
-}: PaginationProps) => {
-    return (
-        <div className="mt-8 flex items-center justify-center gap-3">
-            <button
-                type="button"
-                disabled={page === 1}
-                onClick={onPrevious}
-                className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-50"
-            >
-                Previous
-            </button>
-
-            <span className="rounded-xl bg-[#D4E2E0]/60 px-4 py-2 text-sm font-black text-[#078b91]">
-                Page {page} of {totalPages}
-            </span>
-
-            <button
-                type="button"
-                disabled={page === totalPages}
-                onClick={onNext}
-                className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-50"
-            >
-                Next
-            </button>
-        </div>
-    );
-};
-
-export default Pagination;
 ````
 
 ## File: Frontend/src/features/Doctorcart/hooks/useDoctorProfile.ts
@@ -6772,379 +8495,189 @@ export type DoctorProfileFormInput = z.input<typeof doctorProfileSchema>;
 export type DoctorProfileFormData = z.output<typeof doctorProfileSchema>;
 ````
 
-## File: Frontend/src/features/Landing Page/components/AIAssistance.tsx
+## File: Frontend/src/features/Doctorcart/types/doctorcart.types.ts
 ````typescript
-import { FaPaw, FaPaperPlane } from "react-icons/fa";
+import type { ChangeEvent } from "react";
+import type { Doctor } from "../apis/getDoctors.api";
 
-import Button from "@/shared/components/Button/Button";
-import Input from "@/shared/components/Input/Input";
-import img from "@/assets/shared/images/dog2.jpeg"
+export interface DoctorCardProps {
+  doctor: Doctor;
+  onBookAppointment: (doctorId: string, checkupTime?: string) => void;
+}
 
-const AIAssistantBanner = () => {
-    return (
-        <section className="bg-[#f5fbff] px-6 py-8 lg:px-16">
-            <div className="relative mx-auto flex max-w-7xl items-center overflow-hidden rounded-[26px] border border-[#c9f1ee] bg-gradient-to-r from-[#dff8f7] via-[#eefdfc] to-[#f6fffe] px-8 py-8 shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
-                <img
-                    src={img}
-                    alt="AI Assistant"
-                    className="absolute bottom-0 left-8 hidden h-[210px] object-contain md:block"
-                />
+export interface DoctorsListProps {
+  doctors: Doctor[];
+  loading: boolean;
+  onBookAppointment: (doctorId: string, checkupTime?: string) => void;
+}
 
-                <div className="relative z-10 ml-0 md:ml-[250px]">
-                    <p className="mb-2 flex items-center gap-2 text-sm font-extrabold text-[#009f9d]">
-                        AI Assistant <FaPaw />
-                    </p>
+export interface FilterSidebarProps {
+  search: string;
+  onSearchChange: (value: string) => void;
+  onReset: () => void;
+}
 
-                    <h2 className="mb-3 text-[24px] font-extrabold text-[#07182c]">
-                        Ask anything about your pet
-                    </h2>
+export type SearchInputChangeEvent = ChangeEvent<HTMLInputElement>;
 
-                    <p className="max-w-md text-sm leading-6 text-slate-600">
-                        Get instant answers about symptoms, care, nutrition, vaccination and
-                        more.
-                    </p>
-                </div>
+export interface PaginationProps {
+  page: number;
+  totalPages: number;
+  onPrevious: () => void;
+  onNext: () => void;
+}
 
-                <div className="relative z-10 ml-auto hidden w-[430px] items-center rounded-full bg-white px-5 py-3 shadow-lg lg:flex">
-                    <Input
-                        type="text"
-                        placeholder="Ask your question..."
-                        className="!border-0 !bg-transparent !shadow-none !outline-none !ring-0"
-                    />
-
-                    <Button
-                        variant="primary"
-                        size="md"
-                        className="flex !h-14 !w-14 items-center justify-center !rounded-full !border-[#009f9d] !bg-[#009f9d] !p-0 !text-white hover:!bg-[#008f8d] hover:!text-white"
-                    >
-                        <FaPaperPlane />
-                    </Button>
-                </div>
-
-                <div className="absolute right-10 top-10 hidden h-16 w-20 items-center justify-center rounded-[22px] bg-[#a7eee7] text-white lg:flex">
-                    • • •
-                </div>
-            </div>
-        </section>
-    );
+export type DoctorProfileData = {
+  fullName: string;
+  email: string;
+  phone: string;
+  profileImageUrl: string;
+  specialization: string;
+  education: string;
+  experience: number;
+  fees: number;
+  rating: number;
+  reviews: number;
+  licenseNumber: string;
+  languages: string;
+  address: string;
+  about: string;
+  isVerified: boolean;
+  isAvailable: boolean;
 };
 
-export default AIAssistantBanner;
+export interface GetDoctorsParams {
+  page: number;
+  limit: number;
+  search: string;
+}
 ````
 
-## File: Frontend/src/features/Landing Page/components/ChooseUs.tsx
+## File: Frontend/src/features/Landing Page/components/DashboardHomeMenu.tsx
 ````typescript
-import {
-    FaUserMd,
-    FaLock,
-    FaCalendarCheck,
-    FaBoxOpen,
-    FaHeadset,
-    FaShieldAlt,
-} from "react-icons/fa";
-import img from "@/assets/shared/images/dog2.jpeg"
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Grid3X3, Home, PawPrint, ShoppingCart, Store, UserRound, X } from "lucide-react";
 
-const features = [
-    { icon: <FaUserMd />, title: "Experienced\n& Verified Vets" },
-    { icon: <FaLock />, title: "Affordable\nPricing" },
-    { icon: <FaCalendarCheck />, title: "Fast & Easy\nBookings" },
-    { icon: <FaBoxOpen />, title: "Wide Range of\nQuality Products" },
-    { icon: <FaHeadset />, title: "24/7 Customer\nSupport" },
-    { icon: <FaShieldAlt />, title: "Secure & Safe\nPlatform" },
+const menuItems = [
+  {
+    title: "Pet Owner Dashboard",
+    description: "Manage your pets, appointments & more",
+    path: "/pet-owner/dashboard",
+    icon: <UserRound size={26} />,
+    accent: "text-[#6334ff]",
+  },
+  {
+    title: "Seller Dashboard",
+    description: "Manage your store, products & orders",
+    path: "/seller/dashboard",
+    icon: <Store size={26} />,
+    accent: "text-[#12b971]",
+  },
+  {
+    title: "My Cart",
+    description: "View your cart & checkout",
+    path: "/cart",
+    icon: <ShoppingCart size={26} />,
+    accent: "text-[#ff850f]",
+  },
 ];
 
-const WhyChoose = () => {
+const DashboardHomeMenu = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  if (!isOpen) {
     return (
-        <section className="bg-[#f5fbff] px-6 py-8 lg:px-16">
-            <div className="mx-auto max-w-7xl">
-                <h2 className="mb-7 text-center text-[20px] font-extrabold text-[#07182c]">
-                    Why Pet Parents Choose{" "}
-                    <span className="text-[#009f9d]">PetsVeta</span>
-                </h2>
-
-                <div className="flex flex-col items-center justify-between gap-8 lg:flex-row">
-                    <div className="grid w-full grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-6">
-                        {features.map((item) => (
-                            <div
-                                key={item.title}
-                                className="flex flex-col items-center border-slate-200 text-center lg:border-r last:border-r-0"
-                            >
-                                <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#d9f7f6] text-2xl text-[#008f8d]">
-                                    {item.icon}
-                                </div>
-
-                                <p className="whitespace-pre-line text-[13px] font-extrabold leading-5 text-[#07182c]">
-                                    {item.title}
-                                </p>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="relative hidden w-[320px] shrink-0 lg:block">
-                        <div className="absolute -left-8 top-2 h-28 w-28 rounded-full border-[5px] border-[#9ee6e1]" />
-                        <img
-                            src={img}
-                            alt="Pets"
-                            className="relative z-10 w-full object-contain"
-                        />
-                    </div>
-                </div>
-            </div>
-        </section>
+      <div className="fixed bottom-6 right-6 z-[70]">
+        <button
+          type="button"
+          onClick={() => setIsOpen(true)}
+          aria-label="Open dashboard menu"
+          className="group flex h-12 w-12 items-center justify-center rounded-full bg-[radial-gradient(circle_at_28%_24%,#6ce5df_0%,#009f9d_62%,#007c7a_100%)] text-white shadow-[0_16px_34px_rgba(0,159,157,0.3)] ring-[6px] ring-white/80 transition hover:-translate-y-1 hover:scale-105"
+        >
+          <Grid3X3 size={22} strokeWidth={2.6} />
+        </button>
+      </div>
     );
+  }
+
+  return (
+    <div className="fixed bottom-6 right-6 z-[70] h-[390px] w-[min(350px,calc(100vw-24px))] overflow-hidden rounded-[24px] bg-[#f4fffe] shadow-[0_18px_48px_rgba(0,159,157,0.18)]">
+      <div className="absolute -left-[130px] -top-[68px] h-[480px] w-[460px] rounded-[50%] bg-[radial-gradient(circle_at_30%_30%,#55deda_0%,#009f9d_58%,#007c7a_100%)] shadow-[inset_-18px_-24px_56px_rgba(0,83,82,0.24)]" />
+      <div className="absolute -left-[34px] top-[104px] h-[230px] w-[122px] rounded-r-full border-r border-dashed border-white/60" />
+
+      <div className="absolute right-7 top-6 grid grid-cols-3 gap-2 opacity-55">
+        {Array.from({ length: 9 }).map((_, index) => (
+          <span key={index} className="h-1.5 w-1.5 rounded-full bg-white" />
+        ))}
+      </div>
+
+      <div className="absolute right-8 top-24 h-12 w-16 rounded-full bg-white/5 text-white/10">
+        <PawPrint size={48} fill="currentColor" />
+      </div>
+
+      <div className="absolute left-9 top-[106px] flex flex-col gap-[58px]">
+        <span className="h-3 w-3 rounded-full border-[3px] border-white bg-[#8b45ff] shadow-[0_0_14px_rgba(139,69,255,0.8)]" />
+        <span className="h-3 w-3 rounded-full border-[3px] border-white bg-[#35df76] shadow-[0_0_14px_rgba(53,223,118,0.8)]" />
+        <span className="h-3 w-3 rounded-full border-[3px] border-white bg-[#ff8b18] shadow-[0_0_14px_rgba(255,139,24,0.8)]" />
+      </div>
+
+      <div className="relative z-10 flex h-full flex-col justify-center gap-4 pl-[58px] pr-5">
+        {menuItems.map((item) => (
+          <Link
+            key={item.path}
+            to={item.path}
+            className="group grid grid-cols-[62px_minmax(0,1fr)_34px] items-center gap-3"
+          >
+            <span className={`flex h-[62px] w-[62px] items-center justify-center rounded-full bg-white ${item.accent} shadow-[0_12px_24px_rgba(0,83,82,0.18)] ring-[5px] ring-white/35 transition group-hover:-translate-y-1`}>
+              {item.icon}
+            </span>
+
+            <span className="min-w-0 text-white">
+              <span className="block text-base font-black leading-tight">
+                {item.title}
+              </span>
+              <span className="mt-1 block max-w-[170px] text-xs font-medium leading-5 text-white/90">
+                {item.description}
+              </span>
+            </span>
+
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#007c7a]/70 text-white transition group-hover:translate-x-1 group-hover:bg-white group-hover:text-[#009f9d]">
+              <span className="text-xl leading-none">›</span>
+            </span>
+          </Link>
+        ))}
+      </div>
+
+      <div className="absolute bottom-5 left-5 z-10 flex items-center gap-3 rounded-full bg-white/90 px-4 py-2.5 text-xs font-bold text-[#163051] shadow-[0_12px_35px_rgba(20,67,151,0.16)]">
+        <span className="flex items-center gap-2">
+          <Home size={15} className="text-[#0a62ea]" />
+          Safe
+        </span>
+        <span className="h-1 w-1 rounded-full bg-[#0aa68b]" />
+        <span className="flex items-center gap-2">
+          <PawPrint size={15} className="text-[#6b35ff]" />
+          Trusted
+        </span>
+        <span className="h-1 w-1 rounded-full bg-[#0aa68b]" />
+        <span className="flex items-center gap-2">
+          <PawPrint size={15} className="text-[#0ca5c7]" />
+          Loved
+        </span>
+      </div>
+
+      <button
+        type="button"
+        onClick={() => setIsOpen(false)}
+        aria-label="Close dashboard menu"
+        className="absolute bottom-5 right-5 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#009f9d] shadow-[0_12px_28px_rgba(0,159,157,0.24)] ring-[8px] ring-white/20"
+      >
+        <X size={24} strokeWidth={3.4} />
+      </button>
+    </div>
+  );
 };
 
-export default WhyChoose;
-````
-
-## File: Frontend/src/features/Landing Page/components/CTA.tsx
-````typescript
-import Button from "@/shared/components/Button/Button";
-import img from "@/assets/shared/images/dog2.jpeg"
-
-const CTA = () => {
-    return (
-        <section className="bg-[#f5fbff] px-6 py-10 lg:px-16">
-            <div className="relative mx-auto flex max-w-7xl items-center justify-between overflow-hidden rounded-[34px] bg-gradient-to-r from-[#12aaa5] to-[#079895] px-8 py-10 shadow-xl md:px-14">
-                <img
-                    src={img}
-                    alt="Dog"
-                    className="absolute bottom-0 left-6 hidden h-[260px] object-contain md:block"
-                />
-
-                <div className="relative z-10 mx-auto max-w-2xl text-center">
-                    <h2 className="text-[30px] font-extrabold leading-tight text-white md:text-[42px]">
-                        Your pet’s health is our priority
-                        <br />
-                        Join PetsVeta today!
-                    </h2>
-
-                    <div className="mt-8 flex justify-center gap-5">
-                        <Button
-                            variant="primary"
-                            size="md"
-                            className="!rounded-2xl !border-white !bg-white !px-10 !text-[#009f9d] hover:!bg-white hover:!text-[#008f8d]"
-                        >
-                            Get Started
-                        </Button>
-
-                        <Button
-                            variant="outline"
-                            size="md"
-                            className="!rounded-2xl !border-white !bg-transparent !px-10 !text-white hover:!bg-white hover:!text-[#009f9d]"
-                        >
-                            Explore Features
-                        </Button>
-                    </div>
-                </div>
-
-                <img
-                    src={img}
-                    alt="Cat"
-                    className="absolute bottom-0 right-8 hidden h-[275px] object-contain md:block"
-                />
-            </div>
-        </section>
-    );
-};
-
-export default CTA;
-````
-
-## File: Frontend/src/features/Landing Page/components/Popular.tsx
-````typescript
-import { FaArrowRight, FaStar } from "react-icons/fa";
-import img from "@/assets/shared/images/dog2.jpeg"
-
-const products = [
-    {
-        title: "Royal Canin\nDog Food",
-        price: "Rs. 2,450",
-        rating: "4.8",
-        image: img,
-    },
-    {
-        title: "Cat Litter\nPremium",
-        price: "Rs. 1,350",
-        rating: "4.6",
-        image: img,
-    },
-    {
-        title: "Chew Toy\nFor Dogs",
-        price: "Rs. 650",
-        rating: "4.7",
-        image: img,
-    },
-    {
-        title: "Pet Shampoo\nGentle Care",
-        price: "Rs. 890",
-        rating: "4.5",
-        image: img,
-    },
-    {
-        title: "Nutritional\nSupplements",
-        price: "Rs. 1,250",
-        rating: "4.6",
-        image: img,
-    },
-];
-
-const PopularMarketplace = () => {
-    return (
-        <section className="bg-[#f5fbff] px-6 py-8 lg:px-16">
-            <div className="mb-5 flex items-center justify-between">
-                <h2 className="text-[22px] font-extrabold text-[#07182c]">
-                    Popular in <span className="text-[#009f9d]">Marketplace</span>
-                </h2>
-
-                <button className="flex items-center gap-2 text-sm font-extrabold text-[#009f9d]">
-                    View All Products
-                    <FaArrowRight className="text-xs" />
-                </button>
-            </div>
-
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
-                {products.map((product) => (
-                    <div
-                        key={product.title}
-                        className="rounded-[20px] bg-white p-4 shadow-[0_10px_35px_rgba(15,23,42,0.08)]"
-                    >
-                        <div className="mb-4 flex h-[130px] items-center justify-center rounded-[16px] bg-gradient-to-br from-[#fff3ef] via-[#f8fbfb] to-[#edfafa]">
-                            <img
-                                src={product.image}
-                                alt={product.title}
-                                className="h-[110px] w-full object-contain"
-                            />
-                        </div>
-
-                        <h3 className="whitespace-pre-line text-[16px] font-extrabold leading-[19px] text-[#07182c]">
-                            {product.title}
-                        </h3>
-
-                        <p className="mt-2 text-[14px] font-extrabold text-[#009f9d]">
-                            {product.price}
-                        </p>
-
-                        <div className="mt-2 flex items-center gap-[2px]">
-                            {Array.from({ length: 5 }).map((_, index) => (
-                                <FaStar key={index} className="text-[13px] text-[#ffb020]" />
-                            ))}
-                            <span className="ml-2 text-[12px] font-semibold text-slate-500">
-                                ({product.rating})
-                            </span>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </section>
-    );
-};
-
-export default PopularMarketplace;
-````
-
-## File: Frontend/src/features/Landing Page/components/TopDoctor.tsx
-````typescript
-import { FaArrowRight, FaStar } from "react-icons/fa";
-import img from "@/assets/shared/images/dog2.jpeg"
-
-
-const doctors = [
-    {
-        name: "Dr. Sarah Khan",
-        specialty: "Veterinary Surgeon",
-        rating: "4.9",
-        reviews: "120",
-        image: img,
-    },
-    {
-        name: "Dr. Ali Raza",
-        specialty: "Pet Specialist",
-        rating: "4.8",
-        reviews: "98",
-        image: img,
-    },
-    {
-        name: "Dr. Mehwish Noor",
-        specialty: "Dermatologist",
-        rating: "4.9",
-        reviews: "110",
-        image: img,
-    },
-    {
-        name: "Dr. Usman Ahmed",
-        specialty: "Orthopedic Vet",
-        rating: "4.7",
-        reviews: "85",
-        image: img,
-    },
-];
-
-const TopRatedDoctors = () => {
-    return (
-        <section className="bg-[#f5fbff] px-6 py-8 lg:px-16">
-            <div className="mx-auto max-w-7xl">
-                <div className="mb-5 flex items-center justify-between">
-                    <h2 className="text-[22px] font-extrabold text-[#07182c]">
-                        Top Rated <span className="text-[#009f9d]">Doctors</span>
-                    </h2>
-
-                    <button className="flex items-center gap-2 text-sm font-extrabold text-[#009f9d]">
-                        View All Doctors
-                        <FaArrowRight className="text-xs" />
-                    </button>
-                </div>
-
-                <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
-                    {doctors.map((doctor) => (
-                        <div
-                            key={doctor.name}
-                            className="relative flex h-[140px] overflow-hidden rounded-[22px] bg-white shadow-[0_10px_30px_rgba(15,23,42,0.08)]"
-                        >
-                            <div className="relative w-[105px] shrink-0 bg-gradient-to-br from-[#eefafa] to-white">
-                                <img
-                                    src={doctor.image}
-                                    alt={doctor.name}
-                                    className="absolute bottom-0 left-0 h-[130px] w-full object-contain object-bottom"
-                                />
-
-                                <span className="absolute bottom-4 left-4 h-3 w-3 rounded-full bg-[#22c55e] ring-2 ring-white" />
-                            </div>
-
-                            <div className="flex flex-1 flex-col justify-center px-4">
-                                <h3 className="text-[15px] font-extrabold text-[#07182c]">
-                                    {doctor.name}
-                                </h3>
-
-                                <p className="mt-1 text-[12px] font-semibold text-slate-500">
-                                    {doctor.specialty}
-                                </p>
-
-                                <div className="mt-3 flex items-center gap-1">
-                                    <FaStar className="text-[13px] text-[#ffb020]" />
-                                    <span className="text-[13px] font-extrabold text-[#07182c]">
-                                        {doctor.rating}
-                                    </span>
-                                    <span className="text-[12px] font-semibold text-slate-400">
-                                        ({doctor.reviews})
-                                    </span>
-                                </div>
-
-                                <p className="mt-2 text-[12px] font-bold text-[#f7b731]">
-                                    Online Available
-                                </p>
-                            </div>
-
-                            <span className="absolute left-[98px] top-5 h-3 w-3 rounded-full bg-[#22c55e] ring-2 ring-white" />
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </section>
-    );
-};
-
-export default TopRatedDoctors;
+export default DashboardHomeMenu;
 ````
 
 ## File: Frontend/src/features/Landing Page/data/services.data.ts
@@ -7279,408 +8812,399 @@ export const testimonialData = [
 ];
 ````
 
-## File: Frontend/src/features/Marketplace/components/MarketplaceBanner.tsx
+## File: Frontend/src/features/marketplace1/api/marketplace.api.ts
 ````typescript
-import { Link } from "react-router-dom";
-import { FaGift, FaShippingFast } from "react-icons/fa";
+import { api } from "@/features/api interface/axios.interface";
 
-import Button from "../../../shared/components/Button";
-
-const MarketplaceBanner = () => {
-    return (
-        <section className="bg-[#f5fbff] px-5 py-16 lg:px-16">
-            <div className="mx-auto grid max-w-7xl items-center gap-8 rounded-[36px] bg-gradient-to-br from-[#bdf0ee] via-white to-[#fff3ec] p-8 shadow-[0_18px_50px_rgba(15,23,42,0.10)] lg:grid-cols-[1fr_380px] lg:p-12">
-                <div>
-                    <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-[#009f9d] shadow-sm">
-                        <FaGift />
-                        Special Offer
-                    </div>
-
-                    <h2 className="text-3xl font-extrabold leading-tight text-[#07182c] md:text-4xl">
-                        Get premium pet products with fast delivery and trusted quality.
-                    </h2>
-
-                    <p className="mt-4 max-w-2xl leading-7 text-slate-600">
-                        Explore food, accessories, grooming tools and healthcare products
-                        designed for your pet’s daily comfort.
-                    </p>
-
-                    <div className="mt-7 flex flex-wrap gap-4">
-                        <Button>Shop Now</Button>
-
-                        <Link
-                            to="/contact"
-                            className="inline-flex items-center justify-center rounded-xl border border-[#009f9d] px-5 py-3 text-sm font-bold text-[#009f9d] transition hover:bg-[#eefafa]"
-                        >
-                            Contact Support
-                        </Link>
-                    </div>
-                </div>
-
-                <div className="rounded-[32px] bg-white p-6 shadow-sm">
-                    <div className="flex items-center gap-4">
-                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#eefafa] text-3xl text-[#009f9d]">
-                            <FaShippingFast />
-                        </div>
-
-                        <div>
-                            <h3 className="text-2xl font-extrabold text-[#07182c]">
-                                Free Delivery
-                            </h3>
-
-                            <p className="mt-1 text-sm font-semibold text-slate-500">
-                                On selected pet-care products
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="mt-6 rounded-3xl bg-[#f5fbff] p-5">
-                        <p className="text-sm leading-6 text-slate-600">
-                            Order pet food, grooming tools and accessories from PetsVeta and
-                            get reliable delivery at your doorstep.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-    );
+export type MarketplaceImage = {
+  id?: string;
+  publicUrl: string;
+  publicId?: string | null;
 };
 
-export default MarketplaceBanner;
+export type MarketplaceProduct = {
+  id: string;
+  sellerId?: string;
+  title: string;
+  description?: string | null;
+  category: "PETS" | "FOOD" | "MEDICINE" | "ACCESSORIES";
+  status: "ACTIVE" | "DRAFT" | "SOLD_OUT" | "ARCHIVED";
+  price: string | number;
+  stock: number;
+  location?: string | null;
+  images?: MarketplaceImage[];
+  seller?: {
+    businessName?: string | null;
+    city?: string | null;
+    user?: {
+      fullName?: string | null;
+      email?: string | null;
+      profileImageUrl?: string | null;
+    };
+  };
+  savedBy?: Array<{ userId: string; productId: string }>;
+};
+
+export type MarketplaceProductsResponse = {
+  products: MarketplaceProduct[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+};
+
+export const toBackendCategory = (category: string) => {
+  const map: Record<string, string> = {
+    Pets: "PETS",
+    Food: "FOOD",
+    Accessories: "ACCESSORIES",
+  };
+
+  return map[category] || category;
+};
+
+export const toDisplayCategory = (category: string) => {
+  const map: Record<string, string> = {
+    PETS: "Pets",
+    FOOD: "Food",
+    ACCESSORIES: "Accessories",
+    MEDICINE: "Medicine",
+  };
+
+  return map[category] || category;
+};
+
+export const getProductImage = (product: MarketplaceProduct) => {
+  return (
+    product.images?.[0]?.publicUrl ||
+    "https://images.unsplash.com/photo-1450778869180-41d0601e046e?auto=format&fit=crop&w=900&q=80"
+  );
+};
+
+export const getProductPrice = (product: MarketplaceProduct) => {
+  return Number(product.price || 0);
+};
+
+export const getSellerName = (product: MarketplaceProduct) => {
+  return (
+    product.seller?.businessName ||
+    product.seller?.user?.fullName ||
+    "Pets Veta Seller"
+  );
+};
+
+export const fetchMarketplaceProducts = async (params: {
+  page: number;
+  limit: number;
+  search?: string;
+  category?: string;
+  location?: string;
+}) => {
+  const response = await api.get<{ success: boolean; data: MarketplaceProductsResponse }>(
+    "marketplace/products",
+    { params }
+  );
+
+  return response.data.data;
+};
+
+export const fetchMarketplaceProductById = async (productId: string) => {
+  const response = await api.get<{ success: boolean; data: MarketplaceProduct }>(
+    `marketplace/product/${productId}`
+  );
+
+  return response.data.data;
+};
+
+export const saveMarketplaceListing = async (productId: string) => {
+  const response = await api.post(`marketplace/save/${productId}`);
+  return response.data;
+};
+
+export const removeMarketplaceListing = async (productId: string) => {
+  const response = await api.delete(`marketplace/save/${productId}`);
+  return response.data;
+};
+
+export const fetchSavedMarketplaceListings = async () => {
+  const response = await api.get<{
+    success: boolean;
+    data: Array<{ productId: string; product: MarketplaceProduct }>;
+  }>("marketplace/saved");
+
+  return response.data.data;
+};
 ````
 
-## File: Frontend/src/features/Marketplace/components/MarketplaceBenefits.tsx
+## File: Frontend/src/features/marketplace1/data/marketplace.data.ts
 ````typescript
-import {
-    FaCheckCircle,
-    FaShieldAlt,
-    FaShippingFast,
-    FaUndo,
-} from "react-icons/fa";
-
-const benefits = [
-    {
-        icon: <FaCheckCircle />,
-        title: "100% Genuine Products",
-        subtitle: "Trusted pet brands",
-    },
-
-    {
-        icon: <FaUndo />,
-        title: "Easy Returns",
-        subtitle: "7 days return policy",
-    },
-
-    {
-        icon: <FaShippingFast />,
-        title: "Fast Delivery",
-        subtitle: "Quick doorstep delivery",
-    },
-
-    {
-        icon: <FaShieldAlt />,
-        title: "Secure Payments",
-        subtitle: "Safe & encrypted checkout",
-    },
+export const marketplaceItems = [
+  {
+    id: 1,
+    title: "Golden Retriever Puppy",
+    category: "Pets",
+    price: 45000,
+    rating: 4.8,
+    reviews: 124,
+    location: "Lahore",
+    seller: "Happy Paws Store",
+    stock: 4,
+    image: "https://images.unsplash.com/photo-1552053831-71594a27632d?w=900",
+    description:
+      "Healthy and playful Golden Retriever puppy. Vaccinated and dewormed. Perfect family companion.",
+  },
+  {
+    id: 2,
+    title: "Persian Cat Male",
+    category: "Pets",
+    price: 35000,
+    rating: 4.7,
+    reviews: 98,
+    location: "Karachi",
+    seller: "Furries Store",
+    stock: 2,
+    image: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=900",
+    description: "Beautiful Persian cat with soft fur and friendly nature.",
+  },
+  {
+    id: 3,
+    title: "Royal Canin Mini Adult 2kg",
+    category: "Food",
+    price: 4200,
+    rating: 4.9,
+    reviews: 210,
+    location: "Lahore",
+    seller: "Happy Paws Store",
+    stock: 3,
+    image: "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=900",
+    description: "Complete nutrition for small breed adult dogs.",
+  },
+  {
+    id: 4,
+    title: "Pet Collar Blue",
+    category: "Accessories",
+    price: 1250,
+    rating: 4.6,
+    reviews: 80,
+    location: "Islamabad",
+    seller: "Pet Care Hub",
+    stock: 10,
+    image: "https://images.unsplash.com/photo-1601758124510-52d02ddb7cbd?w=900",
+    description: "Comfortable and adjustable collar for pets.",
+  },
+  {
+    id: 5,
+    title: "Bird Cage Medium",
+    category: "Accessories",
+    price: 4200,
+    rating: 4.5,
+    reviews: 67,
+    location: "Multan",
+    seller: "Birds Planet",
+    stock: 5,
+    image: "https://images.unsplash.com/photo-1520808663317-647b476a81b9?w=900",
+    description: "Medium bird cage with strong build quality.",
+  },
+  {
+    id: 6,
+    title: "Whiskas Tuna 1.2kg",
+    category: "Food",
+    price: 1650,
+    rating: 4.6,
+    reviews: 145,
+    location: "Lahore",
+    seller: "Furries Store",
+    stock: 8,
+    image: "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=900",
+    description: "Tuna flavored cat food for healthy growth.",
+  },
+  {
+    id: 7,
+    title: "Dog Leash Red",
+    category: "Accessories",
+    price: 950,
+    rating: 4.4,
+    reviews: 54,
+    location: "Lahore",
+    seller: "Pet Care Hub",
+    stock: 12,
+    image: "https://images.unsplash.com/photo-1583512603805-3cc6b41f3edb?w=900",
+    description: "Strong and comfortable dog leash.",
+  },
+  {
+    id: 8,
+    title: "Pet Shampoo",
+    category: "Food",
+    price: 1500,
+    rating: 4.3,
+    reviews: 91,
+    location: "Karachi",
+    seller: "Happy Paws Store",
+    stock: 14,
+    image: "https://images.unsplash.com/photo-1601758124096-1fd661873b3d?w=900",
+    description: "Gentle shampoo for clean and healthy pet coat.",
+  },
+  {
+    id: 9,
+    title: "Cat Toy Ball",
+    category: "Accessories",
+    price: 700,
+    rating: 4.5,
+    reviews: 77,
+    location: "Islamabad",
+    seller: "Furries Store",
+    stock: 20,
+    image: "https://images.unsplash.com/photo-1545249390-6bdfa286032f?w=900",
+    description: "Fun toy ball for active cats.",
+  },
+  {
+    id: 10,
+    title: "Dog Bowl Set",
+    category: "Accessories",
+    price: 1200,
+    rating: 4.7,
+    reviews: 88,
+    location: "Lahore",
+    seller: "Pet Care Hub",
+    stock: 16,
+    image: "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=900",
+    description: "Durable bowl set for daily feeding.",
+  },
+  {
+    id: 11,
+    title: "Parrot Cage",
+    category: "Accessories",
+    price: 6200,
+    rating: 4.6,
+    reviews: 52,
+    location: "Multan",
+    seller: "Birds Planet",
+    stock: 4,
+    image: "https://images.unsplash.com/photo-1520808663317-647b476a81b9?w=900",
+    description: "Spacious cage for parrots and small birds.",
+  },
+  {
+    id: 12,
+    title: "Rabbit Food Pack",
+    category: "Food",
+    price: 2100,
+    rating: 4.4,
+    reviews: 38,
+    location: "Lahore",
+    seller: "Happy Paws Store",
+    stock: 9,
+    image: "https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=900",
+    description: "Healthy food pack for rabbits.",
+  },
 ];
-
-const MarketplaceBenefits = () => {
-    return (
-        <section className="bg-white px-5 py-10 lg:px-16">
-            <div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-2 lg:grid-cols-4">
-                {benefits.map((item) => (
-                    <div
-                        key={item.title}
-                        className="flex items-center gap-4 rounded-3xl bg-[#f5fbff] p-5"
-                    >
-                        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl text-[#009f9d] shadow-sm">
-                            {item.icon}
-                        </div>
-
-                        <div>
-                            <h3 className="font-extrabold text-[#07182c]">
-                                {item.title}
-                            </h3>
-
-                            <p className="mt-1 text-sm text-slate-500">
-                                {item.subtitle}
-                            </p>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </section>
-    );
-};
-
-export default MarketplaceBenefits;
 ````
 
-## File: Frontend/src/features/Marketplace/components/MarketplaceCTA.tsx
+## File: Frontend/src/features/marketplace1/types/marketplace.types.ts
 ````typescript
-import { Link } from "react-router-dom";
-import Button from "../../../shared/components/Button";
+import type { MarketplaceProduct } from "../api/marketplace.api";
 
-const MarketplaceCTA = () => {
-    return (
-        <section className="bg-white px-5 pb-16 lg:px-16">
-            <div className="mx-auto max-w-7xl rounded-[36px] bg-gradient-to-br from-[#bdf0ee] via-[#f5fbff] to-[#fff3ec] p-8 text-center shadow-[0_18px_50px_rgba(15,23,42,0.10)] md:p-12">
-                <h2 className="text-3xl font-extrabold text-[#07182c] md:text-4xl">
-                    Need help choosing the right product?
-                </h2>
-
-                <p className="mx-auto mt-3 max-w-2xl leading-7 text-slate-600">
-                    Use AI assistance or contact our support team to find suitable
-                    products for your pet.
-                </p>
-
-                <div className="mt-7 flex flex-wrap justify-center gap-4">
-                    <Link to="/ai-assistant">
-                        <Button>Ask AI Assistant</Button>
-                    </Link>
-
-                    <Link
-                        to="/contact"
-                        className="inline-flex items-center justify-center rounded-xl border border-[#009f9d] px-5 py-3 text-sm font-bold text-[#009f9d] transition hover:bg-[#eefafa]"
-                    >
-                        Contact Support
-                    </Link>
-                </div>
-            </div>
-        </section>
-    );
+export type MarketplaceProductCardProps = {
+  product: MarketplaceProduct;
+  saved: boolean;
+  onSave: () => void;
+  onDetails: () => void;
 };
 
-export default MarketplaceCTA;
-````
-
-## File: Frontend/src/features/Marketplace/components/MarketplaceFilters.tsx
-````typescript
-import { FaFilter } from "react-icons/fa";
-import { categories } from "../data/marketplace.data";
-
-const MarketplaceFilters = () => {
-    return (
-        <aside className="h-fit rounded-3xl bg-white p-5 shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
-            <div className="mb-5 flex items-center justify-between">
-                <h3 className="flex items-center gap-2 text-lg font-extrabold text-[#07182c]">
-                    <FaFilter className="text-[#009f9d]" />
-                    Filters
-                </h3>
-
-                <button
-                    type="button"
-                    className="text-sm font-bold text-[#009f9d] hover:underline"
-                >
-                    Reset
-                </button>
-            </div>
-
-            <div>
-                <h4 className="mb-3 text-sm font-extrabold text-[#07182c]">
-                    Categories
-                </h4>
-
-                <div className="space-y-3">
-                    {categories.slice(0, 7).map((category) => (
-                        <label
-                            key={category}
-                            className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-600"
-                        >
-                            <input
-                                type="checkbox"
-                                className="accent-[#009f9d]"
-                            />
-                            {category}
-                        </label>
-                    ))}
-                </div>
-            </div>
-
-            <div className="mt-6 border-t border-slate-100 pt-6">
-                <h4 className="mb-3 text-sm font-extrabold text-[#07182c]">
-                    Price Range
-                </h4>
-
-                <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    className="w-full accent-[#009f9d]"
-                />
-
-                <div className="mt-2 flex justify-between text-xs font-bold text-slate-500">
-                    <span>$0</span>
-                    <span>$100+</span>
-                </div>
-            </div>
-
-            <div className="mt-6 border-t border-slate-100 pt-6">
-                <h4 className="mb-3 text-sm font-extrabold text-[#07182c]">
-                    Rating
-                </h4>
-
-                {["4.5 & above", "4.0 & above", "3.5 & above"].map((rating) => (
-                    <label
-                        key={rating}
-                        className="mb-3 flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-600"
-                    >
-                        <input
-                            type="checkbox"
-                            className="accent-[#009f9d]"
-                        />
-                        {rating}
-                    </label>
-                ))}
-            </div>
-
-            <div className="mt-6 border-t border-slate-100 pt-6">
-                <h4 className="mb-3 text-sm font-extrabold text-[#07182c]">
-                    Availability
-                </h4>
-
-                {["In Stock", "On Sale", "Best Seller"].map((item) => (
-                    <label
-                        key={item}
-                        className="mb-3 flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-600"
-                    >
-                        <input
-                            type="checkbox"
-                            className="accent-[#009f9d]"
-                        />
-                        {item}
-                    </label>
-                ))}
-            </div>
-        </aside>
-    );
+export type MarketplaceDetailPanelProps = {
+  product: MarketplaceProduct;
+  onClose: () => void;
 };
 
-export default MarketplaceFilters;
+export type MarketplaceFiltersProps = {
+  search: string;
+  category: string;
+  location: string;
+  onSearch: (value: string) => void;
+  onCategory: (value: string) => void;
+  onLocation: (value: string) => void;
+  onClear: () => void;
+};
+
+export type MarketplacePaginationProps = {
+  page: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+};
 ````
 
-## File: Frontend/src/features/Marketplace/components/MarketplaceHero.tsx
+## File: Frontend/src/features/Payment/components/AppointmentPayment.tsx
 ````typescript
+import { useState } from "react";
 import {
-    FaSearch,
-    FaShoppingCart,
-    FaTruck,
-} from "react-icons/fa";
+    PaymentElement,
+    useElements,
+    useStripe,
+} from "@stripe/react-stripe-js";
 
-import Button from "../../../shared/components/Button";
+type AppointmentPaymentFormProps = {
+    appointmentId: string;
+};
 
-const MarketplaceHero = () => {
+const AppointmentPaymentForm = ({ appointmentId }: AppointmentPaymentFormProps) => {
+    const stripe = useStripe();
+    const elements = useElements();
+
+    const [isPaying, setIsPaying] = useState(false);
+    const [error, setError] = useState("");
+
+    const handlePayNow = async (event: React.FormEvent) => {
+        event.preventDefault();
+
+        if (!stripe || !elements) {
+            setError("Stripe is not ready yet. Please wait.");
+            return;
+        }
+
+        try {
+            setIsPaying(true);
+            setError("");
+
+            const result = await stripe.confirmPayment({
+                elements,
+                confirmParams: {
+                    return_url: `${window.location.origin}/payment-success?appointmentId=${appointmentId}`,
+                },
+            });
+
+            if (result.error) {
+                setError(result.error.message || "Payment failed. Please try again.");
+                setIsPaying(false);
+            }
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Payment failed.");
+            setIsPaying(false);
+        }
+    };
+
     return (
-        <section className="bg-white px-5 pt-10 lg:px-16">
-            <div className="mx-auto max-w-7xl rounded-[40px] bg-gradient-to-br from-[#f5fbff] via-white to-[#d9f7f6] p-8 shadow-[0_18px_50px_rgba(15,23,42,0.08)] lg:p-12">
-                <div className="grid items-center gap-10 lg:grid-cols-2">
-                    <div>
-                        <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-[#009f9d] shadow-sm">
-                            <FaShoppingCart />
-                            PetsVeta Marketplace
-                        </div>
+        <form onSubmit={handlePayNow} className="mt-6 space-y-5 text-left">
+            <PaymentElement />
 
-                        <h1 className="max-w-2xl text-4xl font-extrabold leading-tight text-[#07182c] md:text-5xl">
-                            Everything your pet needs,
-                            <br />
-                            all in{" "}
-                            <span className="text-[#009f9d]">
-                                one place
-                            </span>
-                        </h1>
-
-                        <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600">
-                            Discover premium pet food, accessories, grooming tools,
-                            medicines and trusted products for your furry friends.
-                        </p>
-
-                        <div className="mt-7 flex flex-col gap-3 rounded-3xl bg-white p-4 shadow-sm sm:flex-row">
-                            <div className="relative flex-1">
-                                <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-
-                                <input
-                                    type="text"
-                                    placeholder="Search pet products..."
-                                    className="h-14 w-full rounded-2xl border border-slate-200 bg-[#f8fafc] pl-12 pr-4 text-sm outline-none focus:border-[#009f9d] focus:ring-2 focus:ring-[#009f9d]/20"
-                                />
-                            </div>
-
-                            <Button className="h-14 px-8">
-                                Search
-                            </Button>
-                        </div>
-
-                        <div className="mt-7 flex flex-wrap gap-3">
-                            <span className="rounded-full bg-white px-4 py-2 text-sm font-bold text-[#07182c] shadow-sm">
-                                Premium Products
-                            </span>
-
-                            <span className="rounded-full bg-white px-4 py-2 text-sm font-bold text-[#07182c] shadow-sm">
-                                Fast Delivery
-                            </span>
-
-                            <span className="rounded-full bg-white px-4 py-2 text-sm font-bold text-[#07182c] shadow-sm">
-                                Trusted Brands
-                            </span>
-                        </div>
-                    </div>
-
-                    <div className="relative">
-                        <div className="overflow-hidden rounded-[40px] bg-white p-4 shadow-[0_18px_50px_rgba(15,23,42,0.08)]">
-                            <img
-                                src="https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80&w=1400&auto=format&fit=crop"
-                                alt="Pets Marketplace"
-                                className="h-[450px] w-full rounded-[32px] object-cover"
-                            />
-                        </div>
-
-                        <div className="absolute -bottom-6 left-6 rounded-3xl bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.10)]">
-                            <div className="flex items-center gap-3">
-                                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eefafa] text-xl text-[#009f9d]">
-                                    <FaTruck />
-                                </div>
-
-                                <div>
-                                    <h3 className="font-extrabold text-[#07182c]">
-                                        Fast Delivery
-                                    </h3>
-
-                                    <p className="text-sm text-slate-500">
-                                        At your doorstep
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="absolute -right-4 top-10 rounded-3xl bg-[#009f9d] p-5 text-white shadow-[0_18px_50px_rgba(15,23,42,0.10)]">
-                            <h3 className="text-2xl font-extrabold">
-                                10K+
-                            </h3>
-
-                            <p className="mt-1 text-sm text-white/80">
-                                Happy Pet Owners
-                            </p>
-                        </div>
-                    </div>
+            {error && (
+                <div className="rounded-xl border border-red-100 bg-red-50 p-3 text-sm font-semibold text-red-600">
+                    {error}
                 </div>
-            </div>
-        </section>
+            )}
+
+            <button
+                type="submit"
+                disabled={!stripe || !elements || isPaying}
+                className="w-full rounded-xl bg-[#0B8F5A] px-4 py-3 text-sm font-bold text-white hover:bg-[#097b4d] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+                {isPaying ? "Processing..." : "Pay Now"}
+            </button>
+        </form>
     );
 };
 
-export default MarketplaceHero;
-````
-
-## File: Frontend/src/features/Marketplace/marketplace.route.tsx
-````typescript
-import MarketplacePage from "./pages/MarketplacePage";
-
-export const marketplaceRoutes = [
-    {
-        path: "/marketplace",
-        element: <MarketplacePage />,
-    },
-];
+export default AppointmentPaymentForm;
 ````
 
 ## File: Frontend/src/features/Pet Owner/pet details/pages/PetFormPage.tsx
@@ -7722,750 +9246,216 @@ export const petsRoutes = [
 ];
 ````
 
-## File: Frontend/src/features/Pet Owner/pet details/schemas/pet.schema.ts
+## File: Frontend/src/features/Pet Owner/pet details/types/petDetails.types.ts
 ````typescript
-import { z } from "zod";
+import type { PetResponse } from "../apis/pet.api";
 
-export const petSchema = z.object({
-  name: z.string().min(2, "Pet name must be at least 2 characters"),
+export interface PetFormProps {
+  onSubmitSuccess?: (newPet: PetResponse) => void;
+  onCancel?: () => void;
+}
 
-  age: z.coerce
-    .number({
-      message: "Age is required",
-    })
-    .positive("Age must be greater than 0")
-    .max(100, "Age is too high"),
-
-  breed: z.string().min(2, "Breed is required"),
-
-  category: z.enum(["DOG", "CAT", "REPTILE", "OTHER"], {
-    message: "Please select pet category",
-  }),
-});
-
-export type PetFormInput = z.input<typeof petSchema>;
-export type PetFormData = z.output<typeof petSchema>;
+export interface PetIssueReportFormProps {
+  preselectedPetId?: string;
+  doctorId?: string;
+  preselectedCheckupTime?: string;
+  onSubmitSuccess?: (data: unknown) => void;
+  onCancel?: () => void;
+}
 ````
 
-## File: Frontend/src/features/Pet Owner/pet profile/api/petOwnerProfile.api.ts
+## File: Frontend/src/features/Pet Owner/pet profile/components/EditPetOwnerProfileModal.tsx
 ````typescript
-import {api} from "@/features/api interface/axios.interface";
+import { type ChangeEvent, useMemo } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Camera, X } from "lucide-react";
+import { useForm, useWatch } from "react-hook-form";
 
-import type { PetOwnerProfileResponse } from "../types/petProfile.types";
+import Button from "@/shared/components/Button/Button";
 
-export const getPetOwnerProfileApi =
-  async (): Promise<PetOwnerProfileResponse> => {
-    const response = await api.get<PetOwnerProfileResponse>(
-      "/pet-owner/profile",
-    );
-
-    return response.data;
-  };
-````
-
-## File: Frontend/src/features/Pet Owner/pet profile/api/pets.api.ts
-````typescript
-import {api} from "@/features/api interface/axios.interface";
-
-import type { PetFormData } from "../schemas/pet.schema";
-
+import {
+  petOwnerProfileSchema,
+  type PetOwnerProfileFormData,
+} from "../schemas/petOwnerProfile.schema";
 import type {
-  PetResponse,
-  PetsResponse,
+  EditPetOwnerProfileModalProps,
+  PetOwnerProfileFieldProps,
 } from "../types/petProfile.types";
 
-export const getMyPetsApi = async (): Promise<PetsResponse> => {
-  const response = await api.get<PetsResponse>("/pets/my-pets");
-
-  return response.data;
-};
-
-export const getPetByIdApi = async (
-  petId: string,
-): Promise<PetResponse> => {
-  const response = await api.get<PetResponse>(`/pets/${petId}`);
-
-  return response.data;
-};
-
-export const createPetApi = async (
-  payload: PetFormData,
-): Promise<PetResponse> => {
-  const response = await api.post<PetResponse>("/pets", payload);
-
-  return response.data;
-};
-
-export const updatePetApi = async (
-  petId: string,
-  payload: PetFormData,
-): Promise<PetResponse> => {
-  const response = await api.patch<PetResponse>(
-    `/pets/${petId}`,
-    payload,
-  );
-
-  return response.data;
-};
-
-export const deletePetApi = async (
-  petId: string,
-): Promise<{
-  success: boolean;
-  message: string;
-}> => {
-  const response = await api.delete<{
-    success: boolean;
-    message: string;
-  }>(`/pets/${petId}`);
-
-  return response.data;
-};
-````
-
-## File: Frontend/src/features/Pet Owner/pet profile/components/DeletePetModal.tsx
-````typescript
-import { useEffect, useRef, useState } from "react";
-
-import {
-  EllipsisVertical,
-  Pencil,
-  Trash2,
-} from "lucide-react";
-
-type PetActionsMenuProps = {
-  petName: string;
-  onEdit: () => void;
-  onDelete: () => void;
-};
-
-const PetActionsMenu = ({
-  petName,
-  onEdit,
-  onDelete,
-}: PetActionsMenuProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleOutsideClick = (event: MouseEvent) => {
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleOutsideClick);
-
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
-  }, []);
-
-  const handleEdit = () => {
-    setIsOpen(false);
-    onEdit();
-  };
-
-  const handleDelete = () => {
-    setIsOpen(false);
-    onDelete();
-  };
-
-  return (
-    <div ref={menuRef} className="relative">
-      <button
-        type="button"
-        aria-label={`Open actions for ${petName}`}
-        aria-expanded={isOpen}
-        onClick={() => setIsOpen((previous) => !previous)}
-        className="flex h-9 w-9 items-center justify-center rounded-full text-[#101b3d] transition hover:bg-slate-100"
-      >
-        <EllipsisVertical size={21} />
-      </button>
-
-      {isOpen && (
-        <div className="absolute right-0 top-11 z-30 w-36 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-xl">
-          <button
-            type="button"
-            onClick={handleEdit}
-            className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-semibold text-[#101b3d] transition hover:bg-slate-50"
-          >
-            <Pencil size={16} />
-            Edit
-          </button>
-
-          <button
-            type="button"
-            onClick={handleDelete}
-            className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-semibold text-red-500 transition hover:bg-red-50"
-          >
-            <Trash2 size={16} />
-            Delete
-          </button>
-        </div>
-      )}
-    </div>
-  );
-};
-
-export default PetActionsMenu;
-````
-
-## File: Frontend/src/features/Pet Owner/pet profile/components/MyPetsSection.tsx
-````typescript
-import { PawPrint, Plus } from "lucide-react";
-
-import Button from "@/shared/components/Button/Button";
-import Card from "@/shared/components/Card/Card";
-
-import type { Pet } from "../types/petProfile.types";
-
-import PetProfileCard from "./PetProfileCard";
-
-type MyPetsSectionProps = {
-  pets: Pet[];
-  onAddPet: () => void;
-  onEditPet: (petId: string) => void;
-  onDeletePet: (pet: Pet) => void;
-  onBookAppointment: (petId: string) => void;
-};
-
-const MyPetsSection = ({
-  pets,
-  onAddPet,
-  onEditPet,
-  onDeletePet,
-  onBookAppointment,
-}: MyPetsSectionProps) => {
-  return (
-    <section className="mt-8">
-      <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-start gap-3">
-          <PawPrint
-            size={28}
-            className="mt-0.5 shrink-0 text-[#078b91]"
-          />
-
-          <div>
-            <h2 className="text-2xl font-black text-[#101b3d]">
-              My Pets
-            </h2>
-
-            <p className="mt-1 text-sm font-medium text-slate-500">
-              Manage your pets and book veterinary appointments.
-            </p>
-          </div>
-        </div>
-
-        <Button
-          type="button"
-          variant="outline"
-          className="flex h-11 w-auto items-center justify-center gap-2 border-[#078b91] px-5 text-[#078b91]"
-          onClick={onAddPet}
-        >
-          <Plus size={18} />
-          Add New Pet
-        </Button>
-      </div>
-
-      {pets.length === 0 ? (
-        <Card className="border-dashed py-14 text-center shadow-none">
-          <PawPrint size={50} className="mx-auto text-[#D4E2E0]" />
-
-          <h3 className="mt-4 text-xl font-black text-[#101b3d]">
-            No pets added yet
-          </h3>
-
-          <p className="mx-auto mt-2 max-w-md text-sm font-medium leading-6 text-slate-500">
-            Add your first pet to start booking veterinary appointments.
-          </p>
-
-          <Button
-            type="button"
-            className="mx-auto mt-5 flex w-auto items-center gap-2 px-6"
-            onClick={onAddPet}
-          >
-            <Plus size={17} />
-            Add First Pet
-          </Button>
-        </Card>
-      ) : (
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {pets.map((pet) => (
-            <PetProfileCard
-              key={pet.id}
-              pet={pet}
-              onEdit={onEditPet}
-              onDelete={onDeletePet}
-              onBookAppointment={onBookAppointment}
-            />
-          ))}
-        </div>
-      )}
-    </section>
-  );
-};
-
-export default MyPetsSection;
-````
-
-## File: Frontend/src/features/Pet Owner/pet profile/components/PetActionsMenu.tsx
-````typescript
-import { useEffect, useRef, useState } from "react";
-
-import {
-  EllipsisVertical,
-  Pencil,
-  Trash2,
-} from "lucide-react";
-
-type PetActionsMenuProps = {
-  petName: string;
-  onEdit: () => void;
-  onDelete: () => void;
-};
-
-const PetActionsMenu = ({
-  petName,
-  onEdit,
-  onDelete,
-}: PetActionsMenuProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleOutsideClick = (event: MouseEvent) => {
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleOutsideClick);
-
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
-  }, []);
-
-  const handleEdit = () => {
-    setIsOpen(false);
-    onEdit();
-  };
-
-  const handleDelete = () => {
-    setIsOpen(false);
-    onDelete();
-  };
-
-  return (
-    <div ref={menuRef} className="relative">
-      <button
-        type="button"
-        aria-label={`Open actions for ${petName}`}
-        aria-expanded={isOpen}
-        onClick={() => setIsOpen((previous) => !previous)}
-        className="flex h-9 w-9 items-center justify-center rounded-full text-[#101b3d] transition hover:bg-slate-100"
-      >
-        <EllipsisVertical size={21} />
-      </button>
-
-      {isOpen && (
-        <div className="absolute right-0 top-11 z-30 w-36 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-xl">
-          <button
-            type="button"
-            onClick={handleEdit}
-            className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-semibold text-[#101b3d] transition hover:bg-slate-50"
-          >
-            <Pencil size={16} />
-            Edit
-          </button>
-
-          <button
-            type="button"
-            onClick={handleDelete}
-            className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-semibold text-red-500 transition hover:bg-red-50"
-          >
-            <Trash2 size={16} />
-            Delete
-          </button>
-        </div>
-      )}
-    </div>
-  );
-};
-
-export default PetActionsMenu;
-````
-
-## File: Frontend/src/features/Pet Owner/pet profile/components/PetForm.tsx
-````typescript
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-
-import Input from "@/shared/components/Input/Input";
-import Button from "@/shared/components/Button/Button";
-import Card from "@/shared/components/Card/Card";
-
-import {
-  petSchema,
-  type PetFormData,
-  type PetFormInput,
-} from "../schemas/pet.schema";
-
-type PetFormProps = {
-  title: string;
-  description: string;
-  defaultValues?: Partial<PetFormInput>;
-  isSaving?: boolean;
-  onSubmit: (data: PetFormData) => Promise<void>;
-  onCancel: () => void;
-};
-
-const PetForm = ({
-  title,
-  description,
-  defaultValues,
-  isSaving = false,
-  onSubmit,
+const EditPetOwnerProfileModal = ({
+  profile,
+  isSaving,
+  error,
   onCancel,
-}: PetFormProps) => {
+  onSubmit,
+}: EditPetOwnerProfileModalProps) => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<PetFormInput, unknown, PetFormData>({
-    resolver: zodResolver(petSchema),
+    control,
+    setValue,
+    formState: { errors },
+  } = useForm<PetOwnerProfileFormData>({
+    resolver: zodResolver(petOwnerProfileSchema),
     defaultValues: {
-      name: defaultValues?.name ?? "",
-      age: defaultValues?.age ?? "",
-      breed: defaultValues?.breed ?? "",
-      category: defaultValues?.category,
+      fullName: profile.fullName,
+      username: profile.username,
+      phone: profile.phone || "",
     },
   });
 
-  return (
-    <Card className="mx-auto max-w-3xl p-6 sm:p-8">
-      <div className="mb-7">
-        <h1 className="text-3xl font-black tracking-[-0.03em] text-[#101b3d]">
-          {title}
-        </h1>
+  const profileImage = useWatch({ control, name: "profileImage" });
 
-        <p className="mt-2 text-sm font-medium text-slate-500">
-          {description}
-        </p>
-      </div>
-
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        <div className="grid gap-5 md:grid-cols-2">
-          <Input
-            label="Pet Name"
-            placeholder="Enter pet name"
-            error={errors.name?.message}
-            {...register("name")}
-          />
-
-          <Input
-            label="Age"
-            type="number"
-            step="0.1"
-            min="0"
-            placeholder="Enter age"
-            error={errors.age?.message}
-            {...register("age")}
-          />
-
-          <Input
-            label="Breed"
-            placeholder="Enter breed"
-            error={errors.breed?.message}
-            {...register("breed")}
-          />
-
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700">
-              Category
-            </label>
-
-            <select
-              {...register("category")}
-              className={`h-[46px] w-full rounded-xl border bg-white px-4 text-sm font-medium text-slate-600 outline-none transition-all ${
-                errors.category
-                  ? "border-red-500 focus:border-red-500"
-                  : "border-gray-300 focus:border-[#078b91]"
-              }`}
-            >
-              <option value="">Select category</option>
-              <option value="DOG">Dog</option>
-              <option value="CAT">Cat</option>
-              <option value="REPTILE">Reptile</option>
-              <option value="OTHER">Other</option>
-            </select>
-
-            {errors.category && (
-              <p className="text-sm text-red-500">
-                {errors.category.message}
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-3 pt-3 sm:flex-row sm:justify-end">
-          <Button
-            type="button"
-            variant="outline"
-            className="w-auto px-7"
-            onClick={onCancel}
-            disabled={isSaving || isSubmitting}
-          >
-            Cancel
-          </Button>
-
-          <Button
-            type="submit"
-            className="w-auto px-7"
-            disabled={isSaving || isSubmitting}
-            isSubmitting={isSaving || isSubmitting}
-          >
-            Save Pet
-          </Button>
-        </div>
-      </form>
-    </Card>
-  );
-};
-
-export default PetForm;
-````
-
-## File: Frontend/src/features/Pet Owner/pet profile/components/PetOwnerProfileHeader.tsx
-````typescript
-import {
-  Mail,
-  PawPrint,
-  Pencil,
-  Phone,
-  UserRound,
-} from "lucide-react";
-
-import Card from "@/shared/components/Card/Card";
-
-import type { PetOwnerProfile } from "../types/petProfile.types";
-
-type PetOwnerProfileHeaderProps = {
-  profile: PetOwnerProfile;
-  onEditProfile: () => void;
-};
-
-const PetOwnerProfileHeader = ({
-  profile,
-  onEditProfile,
-}: PetOwnerProfileHeaderProps) => {
   const fallbackProfileImage =
     "https://ui-avatars.com/api/?name=Pet+Owner&background=EAF7F5&color=078b91";
+  const savedProfileImage =
+    profile.profileImageUrl &&
+    !profile.profileImageUrl.toLowerCase().includes("enter your image")
+      ? profile.profileImageUrl
+      : fallbackProfileImage;
+
+  const previewUrl = useMemo(() => {
+    if (profileImage) {
+      return URL.createObjectURL(profileImage);
+    }
+
+    return savedProfileImage;
+  }, [profileImage, savedProfileImage]);
+
+  const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    setValue("profileImage", file, { shouldDirty: true, shouldValidate: true });
+  };
 
   return (
-    <Card className="p-5 sm:p-7 lg:p-8">
-      <div className="flex flex-col gap-6 md:flex-row md:items-center">
-        <div className="relative mx-auto shrink-0 md:mx-0">
-          <div className="h-36 w-36 overflow-hidden rounded-full border-4 border-white bg-[#EAF7F5] shadow-lg sm:h-40 sm:w-40">
-            <img
-              src={profile.profileImageUrl || fallbackProfileImage}
-              alt={profile.fullName}
-              className="h-full w-full object-cover"
-              onError={(event) => {
-                event.currentTarget.src = fallbackProfileImage;
-              }}
-            />
+    <div
+      className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 px-4 py-6"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div className="mx-auto max-w-lg rounded-3xl bg-white p-5 shadow-2xl sm:p-7">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-black text-[#101b3d]">
+              Edit Profile
+            </h2>
+            <p className="mt-1 text-sm font-medium text-slate-500">
+              Update your profile details and photo.
+            </p>
           </div>
 
           <button
             type="button"
-            onClick={onEditProfile}
-            aria-label="Edit profile"
-            className="absolute bottom-1 right-1 flex h-11 w-11 items-center justify-center rounded-full border-4 border-white bg-white text-[#078b91] shadow-md transition hover:bg-[#078b91] hover:text-white"
+            onClick={onCancel}
+            className="flex h-10 w-10 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-[#101b3d]"
+            aria-label="Close edit profile"
           >
-            <Pencil size={18} />
+            <X size={20} />
           </button>
         </div>
 
-        <div className="min-w-0 flex-1 text-center md:text-left">
-          <div className="flex flex-wrap items-center justify-center gap-3 md:justify-start">
-            <h1 className="text-3xl font-black tracking-[-0.04em] text-[#101b3d] sm:text-4xl">
-              {profile.fullName}
-            </h1>
+        {error && (
+          <p className="mt-5 rounded-2xl bg-red-50 px-4 py-3 text-sm font-bold text-red-600">
+            {error}
+          </p>
+        )}
 
-            <span className="inline-flex items-center gap-2 rounded-full bg-[#EAF7F5] px-4 py-2 text-xs font-black text-[#078b91]">
-              <PawPrint size={15} />
-              Pet Parent
-            </span>
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-5">
+          <div className="flex justify-center">
+            <label className="group relative cursor-pointer">
+              <span className="block h-32 w-32 overflow-hidden rounded-full border-4 border-white bg-[#EAF7F5] shadow-lg">
+                <img
+                  src={previewUrl || fallbackProfileImage}
+                  alt={profile.fullName}
+                  className="h-full w-full object-cover"
+                  onError={(event) => {
+                    event.currentTarget.src = fallbackProfileImage;
+                  }}
+                />
+              </span>
+
+              <span className="absolute bottom-1 right-1 flex h-11 w-11 items-center justify-center rounded-full border-4 border-white bg-[#078b91] text-white shadow-md transition group-hover:bg-[#056f75]">
+                <Camera size={18} />
+              </span>
+
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                className="sr-only"
+                onChange={handleImageChange}
+              />
+            </label>
           </div>
 
-          <p className="mt-2 text-sm font-bold text-slate-500">
-            @{profile.username}
-          </p>
+          {errors.profileImage && (
+            <p className="text-center text-xs font-bold text-red-600">
+              {errors.profileImage.message}
+            </p>
+          )}
 
-          <p className="mt-5 max-w-2xl text-sm font-medium leading-7 text-slate-600">
-            Manage your pets, veterinary appointments, and health information
-            from one place.
-          </p>
+          <Field
+            label="Full Name"
+            inputProps={register("fullName")}
+            error={errors.fullName?.message}
+          />
 
-          <div className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm font-semibold text-slate-600 md:justify-start">
-            <ProfileMeta
-              icon={<Mail size={18} />}
-              value={profile.email}
-            />
+          <Field
+            label="Username"
+            inputProps={register("username")}
+            error={errors.username?.message}
+          />
 
-            <ProfileMeta
-              icon={<Phone size={18} />}
-              value={profile.phone || "Phone not added"}
-            />
+          <Field
+            label="Phone"
+            inputProps={register("phone")}
+            error={errors.phone?.message}
+          />
 
-            <ProfileMeta
-              icon={<UserRound size={18} />}
-              value="Pet Owner"
-            />
+          <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full sm:w-auto"
+              onClick={onCancel}
+              disabled={isSaving}
+            >
+              Cancel
+            </Button>
+
+            <Button
+              type="submit"
+              className="w-full !bg-[#078b91] !border-[#078b91] !text-white hover:!bg-[#056f75] hover:!text-white sm:w-auto"
+              loading={isSaving}
+              loadingText="Saving..."
+            >
+              Save Changes
+            </Button>
           </div>
-        </div>
+        </form>
       </div>
-    </Card>
-  );
-};
-
-const ProfileMeta = ({
-  icon,
-  value,
-}: {
-  icon: React.ReactNode;
-  value: string;
-}) => {
-  return (
-    <div className="flex items-center gap-2">
-      <span className="text-[#078b91]">{icon}</span>
-      <span>{value}</span>
     </div>
   );
 };
 
-export default PetOwnerProfileHeader;
-````
-
-## File: Frontend/src/features/Pet Owner/pet profile/components/PetProfileCard.tsx
-````typescript
-import { CalendarDays } from "lucide-react";
-
-import Button from "@/shared/components/Button/Button";
-import Card from "@/shared/components/Card/Card";
-
-import type {
-  Pet,
-  PetCategory,
-} from "../types/petProfile.types";
-
-import PetActionsMenu from "./PetActionsMenu";
-
-type PetProfileCardProps = {
-  pet: Pet;
-  onEdit: (petId: string) => void;
-  onDelete: (pet: Pet) => void;
-  onBookAppointment: (petId: string) => void;
-};
-
-const categoryImages: Record<PetCategory, string> = {
-  DOG: "https://images.unsplash.com/photo-1568572933382-74d440642117?auto=format&fit=crop&w=700&q=80",
-  CAT: "https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=700&q=80",
-  REPTILE:
-    "https://images.unsplash.com/photo-1504450874802-0ba2bcd9b5ae?auto=format&fit=crop&w=700&q=80",
-  OTHER:
-    "https://images.unsplash.com/photo-1552728089-57bdde30beb3?auto=format&fit=crop&w=700&q=80",
-};
-
-const categoryStyles: Record<PetCategory, string> = {
-  DOG: "bg-cyan-50 text-cyan-700",
-  CAT: "bg-orange-50 text-orange-600",
-  REPTILE: "bg-green-50 text-green-700",
-  OTHER: "bg-slate-100 text-slate-700",
-};
-
-const formatCategory = (category: PetCategory) => {
-  return category.charAt(0) + category.slice(1).toLowerCase();
-};
-
-const PetProfileCard = ({
-  pet,
-  onEdit,
-  onDelete,
-  onBookAppointment,
-}: PetProfileCardProps) => {
-  const age = Number(pet.age);
-
+const Field = ({ label, error, inputProps }: PetOwnerProfileFieldProps) => {
   return (
-    <Card className="overflow-visible p-3">
-      <div className="flex flex-col gap-4 sm:flex-row xl:flex-col">
-        <div className="h-52 w-full shrink-0 overflow-hidden rounded-2xl bg-[#EAF7F5] sm:w-48 xl:w-full">
-          <img
-            src={categoryImages[pet.category]}
-            alt={pet.name}
-            className="h-full w-full object-cover transition duration-300 hover:scale-105"
-          />
-        </div>
-
-        <div className="flex min-w-0 flex-1 flex-col px-1 py-1">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h3 className="text-xl font-black text-[#101b3d]">
-                {pet.name}
-              </h3>
-
-              <span
-                className={`mt-3 inline-flex rounded-full px-3 py-1 text-[11px] font-black ${
-                  categoryStyles[pet.category]
-                }`}
-              >
-                {formatCategory(pet.category)}
-              </span>
-            </div>
-
-            <PetActionsMenu
-              petName={pet.name}
-              onEdit={() => onEdit(pet.id)}
-              onDelete={() => onDelete(pet)}
-            />
-          </div>
-
-          <p className="mt-3 text-sm font-semibold text-slate-600">
-            {pet.breed}
-          </p>
-
-          <div className="mt-5 flex items-center gap-2 text-sm font-medium text-slate-600">
-            <CalendarDays size={16} className="text-[#078b91]" />
-
-            <span>
-              {age} {age === 1 ? "Year" : "Years"}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <Button
-        type="button"
-        variant="outline"
-        className="mt-4 flex h-11 w-full items-center justify-center gap-2 border-[#078b91] text-[#078b91] hover:bg-[#078b91] hover:text-white"
-        onClick={() => onBookAppointment(pet.id)}
-      >
-        <CalendarDays size={17} />
-        Book Appointment
-      </Button>
-    </Card>
+    <label className="block">
+      <span className="text-sm font-black text-[#101b3d]">{label}</span>
+      <input
+        className="mt-2 h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-[#101b3d] outline-none transition focus:border-[#078b91] focus:ring-4 focus:ring-[#078b91]/10"
+        {...inputProps}
+      />
+      {error && (
+        <span className="mt-1.5 block text-xs font-bold text-red-600">
+          {error}
+        </span>
+      )}
+    </label>
   );
 };
 
-export default PetProfileCard;
+export default EditPetOwnerProfileModal;
 ````
 
 ## File: Frontend/src/features/Pet Owner/pet profile/pages/AddPetPage.tsx
@@ -8646,201 +9636,6 @@ const EditPetPage = () => {
 export default EditPetPage;
 ````
 
-## File: Frontend/src/features/Pet Owner/pet profile/pages/PetOwnerProfilePage.tsx
-````typescript
-import { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-import Button from "@/shared/components/Button/Button";
-import Card from "@/shared/components/Card/Card";
-
-import DeletePetModal from "../components/DeletePetModal";
-import MyPetsSection from "../components/MyPetsSection";
-import PetOwnerProfileHeader from "../components/PetOwnerProfileHeader";
-
-import { getPetOwnerProfileApi } from "../api/petOwnerProfile.api";
-import {
-  deletePetApi,
-  getMyPetsApi,
-} from "../api/pets.api";
-
-import type {
-  Pet,
-  PetOwnerProfile,
-} from "../types/petProfile.types";
-
-const PetOwnerProfilePage = () => {
-  const navigate = useNavigate();
-
-  const [profile, setProfile] = useState<PetOwnerProfile | null>(null);
-  const [pets, setPets] = useState<Pet[]>([]);
-  const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
-
-  const [isLoading, setIsLoading] = useState(true);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [error, setError] = useState("");
-
-  const fetchProfileData = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setError("");
-
-      const [profileResponse, petsResponse] = await Promise.all([
-        getPetOwnerProfileApi(),
-        getMyPetsApi(),
-      ]);
-
-      setProfile(profileResponse.data);
-      setPets(petsResponse.data);
-    } catch (fetchError) {
-      console.error("Pet owner profile fetch error:", fetchError);
-      setError("Unable to load your profile. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    void fetchProfileData();
-  }, [fetchProfileData]);
-
-  const handleDeletePet = async () => {
-    if (!selectedPet) return;
-
-    try {
-      setIsDeleting(true);
-
-      await deletePetApi(selectedPet.id);
-
-      setPets((previousPets) =>
-        previousPets.filter((pet) => pet.id !== selectedPet.id),
-      );
-
-      setSelectedPet(null);
-    } catch (deleteError) {
-      console.error("Delete pet error:", deleteError);
-      setError("Unable to delete pet. Please try again.");
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <main className="min-h-screen bg-[#F8FAFA] px-4 py-6 sm:px-6 lg:px-10">
-        <section className="mx-auto max-w-7xl space-y-6">
-          <div className="h-64 animate-pulse rounded-3xl bg-slate-200" />
-
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {[1, 2, 3].map((item) => (
-              <div
-                key={item}
-                className="h-96 animate-pulse rounded-3xl bg-slate-200"
-              />
-            ))}
-          </div>
-        </section>
-      </main>
-    );
-  }
-
-  if (error && !profile) {
-    return (
-      <main className="min-h-screen bg-[#F8FAFA] px-4 py-6 sm:px-6 lg:px-10">
-        <Card className="mx-auto max-w-xl py-12 text-center">
-          <h1 className="text-xl font-black text-[#101b3d]">
-            Unable to load profile
-          </h1>
-
-          <p className="mt-2 text-sm font-medium text-slate-500">
-            {error}
-          </p>
-
-          <Button
-            type="button"
-            className="mx-auto mt-5 w-auto px-6"
-            onClick={() => void fetchProfileData()}
-          >
-            Try Again
-          </Button>
-        </Card>
-      </main>
-    );
-  }
-
-  return (
-    <>
-      <main className="min-h-screen bg-[#F8FAFA] px-4 py-6 text-[#20263D] sm:px-6 lg:px-10">
-        <section className="mx-auto max-w-7xl">
-          {error && (
-            <div className="mb-5 rounded-2xl border border-red-100 bg-red-50 px-5 py-3 text-sm font-semibold text-red-600">
-              {error}
-            </div>
-          )}
-
-          {profile && (
-            <PetOwnerProfileHeader
-              profile={profile}
-              onEditProfile={() =>
-                navigate("/pet-owner/profile/edit")
-              }
-            />
-          )}
-
-          <MyPetsSection
-            pets={pets}
-            onAddPet={() => navigate("/pet-owner/pets/add")}
-            onEditPet={(petId) =>
-              navigate(`/pet-owner/pets/${petId}/edit`)
-            }
-            onDeletePet={setSelectedPet}
-            onBookAppointment={(petId) =>
-              navigate(`/doctors?petId=${petId}`)
-            }
-          />
-        </section>
-      </main>
-
-      <DeletePetModal
-        isOpen={Boolean(selectedPet)}
-        petName={selectedPet?.name ?? ""}
-        isDeleting={isDeleting}
-        onClose={() => {
-          if (!isDeleting) {
-            setSelectedPet(null);
-          }
-        }}
-        onConfirm={() => void handleDeletePet()}
-      />
-    </>
-  );
-};
-
-export default PetOwnerProfilePage;
-````
-
-## File: Frontend/src/features/Pet Owner/pet profile/petProfile.route.tsx
-````typescript
-import PetOwnerProfilePage from "./pages/PetOwnerProfilePage";
-import AddPetPage from "./pages/AddPetPage";
-import EditPetPage from "./pages/EditPetPage";
-
-export const petProfileRoutes = [
-  {
-    path: "/pet-owner/profile",
-    element: <PetOwnerProfilePage />,
-  },
-  {
-    path: "/pet-owner/pets/add",
-    element: <AddPetPage />,
-  },
-  {
-    path: "/pet-owner/pets/:petId/edit",
-    element: <EditPetPage />,
-  },
-];
-````
-
 ## File: Frontend/src/features/Pet Owner/pet profile/schemas/pet.schema.ts
 ````typescript
 import { z } from "zod";
@@ -8874,45 +9669,47 @@ export type PetFormInput = z.input<typeof petSchema>;
 export type PetFormData = z.output<typeof petSchema>;
 ````
 
-## File: Frontend/src/features/Pet Owner/pet profile/types/petProfile.types.ts
+## File: Frontend/src/features/Pet Owner/pet profile/schemas/petOwnerProfile.schema.ts
 ````typescript
-export type PetCategory = "DOG" | "CAT" | "REPTILE" | "OTHER";
+import { z } from "zod";
 
-export type PetOwnerProfile = {
-  id: string;
-  fullName: string;
-  username: string;
-  email: string;
-  phone: string;
-  profileImageUrl: string;
-};
+export const petOwnerProfileSchema = z.object({
+  fullName: z
+    .string()
+    .trim()
+    .min(2, "Full name must be at least 2 characters")
+    .max(50, "Full name cannot exceed 50 characters"),
+  username: z
+    .string()
+    .trim()
+    .min(3, "Username must be at least 3 characters")
+    .regex(
+      /^[a-zA-Z0-9_]+$/,
+      "Username can only contain letters, numbers, and underscores",
+    ),
+  phone: z
+    .string()
+    .trim()
+    .max(20, "Phone number cannot exceed 20 characters")
+    .optional(),
+  profileImage: z
+    .instanceof(File)
+    .optional()
+    .refine(
+      (file) =>
+        !file ||
+        ["image/png", "image/jpeg", "image/webp"].includes(file.type),
+      "Only PNG, JPEG, and WEBP images are allowed",
+    )
+    .refine(
+      (file) => !file || file.size <= 2 * 1024 * 1024,
+      "Profile image must be 2MB or less",
+    ),
+});
 
-export type Pet = {
-  id: string;
-  petOwnerId: string;
-  name: string;
-  age: number | string;
-  breed: string;
-  category: PetCategory;
-};
-
-export type PetOwnerProfileResponse = {
-  success: boolean;
-  message: string;
-  data: PetOwnerProfile;
-};
-
-export type PetsResponse = {
-  success: boolean;
-  message: string;
-  data: Pet[];
-};
-
-export type PetResponse = {
-  success: boolean;
-  message: string;
-  data: Pet;
-};
+export type PetOwnerProfileFormData = z.infer<
+  typeof petOwnerProfileSchema
+>;
 ````
 
 ## File: Frontend/src/features/Pet Owner/SelectPet/components/AddNewPetCard.tsx
@@ -8971,179 +9768,6 @@ const AddNewPetCard = () => {
 };
 
 export default AddNewPetCard;
-````
-
-## File: Frontend/src/features/Pet Owner/SelectPet/components/ExistingPetCard.tsx
-````typescript
-import {
-  CalendarDays,
-  MoreVertical,
-  UserRound,
-} from "lucide-react";
-
-import Button from "@/shared/components/Button/Button";
-import Card from "@/shared/components/Card/Card";
-
-import type { ExistingPet } from "../types/selectPet.types";
-
-type ExistingPetCardProps = {
-  pet: ExistingPet;
-  onSelect: (pet: ExistingPet) => void;
-};
-
-const formatCategory = (category: ExistingPet["category"]) => {
-  return (
-    category.charAt(0).toUpperCase() +
-    category.slice(1).toLowerCase()
-  );
-};
-
-const ExistingPetCard = ({
-  pet,
-  onSelect,
-}: ExistingPetCardProps) => {
-  return (
-    <Card
-      className="
-        overflow-hidden border border-slate-200
-        bg-white p-4 shadow-sm
-        transition duration-300
-        hover:-translate-y-1 hover:shadow-lg
-      "
-    >
-      <div className="flex gap-4">
-        <div className="h-40 w-36 shrink-0 overflow-hidden rounded-2xl bg-[#EAF7F5] sm:h-44 sm:w-40">
-          <img
-            src={pet.profileImageUrl}
-            alt={pet.name}
-            className="h-full w-full object-cover transition duration-300 hover:scale-105"
-          />
-        </div>
-
-        <div className="flex min-w-0 flex-1 flex-col">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h2 className="text-xl font-black text-[#101b3d]">
-                {pet.name}
-              </h2>
-
-              <p className="mt-2 text-sm font-semibold text-slate-500">
-                {formatCategory(pet.category)}
-
-                <span className="mx-2 text-[#078b91]">•</span>
-
-                {pet.breed}
-              </p>
-            </div>
-
-            <button
-              type="button"
-              aria-label={`More options for ${pet.name}`}
-              className="rounded-lg p-1.5 text-slate-500 transition hover:bg-slate-100 hover:text-[#078b91]"
-            >
-              <MoreVertical size={20} />
-            </button>
-          </div>
-
-          <div className="mt-5 space-y-3">
-            <div className="flex items-center gap-2 text-sm font-medium text-slate-600">
-              <CalendarDays size={17} className="text-[#078b91]" />
-
-              <span>
-                {pet.age} {pet.age === 1 ? "Year" : "Years"}
-              </span>
-            </div>
-
-            {pet.gender && (
-              <div className="flex items-center gap-2 text-sm font-medium text-slate-600">
-                <UserRound size={17} className="text-[#078b91]" />
-                <span>{pet.gender}</span>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <Button
-        type="button"
-        variant="outline"
-        className="
-          mt-4 h-11 w-full
-          border-[#078b91] text-[#078b91]
-          hover:bg-[#078b91] hover:text-white
-        "
-        onClick={() => onSelect(pet)}
-      >
-        Select Pet
-      </Button>
-    </Card>
-  );
-};
-
-export default ExistingPetCard;
-````
-
-## File: Frontend/src/features/Pet Owner/SelectPet/components/ExistingPetsSection.tsx
-````typescript
-import Card from "@/shared/components/Card/Card";
-
-import type { ExistingPet } from "../types/selectPet.types";
-import ExistingPetCard from "./ExistingPetCard";
-
-type ExistingPetsSectionProps = {
-  pets: ExistingPet[];
-  onSelectPet: (pet: ExistingPet) => void;
-};
-
-const ExistingPetsSection = ({
-  pets,
-  onSelectPet,
-}: ExistingPetsSectionProps) => {
-  if (pets.length === 0) {
-    return (
-      <Card
-        className="
-          mt-10 border border-dashed border-slate-300
-          bg-white px-6 py-12 text-center shadow-none
-        "
-      >
-        <h2 className="text-xl font-black text-[#101b3d]">
-          No existing pets found
-        </h2>
-
-        <p className="mt-2 text-sm font-medium text-slate-500">
-          Add a pet from your profile before continuing.
-        </p>
-      </Card>
-    );
-  }
-
-  return (
-    <section className="mt-10">
-      <div className="mb-5">
-        <h2 className="text-2xl font-black text-[#101b3d]">
-          Existing Pets
-        </h2>
-
-        <p className="mt-1 text-sm font-medium text-slate-500">
-          Select a pet to continue.
-        </p>
-      </div>
-
-      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {pets.map((pet) => (
-          <ExistingPetCard
-            key={pet.id}
-            pet={pet}
-            onSelect={onSelectPet}
-          />
-        ))}
-      </div>
-    </section>
-  );
-};
-
-export default ExistingPetsSection;
 ````
 
 ## File: Frontend/src/features/Pet Owner/SelectPet/components/SelectPetHeader.tsx
@@ -9369,42 +9993,6 @@ export const selectPetRoutes = [
 ];
 ````
 
-## File: Frontend/src/features/Pet Owner/SelectPet/types/selectPet.types.ts
-````typescript
-export type PetCategory = "DOG" | "CAT" | "BIRD" | "REPTILE" | "OTHER";
-
-export type ExistingPet = {
-  id: string;
-  name: string;
-  breed: string;
-  category: PetCategory;
-  age: number;
-  gender?: string;
-  profileImageUrl: string;
-};
-
-export type SelectPetAction = "report-issue" | "book-appointment";
-````
-
-## File: Frontend/src/features/PetOwnerDashboard/api/petOwnerDashboard.api.ts
-````typescript
-import {api} from "@/features/api interface/axios.interface";
-
-import type {
-  PetOwnerDashboardResponse,
-} from "../types/petOwnerDashboard.types";
-
-export const getPetOwnerDashboardApi =
-  async (): Promise<PetOwnerDashboardResponse> => {
-    const response =
-      await api.get<PetOwnerDashboardResponse>(
-        "/pet-owner/dashboard",
-      );
-
-    return response.data;
-  };
-````
-
 ## File: Frontend/src/features/PetOwnerDashboard/components/DashboardBanner.tsx
 ````typescript
 import { HeartPulse } from "lucide-react";
@@ -9438,1054 +10026,428 @@ const DashboardBanner = () => {
 export default DashboardBanner;
 ````
 
-## File: Frontend/src/features/PetOwnerDashboard/components/DashboardHeader.tsx
+## File: Frontend/src/features/seller/api/seller.api.ts
 ````typescript
-import { Bell, ChevronDown } from "lucide-react";
+import { api } from "@/features/api interface/axios.interface";
+import type { MarketplaceProduct } from "@/features/marketplace1/api/marketplace.api";
 
-import type {
-  DashboardUser,
-} from "../types/petOwnerDashboard.types";
-
-type DashboardHeaderProps = {
-  user: DashboardUser;
+export type SellerProductPayload = {
+  title: string;
+  description?: string;
+  category: string;
+  status?: string;
+  price: number;
+  stock: number;
+  location?: string;
+  images?: Array<{
+    publicUrl: string;
+    publicId?: string;
+  }>;
 };
 
-const DashboardHeader = ({
-  user,
-}: DashboardHeaderProps) => {
-  const firstName =
-    user.fullName.split(" ")[0] || user.fullName;
+export type SellerOrder = {
+  id: string;
+  orderNumber: string;
+  status: string;
+  totalAmount: string | number;
+  createdAt: string;
+  buyer?: {
+    fullName?: string | null;
+    email?: string | null;
+  };
+  items: Array<{
+    quantity: number;
+    product: MarketplaceProduct;
+  }>;
+};
 
+export const fetchSellerProducts = async () => {
+  const response = await api.get<{ success: boolean; data: MarketplaceProduct[] }>(
+    "seller/products"
+  );
+
+  return response.data.data;
+};
+
+export const createSellerProduct = async (payload: SellerProductPayload | FormData) => {
+  const response = await api.post<{ success: boolean; data: MarketplaceProduct }>(
+    "seller/product",
+    payload
+  );
+
+  return response.data.data;
+};
+
+export const updateSellerProduct = async (
+  productId: string,
+  payload: SellerProductPayload | FormData
+) => {
+  const response = await api.patch<{ success: boolean; data: MarketplaceProduct }>(
+    `seller/product/${productId}`,
+    payload
+  );
+
+  return response.data.data;
+};
+
+export const updateSellerProductStock = async (
+  productId: string,
+  stock: number
+) => {
+  const response = await api.patch<{ success: boolean; data: MarketplaceProduct }>(
+    `seller/product/${productId}/stock`,
+    { stock }
+  );
+
+  return response.data.data;
+};
+
+export const deleteSellerProduct = async (productId: string) => {
+  const response = await api.delete(`seller/product/${productId}`);
+  return response.data;
+};
+
+export const fetchSellerOrders = async () => {
+  const response = await api.get<{ success: boolean; data: SellerOrder[] }>(
+    "seller/orders"
+  );
+
+  return response.data.data;
+};
+````
+
+## File: Frontend/src/features/seller/components/SellerHeader.tsx
+````typescript
+import { FaBell, FaChevronDown } from "react-icons/fa";
+import Input from "@/shared/components/Input/Input";
+
+const SellerHeader = () => {
   return (
-    <header className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+    <header className="flex items-center justify-between border-b border-gray-100 bg-white px-7 py-4">
       <div>
-        <h1 className="text-3xl font-black tracking-[-0.04em] text-[#101b3d]">
-          Hi, {firstName}!
+        <h1 className="text-lg font-semibold text-gray-900">
+          Welcome back, Furries Store
         </h1>
-
-        <p className="mt-2 text-sm font-medium text-slate-500">
-          Here&apos;s what&apos;s happening with your pets today.
+        <p className="text-sm text-gray-500">
+          Here's what's happening with your store today.
         </p>
       </div>
 
       <div className="flex items-center gap-4">
-        <button
-          type="button"
-          aria-label="Notifications"
-          className="relative flex h-11 w-11 items-center justify-center rounded-full text-[#101b3d] transition hover:bg-slate-100"
-        >
-          <Bell size={23} />
+        <Input placeholder="Search..." className="w-72" />
 
-          <span className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-black text-white">
-            3
-          </span>
+        <button className="relative rounded-full border border-gray-100 p-3 text-gray-600">
+          <FaBell />
+          <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500" />
         </button>
 
-        <div className="h-12 w-12 overflow-hidden rounded-full bg-[#EAF7F5]">
+        <div className="flex items-center gap-3">
           <img
-            src={user.profileImageUrl}
-            alt={user.fullName}
-            className="h-full w-full object-cover"
+            src="https://i.pravatar.cc/80?img=12"
+            alt="seller"
+            className="h-10 w-10 rounded-full object-cover"
           />
+
+          <div>
+            <p className="text-sm font-semibold text-gray-900">Furries Store</p>
+            <p className="text-xs text-gray-500">Seller</p>
+          </div>
+
+          <FaChevronDown className="text-xs text-gray-500" />
         </div>
-
-        <div className="hidden sm:block">
-          <p className="text-sm font-black text-[#101b3d]">
-            {user.fullName}
-          </p>
-
-          <p className="text-xs font-semibold text-slate-500">
-            Pet Parent
-          </p>
-        </div>
-
-        <ChevronDown size={18} className="text-[#101b3d]" />
       </div>
     </header>
   );
 };
 
-export default DashboardHeader;
+export default SellerHeader;
 ````
 
-## File: Frontend/src/features/PetOwnerDashboard/components/DashboardSidebar.tsx
+## File: Frontend/src/features/seller/data/sellerDashboard.data.ts
 ````typescript
-import {
-  CalendarDays,
-  LayoutDashboard,
-  LogOut,
-  PawPrint,
-  Settings,
-  ShoppingCart,
-  Stethoscope,
-  UserRound,
-  FileText,
-} from "lucide-react";
+export const sellerStats = [
+  { title: "Total Products", value: "48", subtitle: "All time" },
+  { title: "Active Listings", value: "36", subtitle: "Live on Marketplace" },
+  { title: "Low Stock Items", value: "5", subtitle: "Requires attention" },
+  { title: "Total Orders", value: "128", subtitle: "All time" },
+  { title: "Pending Orders", value: "17", subtitle: "Awaiting action" },
+  { title: "Revenue", value: "PKR 256,540", subtitle: "All time" },
+];
 
-import { NavLink, useNavigate } from "react-router-dom";
+export const recentOrders = [
+  { id: "#PV-1001", product: "Royal Canin Mini Adult 2kg", buyer: "Ali Raza", amount: "PKR 4,200", status: "Pending", date: "16 Jun, 2026" },
+  { id: "#PV-1002", product: "Pet Collar - Blue (M)", buyer: "Sara Khan", amount: "PKR 1,250", status: "Confirmed", date: "15 Jun, 2026" },
+  { id: "#PV-1003", product: "Persian Cat (Male)", buyer: "Usman Mir", amount: "PKR 35,000", status: "Shipped", date: "15 Jun, 2026" },
+  { id: "#PV-1004", product: "Dog Leash - Red (L)", buyer: "Hassan Ali", amount: "PKR 950", status: "Completed", date: "14 Jun, 2026" },
+  { id: "#PV-1005", product: "Whiskas Tuna 1.2kg", buyer: "Zainab Fatima", amount: "PKR 1,650", status: "Pending", date: "14 Jun, 2026" },
+  { id: "#PV-1006", product: "Golden Retriever Puppy", buyer: "Hamza Noor", amount: "PKR 45,000", status: "Confirmed", date: "13 Jun, 2026" },
+];
+````
 
-type SidebarItem = {
-  label: string;
-  path: string;
-  icon: React.ReactNode;
-};
+## File: Frontend/src/features/seller/data/sellerOrdersStock.data.ts
+````typescript
+export const orderTabs = [
+  "All (128)",
+  "Pending (17)",
+  "Confirmed (21)",
+  "Shipped (35)",
+  "Completed (55)",
+  "Cancelled (0)",
+];
 
-const sidebarItems: SidebarItem[] = [
+export const sellerOrders = [
   {
-    label: "Dashboard",
-    path: "/pet-owner/dashboard",
-    icon: <LayoutDashboard size={20} />,
+    id: "#PV-1001",
+    product: "Royal Canin Mini Adult 2kg",
+    buyer: "Ali Raza",
+    quantity: 1,
+    amount: "PKR 4,200",
+    status: "Pending",
+    date: "16 Jun, 2026",
+    image: "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=120",
   },
   {
-    label: "Appointments",
-    path: "/pet-owner/appointments",
-    icon: <CalendarDays size={20} />,
+    id: "#PV-1002",
+    product: "Pet Collar - Blue (M)",
+    buyer: "Sara Khan",
+    quantity: 1,
+    amount: "PKR 1,250",
+    status: "Confirmed",
+    date: "15 Jun, 2026",
+    image: "https://images.unsplash.com/photo-1601758124510-52d02ddb7cbd?w=120",
   },
   {
-    label: "Reports",
-    path: "/pet-owner/reports",
-    icon: <FileText size={20} />,
+    id: "#PV-1003",
+    product: "Persian Cat (Male)",
+    buyer: "Usman Mir",
+    quantity: 1,
+    amount: "PKR 35,000",
+    status: "Shipped",
+    date: "15 Jun, 2026",
+    image: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=120",
   },
   {
-    label: "Find Doctor",
-    path: "/doctors",
-    icon: <Stethoscope size={20} />,
+    id: "#PV-1004",
+    product: "Dog Leash - Red (L)",
+    buyer: "Hassan Ali",
+    quantity: 2,
+    amount: "PKR 1,900",
+    status: "Completed",
+    date: "14 Jun, 2026",
+    image: "https://images.unsplash.com/photo-1583512603805-3cc6b41f3edb?w=120",
   },
   {
-    label: "Marketplace",
-    path: "/marketplace",
-    icon: <ShoppingCart size={20} />,
-  },
-  {
-    label: "Profile",
-    path: "/pet-owner/profile",
-    icon: <UserRound size={20} />,
-  },
-  {
-    label: "Settings",
-    path: "/pet-owner/settings",
-    icon: <Settings size={20} />,
+    id: "#PV-1005",
+    product: "Whiskas Tuna 1.2kg",
+    buyer: "Zainab Fatima",
+    quantity: 1,
+    amount: "PKR 1,650",
+    status: "Pending",
+    date: "14 Jun, 2026",
+    image: "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=120",
   },
 ];
 
-const DashboardSidebar = () => {
-  const navigate = useNavigate();
+export const stockProducts = [
+  {
+    id: 1,
+    product: "Royal Canin Mini Adult 2kg",
+    stock: 3,
+    status: "Low Stock",
+    image: "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=120",
+  },
+  {
+    id: 2,
+    product: "Whiskas Tuna 1.2kg",
+    stock: 2,
+    status: "Low Stock",
+    image: "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=120",
+  },
+  {
+    id: 3,
+    product: "Pet Collar - Blue (M)",
+    stock: 1,
+    status: "Low Stock",
+    image: "https://images.unsplash.com/photo-1601758124510-52d02ddb7cbd?w=120",
+  },
+  {
+    id: 4,
+    product: "Dog Leash - Red (L)",
+    stock: 2,
+    status: "Low Stock",
+    image: "https://images.unsplash.com/photo-1583512603805-3cc6b41f3edb?w=120",
+  },
+  {
+    id: 5,
+    product: "Golden Retriever Puppy",
+    stock: 4,
+    status: "In Stock",
+    image: "https://images.unsplash.com/photo-1552053831-71594a27632d?w=120",
+  },
+];
+````
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
+## File: Frontend/src/features/seller/data/sellerProducts.data.ts
+````typescript
+export const productTabs = [
+  "All",
+  "Pets",
+  "Food",
+  "Accessories",
+  "Active",
+  "Sold Out",
+  "Draft",
+];
+
+export const sellerProducts = [
+  {
+    id: 1,
+    name: "Golden Retriever Puppy",
+    category: "Pets",
+    price: "PKR 45,000",
+    stock: 4,
+    status: "Active",
+    image:
+      "https://images.unsplash.com/photo-1552053831-71594a27632d?w=500",
+  },
+  {
+    id: 2,
+    name: "Persian Cat (Male)",
+    category: "Pets",
+    price: "PKR 35,000",
+    stock: 2,
+    status: "Active",
+    image:
+      "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=500",
+  },
+  {
+    id: 3,
+    name: "Royal Canin Mini Adult 2kg",
+    category: "Food",
+    price: "PKR 4,200",
+    stock: 3,
+    status: "Active",
+    image:
+      "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=500",
+  },
+  {
+    id: 4,
+    name: "Whiskas Tuna 1.2kg",
+    category: "Food",
+    price: "PKR 1,650",
+    stock: 2,
+    status: "Sold Out",
+    image:
+      "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=500",
+  },
+  {
+    id: 5,
+    name: "Pet Collar - Blue (M)",
+    category: "Accessories",
+    price: "PKR 1,250",
+    stock: 1,
+    status: "Low Stock",
+    image:
+      "https://images.unsplash.com/photo-1601758124510-52d02ddb7cbd?w=500",
+  },
+  {
+    id: 6,
+    name: "Dog Leash - Red (L)",
+    category: "Accessories",
+    price: "PKR 950",
+    stock: 2,
+    status: "Active",
+    image:
+      "https://images.unsplash.com/photo-1583512603805-3cc6b41f3edb?w=500",
+  },
+];
+````
+
+## File: Frontend/src/features/seller/schemas/sellerProduct.schema.ts
+````typescript
+import { z } from "zod";
+
+export const sellerProductSchema = z.object({
+  title: z.string().trim().min(1, "Product title is required"),
+  category: z.enum(["Food", "Pets", "Accessories"]),
+  price: z
+    .string()
+    .trim()
+    .min(1, "Price is required")
+    .refine((value) => Number(value) > 0, "Price must be greater than 0"),
+  stock: z
+    .string()
+    .trim()
+    .min(1, "Stock quantity is required")
+    .refine((value) => Number(value) >= 0, "Stock cannot be negative"),
+  location: z.string().trim().optional(),
+  description: z.string().trim().optional(),
+  status: z.enum(["Active", "Draft", "Sold Out"]),
+});
+
+export type SellerProductFormData = z.infer<typeof sellerProductSchema>;
+````
+
+## File: Frontend/src/features/seller/types/seller.types.ts
+````typescript
+import type { MarketplaceProduct } from "@/features/marketplace1/api/marketplace.api";
+import type { SellerOrder } from "../api/seller.api";
+
+export type SellerApiError = {
+  response?: {
+    status?: number;
+    data?: {
+      message?: string;
+    };
   };
-
-  return (
-    <aside className="fixed left-0 top-0 hidden h-screen w-[260px] border-r border-slate-200 bg-white lg:flex lg:flex-col">
-      {/* Logo */}
-      <div className="flex items-center gap-3 border-b border-slate-100 px-7 py-6">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EAF7F5] text-[#078b91]">
-          <PawPrint size={27} />
-        </div>
-
-        <div>
-          <h1 className="text-xl font-black text-[#078b91]">
-            Pets Veta
-          </h1>
-
-          <p className="text-xs font-semibold text-slate-500">
-            Care • Love • Heal
-          </p>
-        </div>
-      </div>
-
-      {/* Navigation */}
-      <nav className="flex-1 space-y-2 px-4 py-6">
-        {sidebarItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            className={({ isActive }) =>
-              `flex items-center gap-4 rounded-xl px-4 py-3.5 text-sm font-bold transition ${
-                isActive
-                  ? "bg-[#EAF7F5] text-[#078b91]"
-                  : "text-[#20263D] hover:bg-slate-50"
-              }`
-            }
-          >
-            {item.icon}
-            {item.label}
-          </NavLink>
-        ))}
-      </nav>
-
-      {/* Small sidebar info */}
-      <div className="mx-4 mb-5 rounded-2xl bg-[#F1FAF8] p-5">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-[#078b91]">
-          <PawPrint size={24} />
-        </div>
-
-        <h3 className="mt-4 text-lg font-black text-[#101b3d]">
-          We care for your pets
-        </h3>
-
-        <p className="mt-2 text-sm font-medium leading-6 text-slate-500">
-          Book appointments and track your pet&apos;s health easily.
-        </p>
-      </div>
-
-      {/* Logout */}
-      <button
-        type="button"
-        onClick={handleLogout}
-        className="mx-5 mb-6 flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-red-500 transition hover:bg-red-50"
-      >
-        <LogOut size={20} />
-        Logout
-      </button>
-    </aside>
-  );
 };
 
-export default DashboardSidebar;
-````
-
-## File: Frontend/src/features/PetOwnerDashboard/components/DashboardStats.tsx
-````typescript
-import {
-  ArrowRight,
-  FileText,
-  PawPrint,
-} from "lucide-react";
-
-import { useNavigate } from "react-router-dom";
-
-import Card from "@/shared/components/Card/Card";
-
-import type {
-  DashboardCounts,
-} from "../types/petOwnerDashboard.types";
-
-type DashboardStatsProps = {
-  counts: DashboardCounts;
-};
-
-const DashboardStats = ({
-  counts,
-}: DashboardStatsProps) => {
-  const navigate = useNavigate();
-
-  return (
-    <section className="mt-7 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-      {/* Pets */}
-      <Card className="p-6">
-        <div className="flex items-center gap-5">
-          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-[#EAF7F5] text-[#078b91]">
-            <PawPrint size={35} />
-          </div>
-
-          <div>
-            <p className="text-sm font-black text-[#101b3d]">
-              My Pets
-            </p>
-
-            <h2 className="mt-1 text-4xl font-black text-[#101b3d]">
-              {counts.totalPets}
-            </h2>
-
-            <button
-              type="button"
-              onClick={() => navigate("/pet-owner/profile")}
-              className="mt-3 flex items-center gap-2 text-sm font-bold text-[#078b91]"
-            >
-              View all pets
-              <ArrowRight size={16} />
-            </button>
-          </div>
-        </div>
-      </Card>
-
-      {/* Appointments without icon */}
-      <Card className="p-6">
-        <div className="grid grid-cols-[1fr_auto] gap-6">
-          <div>
-            <p className="text-sm font-black text-[#101b3d]">
-              Total Appointments
-            </p>
-
-            <h2 className="mt-2 text-4xl font-black text-[#101b3d]">
-              {counts.totalAppointments}
-            </h2>
-
-            <button
-              type="button"
-              onClick={() =>
-                navigate("/pet-owner/appointments")
-              }
-              className="mt-4 flex items-center gap-2 text-sm font-bold text-blue-600"
-            >
-              View all appointments
-              <ArrowRight size={16} />
-            </button>
-          </div>
-
-          <div className="border-l border-slate-200 pl-6">
-            <StatusCount
-              label="Upcoming"
-              value={counts.upcomingAppointments}
-              className="text-blue-600"
-            />
-
-            <StatusCount
-              label="Completed"
-              value={counts.completedAppointments}
-              className="mt-3 text-emerald-600"
-            />
-
-            <StatusCount
-              label="Cancelled"
-              value={counts.cancelledAppointments}
-              className="mt-3 text-red-500"
-            />
-          </div>
-        </div>
-      </Card>
-
-      {/* Reports */}
-      <Card className="p-6 md:col-span-2 xl:col-span-1">
-        <div className="flex items-center gap-5">
-          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-orange-50 text-orange-500">
-            <FileText size={35} />
-          </div>
-
-          <div>
-            <p className="text-sm font-black text-[#101b3d]">
-              Reports
-            </p>
-
-            <h2 className="mt-1 text-4xl font-black text-[#101b3d]">
-              {counts.totalReports}
-            </h2>
-
-            <button
-              type="button"
-              onClick={() => navigate("/pet-owner/reports")}
-              className="mt-3 flex items-center gap-2 text-sm font-bold text-[#078b91]"
-            >
-              View all reports
-              <ArrowRight size={16} />
-            </button>
-          </div>
-        </div>
-      </Card>
-    </section>
-  );
-};
-
-const StatusCount = ({
-  label,
-  value,
-  className = "",
-}: {
-  label: string;
-  value: number;
-  className?: string;
-}) => {
-  return (
-    <div className={className}>
-      <p className="text-xs font-bold">{label}</p>
-      <p className="mt-0.5 text-sm font-black">{value}</p>
-    </div>
-  );
-};
-
-export default DashboardStats;
-````
-
-## File: Frontend/src/features/PetOwnerDashboard/components/MyPetsPreview.tsx
-````typescript
-import {
-  ArrowRight,
-  PawPrint,
-  Plus,
-} from "lucide-react";
-
-import { useNavigate } from "react-router-dom";
-
-import Button from "@/shared/components/Button/Button";
-import Card from "@/shared/components/Card/Card";
-
-import type { Pet } from "../types/petOwnerDashboard.types";
-
-import PetPreviewCard from "./PetPreviewCard";
-
-type MyPetsPreviewProps = {
-  pets: Pet[];
-};
-
-const MyPetsPreview = ({ pets }: MyPetsPreviewProps) => {
-  const navigate = useNavigate();
-
-  return (
-    <Card className="min-w-0 p-5 sm:p-6">
-      {/* Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <PawPrint size={25} className="text-[#078b91]" />
-
-          <h2 className="text-xl font-black text-[#101b3d]">
-            My Pets
-          </h2>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => navigate("/pet-owner/profile")}
-          className="flex w-fit items-center gap-2 text-sm font-black text-[#078b91]"
-        >
-          View All Pets
-          <ArrowRight size={17} />
-        </button>
-      </div>
-
-      {pets.length === 0 ? (
-        <div className="mt-5 rounded-2xl border border-dashed border-slate-300 px-5 py-12 text-center">
-          <PawPrint
-            size={45}
-            className="mx-auto text-[#D4E2E0]"
-          />
-
-          <h3 className="mt-4 text-lg font-black text-[#101b3d]">
-            No pets added yet
-          </h3>
-
-          <p className="mt-2 text-sm font-medium text-slate-500">
-            Add your first pet to book appointments.
-          </p>
-
-          <Button
-            type="button"
-            className="mx-auto mt-5 flex w-auto items-center gap-2 px-5"
-            onClick={() => navigate("/pet-owner/pets/add")}
-          >
-            <Plus size={17} />
-            Add New Pet
-          </Button>
-        </div>
-      ) : (
-        <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {pets.slice(0, 3).map((pet) => (
-            <PetPreviewCard key={pet.id} pet={pet} />
-          ))}
-        </div>
-      )}
-
-      {/* Bottom Add Pet Button */}
-      <div className="mt-5 flex justify-end">
-        <Button
-          type="button"
-          variant="outline"
-          className="flex h-10 w-auto items-center gap-2 border-[#078b91] px-5 text-[#078b91]"
-          onClick={() => navigate("/pet-owner/pets/add")}
-        >
-          <Plus size={17} />
-          Add New Pet
-        </Button>
-      </div>
-    </Card>
-  );
-};
-
-export default MyPetsPreview;
-````
-
-## File: Frontend/src/features/PetOwnerDashboard/components/PetPreviewCard.tsx
-````typescript
-import {
-  CalendarDays,
-  EllipsisVertical,
-} from "lucide-react";
-
-import { useNavigate } from "react-router-dom";
-
-import Button from "@/shared/components/Button/Button";
-import Card from "@/shared/components/Card/Card";
-
-import type {
-  Pet,
-  PetCategory,
-} from "../types/petOwnerDashboard.types";
-
-type PetPreviewCardProps = {
-  pet: Pet;
-};
-
-const categoryImages: Record<PetCategory, string> = {
-  DOG: "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=700&q=80",
-
-  CAT: "https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=700&q=80",
-
-  REPTILE:
-    "https://images.unsplash.com/photo-1504450874802-0ba2bcd9b5ae?auto=format&fit=crop&w=700&q=80",
-
-  OTHER:
-    "https://images.unsplash.com/photo-1552728089-57bdde30beb3?auto=format&fit=crop&w=700&q=80",
-};
-
-const categoryLabels: Record<PetCategory, string> = {
-  DOG: "Dog",
-  CAT: "Cat",
-  REPTILE: "Reptile",
-  OTHER: "Bird",
-};
-
-const PetPreviewCard = ({ pet }: PetPreviewCardProps) => {
-  const navigate = useNavigate();
-
-  const age = Number(pet.age);
-
-  return (
-    <Card className="min-w-0 overflow-visible p-3">
-      {/* Image */}
-      <div className="relative h-44 overflow-hidden rounded-2xl bg-[#EAF7F5]">
-        <img
-          src={categoryImages[pet.category]}
-          alt={pet.name}
-          className="h-full w-full object-cover transition duration-300 hover:scale-105"
-        />
-
-        <span className="absolute right-3 top-3 rounded-lg bg-white/90 px-3 py-1 text-xs font-black text-[#078b91] shadow-sm">
-          {categoryLabels[pet.category]}
-        </span>
-      </div>
-
-      {/* Information */}
-      <div className="px-1 pb-1 pt-4">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <h3 className="truncate text-lg font-black text-[#101b3d]">
-              {pet.name}
-            </h3>
-
-            <p className="mt-1 truncate text-sm font-semibold text-slate-500">
-              {pet.breed}
-            </p>
-          </div>
-
-          <button
-            type="button"
-            aria-label={`More actions for ${pet.name}`}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[#101b3d] transition hover:bg-slate-100"
-          >
-            <EllipsisVertical size={19} />
-          </button>
-        </div>
-
-        <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-slate-500">
-          <CalendarDays size={16} className="shrink-0 text-[#078b91]" />
-
-          <span>
-            {age} {age === 1 ? "Year" : "Years"}
-          </span>
-        </div>
-      </div>
-
-      <Button
-        type="button"
-        variant="outline"
-        className="mt-4 flex h-10 w-full items-center justify-center gap-2 whitespace-nowrap border-[#078b91] px-3 text-xs text-[#078b91]"
-        onClick={() => navigate(`/doctors?petId=${pet.id}`)}
-      >
-        <CalendarDays size={15} />
-        Book Appointment
-      </Button>
-    </Card>
-  );
-};
-
-export default PetPreviewCard;
-````
-
-## File: Frontend/src/features/PetOwnerDashboard/components/QuickActions.tsx
-````typescript
-import {
-  ArrowRight,
-  Bell,
-  CalendarPlus,
-  FileText,
-  HeartPulse,
-} from "lucide-react";
-
-import { useNavigate } from "react-router-dom";
-
-import Card from "@/shared/components/Card/Card";
-
-const quickActions = [
-  {
-    title: "Book Appointment",
-    description: "Find and book a vet appointment",
-    icon: <CalendarPlus size={26} />,
-    iconClass: "bg-[#EAF7F5] text-[#078b91]",
-    path: "/doctors",
-  },
-  {
-    title: "Report Issue",
-    description: "Report an issue for your pet",
-    icon: <FileText size={26} />,
-    iconClass: "bg-orange-50 text-orange-500",
-    path: "/pet-owner/select-pet?action=report-issue",
-  },
-  {
-    title: "Health Records",
-    description: "View your pet's health history",
-    icon: <HeartPulse size={26} />,
-    iconClass: "bg-blue-50 text-blue-600",
-    path: "/pet-owner/reports",
-  },
-  {
-    title: "Reminders",
-    description: "Set reminders for meds and checkups",
-    icon: <Bell size={26} />,
-    iconClass: "bg-purple-50 text-purple-600",
-    path: "/pet-owner/reminders",
-  },
-];
-
-const QuickActions = () => {
-  const navigate = useNavigate();
-
-  return (
-    <Card className="p-5">
-      <h2 className="text-xl font-black text-[#101b3d]">
-        Quick Actions
-      </h2>
-
-      <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {quickActions.map((action) => (
-          <button
-            key={action.title}
-            type="button"
-            onClick={() => navigate(action.path)}
-            className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 text-left transition hover:-translate-y-0.5 hover:border-[#078b91]/30 hover:shadow-sm"
-          >
-            <div
-              className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full ${action.iconClass}`}
-            >
-              {action.icon}
-            </div>
-
-            <div className="min-w-0 flex-1">
-              <h3 className="text-sm font-black text-[#101b3d]">
-                {action.title}
-              </h3>
-
-              <p className="mt-1 text-xs font-medium leading-5 text-slate-500">
-                {action.description}
-              </p>
-            </div>
-
-            <ArrowRight
-              size={18}
-              className="shrink-0 text-[#078b91]"
-            />
-          </button>
-        ))}
-      </div>
-    </Card>
-  );
-};
-
-export default QuickActions;
-````
-
-## File: Frontend/src/features/PetOwnerDashboard/components/UpcomingAppointments.tsx
-````typescript
-import {
-  ArrowRight,
-  CalendarDays,
-  Clock3,
-  MapPin,
-} from "lucide-react";
-
-import { useNavigate } from "react-router-dom";
-
-import Card from "@/shared/components/Card/Card";
-
-import type {
-  DashboardAppointment,
-} from "../types/petOwnerDashboard.types";
-
-type UpcomingAppointmentsProps = {
-  appointments: DashboardAppointment[];
-};
-
-const petImages = [
-  "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=200&q=80",
-  "https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=200&q=80",
-];
-
-const formatDate = (date: string) => {
-  return new Intl.DateTimeFormat("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(date));
-};
-
-const formatTime = (date: string) => {
-  return new Intl.DateTimeFormat("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(date));
-};
-
-const UpcomingAppointments = ({
-  appointments,
-}: UpcomingAppointmentsProps) => {
-  const navigate = useNavigate();
-
-  return (
-    <Card className="p-5">
-      <div className="flex items-center justify-between gap-3">
-        <h2 className="text-xl font-black text-[#101b3d]">
-          Upcoming Appointments
-        </h2>
-
-        <button
-          type="button"
-          onClick={() =>
-            navigate("/pet-owner/appointments")
-          }
-          className="flex items-center gap-2 text-sm font-black text-[#078b91]"
-        >
-          View All
-          <ArrowRight size={17} />
-        </button>
-      </div>
-
-      <div className="mt-5 space-y-3">
-        {appointments.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-300 px-5 py-10 text-center">
-            <p className="text-sm font-bold text-slate-500">
-              No upcoming appointments.
-            </p>
-          </div>
-        ) : (
-          appointments.slice(0, 2).map((appointment, index) => (
-            <button
-              key={appointment.id}
-              type="button"
-              onClick={() =>
-                navigate(
-                  `/pet-owner/appointments/${appointment.id}`,
-                )
-              }
-              className="flex w-full items-start gap-4 rounded-2xl border border-slate-200 p-4 text-left transition hover:border-[#078b91]/30 hover:bg-[#F8FCFB]"
-            >
-              <div className="h-14 w-14 shrink-0 overflow-hidden rounded-full bg-[#EAF7F5]">
-                <img
-                  src={petImages[index % petImages.length]}
-                  alt={appointment.petName}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-
-              <div className="min-w-0 flex-1">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h3 className="font-black text-[#101b3d]">
-                      {appointment.petName}
-                    </h3>
-
-                    <p className="mt-1 text-sm font-semibold text-slate-600">
-                      {appointment.doctorName}
-                    </p>
-                  </div>
-
-                  <span className="rounded-lg bg-[#EAF7F5] px-3 py-1 text-xs font-black text-[#078b91]">
-                    {appointment.appointmentType}
-                  </span>
-                </div>
-
-                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-xs font-semibold text-slate-500">
-                  <span className="flex items-center gap-2">
-                    <CalendarDays size={14} />
-                    {formatDate(appointment.checkupTime)}
-                  </span>
-
-                  <span className="flex items-center gap-2">
-                    <Clock3 size={14} />
-                    {formatTime(appointment.checkupTime)}
-                  </span>
-
-                  <span className="flex items-center gap-2">
-                    <MapPin size={14} />
-                    {appointment.clinicAddress}
-                  </span>
-                </div>
-              </div>
-
-              <ArrowRight
-                size={18}
-                className="mt-5 shrink-0 text-[#078b91]"
-              />
-            </button>
-          ))
-        )}
-      </div>
-
-      <button
-        type="button"
-        onClick={() =>
-          navigate("/pet-owner/appointments")
-        }
-        className="mt-5 flex items-center gap-2 text-sm font-black text-[#078b91]"
-      >
-        View All Appointments
-        <ArrowRight size={17} />
-      </button>
-    </Card>
-  );
-};
-
-export default UpcomingAppointments;
-````
-
-## File: Frontend/src/features/PetOwnerDashboard/data/dashboard.data.ts
-````typescript
-import type {
-  PetOwnerDashboardData,
-} from "../types/petOwnerDashboard.types";
-
-export const dashboardData: PetOwnerDashboardData = {
-  user: {
-    id: "user-1",
-    fullName: "Ayesha Khan",
-    profileImageUrl:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80",
-  },
-
-  counts: {
-    totalPets: 3,
-    totalAppointments: 8,
-    upcomingAppointments: 2,
-    completedAppointments: 5,
-    cancelledAppointments: 1,
-    totalReports: 4,
-  },
-
-  pets: [
-    {
-      id: "pet-1",
-      petOwnerId: "user-1",
-      name: "Bruno",
-      age: 3,
-      breed: "German Shepherd",
-      category: "DOG",
-    },
-    {
-      id: "pet-2",
-      petOwnerId: "user-1",
-      name: "Kitty",
-      age: 2,
-      breed: "Persian Cat",
-      category: "CAT",
-    },
-    {
-      id: "pet-3",
-      petOwnerId: "user-1",
-      name: "Coco",
-      age: 1,
-      breed: "Parrot",
-      category: "OTHER",
-    },
-  ],
-
-  upcomingAppointments: [
-    {
-      id: "appointment-1",
-      petId: "pet-1",
-      petName: "Bruno",
-      doctorId: "doctor-1",
-      doctorName: "Dr. Ayesha Khan",
-      appointmentType: "Checkup",
-      checkupTime: "2026-05-24T10:00:00.000Z",
-      clinicAddress: "Downtown Pet Clinic",
-      status: "PENDING",
-    },
-    {
-      id: "appointment-2",
-      petId: "pet-2",
-      petName: "Kitty",
-      doctorId: "doctor-2",
-      doctorName: "Dr. Ali Raza",
-      appointmentType: "Vaccination",
-      checkupTime: "2026-05-28T14:30:00.000Z",
-      clinicAddress: "City Pet Care Hospital",
-      status: "PENDING",
-    },
-  ],
-};
-````
-
-## File: Frontend/src/features/PetOwnerDashboard/pages/PetOwnerDashboardPage.tsx
-````typescript
-import DashboardBanner from "../components/DashboardBanner";
-import DashboardHeader from "../components/DashboardHeader";
-import DashboardSidebar from "../components/DashboardSidebar";
-import DashboardStats from "../components/DashboardStats";
-import MyPetsPreview from "../components/MyPetsPreview";
-import QuickActions from "../components/QuickActions";
-import UpcomingAppointments from "../components/UpcomingAppointments";
-
-import { dashboardData } from "../data/dashboard.data";
-
-const PetOwnerDashboardPage = () => {
-  return (
-    <main className="min-h-screen bg-[#F8FAFA] text-[#20263D]">
-      <DashboardSidebar />
-
-      <section className="min-h-screen px-4 py-6 sm:px-6 lg:ml-[260px] lg:px-8">
-        <div className="mx-auto max-w-[1500px]">
-          <DashboardHeader user={dashboardData.user} />
-
-          <DashboardStats counts={dashboardData.counts} />
-
-          <section className="mt-5 grid gap-5 2xl:grid-cols-[minmax(0,1fr)_390px]">
-            <MyPetsPreview pets={dashboardData.pets} />
-
-            <UpcomingAppointments
-              appointments={dashboardData.upcomingAppointments}
-            />
-          </section>
-
-          <div className="mt-5">
-            <QuickActions />
-          </div>
-
-          <div className="mt-5">
-            <DashboardBanner />
-          </div>
-        </div>
-      </section>
-    </main>
-  );
-};
-
-export default PetOwnerDashboardPage;
-````
-
-## File: Frontend/src/features/PetOwnerDashboard/petOwnerDashboard.route.tsx
-````typescript
-import PetOwnerDashboardPage from "./pages/PetOwnerDashboardPage";
-
-export const petOwnerDashboardRoutes = [
-  {
-    path: "/pet-owner/dashboard",
-    element: <PetOwnerDashboardPage />,
-  },
-];
-````
-
-## File: Frontend/src/features/PetOwnerDashboard/types/petOwnerDashboard.types.ts
-````typescript
-export type PetCategory = "DOG" | "CAT" | "REPTILE" | "OTHER";
-
-export type Pet = {
-  id: string;
-  petOwnerId: string;
-  name: string;
-  age: number | string;
-  breed: string;
-  category: PetCategory;
-};
-
-export type AppointmentStatus =
-  | "PENDING"
-  | "COMPLETED"
-  | "CANCELLED";
-
-export type DashboardAppointment = {
-  id: string;
-  petId: string;
-  petName: string;
-  doctorId: string;
-  doctorName: string;
-  appointmentType: string;
-  checkupTime: string;
-  clinicAddress: string;
-  status: AppointmentStatus;
-};
-
-export type DashboardCounts = {
-  totalPets: number;
-  totalAppointments: number;
-  upcomingAppointments: number;
-  completedAppointments: number;
-  cancelledAppointments: number;
-  totalReports: number;
-};
-
-export type DashboardUser = {
-  id: string;
-  fullName: string;
-  profileImageUrl: string;
-};
-
-export type PetOwnerDashboardData = {
-  user: DashboardUser;
-  counts: DashboardCounts;
-  pets: Pet[];
-  upcomingAppointments: DashboardAppointment[];
-};
-
-export type PetOwnerDashboardResponse = {
-  success: boolean;
-  message: string;
-  data: PetOwnerDashboardData;
-};
-````
-
-## File: Frontend/src/features/Services/components/ServiceCard.tsx
-````typescript
-import type { IconType } from "react-icons";
-
-type ServiceCardProps = {
+export type ProductPreviewCardProps = {
+  image: string;
   title: string;
+  category: string;
+  price: string;
+  stock: string;
+  location: string;
   description: string;
-  icon: IconType;
-  color: string;
+  status: string;
 };
 
-const ServiceCard = ({
-  title,
-  description,
-  icon: Icon,
-  color,
-}: ServiceCardProps) => {
-  return (
-    <div className="group rounded-3xl bg-white p-6 shadow-[0_10px_35px_rgba(15,23,42,0.08)] transition hover:-translate-y-1 hover:shadow-[0_18px_45px_rgba(15,23,42,0.12)]">
-      <div
-        className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${color} text-2xl text-[#009f9d]`}
-      >
-        <Icon />
-      </div>
-
-      <h3 className="text-xl font-extrabold text-[#07182c]">
-        {title}
-      </h3>
-
-      <p className="mt-3 text-sm leading-6 text-slate-600">
-        {description}
-      </p>
-
-      <button
-        type="button"
-        className="mt-5 text-sm font-extrabold text-[#009f9d] transition group-hover:underline"
-      >
-        Learn More
-      </button>
-    </div>
-  );
+export type ProductImageUploadProps = {
+  previews: string[];
+  onImageChange: (files: File[]) => void;
 };
 
-export default ServiceCard;
+export type ProductCardProps = {
+  product: MarketplaceProduct;
+  onEdit: () => void;
+  onDelete: () => void;
+  onView: () => void;
+};
+
+export type OrdersTableProps = {
+  orders: SellerOrder[];
+};
+
+export type StockTableProps = {
+  products: MarketplaceProduct[];
+  onStockChange: (productId: string, stock: number) => void;
+};
+
+export type RecentOrdersProps = {
+  orders: SellerOrder[];
+  onViewAll: () => void;
+};
+
+export type StockOverviewProps = {
+  products: MarketplaceProduct[];
+};
+
+export type SellerStatCardProps = {
+  title: string;
+  value: string;
+  subtitle: string;
+};
 ````
 
 ## File: Frontend/src/features/Services/components/ServicesCTA.tsx
@@ -10832,58 +10794,16 @@ const ServicesPage = () => {
 export default ServicesPage;
 ````
 
-## File: Frontend/src/Global Provider/SmoothScroller.tsx
+## File: Frontend/src/features/Services/types/services.types.ts
 ````typescript
-import { useEffect } from "react";
-import Lenis from "@studio-freight/lenis";
+import type { IconType } from "react-icons";
 
-export default function SmoothScroll({ children }: { children: React.ReactNode }) {
-    useEffect(() => {
-        const lenis = new Lenis({
-            duration: 0.9,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            orientation: "vertical",
-            gestureOrientation: "vertical",
-            smoothWheel: true,
-            wheelMultiplier: 0.95,
-            touchMultiplier: 1.5,
-            infinite: false,
-            syncTouch: false,
-        });
-
-        // 1. Function to instantly snap Lenis to the top
-        const handleScrollToTop = () => {
-            lenis.scrollTo(0, { immediate: true });
-        };
-
-        // 2. Listen to browser navigation history changes natively
-        window.addEventListener("popstate", handleScrollToTop);
-
-        // 3. Patch the standard history pushState to catch programmatic route clicks
-        const originalPushState = history.pushState;
-        history.pushState = function (...args) {
-            originalPushState.apply(this, args);
-            handleScrollToTop(); // Trigger scroll up when a new page is pushed
-        };
-
-        let rafId: number;
-        function raf(time: number) {
-            lenis.raf(time);
-            rafId = requestAnimationFrame(raf);
-        }
-
-        rafId = requestAnimationFrame(raf);
-
-        return () => {
-            lenis.destroy();
-            cancelAnimationFrame(rafId);
-            window.removeEventListener("popstate", handleScrollToTop);
-            history.pushState = originalPushState; // Restore native behavior on cleanup
-        };
-    }, []);
-
-    return <>{children}</>;
-}
+export type ServiceCardProps = {
+  title: string;
+  description: string;
+  icon: IconType;
+  color: string;
+};
 ````
 
 ## File: Frontend/src/layout/service.layout.tsx
@@ -11405,101 +11325,435 @@ export default defineConfig({
 })
 ````
 
+## File: Backend/app/config/prisma.js
+````javascript
+const { PrismaClient } = require("@prisma/client")
+
+const prisma = new PrismaClient();
+
+module.exports = prisma
+````
+
+## File: Backend/app/config/redis.config.js
+````javascript
+const { createClient } = require('redis');
+
+const redisUrl = process.env.REDIS_URL;
+let redisClient = null;
+
+if (redisUrl) {
+    redisClient = createClient({
+        url: redisUrl,
+        socket: {
+            reconnectStrategy: false,
+        },
+    })
+
+    redisClient.on('connect', () => {
+        console.log("Redis Connected")
+    })
+
+    redisClient.on('error', (err) => {
+        console.error("Error is Redi Connection", err.message)
+    });
+
+    (async () => {
+        try {
+            await redisClient.connect();
+
+        } catch (error) {
+            console.error("Failed To Connect to Redis", error.message)
+        }
+    })()
+} else {
+    console.warn("REDIS_URL not set. Using in-memory rate limiting.");
+}
+
+
+module.exports = redisClient;
+````
+
 ## File: Backend/app/config/stripe.js
 ````javascript
 const Stripe = require('stripe');
-const stripe = new Stripe(
-    process.env.STRIPE_SECRET_KEY
-)
+
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
 
 module.exports = {
     stripe
+};
+````
+
+## File: Backend/app/middleware/rateLimiter.js
+````javascript
+const redisClient = require('../config/redis.config');
+const { RedisStore } = require('rate-limit-redis');
+const { rateLimit } = require('express-rate-limit');
+
+const createRedisStore = (prefix) => {
+    if (!redisClient) {
+        return undefined;
+    }
+
+    return new RedisStore({
+        sendCommand: (...args) => redisClient.sendCommand(args),
+        prefix,
+    });
+}
+
+
+const authLimiter = rateLimit({
+    store: createRedisStore('rl:auth:'),
+    windowMs: 5 * 60 * 1000,
+    limit: 10,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    message: {
+        status: 429,
+        error: "To many Auth attempts"
+    }
+});
+
+const adminLimiter = rateLimit({
+    store: createRedisStore('rl:admin:'),
+    windowMs: 10 * 60 * 1000,
+    limit: 50,
+    standardHeaders: false,
+    message: {
+        status: 429,
+        error: "Admin resource limit reaached try again after some minutes"
+    }
+})
+
+const petOwnerLimiter = rateLimit({
+    store: createRedisStore('rl:petOwner:'),
+    windowMs: 10 * 60 * 1000,
+    limit: 50,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    message: {
+        status: 429,
+        error: "Resource limite Reach Wait for few second"
+    }
+});
+
+const globalUserLimiter = rateLimit({
+    store: createRedisStore('rl:global:'),
+    windowMs: 10 * 60 * 1000,
+    limit: 150,
+    legacyHeaders: false,
+    standardHeaders: 'draft-8',
+    message: {
+        status: 429,
+        error: "Too many request from this device Please slow down"
+    }
+});
+
+const doctorLimiter = rateLimit({
+    limit: 100,
+    windowMs: 10 * 60 * 1000,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    message: {
+        status: 429,
+        error: "Too many requests Please wait a minute only then proceed"
+    }
+})
+
+module.exports = {
+    adminLimiter,
+    globalUserLimiter,
+    authLimiter,
+    petOwnerLimiter,
+    doctorLimiter
 }
 ````
 
-## File: Backend/app/middleware/auth.middleware.js
+## File: Backend/app/server.js
 ````javascript
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+const app = require('./app');
+const { startAppointmentCleanupJob } = require('./jobs/appointmentCleanup.job')
+const { startScheduleCleanupJob } = require('./jobs/scheduleCleanup')
+const port = 8000;
 
-const protect = async (req, res, next) => {
-    try {
-        const token = req.cookies.accessToken;
-        console.log("Cookies in protect are ", req.cookies)
-        if (!token) {
-            console.log("No Token!");
-            return res.status(401).json({ success: false, err: 'Access token missing' });
+app.listen(port, () => {
+    console.log("Server is running");
 
-        }
-        const secret = process.env.JWT_ACCESS_SECRET;
-        const decoded = jwt.verify(token, secret);
+    startAppointmentCleanupJob();
+    startScheduleCleanupJob();
+})
+````
 
-        req.user = decoded;
-        console.log("Requset is ", req.user);
-        next();
+## File: Backend/app/services/stripe.service.js
+````javascript
+const { stripe } = require("../config/stripe");
+const prisma = require("../config/prisma");
+const AppError = require("../utils/AppError");
 
-    } catch (error) {
-        console.log("Error in jwt middleware", error.message);
-        if (error.name === "TokenExpiredError" || error.name === "JsonWebTokenError") {
-            return res.status(401).json({ success: false, err: "Token expired or invalid" });
-        }
+const {
+  PaymentStatus,
+  AppointmentStatus,
+  ScheduleStatus,
+} = require("@prisma/client");
 
-        return res.status(500).json({ success: false, err: error.message })
+const createAppointmentPaymentIntent = async ({ appointmentId, petOwnerId }) => {
+  if (!appointmentId || !petOwnerId) {
+    throw new AppError("Appointment ID or user ID is missing", 400);
+  }
+
+  const appointment = await prisma.appointment.findFirst({
+    where: {
+      id: appointmentId,
+      petOwnerId,
+    },
+    include: {
+      doctor: {
+        include: {
+          user: {
+            select: {
+              fullName: true,
+            },
+          },
+        },
+      },
+      doctorSchedule: true,
+      payment: true,
+    },
+  });
+
+  if (!appointment) {
+    throw new AppError("Appointment not found", 404);
+  }
+
+  if (appointment.status !== AppointmentStatus.PENDING_PAYMENT) {
+    throw new AppError(
+      `Appointment is not ready for payment. Current status is ${appointment.status}`,
+      400
+    );
+  }
+
+  if (appointment.paymentStatus === PaymentStatus.SUCCEEDED) {
+    throw new AppError("Payment is already completed for this appointment", 400);
+  }
+
+  if (appointment.expiresAt && appointment.expiresAt < new Date()) {
+    throw new AppError(
+      "Appointment hold has expired. Please select slot again.",
+      400
+    );
+  }
+
+  if (!appointment.petId) {
+    throw new AppError("Pet is missing from appointment", 400);
+  }
+
+  if (!appointment.petIssueReportId) {
+    throw new AppError("Pet issue report is missing from appointment", 400);
+  }
+
+  if (
+    appointment.doctorSchedule.status !== ScheduleStatus.HELD ||
+    appointment.doctorSchedule.lockedByAppointmentId !== appointment.id
+  ) {
+    throw new AppError("This slot is no longer held for this appointment", 400);
+  }
+
+  const stripeAmount = appointment.fees * 100;
+  const currency = appointment.currency || "pkr";
+
+  
+  if (
+    appointment.payment &&
+    appointment.payment.stripePaymentIntentId &&
+    appointment.payment.stripeClientSecret &&
+    [
+      PaymentStatus.PENDING,
+      PaymentStatus.REQUIRES_PAYMENT_METHOD,
+      PaymentStatus.REQUIRES_ACTION,
+      PaymentStatus.PROCESSING,
+    ].includes(appointment.payment.status)
+  ) {
+    return {
+      appointmentId: appointment.id,
+      paymentId: appointment.payment.id,
+      clientSecret: appointment.payment.stripeClientSecret,
+      amount: appointment.payment.amount,
+      currency: appointment.payment.currency,
+      reused: true,
+    };
+  }
+
+  const metadata = {
+    appointmentId: appointment.id,
+    doctorId: appointment.doctorId,
+    petOwnerId: appointment.petOwnerId,
+    petId: appointment.petId,
+    petIssueReportId: appointment.petIssueReportId,
+    scheduleId: appointment.scheduleId,
+  };
+
+  const paymentIntent = await stripe.paymentIntents.create(
+    {
+      amount: stripeAmount,
+      currency,
+      automatic_payment_methods: {
+        enabled: true,
+      },
+      description: `Veterinary appointment with Dr. ${appointment.doctor?.user?.fullName || "Doctor"
+        }`,
+      metadata,
+    },
+    {
+      idempotencyKey: `appointment-payment-${appointment.id}`,
     }
-}
+  );
 
-const protectRefresh = async (req, res, next) => {
-    try {
-        const token = req.cookies.refreshToken;
-        if (!token) {
-            console.log("No Refresh Token Found!");
-            return res.status(401).json({ success: false, err: 'Session expired. Please log in again.' });
-        }
+  const payment = await prisma.payment.upsert({
+    where: {
+      appointmentId: appointment.id,
+    },
+    update: {
+      stripePaymentIntentId: paymentIntent.id,
+      stripeClientSecret: paymentIntent.client_secret,
+      amount: stripeAmount,
+      currency,
+      status: PaymentStatus.REQUIRES_PAYMENT_METHOD,
+      metadata,
+    },
+    create: {
+      appointmentId: appointment.id,
+      userId: petOwnerId,
+      stripePaymentIntentId: paymentIntent.id,
+      stripeClientSecret: paymentIntent.client_secret,
+      amount: stripeAmount,
+      currency,
+      status: PaymentStatus.REQUIRES_PAYMENT_METHOD,
+      metadata,
+    },
+  });
 
-        const secret = process.env.JWT_REFRESH_SECRET;
-        const decoded = jwt.verify(token, secret);
+  await prisma.appointment.update({
+    where: {
+      id: appointment.id,
+    },
+    data: {
+      paymentStatus: PaymentStatus.REQUIRES_PAYMENT_METHOD,
+    },
+  });
 
-        req.user = decoded;
-        next();
+  return {
+    appointmentId: appointment.id,
+    paymentId: payment.id,
+    clientSecret: paymentIntent.client_secret,
+    amount: stripeAmount,
+    currency,
+    reused: false,
+  };
+};
 
-    } catch (error) {
-        console.log("Error in refresh token middleware:", error.message);
 
+const getAppointmentPaymentStatus = async ({ appointmentId, petOwnerId }) => {
+  if (!appointmentId || !petOwnerId) {
+    throw new AppError("Appointment ID or user ID is missing", 400);
+  }
 
-        if (error.name === "TokenExpiredError" || error.name === "JsonWebTokenError") {
-            return res.status(401).json({ success: false, err: "Session expired. Please log in again." });
-        }
+  const appointment = await prisma.appointment.findFirst({
+    where: {
+      id: appointmentId,
+      petOwnerId,
+    },
+    select: {
+      id: true,
+      doctorId: true,
+      petOwnerId: true,
+      petId: true,
+      petIssueReportId: true,
+      scheduleId: true,
 
+      fees: true,
+      currency: true,
 
-        return res.status(500).json({ success: false, err: error.message });
-    }
-}
+      status: true,
+      paymentStatus: true,
 
-const protectOtp = async (req, res, next) => {
-    try {
-        const otpToken = req.cookies.otpToken;
-        console.log("OTP token is ", req.cookies.otpToken);
+      checkupTime: true,
+      expiresAt: true,
+      confirmedAt: true,
+      createdAt: true,
+      updatedAt: true,
 
-        if (!otpToken) {
-            return res.status(400).json({ err: 'Invalid Cookie' })
-        }
-        const decoded = jwt.verify(otpToken, process.env.JWT_OTP_SECRET);
-        if (!decoded) {
-            return res.status(400).json({ err: 'Invalid Decoding in auth middleware' })
-        }
-        req.user = decoded;
-        next();
+      doctor: {
+        select: {
+          id: true,
+          specialization: true,
+          user: {
+            select: {
+              fullName: true,
+              email: true,
+            },
+          },
+        },
+      },
 
-    } catch (error) {
-        console.log("Protect Otp Err", error.message);
-        return res.status(500).json({ tokenErr: error.message })
-    }
-}
+      doctorSchedule: {
+        select: {
+          id: true,
+          status: true,
+          date: true,
+          startTime: true,
+          endTime: true,
+          lockedByAppointmentId: true,
+        },
+      },
+
+      pet: {
+        select: {
+          id: true,
+          name: true,
+          breed: true,
+          category: true,
+        },
+      },
+
+      petIssueReport: {
+        select: {
+          id: true,
+          issue: true,
+          createdAt: true,
+        },
+      },
+
+      payment: {
+        select: {
+          id: true,
+          stripePaymentIntentId: true,
+          stripeChargeId: true,
+          amount: true,
+          currency: true,
+          status: true,
+          receiptUrl: true,
+          failureReason: true,
+          paidAt: true,
+          cancelledAt: true,
+          refundedAt: true,
+        },
+      },
+    },
+  });
+
+  if (!appointment) {
+    throw new AppError("Appointment not found", 404);
+  }
+
+  return appointment;
+};
+
 module.exports = {
-    protect,
-    protectRefresh,
-    protectOtp
-}
+  createAppointmentPaymentIntent,
+  getAppointmentPaymentStatus,
+};
 ````
 
 ## File: Backend/app/utils/auth.utils.js
@@ -11963,62 +12217,6 @@ const AboutPage = () => {
 export default AboutPage;
 ````
 
-## File: Frontend/src/features/Admin/components/AdminNavbar.tsx
-````typescript
-import { memo } from 'react';
-import { Bell, Menu } from 'lucide-react'
-import { useAuth } from '@/features/Auth/hooks/authhook';
-
-type AdminNavbarProps = {
-    onMenuClick: () => void;
-};
-
-const AdminNavbar = ({ onMenuClick }: AdminNavbarProps) => {
-    const { user } = useAuth();
-    return (
-        <header className="sticky top-0 z-30 flex h-[68px] items-center justify-between gap-4 border-b border-slate-200 bg-white px-4 shadow-sm sm:h-[76px] sm:px-6 lg:justify-end lg:px-10">
-            <button
-                type="button"
-                onClick={onMenuClick}
-                aria-label="Open sidebar"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-[#0f172a] transition hover:bg-slate-100 lg:hidden"
-            >
-                <Menu size={24} strokeWidth={2.4} />
-            </button>
-
-            <div className="flex items-center justify-end gap-3 sm:gap-8">
-            <button
-                type="button"
-                aria-label="Notifications"
-                className="relative cursor-pointer rounded-lg p-2 text-[#0f172a] transition hover:bg-slate-100"
-            >
-                <Bell size={27} strokeWidth={2.4} />
-                <span className="absolute right-0 top-0 flex h-5 w-5 items-center justify-center rounded-full bg-[#ef4444] text-[11px] font-black text-white">
-                    4
-                </span>
-            </button>
-
-            <button type="button" className="cursor-pointer flex items-center gap-2">
-                <img
-                    src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png"
-                    alt="Admin"
-                    className="h-10 w-10 rounded-full bg-[#dff5f3] sm:h-11 sm:w-11"
-                />
-                <div className="flex items-center gap-2">
-
-                    <p className="max-w-28 truncate rounded-full bg-[#078b91]/10 px-3 py-1 text-sm font-bold tracking-wider text-[#078b91] lowercase sm:max-w-none sm:text-[15px]">
-                        {user?.data?.role === 'Admin' ? user.data.username : 'Admin'}
-                    </p>
-                </div>
-            </button>
-            </div>
-        </header>
-    );
-};
-
-export default memo(AdminNavbar);
-````
-
 ## File: Frontend/src/features/Admin/components/doctors/DoctorFilter.tsx
 ````typescript
 import { memo, type SetStateAction } from 'react';
@@ -12100,6 +12298,228 @@ const DoctorFilter = ({ doctorStatus, setDoctorStatus }: { doctorStatus: string,
 export default memo(DoctorFilter);
 ````
 
+## File: Frontend/src/features/Admin/types/admin.types.ts
+````typescript
+import type { Dispatch, ElementType, SetStateAction } from "react";
+import type { DoctorData } from "../apis/doctorquery.api";
+
+export interface SidebarItemType {
+  id: number;
+  title: string;
+  icon: ElementType;
+}
+
+export interface StatsCardType {
+  id: number;
+  title: string;
+  total: number;
+  subtitle: string;
+  color: string;
+  icon: ElementType;
+}
+
+export interface DoctorType {
+  id: number;
+  name: string;
+  specialist: string;
+  experience: string;
+  email: string;
+  phone: string;
+  status: string;
+  image: string;
+}
+
+export type AdminNavbarProps = {
+  onMenuClick: () => void;
+};
+
+export type SidebarProps = {
+  sidebarOpen: boolean;
+  setSidebarOpen: (open: boolean) => void;
+};
+
+export interface MobileSidebarProps {
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+}
+
+export interface DoctorStatusBadgeProps {
+  status: string;
+}
+
+export type DoctorRequestCardProps = {
+  doctor: DoctorData;
+  onApprove: (doctorId: string) => void;
+  onReject: (doctorId: string) => void;
+  doctorRequestProceed: boolean;
+};
+````
+
+## File: Frontend/src/features/AiAssistance/components/AiChatBox.tsx
+````typescript
+import { useState } from "react";
+import { FaPaperPlane, FaRobot, FaUser, FaPaw } from "react-icons/fa";
+
+import Button from "../../../shared/components/Button";
+import type { AiMessage } from "../types/aiAssistance.types";
+
+const AiChatBox = () => {
+    const [message, setMessage] = useState("");
+
+    const [messages, setMessages] = useState<AiMessage[]>([
+        {
+            id: 1,
+            sender: "ai",
+            text: "Hello! I am your PetsVeta AI Assistant. Tell me your pet symptoms and I will guide you.",
+        },
+    ]);
+
+    const handleSendMessage = () => {
+        if (!message.trim()) return;
+
+        const userMessage: AiMessage = {
+            id: Date.now(),
+            sender: "user",
+            text: message,
+        };
+
+        const aiReply: AiMessage = {
+            id: Date.now() + 1,
+            sender: "ai",
+            text: "Thanks for sharing. Based on the symptoms, please monitor your pet closely and consult a verified veterinary doctor if the issue continues.",
+        };
+
+        setMessages((prev) => [...prev, userMessage, aiReply]);
+        setMessage("");
+    };
+
+    return (
+        <section className="bg-white px-5 py-16 lg:px-16">
+            <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1fr_380px]">
+                <div className="rounded-3xl bg-[#f5fbff] p-4 shadow-[0_10px_35px_rgba(15,23,42,0.08)] md:p-6">
+                    <div className="mb-5 flex items-center justify-between rounded-3xl bg-white p-5 shadow-sm">
+                        <div>
+                            <h2 className="text-2xl font-extrabold text-[#07182c]">
+                                Ask AI Assistant
+                            </h2>
+
+                            <p className="mt-1 text-sm text-slate-500">
+                                Describe your pet symptoms or care question.
+                            </p>
+                        </div>
+
+                        <div className="hidden h-12 w-12 items-center justify-center rounded-2xl bg-[#eefafa] text-xl text-[#009f9d] sm:flex">
+                            <FaRobot />
+                        </div>
+                    </div>
+
+                    <div className="h-[420px] space-y-4 overflow-y-auto rounded-3xl bg-white p-5">
+                        {messages.map((item) => (
+                            <div
+                                key={item.id}
+                                className={`flex ${item.sender === "user" ? "justify-end" : "justify-start"
+                                    }`}
+                            >
+                                <div
+                                    className={`flex max-w-[85%] gap-3 rounded-3xl p-4 ${item.sender === "user"
+                                        ? "bg-[#07182c] text-white"
+                                        : "bg-[#eefafa] text-[#07182c]"
+                                        }`}
+                                >
+                                    <div
+                                        className={`mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${item.sender === "user"
+                                            ? "bg-white/15"
+                                            : "bg-white text-[#009f9d]"
+                                            }`}
+                                    >
+                                        {item.sender === "user" ? <FaUser /> : <FaRobot />}
+                                    </div>
+
+                                    <p className="text-sm leading-6">{item.text}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="mt-5 grid gap-3 rounded-3xl bg-white p-4 md:grid-cols-[1fr_auto]">
+                        <textarea
+                            rows={2}
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                            placeholder="Example: My dog is vomiting and not eating..."
+                            className="resize-none rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#009f9d] focus:ring-2 focus:ring-[#009f9d]/20"
+                        />
+
+                        <Button
+                            type="button"
+                            onClick={handleSendMessage}
+                            className="flex items-center justify-center gap-2"
+                        >
+                            <FaPaperPlane />
+                            Send
+                        </Button>
+                    </div>
+                </div>
+
+                <aside className="space-y-5">
+                    <div className="rounded-3xl bg-gradient-to-br from-[#bdf0ee] to-[#fff3ec] p-6 shadow-[0_18px_50px_rgba(15,23,42,0.10)]">
+                        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl text-[#009f9d]">
+                            <FaPaw />
+                        </div>
+
+                        <h3 className="text-2xl font-extrabold text-[#07182c]">
+                            Quick Symptom Guide
+                        </h3>
+
+                        <p className="mt-3 text-sm leading-6 text-slate-600">
+                            AI can guide you, but serious symptoms should always be checked by
+                            a verified doctor.
+                        </p>
+                    </div>
+
+                    <div className="rounded-3xl bg-white p-6 shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
+                        <h3 className="text-lg font-extrabold text-[#07182c]">
+                            Try asking:
+                        </h3>
+
+                        <div className="mt-4 space-y-3">
+                            {[
+                                "My cat is not eating",
+                                "My dog is vomiting",
+                                "My pet has skin allergy",
+                                "Which doctor should I visit?",
+                            ].map((item) => (
+                                <button
+                                    key={item}
+                                    type="button"
+                                    onClick={() => setMessage(item)}
+                                    className="w-full rounded-2xl bg-[#f5fbff] px-4 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-[#eefafa] hover:text-[#009f9d]"
+                                >
+                                    {item}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="rounded-3xl bg-[#07182c] p-6 text-white">
+                        <h3 className="text-lg font-extrabold">
+                            Emergency Reminder
+                        </h3>
+
+                        <p className="mt-3 text-sm leading-6 text-white/75">
+                            If your pet has breathing problems, bleeding, seizures, poisoning,
+                            or extreme weakness, contact a vet immediately.
+                        </p>
+                    </div>
+                </aside>
+            </div>
+        </section>
+    );
+};
+
+export default AiChatBox;
+````
+
 ## File: Frontend/src/features/Appointment/apis/doctorProfile.api.ts
 ````typescript
 import { api } from "@/features/api interface/axios.interface";
@@ -12141,7 +12561,17 @@ export type ApiResponse = {
 export const getDoctorProfileData = async (id: string) => {
     try {
         const response = await api.get(`http://localhost:8000/api/v1/user/doctor-profile?doctorId=${id}`);
+        console.log("Doctor Profile Data ", response)
         return response.data?.data;
+    } catch (error) {
+        handleAxiosError(error)
+    }
+}
+
+export const getUserPets = async () => {
+    try {
+        const response = await api.get("http://localhost:8000/api/v1/petOwner/my-pets")
+        return response.data.data
     } catch (error) {
         handleAxiosError(error)
     }
@@ -12160,7 +12590,7 @@ export const doctorRoutes = [
         element: <DoctorProfilePage />
     },
     {
-        path: '/book-appointment/:id',
+        path: '/book-appointment',
         element: (
             <ProtectedRoutes>
                 <BookAppointmentPage />
@@ -12168,6 +12598,114 @@ export const doctorRoutes = [
         )
     }
 ]
+````
+
+## File: Frontend/src/features/Auth/components/AuthSuccess.tsx
+````typescript
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
+const getPostLoginPath = (role?: string) => {
+    if (role === 'Admin') {
+        return '/admin-dashboard';
+    }
+
+    if (role === 'Doctor') {
+        return '/doctor-dashboard';
+    }
+
+    if (role === 'PetOwner' || role === 'Seller') {
+        return '/choose-dashboard';
+    }
+
+    return '/';
+};
+
+export const AuthSuccess = () => {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const verifyUserSession = async () => {
+            try {
+
+                const response = await axios.get('http://localhost:8000/api/v1/auth/me', {
+                    withCredentials: true
+                });
+
+                if (response.data.success) {
+                    navigate(getPostLoginPath(response.data.data?.role));
+                }
+            } catch (error) {
+                console.error("Session verification failed", error);
+                navigate('/login');
+            }
+        };
+
+        verifyUserSession();
+    }, [navigate]);
+
+    return <div>Completing login, please wait...</div>;
+};
+````
+
+## File: Frontend/src/features/Auth/Context/auth.context.tsx
+````typescript
+import { useState, createContext, useEffect } from 'react'
+import { type ApiResponse, verifyUser } from '../api/loginuser.api';
+import type {
+    AuthContextProviderProps,
+    AuthContextType,
+} from "../types/auth.types";
+
+
+export const AuthContext = createContext<AuthContextType | null>(null);
+
+export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
+
+    const [isAuthenticatedUser, setIsAuthenticateUser] = useState<boolean>(false);
+    const [user, setUser] = useState<ApiResponse | undefined>(undefined);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+
+    useEffect(() => {
+        const veirfyAuthenticatedUser = async () => {
+            try {
+                setIsLoading(true);
+                const response = await verifyUser();
+                console.log("Auth Context working....", response)
+
+                if (response.success) {
+                    setUser(response);
+                    setIsAuthenticateUser(true);
+                } else {
+                    setIsAuthenticateUser(false);
+                    setUser(undefined);
+                }
+
+
+            } catch (error) {
+                console.log("Error in Auth Provider:", error);
+                setIsAuthenticateUser(false);
+                setUser(undefined);
+            } finally {
+                console.log("Finally works");
+                setIsLoading(false);
+            }
+        };
+
+        veirfyAuthenticatedUser();
+
+    }, [])
+
+
+
+
+    return (
+        <AuthContext.Provider value={{ user, setUser, isAuthenticatedUser, setIsAuthenticateUser, isLoading, setIsLoading }}>
+            {children}
+        </AuthContext.Provider>
+    )
+}
 ````
 
 ## File: Frontend/src/features/Auth/hooks/useDoctorAccount.ts
@@ -12208,6 +12746,94 @@ export const useDoctorAccountHook = (options: UseMutationOptions<ApiResponse, Er
             }
         }
     });
+}
+````
+
+## File: Frontend/src/features/Auth/hooks/useLogin.ts
+````typescript
+import { useMutation, type UseMutationOptions } from '@tanstack/react-query'
+import { userLogin, type ApiResponse } from '../api/loginuser.api'
+import { type LoginFormData } from '../schemas/login.schema'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from './authhook'
+
+const getPostLoginPath = (role: string) => {
+    if (role === "Admin") {
+        return "/admin-dashboard";
+    }
+
+    if (role === "Doctor") {
+        return "/doctor-dashboard";
+    }
+
+    if (role === "PetOwner" || role === "Seller") {
+        return "/choose-dashboard";
+    }
+
+    return "/";
+};
+
+export const useLogin = (options: UseMutationOptions<ApiResponse, Error, LoginFormData>) => {
+    const navigate = useNavigate();
+    const { setIsAuthenticateUser, setUser } = useAuth()
+    return useMutation({
+        mutationFn: userLogin,
+        ...options,
+
+        onSuccess: (data) => {
+            console.log("Login Success", data)
+            setUser(data);
+            setIsAuthenticateUser(true);
+            navigate(getPostLoginPath(data.data.role), { replace: true });
+        },
+
+        onError: (error) => {
+            console.log("Login Error ", error.message)
+        }
+
+    })
+}
+````
+
+## File: Frontend/src/features/Auth/hooks/usePetOwnerAccount.ts
+````typescript
+import { useMutation, type UseMutationOptions } from '@tanstack/react-query'
+import { type PetOwnerFormData } from '../schemas/petowner.schema'
+import { createPetOwnerAccount } from '../api/petOwner.api'
+import { type ApiResponse } from '../api/petOwner.api'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from './authhook'
+import { AxiosError } from 'axios'
+import type { ApiErrorResponse } from '../types/auth.types'
+
+
+export const usePetOwnerHook = (options: UseMutationOptions<ApiResponse, AxiosError<ApiErrorResponse>, PetOwnerFormData>) => {
+
+    const { setUser, setIsAuthenticateUser } = useAuth();
+    const navigate = useNavigate();
+
+
+    return useMutation({
+
+        mutationFn: createPetOwnerAccount,
+
+        ...options,
+
+        onSuccess: (response) => {
+            console.log("Account Success", response)
+            setUser(response);
+            setIsAuthenticateUser(true);
+            if (response?.success) {
+                navigate('/verify-otp')
+            }
+
+        },
+
+        onError: (error) => {
+            console.log("Account Error ", error.message)
+
+        }
+    })
 }
 ````
 
@@ -12493,107 +13119,6 @@ const ContactCTA = () => {
 export default ContactCTA;
 ````
 
-## File: Frontend/src/features/Contact/components/ContactForm.tsx
-````typescript
-import Button from "../../../shared/components/Button";
-import Input from "@/shared/components/Input";
-
-const ContactForm = () => {
-  return (
-    <section className="bg-[#f5fbff] px-5 py-16 lg:px-16">
-      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1fr_420px]">
-        <div className="rounded-3xl bg-white p-8 shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
-          <div className="mb-8">
-            <h2 className="text-3xl font-extrabold text-[#07182c]">
-              Send Us a Message
-            </h2>
-
-            <p className="mt-2 text-slate-500">
-              Fill the form and our support team will contact you shortly.
-            </p>
-          </div>
-
-          <form className="space-y-5">
-            <div className="grid gap-5 md:grid-cols-2">
-              <Input label="Full Name" placeholder="Enter your name" />
-
-              <Input
-                label="Email Address"
-                placeholder="Enter your email"
-                type="email"
-              />
-            </div>
-
-            <div className="grid gap-5 md:grid-cols-2">
-              <Input
-                label="Phone Number"
-                placeholder="03xx xxxxxxx"
-              />
-
-              <Input label="Subject" placeholder="Enter subject" />
-            </div>
-
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                Message
-              </label>
-
-              <textarea
-                rows={6}
-                placeholder="Write your message..."
-                className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-[#178f95] focus:ring-2 focus:ring-[#178f95]/20"
-              />
-            </div>
-
-            <Button>Send Message</Button>
-          </form>
-        </div>
-
-        <div className="rounded-3xl bg-gradient-to-br from-[#bdf0ee] via-[#f5fbff] to-[#fff3ec] p-8 shadow-[0_18px_50px_rgba(15,23,42,0.10)]">
-          <h2 className="text-3xl font-extrabold text-[#07182c]">
-            Why Contact PetsVeta?
-          </h2>
-
-          <div className="mt-8 space-y-5">
-            <div className="rounded-2xl bg-white p-5 shadow-sm">
-              <h3 className="font-extrabold text-[#07182c]">
-                Doctor Assistance
-              </h3>
-
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                Get support regarding appointments, schedules and consultations.
-              </p>
-            </div>
-
-            <div className="rounded-2xl bg-white p-5 shadow-sm">
-              <h3 className="font-extrabold text-[#07182c]">
-                Marketplace Help
-              </h3>
-
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                Need help with pet products or orders? Our team is here.
-              </p>
-            </div>
-
-            <div className="rounded-2xl bg-white p-5 shadow-sm">
-              <h3 className="font-extrabold text-[#07182c]">
-                AI Assistance
-              </h3>
-
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                Ask questions about AI symptom assistance and smart pet-care.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-export default ContactForm;
-````
-
 ## File: Frontend/src/features/Contact/components/ContactHero.tsx
 ````typescript
 import { FaEnvelopeOpenText } from "react-icons/fa";
@@ -12633,6 +13158,320 @@ export const contactRoutes = [
         element: <ContactPage />,
     },
 ];
+````
+
+## File: Frontend/src/features/Doctor/components/AddSlotModal.tsx
+````typescript
+import { X } from "lucide-react";
+import Button from "../../../shared/components/Button/Button";
+import type { WeekDay } from "./DoctorTypes";
+import { weekDays } from "./DoctorTypes";
+import type { AddSlotModalProps } from "../doctor.types";
+
+const AddSlotModal = ({
+    isOpen,
+    onClose,
+    slotForm,
+    setSlotForm,
+    handleAddSlot,
+    error,
+    resetSlotForm,
+    setError,
+}: AddSlotModalProps) => {
+    if (!isOpen) return null;
+
+    // Helper validation function to catch past dates and times
+    const timeFilter = (dateStr: string, timeStr: string): boolean => {
+        if (!dateStr) return false;
+
+        const now = new Date();
+
+        // 1. Check if the date is strictly in the past (ignores time)
+        const selectedDateOnly = new Date(dateStr);
+        // Normalize times to midnight for an accurate date-only comparison
+        const todayDateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+        if (selectedDateOnly < todayDateOnly) {
+            setError("You cannot select a past date.");
+            return false;
+        }
+
+        // 2. If the date is today, verify the selected time hasn't passed
+        if (selectedDateOnly.getTime() === todayDateOnly.getTime() && timeStr) {
+            const [hours, minutes] = timeStr.split(":").map(Number);
+            const selectedDateTime = new Date(todayDateOnly.getTime());
+            selectedDateTime.setHours(hours, minutes, 0, 0);
+
+            if (selectedDateTime < now) {
+                setError("You cannot select a past time for today.");
+                return false;
+            }
+        }
+
+        // Clear error if validation passes
+        setError(null);
+        return true;
+    };
+
+    // Wrapper for submission to enforce the filters
+    const handleSubmission = () => {
+        const isDateValid = timeFilter(slotForm.date, slotForm.startTime);
+        if (isDateValid) {
+            handleAddSlot();
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4">
+            <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
+                <div className="mb-6 flex items-start justify-between gap-4">
+                    <div>
+                        <h2 className="text-2xl font-black text-[#101b3d]">Add Time Slot</h2>
+                        <p className="mt-1 text-sm text-slate-500">Select date, day, start time and end time.</p>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={() => { resetSlotForm(); onClose(); }}
+                        className="rounded-full bg-slate-100 p-2 text-slate-500 transition hover:bg-slate-200"
+                    >
+                        <X size={20} />
+                    </button>
+                </div>
+
+                <div className="space-y-4">
+                    <div>
+                        <label className="mb-2 block text-sm font-black text-[#20263D]">Date</label>
+                        <input
+                            type="date"
+                            value={slotForm.date}
+                            onChange={(e) => {
+                                const newDate = e.target.value;
+                                setSlotForm((prev) => ({ ...prev, date: newDate }));
+                                timeFilter(newDate, slotForm.startTime);
+                            }}
+                            className="h-12 w-full rounded-xl border border-slate-200 px-4 text-sm font-semibold outline-none transition focus:border-[#078b91] focus:ring-4 focus:ring-[#D4E2E0]/60"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="mb-2 block text-sm font-black text-[#20263D]">Day</label>
+                        <select
+                            value={slotForm.day}
+                            onChange={(e) => setSlotForm((prev) => ({ ...prev, day: e.target.value as WeekDay }))}
+                            className="h-12 w-full rounded-xl border border-slate-200 px-4 text-sm font-semibold outline-none transition focus:border-[#078b91] focus:ring-4 focus:ring-[#D4E2E0]/60"
+                        >
+                            {weekDays.map((item) => (
+                                <option key={item.value} value={item.value}>{item.label}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                        <div>
+                            <label className="mb-2 block text-sm font-black text-[#20263D]">Start Time</label>
+                            <input
+                                type="time"
+                                value={slotForm.startTime}
+                                onChange={(e) => {
+                                    const newTime = e.target.value;
+                                    setSlotForm((prev) => ({ ...prev, startTime: newTime }));
+                                    timeFilter(slotForm.date, newTime);
+                                }}
+                                className="h-12 w-full rounded-xl border border-slate-200 px-4 text-sm font-semibold outline-none transition focus:border-[#078b91] focus:ring-4 focus:ring-[#D4E2E0]/60"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="mb-2 block text-sm font-black text-[#20263D]">End Time</label>
+                            <input
+                                type="time"
+                                value={slotForm.endTime}
+                                onChange={(e) => setSlotForm((prev) => ({ ...prev, endTime: e.target.value }))}
+                                className="h-12 w-full rounded-xl border border-slate-200 px-4 text-sm font-semibold outline-none transition focus:border-[#078b91] focus:ring-4 focus:ring-[#D4E2E0]/60"
+                            />
+                        </div>
+                    </div>
+
+                    {error ? (
+                        <div className="rounded-2xl bg-red-50 p-4 text-sm font-semibold text-red-600 border border-red-100">{error}</div>
+                    ) : (
+                        <div className="rounded-2xl bg-[#F0FAF7] p-4 text-sm font-semibold text-[#078b91]">This slot will be added to your appointment availability.</div>
+                    )}
+
+                    <div className="grid grid-cols-2 gap-3 pt-2">
+                        <Button type="button" variant="outline" onClick={() => { resetSlotForm(); onClose(); }}>Cancel</Button>
+                        <Button type="button" onClick={handleSubmission}>Add Slot</Button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default AddSlotModal;
+````
+
+## File: Frontend/src/features/Doctor/components/DeleteModal.tsx
+````typescript
+import { AlertTriangle } from "lucide-react";
+import type { DeleteModalProps } from "../doctor.types";
+
+const DeleteModal = ({
+    isOpen,
+    serviceName,
+    price,
+    itemId,
+    onCancel,
+    onConfirmDelete,
+    isLoading = false
+}: DeleteModalProps) => {
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full mx-4 animate-in fade-in zoom-in-95 duration-200">
+                {/* Icon and Title */}
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="p-3 bg-red-50 rounded-full">
+                        <AlertTriangle className="w-6 h-6 text-red-600" />
+                    </div>
+                    <h2 className="text-xl font-semibold text-slate-900">Delete Service</h2>
+                </div>
+
+                {/* Content */}
+                <div className="mb-6">
+                    <p className="text-slate-600 text-sm mb-4">
+                        Are you sure you want to delete this service? This action cannot be undone.
+                    </p>
+                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <p className="text-xs text-slate-500 mb-1">Service</p>
+                                <p className="font-medium text-slate-900">{serviceName}</p>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-xs text-slate-500 mb-1">Price</p>
+                                <p className="font-semibold text-red-600">Rs. {Number(price).toLocaleString()}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-3">
+                    <button
+                        onClick={onCancel}
+                        disabled={isLoading}
+                        className="flex-1 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={() => onConfirmDelete(itemId)}
+                        disabled={isLoading}
+                        className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                        {isLoading ? (
+                            <>
+                                <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                Deleting...
+                            </>
+                        ) : (
+                            "Delete"
+                        )}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default DeleteModal;
+````
+
+## File: Frontend/src/features/Doctor/components/DoctorAvailability/ScheduleTable.tsx
+````typescript
+import type { ScheduleTableProps } from "../../doctor.types";
+
+const ScheduleTable = ({ schedules }: ScheduleTableProps) => {
+
+    // 1. Helper to format dates cleanly (e.g., "Jun 12, 2026")
+    const formatDate = (dateStr: string) => {
+        return new Date(dateStr).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+        });
+    };
+
+    // 2. Helper to format times cleanly (e.g., "07:30 PM")
+    const formatTime = (timeStr: string) => {
+        return new Date(timeStr).toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+        });
+    };
+
+    if (schedules.length === 0) {
+        return (
+            <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm font-medium text-slate-500">
+                No slots generated yet. Set a schedule block above to create availability.
+            </div>
+        );
+    }
+
+    return (
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <table className="w-full border-collapse text-left text-sm text-slate-600">
+                <thead className="bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-700 border-b border-slate-200">
+                    <tr>
+                        <th className="px-6 py-4">Date</th>
+                        <th className="px-6 py-4">Start Time</th>
+                        <th className="px-6 py-4">End Time</th>
+                        <th className="px-6 py-4">Status</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                    {schedules.map((item) => (
+                        <tr key={item.id} className="transition hover:bg-slate-50/50">
+                            {/* Formatted Date */}
+                            <td className="white-space-nowrap px-6 py-4 font-semibold text-slate-800">
+                                {formatDate(item.date)}
+                            </td>
+
+                            {/* Formatted Start Time */}
+                            <td className="px-6 py-4 text-slate-600 font-medium">
+                                {formatTime(item.startTime)}
+                            </td>
+
+                            {/* Formatted End Time */}
+                            <td className="px-6 py-4 text-slate-600 font-medium">
+                                {formatTime(item.endTime)}
+                            </td>
+
+                            {/* Status Badge */}
+                            <td className="px-6 py-4">
+                                <span
+                                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold ${item.isBooked
+                                            ? "bg-red-50 text-red-700 border border-red-100"
+                                            : "bg-emerald-50 text-emerald-700 border border-emerald-100"
+                                        }`}
+                                >
+                                    <span className={`h-1.5 w-1.5 rounded-full ${item.isBooked ? "bg-red-500" : "bg-emerald-500"}`} />
+                                    {item.isBooked ? "Booked" : "Available"}
+                                </span>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
+};
+
+export default ScheduleTable;
 ````
 
 ## File: Frontend/src/features/Doctor/components/DoctorDashboard.tsx
@@ -12727,342 +13566,167 @@ const DoctorDashboard = () => {
 export default DoctorDashboard;
 ````
 
-## File: Frontend/src/features/Doctor/components/DoctorHeader.tsx
+## File: Frontend/src/features/Doctor/components/DoctorProfileButton.tsx
 ````typescript
-import { Plus } from "lucide-react";
-import Button from "../../../shared/components/Button/Button";
+import { useNavigate } from "react-router-dom";
+import type { DoctorProfileButtonProps } from "../doctor.types";
 
-type DoctorHeaderProps = {
-  onOpenModal: () => void;
-};
+const DoctorProfileButton = ({ name, image }: DoctorProfileButtonProps) => {
+  const navigate = useNavigate();
 
-const DoctorHeader = ({ onOpenModal }: DoctorHeaderProps) => {
+  const handleOpenProfile = () => {
+    navigate("/doctor/profile");
+  };
+
   return (
-    <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-      <div>
-        <p className="text-xs font-black uppercase tracking-[0.25em] text-[#078b91]">
-          Doctor Panel
-        </p>
-
-        <h1 className="mt-2 text-3xl font-black tracking-[-0.03em] text-[#101b3d]">
-          My Availability
-        </h1>
-
-        <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-slate-500">
-          Set your appointment date and time slots so pet owners can book
-          according to your schedule.
-        </p>
-      </div>
-
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <Button
-          type="button"
-          className="flex h-12 w-auto items-center justify-center gap-2 px-5"
-          onClick={onOpenModal}
-        >
-          <Plus size={18} />
-          Add Time Slot
-        </Button>
-      </div>
-    </div>
+    <button
+      type="button"
+      onClick={handleOpenProfile}
+      className="rounded-full transition hover:scale-105 focus:outline-none focus:ring-4 focus:ring-teal-100"
+      title="Open Profile"
+    >
+      {image ? (
+        <img
+          src={image}
+          alt={name}
+          className="h-12 w-12 rounded-full object-cover ring-4 ring-slate-100"
+        />
+      ) : (
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#F9C5A8] text-2xl ring-4 ring-slate-100">
+          👩‍⚕️
+        </div>
+      )}
+    </button>
   );
 };
 
-export default DoctorHeader;
+export default DoctorProfileButton;
 ````
 
-## File: Frontend/src/features/Doctor/components/PatientCard.tsx
+## File: Frontend/src/features/Doctor/doctor.types.ts
 ````typescript
-import { CalendarClock, Mail, PawPrint, Phone, Wallet } from "lucide-react";
-import type { DoctorAppointment } from "../api/doctorAppointments.api";
+import type { Dispatch, SetStateAction } from "react";
+import type { DoctorAppointment } from "./api/doctorAppointments.api";
+import type { ItemType } from "./components/DoctorSkill";
+import type { SlotForm } from "./components/DoctorTypes";
 
-type PatientCardProps = {
-  appointment: DoctorAppointment;
+export type AppointmentStatus = "Confirmed" | "Pending" | "Completed" | "Cancelled";
+
+export type Doctor = {
+    name: string;
+    image?: string;
 };
 
-const formatDateTime = (value: string) => {
-  return new Date(value).toLocaleString("en-US", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
+export type DashboardStats = {
+    todayAppointments: number;
+    pendingAppointments: number;
+    totalPatients: number;
+    completedToday: number;
 };
 
-const PatientCard = ({ appointment }: PatientCardProps) => {
-  const patient = appointment.petIssueReport.user;
-  const pet = appointment.petIssueReport.pet;
-
-  return (
-    <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-[#078b91]/40 hover:shadow-md">
-      <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
-        <div className="flex gap-4">
-          {/* <img
-            src={
-              patient.profileImageUrl ||
-            
-            }
-            alt={patient.fullName}
-            className="h-16 w-16 rounded-2xl object-cover"
-          /> */}
-
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-lg font-black text-[#101b3d]">
-                {patient.fullName}
-              </h2>
-
-              <span className="rounded-full bg-amber-50 px-3 py-1 text-[11px] font-black text-amber-700">
-                {appointment.status}
-              </span>
-            </div>
-
-            <div className="mt-3 flex flex-wrap gap-3 text-xs font-semibold text-slate-500">
-              <span className="inline-flex items-center gap-1.5">
-                <Mail size={14} />
-                {patient.email}
-              </span>
-
-              <span className="inline-flex items-center gap-1.5">
-                <Phone size={14} />
-                {patient.phone || "No phone"}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-xl bg-[#F0FAF7] px-4 py-3 text-sm font-black text-[#078b91]">
-          <CalendarClock size={17} className="mr-2 inline" />
-          {formatDateTime(appointment.checkupTime)}
-        </div>
-      </div>
-
-      <div className="mt-5 grid gap-4 md:grid-cols-[1fr_1.4fr_150px]">
-        <div className="rounded-xl bg-slate-50 p-4">
-          <p className="flex items-center gap-2 text-xs font-black uppercase text-slate-400">
-            <PawPrint size={15} />
-            Pet
-          </p>
-
-          <h3 className="mt-2 font-black text-[#101b3d]">{pet.name}</h3>
-          <p className="mt-1 text-sm font-semibold text-slate-500">
-            {pet.category} · {pet.breed}
-          </p>
-        </div>
-
-        <div className="rounded-xl bg-slate-50 p-4">
-          <p className="text-xs font-black uppercase text-slate-400">
-            Issue
-          </p>
-
-          <p className="mt-2 line-clamp-3 text-sm font-semibold leading-6 text-slate-600">
-            {appointment.petIssueReport.issue}
-          </p>
-        </div>
-
-        <div className="rounded-xl bg-slate-50 p-4">
-          <p className="flex items-center gap-2 text-xs font-black uppercase text-slate-400">
-            <Wallet size={15} />
-            Fees
-          </p>
-
-          <h3 className="mt-2 font-black text-[#101b3d]">
-            Rs. {appointment.fees}
-          </h3>
-        </div>
-      </div>
-    </article>
-  );
+export type Appointment = {
+    id: string | number;
+    time: string;
+    petName: string;
+    petType: string;
+    ownerName: string;
+    purpose: string;
+    status: AppointmentStatus;
 };
 
-export default PatientCard;
-````
+export type DashboardData = {
+    doctor: Doctor;
+    stats: DashboardStats;
+    appointments: Appointment[];
+};
 
-## File: Frontend/src/features/Doctor/components/ServiceTable.tsx
-````typescript
-import { useState, useEffect } from "react";
-import { Edit2, Trash2, ShieldAlert, Activity } from "lucide-react";
-import { getDoctorServices } from "../api/doctorServices";
-import { type ItemType } from "./DoctorSkill";
-import DeleteModal from "./DeleteModal";
-type Data = {
-    id: string,
-    userId: string,
-    price: string,
-    skill: string
+
+export type TimeSlot = {
+    id: string;
+    day: string;
+    startTime: string;
+    endTime: string;
+};
+
+export const DAYS_OF_WEEK = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+];
+
+export type DeleteModalProps = {
+    isOpen: boolean;
+    serviceName: string;
+    price: string;
+    itemId: string;
+    onCancel: () => void;
+    onConfirmDelete: (itemId: string) => void;
+    isLoading?: boolean;
+};
+
+export interface AddSlotModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    slotForm: SlotForm;
+    setSlotForm: Dispatch<SetStateAction<SlotForm>>;
+    handleAddSlot: () => void;
+    error: string | null;
+    resetSlotForm: () => void;
+    setError: (error: string | null) => void;
 }
 
-const DoctorServicesTable = ({ onEdit, onDelete }: {
-    onEdit: (item: ItemType) => void | Promise<void>,
-    onDelete: (itemId: string) => Promise<void>,
-
-}) => {
-    const [services, setServices] = useState<Data[] | undefined>(undefined)
-    const [loading, setLoading] = useState(true);
-    const [fetchError, setFetchError] = useState('');
-    const [isDeleteModal, setDeleteModal] = useState(false);
-    const [deleteItem, setDeleteItem] = useState<{ id: string; skill: string; price: string } | null>(null);
-    const [isDeleting, setIsDeleting] = useState(false);
-
-    const openDeleteModal = (item: Data) => {
-        setDeleteItem(item);
-        setDeleteModal(true);
-    }
-
-    const closeDeleteModal = () => {
-        setDeleteModal(false);
-        setDeleteItem(null);
-    }
-
-    const handleConfirmDelete = async (itemId: string) => {
-        setIsDeleting(true);
-        try {
-            await onDelete(itemId);
-            closeDeleteModal();
-            // Refresh services list after delete
-            const response = await getDoctorServices();
-            if (response?.success && Array.isArray(response.data)) {
-                setServices(response.data);
-            }
-        } catch (err) {
-            console.error("Delete Error:", err);
-        } finally {
-            setIsDeleting(false);
-        }
-    }
-
-
-    useEffect(() => {
-        const loadServices = async () => {
-            setLoading(true);
-            try {
-                const response = await getDoctorServices();
-                console.log("Initial database payload:", response?.data);
-
-                if (response?.success && Array.isArray(response.data)) {
-                    setServices(response.data);
-                    setFetchError('');
-                } else {
-                    setFetchError(response?.message || "Failed to parse service records.");
-                }
-            } catch (err) {
-                setFetchError("Internal network connection error.");
-                console.error("Fetch Error:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadServices();
-    }, []);
-
-    if (loading) {
-        return (
-            <div className="w-full p-8 text-center text-sm text-slate-500 bg-white border border-slate-100 rounded-xl shadow-sm">
-                <div className="animate-pulse flex flex-col items-center gap-2">
-                    <div className="h-4 w-4 bg-emerald-500 rounded-full animate-ping" />
-                    <span>Loading your medical catalog updates...</span>
-                </div>
-            </div>
-        );
-    }
-
-    if (fetchError) {
-        return (
-            <div className="w-full p-5 text-center text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl flex items-center gap-2 justify-center">
-                <ShieldAlert className="w-4 h-4" />
-                <span>Error: {fetchError}</span>
-            </div>
-        );
-    }
-
-    return (
-        <div className="w-full bg-white border border-slate-100 rounded-xl shadow-sm overflow-hidden">
-
-            {/* Header Meta Info */}
-            <div className="bg-emerald-50/50 px-6 py-4 border-b border-emerald-100/60 flex items-center gap-2">
-                <Activity className="w-5 h-5 text-emerald-600" />
-                <h3 className="text-emerald-900 font-semibold text-base">
-                    Offered Services & Custom Pricing
-                </h3>
-                <span className="ml-auto bg-emerald-100 text-emerald-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                    {services?.length} Total
-                </span>
-            </div>
-
-            {/* Table Core Layout */}
-            <div className="overflow-x-auto">
-                {services?.length === 0 ? (
-                    <div className="p-8 text-center text-slate-400 text-sm">
-                        No active clinical services found. Choose a skill above to start.
-                    </div>
-                ) : (
-                    <table className="w-full text-left border-collapse text-sm">
-                        <thead>
-                            <tr className="bg-slate-50 border-b border-slate-100 text-slate-600 font-medium">
-                                <th className="p-4 pl-6">Service</th>
-                                <th className="p-4">Price (PKR)</th>
-                                <th className="p-4 pr-6 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100 text-slate-700">
-                            {services?.map((item) => (
-                                <tr key={item.id} className="hover:bg-emerald-50/20 transition-colors">
-                                    {/* Service Name Column */}
-                                    <td className="p-4 pl-6 font-medium text-slate-800" >
-                                        {item.skill}
-                                    </td>
-
-                                    {/* Price Tag Column */}
-                                    <td className="p-4 text-emerald-700 font-semibold">
-                                        Rs. {Number(item.price).toLocaleString()}
-                                    </td>
-
-                                    {/* Edit and Delete Buttons Column */}
-                                    <td className="p-4 pr-6 text-right">
-                                        <div className="flex justify-end gap-2">
-                                            <button
-                                                onClick={() => onEdit(item)}
-                                                className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-md transition-all"
-                                                title="Edit Service Price"
-                                            >
-                                                <Edit2 className="w-4 h-4" />
-                                            </button>
-                                            <button
-                                                onClick={() => openDeleteModal(item)}
-                                                className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-all"
-                                                title="Delete Service Option"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                )}
-            </div>
-
-            {/* Delete Modal */}
-            {deleteItem && (
-                <DeleteModal
-                    isOpen={isDeleteModal}
-                    serviceName={deleteItem.skill}
-                    price={deleteItem.price}
-                    itemId={deleteItem.id}
-                    onCancel={closeDeleteModal}
-                    onConfirmDelete={handleConfirmDelete}
-                    isLoading={isDeleting}
-                />
-            )}
-        </div>
-    );
+export type DoctorHeaderProps = {
+    onOpenModal: () => void;
 };
 
-export default DoctorServicesTable;
+export type DoctorProfileButtonProps = {
+    name: string;
+    image?: string;
+};
+
+export type DoctorSidebarProps = {
+    sidebarOpen: boolean;
+    setSidebarOpen: (open: boolean) => void;
+};
+
+export type PatientCardProps = {
+    appointment: DoctorAppointment;
+};
+
+export type DoctorServiceData = {
+    id: string;
+    userId: string;
+    price: string;
+    skill: string;
+};
+
+export type DoctorServicesTableProps = {
+    onEdit: (item: ItemType) => void | Promise<void>;
+    onDelete: (itemId: string) => Promise<void>;
+};
+
+export interface ScheduleFormData {
+    date: string;
+    startTime: string;
+    endTime: string;
+}
+
+export interface BackendScheduleItem {
+    id: string;
+    doctorId: string;
+    date: string;
+    startTime: string;
+    endTime: string;
+    isBooked: boolean;
+}
+
+export interface ScheduleTableProps {
+    schedules: BackendScheduleItem[];
+}
 ````
 
 ## File: Frontend/src/features/Doctor/Layout/doctor.layout.tsx
@@ -13256,55 +13920,404 @@ export const updateDoctorProfileApi = async (
 };
 ````
 
-## File: Frontend/src/features/Doctorcart/component/DoctorsList.tsx
+## File: Frontend/src/features/Doctorcart/component/DoctorProfile.tsx
 ````typescript
-import { type Doctor } from "../apis/getDoctors.api";
-import DoctorCard from "./DoctorCard";
+import {
+  BadgeCheck,
+  BriefcaseBusiness,
+  CalendarDays,
+  CircleCheck,
+  GraduationCap,
+  Languages,
+  Mail,
+  MapPin,
+  Phone,
+  Star,
+  Stethoscope,
+  UserRound,
+  Wallet,
+  IdCard,
+  Pencil,
+} from "lucide-react";
 
-interface DoctorsListProps {
-    doctors: Doctor[];
-    loading: boolean;
-    onBookAppointment: (doctorId: string, checkupTime?: string) => void;
-}
+import { useNavigate } from "react-router-dom";
+import Button from "../../../shared/components/Button/Button";
+import type { DoctorProfileData } from "../types/doctorcart.types";
 
-const DoctorsList = ({
-    doctors,
-    loading,
-    onBookAppointment,
-}: DoctorsListProps) => {
-    if (loading) {
-        return (
-            <div className="rounded-3xl bg-white p-10 text-center font-black text-[#078b91]">
-                Loading doctors...
+const doctor: DoctorProfileData = {
+  fullName: "Dr. Ayesha Khan",
+  email: "ayesha.khan@gmail.com",
+  phone: "+92 300 1234567",
+  profileImageUrl:
+    "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=500&q=80",
+  specialization: "Veterinary Surgeon",
+  education: "DVM",
+  experience: 5,
+  fees: 2500,
+  rating: 4.8,
+  reviews: 128,
+  licenseNumber: "VS-PK-2021-11234",
+  languages: "English, Urdu, Punjabi",
+  address: "PetCare Clinic, Gulberg III, Lahore",
+  about:
+    "Passionate about animal care and dedicated to providing the best medical services to pets.",
+  isVerified: true,
+  isAvailable: true,
+};
+
+const DoctorProfile = () => {
+  const navigate = useNavigate();
+
+  return (
+    <main className="min-h-screen bg-[#F8FAFA] px-4 py-6 text-[#20263D] sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-7xl">
+        <div className="mb-6">
+          <p className="text-xs font-black uppercase tracking-[0.25em] text-[#078b91]">
+            Doctor Panel
+          </p>
+
+          <h1 className="mt-2 text-3xl font-black tracking-[-0.03em] text-[#101b3d]">
+            Doctor Profile
+          </h1>
+
+          <p className="mt-2 text-sm font-medium text-slate-500">
+            Manage your professional information and public doctor details.
+          </p>
+        </div>
+
+        <section className="grid gap-5 xl:grid-cols-[330px_1fr]">
+          <aside className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm">
+            <div className="relative h-32 bg-gradient-to-br from-[#D4E2E0] via-[#EAF7F5] to-white">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(23,143,149,0.12),transparent_35%),radial-gradient(circle_at_80%_20%,rgba(249,197,168,0.18),transparent_38%)]" />
             </div>
-        );
-    }
 
-    if (doctors.length === 0) {
-        return (
-            <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center">
-                <h2 className="text-xl font-black">No doctors found</h2>
-                <p className="mt-2 text-sm text-slate-500">
-                    Try changing your search.
-                </p>
-            </div>
-        );
-    }
-
-    return (
-        <div className="space-y-5">
-            {doctors.map((doctor) => (
-                <DoctorCard
-                    key={doctor.id}
-                    doctor={doctor}
-                    onBookAppointment={onBookAppointment}
+            <div className="-mt-16 flex flex-col items-center px-6 pb-6">
+              <div className="relative h-32 w-32 overflow-hidden rounded-full border-4 border-white bg-slate-100 shadow-xl">
+                <img
+                  src={doctor.profileImageUrl}
+                  alt={doctor.fullName}
+                  className="h-full w-full object-cover"
                 />
-            ))}
+
+                <span className="absolute bottom-3 right-3 h-5 w-5 rounded-full border-2 border-white bg-green-500" />
+              </div>
+
+              <h2 className="mt-5 text-center text-2xl font-black text-[#101b3d]">
+                {doctor.fullName} 
+              </h2>
+
+              <p className="mt-1 text-sm font-bold text-[#078b91]">
+                {doctor.specialization}
+              </p>
+
+              <div className="mt-5 flex flex-wrap justify-center gap-3">
+                {doctor.isVerified && (
+                  <span className="inline-flex items-center gap-2 rounded-lg bg-[#EAF7F5] px-4 py-2 text-sm font-black text-[#078b91]">
+                    <BadgeCheck size={17} />
+                    Verified
+                  </span>
+                )}
+
+                {doctor.isAvailable && (
+                  <span className="inline-flex items-center gap-2 rounded-lg bg-green-50 px-4 py-2 text-sm font-black text-green-700">
+                    <CircleCheck size={17} />
+                    Available
+                  </span>
+                )}
+              </div>
+
+              <div className="mt-6 h-px w-full bg-slate-200" />
+
+              <div className="mt-6 w-full space-y-5">
+                <ContactRow icon={<Mail size={20} />} value={doctor.email} />
+                <ContactRow icon={<Phone size={20} />} value={doctor.phone} />
+                <ContactRow icon={<MapPin size={20} />} value={doctor.address} />
+              </div>
+
+              <div className="mt-7 w-full">
+                <Button
+                  type="button"
+                  className="flex h-10 w-full items-center justify-center gap-1.5 rounded-xl px-3 py-0 text-xs font-black"
+                  onClick={() => navigate("/doctor-profile/edit")}
+                >
+                  <Pencil size={15} />
+                  Edit Profile
+                </Button>
+              </div>
+            </div>
+          </aside>
+
+          <div className="space-y-5">
+            <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <MetricCard
+                icon={<BriefcaseBusiness size={28} />}
+                iconClass="bg-[#D4E2E0]/70 text-[#078b91]"
+                label="Experience"
+                value={`${doctor.experience}+ Years`}
+                description="Professional work"
+              />
+
+              <MetricCard
+                icon={<GraduationCap size={30} />}
+                iconClass="bg-purple-100 text-purple-600"
+                label="Education"
+                value={doctor.education}
+                description="Doctor of Veterinary Medicine"
+              />
+
+              <MetricCard
+                icon={<Wallet size={30} />}
+                iconClass="bg-orange-100 text-orange-500"
+                label="Consultation Fee"
+                value={`Rs. ${doctor.fees.toLocaleString()}`}
+                description="Per Consultation"
+              />
+
+              <MetricCard
+                icon={<Star size={30} />}
+                iconClass="bg-blue-100 text-blue-500"
+                label="Total Rating"
+                value={doctor.rating.toString()}
+                description={`(${doctor.reviews} Reviews)`}
+              />
+            </section>
+
+            <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+              <h2 className="text-xl font-black text-[#101b3d]">
+                Professional Information
+              </h2>
+
+              <div className="mt-6 grid gap-x-8 gap-y-0 lg:grid-cols-2">
+                <InfoRow
+                  icon={<Stethoscope size={23} />}
+                  label="Specialization"
+                  value={doctor.specialization}
+                />
+
+                <InfoRow
+                  icon={<CalendarDays size={23} />}
+                  label="Experience"
+                  value={`${doctor.experience}+ Years`}
+                />
+
+                <InfoRow
+                  icon={<IdCard size={23} />}
+                  label="License Number"
+                  value={doctor.licenseNumber}
+                />
+
+                <InfoRow
+                  icon={<MapPin size={23} />}
+                  label="Clinic Address"
+                  value={doctor.address}
+                />
+
+                <InfoRow
+                  icon={<Languages size={23} />}
+                  label="Languages"
+                  value={doctor.languages}
+                />
+
+                <InfoRow
+                  icon={<UserRound size={23} />}
+                  label="About Me"
+                  value={doctor.about}
+                  noBorder
+                />
+              </div>
+            </section>
+          </div>
+        </section>
+      </section>
+    </main>
+  );
+};
+
+const ContactRow = ({
+  icon,
+  value,
+}: {
+  icon: React.ReactNode;
+  value: string;
+}) => {
+  return (
+    <div className="flex items-start gap-4 text-sm font-semibold text-slate-600">
+      <span className="mt-0.5 text-[#078b91]">{icon}</span>
+      <span className="leading-6">{value}</span>
+    </div>
+  );
+};
+
+const MetricCard = ({
+  icon,
+  iconClass,
+  label,
+  value,
+  description,
+}: {
+  icon: React.ReactNode;
+  iconClass: string;
+  label: string;
+  value: string;
+  description: string;
+}) => {
+  return (
+    <div className="rounded-[22px] border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+      <div className="flex items-center gap-4">
+        <div
+          className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-full ${iconClass}`}
+        >
+          {icon}
+        </div>
+
+        <div>
+          <p className="text-sm font-semibold text-slate-500">{label}</p>
+
+          <h3 className="mt-1 text-2xl font-black text-[#101b3d]">{value}</h3>
+
+          <p className="mt-1 text-sm font-medium leading-5 text-slate-500">
+            {description}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const InfoRow = ({
+  icon,
+  label,
+  value,
+  noBorder = false,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  noBorder?: boolean;
+}) => {
+  return (
+    <div
+      className={`flex gap-4 py-4 ${
+        noBorder ? "" : "border-b border-dashed border-slate-200"
+      }`}
+    >
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#EAF7F5] text-[#078b91]">
+        {icon}
+      </div>
+
+      <div>
+        <p className="text-sm font-semibold text-slate-500">{label}</p>
+
+        <h3 className="mt-1 text-sm font-black leading-6 text-[#101b3d]">
+          {value}
+        </h3>
+      </div>
+    </div>
+  );
+};
+
+export default DoctorProfile;
+````
+
+## File: Frontend/src/features/Doctorcart/component/FilterSidebar.tsx
+````typescript
+import Button from "../../../shared/components/Button/Button";
+import SearchBar from "../../../shared/components/SearchBar/SearchBar";
+import type {
+    FilterSidebarProps,
+    SearchInputChangeEvent,
+} from "../types/doctorcart.types";
+
+const FilterSidebar = ({
+    search,
+    onSearchChange,
+    onReset,
+}: FilterSidebarProps) => {
+    return (
+        <aside className="h-fit rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="flex items-center justify-between">
+                <h2 className="text-lg font-black">Filters</h2>
+
+                <button
+                    type="button"
+                    onClick={onReset}
+                    className="text-sm font-bold text-[#078b91]"
+                >
+                    Reset
+                </button>
+            </div>
+
+            <div className="mt-6 space-y-5">
+                <div className="w-full max-w-full overflow-hidden">
+                    <SearchBar
+                        placeholder="Search doctor..."
+                        value={search}
+                        onChange={(e: SearchInputChangeEvent) => {
+                            onSearchChange(e.target.value);
+                        }}
+                    />
+                </div>
+
+                <div>
+                    <label className="mb-2 block text-sm font-bold">
+                        Specialization
+                    </label>
+
+                    <select className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#078b91] focus:ring-4 focus:ring-[#D4E2E0]/60">
+                        <option>All Specializations</option>
+                        <option>Veterinary Surgeon</option>
+                        <option>Pet Dermatology</option>
+                        <option>Animal Nutritionist</option>
+                    </select>
+                </div>
+
+                <Button type="button">Apply Filters</Button>
+            </div>
+        </aside>
+    );
+};
+
+export default FilterSidebar;
+````
+
+## File: Frontend/src/features/Doctorcart/component/Pagination.tsx
+````typescript
+import type { PaginationProps } from "../types/doctorcart.types";
+
+const Pagination = ({
+    page,
+    totalPages,
+    onPrevious,
+    onNext,
+}: PaginationProps) => {
+    return (
+        <div className="mt-8 flex items-center justify-center gap-3">
+            <button
+                type="button"
+                disabled={page === 1}
+                onClick={onPrevious}
+                className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-50"
+            >
+                Previous
+            </button>
+
+            <span className="rounded-xl bg-[#D4E2E0]/60 px-4 py-2 text-sm font-black text-[#078b91]">
+                Page {page} of {totalPages}
+            </span>
+
+            <button
+                type="button"
+                disabled={page === totalPages}
+                onClick={onNext}
+                className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-50"
+            >
+                Next
+            </button>
         </div>
     );
 };
 
-export default DoctorsList;
+export default Pagination;
 ````
 
 ## File: Frontend/src/features/Doctorcart/doctorAppointment.route.tsx
@@ -13331,30 +14344,6 @@ export const doctorAppointmentRoutes = [
     element: <DoctorProfilePage />,
   },
 ];
-````
-
-## File: Frontend/src/features/Doctorcart/hooks/useGetDoctors.ts
-````typescript
-import { useQuery, type UseQueryOptions } from '@tanstack/react-query'
-import { getApprovedDoctors, type DoctorApiResponse } from '../apis/getDoctors.api'
-
-interface GetDoctorsParams {
-    page: number,
-    limit: number,
-    search: string
-}
-
-export const useApprovedDoctors = (
-    { page, limit, search }: GetDoctorsParams,
-    options?: Omit<UseQueryOptions<DoctorApiResponse, Error>, 'queryKey' | 'queryFn'>
-
-) => {
-    return useQuery({
-        queryKey: ['approved-doctors', page, limit, search],
-        queryFn: () => getApprovedDoctors(page, limit, search),
-        ...options,
-    })
-}
 ````
 
 ## File: Frontend/src/features/Landing Page/components/About.tsx
@@ -13414,398 +14403,379 @@ const Stats = () => {
 export default Stats;
 ````
 
-## File: Frontend/src/features/Landing Page/components/Banner.tsx
+## File: Frontend/src/features/Landing Page/components/AIAssistance.tsx
 ````typescript
-import { Link } from "react-router-dom";
+import { FaPaw, FaPaperPlane } from "react-icons/fa";
 
-import {
-  FaShieldAlt,
-  FaLock,
-  FaHeadset,
-  FaUsers,
-  FaCalendarAlt,
-  FaShoppingBag,
-  FaPaw,
-} from "react-icons/fa";
+import Button from "@/shared/components/Button/Button";
+import Input from "@/shared/components/Input/Input";
+import img from "@/assets/shared/images/bannerImage.png"
 
-import img from "@/assets/shared/images/dog2.jpeg";
-import Button from "../../../shared/components/Button/Button";
-
-export const Banner = () => {
-  return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-[#f4fbff] via-white to-[#e8fbfa] px-6 py-16 lg:px-16 lg:py-20 flex flex-col lg:flex-row items-center justify-between gap-10">
-      <div className="w-full lg:w-1/2 z-10">
-        <div className="inline-flex items-center gap-2 bg-white text-[#07182c] font-semibold px-5 py-3 rounded-full shadow-lg mb-7">
-          <FaPaw className="text-[#009f9d]" />
-          <span>Trusted by 10,000+ pet parents</span>
-        </div>
-
-        <h1 className="text-[40px] md:text-[56px] lg:text-[64px] leading-tight font-extrabold text-[#07182c] mb-6">
-          Better care for <br />
-          your pets, <span className="text-[#00a7a5]">every day.</span>
-        </h1>
-
-        <p className="text-base md:text-lg text-slate-700 leading-7 max-w-xl mb-8">
-          PetsVeta is your all-in-one platform for expert care, trusted vets,
-          quality products and a loving community.
-        </p>
-
-        <div className="flex flex-wrap gap-4 mb-8">
-          <Link to="/doctors">
-            <Button
-              variant="primary"
-              size="md"
-              className="inline-flex items-center gap-3 !bg-[#009f9d] !border-[#009f9d] !text-white hover:!bg-[#008f8d] hover:!text-white rounded-2xl shadow-xl"
-            >
-              <FaCalendarAlt />
-              Book a Vet Appointment
-            </Button>
-          </Link>
-
-          <Link to="/marketplace">
-            <Button
-              variant="outline"
-              size="md"
-              className="inline-flex items-center gap-3 !bg-white !text-[#07182c] !border-white hover:!bg-white hover:!text-[#009f9d] rounded-2xl shadow-lg"
-            >
-              <FaShoppingBag />
-              Explore Marketplace
-            </Button>
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-          <div className="flex items-center gap-3 text-sm font-bold text-[#07182c]">
-            <span className="w-10 h-10 rounded-full bg-[#d9f7f6] text-[#008f8d] flex items-center justify-center shrink-0">
-              <FaShieldAlt />
-            </span>
-            Verified Vets
-          </div>
-
-          <div className="flex items-center gap-3 text-sm font-bold text-[#07182c]">
-            <span className="w-10 h-10 rounded-full bg-[#d9f7f6] text-[#008f8d] flex items-center justify-center shrink-0">
-              <FaLock />
-            </span>
-            Secure Bookings
-          </div>
-
-          <div className="flex items-center gap-3 text-sm font-bold text-[#07182c]">
-            <span className="w-10 h-10 rounded-full bg-[#d9f7f6] text-[#008f8d] flex items-center justify-center shrink-0">
-              <FaHeadset />
-            </span>
-            24/7 Support
-          </div>
-
-          <div className="flex items-center gap-3 text-sm font-bold text-[#07182c]">
-            <span className="w-10 h-10 rounded-full bg-[#d9f7f6] text-[#008f8d] flex items-center justify-center shrink-0">
-              <FaUsers />
-            </span>
-            Trusted by Pet Parents
-          </div>
-        </div>
-      </div>
-
-      <div className="relative w-full lg:w-1/2 min-h-[360px] lg:min-h-[520px] flex items-end justify-center">
-        <div className="absolute w-[330px] h-[330px] md:w-[480px] md:h-[480px] rounded-full bg-gradient-to-br from-[#4fd4d1] to-[#009f9d] bottom-4" />
-
-        <img
-          src={img}
-          alt="PetsVeta pets"
-          className="relative z-10 w-full max-w-[620px] object-contain"
-        />
-      </div>
-    </section>
-  );
-};
-````
-
-## File: Frontend/src/features/Landing Page/components/Services.tsx
-````typescript
-import {
-  FaPaw,
-  FaShoppingBasket,
-  FaStethoscope,
-  FaRobot,
-  FaCheck,
-  FaShieldAlt,
-  FaAward,
-  FaLock,
-  FaHeadset,
-  FaArrowRight,
-} from "react-icons/fa";
-
-import Button from "../../../shared/components/Button/Button";
-import img from "@/assets/shared/images/dog2.jpeg"
-import { NavLink } from "react-router-dom";
-
-const services = [
-  {
-    title: "Pet Marketplace",
-    desc: "Shop a wide range of trusted pet products delivered to your doorstep.",
-    icon: <FaShoppingBasket />,
-    color: "text-[#159f9b]",
-    checkBg: "bg-[#159f9b]",
-    iconBg: "bg-[#d8f4ef]",
-    bg: "from-[#eefbf7] to-[#f8fffd]",
-    btn: "!bg-[#119f98] !border-[#119f98]",
-    image: img,
-    items: [
-      "Premium pet food",
-      "Toys & accessories",
-      "Medications & supplements",
-      "Grooming essentials",
-    ],
-    button: "Explore Marketplace",
-    url:"/marketplace"
-  },
-  {
-    title: "Vet Consultation",
-    desc: "Connect with verified veterinarians and book appointments with ease.",
-    icon: <FaStethoscope />,
-    color: "text-[#168dcc]",
-    checkBg: "bg-[#168dcc]",
-    iconBg: "bg-[#d9f0fb]",
-    bg: "from-[#eef8ff] to-[#f7fcff]",
-    btn: "!bg-[#168dcc] !border-[#168dcc]",
-    image: img,
-    items: [
-      "Book online appointments",
-      "Verified & experienced vets",
-      "Video & in-clinic consultation",
-      "Health records & prescriptions",
-    ],
-    button: "Book a Consultation",
-    url:"/doctors"
-  },
-  {
-    title: "AI Assistant",
-    desc: "Get 24/7 AI support for your pet's health, nutrition and well-being.",
-    icon: <FaRobot />,
-    color: "text-[#6e36b8]",
-    checkBg: "bg-[#6e36b8]",
-    iconBg: "bg-[#eadcf8]",
-    bg: "from-[#faf4ff] to-[#fff9ff]",
-    btn: "!bg-[#6e36b8] !border-[#6e36b8]",
-    image: img,
-    items: [
-      "Instant answers to your questions",
-      "Health & symptom checker",
-      "Nutrition & diet guidance",
-      "Care tips & reminders",
-    ],
-    button: "Ask AI Assistant",
-    url:"/ai-assistant"
-  },
-];
-
-const bottomFeatures = [
-  {
-    icon: <FaShieldAlt />,
-    title: "Trusted & Secure",
-    desc: "100% genuine products and reliable care",
-  },
-  {
-    icon: <FaAward />,
-    title: "Verified Experts",
-    desc: "Experienced vets & pet care professionals",
-  },
-  {
-    icon: <FaLock />,
-    title: "Safe & Private",
-    desc: "Your pet's data is protected with top security",
-  },
-  {
-    icon: <FaHeadset />,
-    title: "24/7 Support",
-    desc: "We're always here for you and your pets",
-  },
-];
-
-const Services = () => {
-  return (
-    <section className="bg-white px-6 py-12 lg:px-16">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-10 text-center">
-          <p className="mb-2 flex items-center justify-center gap-2 text-sm font-extrabold uppercase tracking-wider text-[#009f9d]">
-            Our Services <FaPaw />
-          </p>
-
-          <h2 className="text-[28px] font-extrabold leading-tight text-[#07182c] md:text-[36px]">
-            Everything your pet needs, in{" "}
-            <span className="text-[#009f9d]">one place</span>
-          </h2>
-
-          <p className="mx-auto mt-4 max-w-3xl text-base leading-7 text-slate-600">
-            From shopping the best products to expert care and AI support,
-            <br className="hidden md:block" />
-            we make pet parenting easier, smarter and worry-free.
-          </p>
-        </div>
-
-        <div className="grid gap-6 lg:grid-cols-3">
-          {services.map((service) => (
-            <div
-              key={service.title}
-              className={`rounded-[24px] bg-gradient-to-br ${service.bg} p-6 shadow-[0_12px_35px_rgba(15,23,42,0.08)]`}
-            >
-              <div className="mb-6 flex items-start gap-4">
-                <div
-                  className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-full ${service.iconBg} ${service.color} text-3xl`}
-                >
-                  {service.icon}
-                </div>
-
-                <div>
-                  <h3 className="mb-2 text-[20px] font-extrabold text-[#07182c]">
-                    {service.title}
-                  </h3>
-                  <p className="text-sm leading-6 text-slate-600">
-                    {service.desc}
-                  </p>
-                </div>
-              </div>
-
-              <div className="mb-6 space-y-3">
-                {service.items.map((item) => (
-                  <div
-                    key={item}
-                    className="flex items-center gap-3 text-sm font-medium text-[#07182c]"
-                  >
-                    <span
-                      className={`flex h-5 w-5 items-center justify-center rounded-full ${service.checkBg} text-white`}
-                    >
-                      <FaCheck className="text-[10px]" />
-                    </span>
-                    {item}
-                  </div>
-                ))}
-              </div>
-
-              <div className="mb-6 flex h-[230px] items-end justify-center overflow-hidden rounded-3xl">
-                <img
-                  src={service.image}
-                  alt={service.title}
-                  className="h-full w-full object-contain object-bottom"
-                />
-              </div>
-
-              <NavLink
-                to={service.url}
-                className={`inline-flex items-center gap-3 p-3 !rounded-xl !text-white hover:!text-white ${service.btn}`}
-              >
-                {service.button}hh
-                <FaArrowRight />
-              </NavLink>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-8 grid gap-6 rounded-[22px] bg-white px-7 py-5 shadow-[0_10px_35px_rgba(15,23,42,0.08)] md:grid-cols-2 lg:grid-cols-4">
-          {bottomFeatures.map((feature) => (
-            <div key={feature.title} className="flex items-center gap-4">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#e0f7f5] text-2xl text-[#009f9d]">
-                {feature.icon}
-              </div>
-              <div>
-                <h4 className="text-base font-extrabold text-[#07182c]">
-                  {feature.title}
-                </h4>
-                <p className="text-sm leading-5 text-slate-600">
-                  {feature.desc}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-export default Services;
-````
-
-## File: Frontend/src/features/Landing Page/components/Testimonials.tsx
-````typescript
-import { FaPaw, FaQuoteRight, FaStar } from "react-icons/fa";
-import img from "@/assets/shared/images/dog2.jpeg"
-
-const testimonials = [
-    {
-        name: "Aisha Malik",
-        image: img,
-        text: "Booked a vet consultation for my cat. The experience was amazing!",
-    },
-    {
-        name: "Bilal Ahmed",
-        image: img,
-        text: "Great products and fast delivery. Highly recommended PetsVeta!",
-    },
-    {
-        name: "Sana Farooq",
-        image: img,
-        text: "AI Assistant helped me a lot with my dog's health queries.",
-    },
-];
-
-const Testimonials = () => {
+const AIAssistantBanner = () => {
     return (
-        <section className="bg-[#f5fbff] px-6 py-10 lg:px-16">
-            <div className="mx-auto max-w-7xl">
-                <h2 className="mb-8 flex items-center justify-center gap-2 text-center text-[22px] font-extrabold text-[#07182c]">
-                    What Our <span className="text-[#009f9d]">Pet Parents</span> Say
-                    <FaPaw className="text-[#009f9d]" />
-                </h2>
+        <section className="bg-[#f5fbff] px-6 py-8 lg:px-16">
+            <div className="relative mx-auto flex max-w-7xl items-center overflow-hidden rounded-[26px] border border-[#c9f1ee] bg-gradient-to-r from-[#dff8f7] via-[#eefdfc] to-[#f6fffe] px-8 py-8 shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
+                <img
+                    src={img}
+                    alt="AI Assistant"
+                    className="absolute bottom-0 left-8 hidden h-[210px] object-contain md:block"
+                />
 
-                <div className="grid gap-7 md:grid-cols-3">
-                    {testimonials.map((item) => (
-                        <div
-                            key={item.name}
-                            className="relative rounded-[18px] bg-white px-7 py-6 shadow-[0_10px_30px_rgba(15,23,42,0.08)]"
-                        >
-                            <FaQuoteRight className="absolute right-6 top-5 text-2xl text-[#b8efeb]" />
+                <div className="relative z-10 ml-0 md:ml-[250px]">
+                    <p className="mb-2 flex items-center gap-2 text-sm font-extrabold text-[#009f9d]">
+                        AI Assistant <FaPaw />
+                    </p>
 
-                            <div className="mb-5 flex items-center gap-4">
-                                <div className="relative">
-                                    <img
-                                        src={item.image}
-                                        alt={item.name}
-                                        className="h-14 w-14 rounded-full object-cover"
-                                    />
-                                    <span className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-[#20c997] ring-2 ring-white" />
-                                </div>
+                    <h2 className="mb-3 text-[24px] font-extrabold text-[#07182c]">
+                        Ask anything about your pet
+                    </h2>
 
-                                <div>
-                                    <h3 className="text-sm font-extrabold text-[#07182c]">
-                                        {item.name}
-                                    </h3>
-
-                                    <div className="mt-1 flex gap-1 text-[12px] text-[#ffb020]">
-                                        {Array.from({ length: 5 }).map((_, index) => (
-                                            <FaStar key={index} />
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <p className="text-[15px] font-medium leading-7 text-[#07182c]">
-                                {item.text}
-                            </p>
-                        </div>
-                    ))}
+                    <p className="max-w-md text-sm leading-6 text-slate-600">
+                        Get instant answers about symptoms, care, nutrition, vaccination and
+                        more.
+                    </p>
                 </div>
 
-                <div className="mt-7 flex justify-center gap-2">
-                    <span className="h-3 w-3 rounded-full bg-[#009f9d]" />
-                    <span className="h-3 w-3 rounded-full bg-slate-300" />
-                    <span className="h-3 w-3 rounded-full bg-slate-300" />
+                <div className="relative z-10 ml-auto hidden w-[430px] items-center rounded-full bg-white px-5 py-3 shadow-lg lg:flex">
+                    <Input
+                        type="text"
+                        placeholder="Ask your question..."
+                        className="!border-0 !bg-transparent !shadow-none !outline-none !ring-0"
+                    />
+
+                    <Button
+                        variant="primary"
+                        size="md"
+                        className="flex !h-14 !w-14 items-center justify-center !rounded-full !border-[#009f9d] !bg-[#009f9d] !p-0 !text-white hover:!bg-[#008f8d] hover:!text-white"
+                    >
+                        <FaPaperPlane />
+                    </Button>
+                </div>
+
+                <div className="absolute right-10 top-10 hidden h-16 w-20 items-center justify-center rounded-[22px] bg-[#a7eee7] text-white lg:flex">
+                    • • •
                 </div>
             </div>
         </section>
     );
 };
 
-export default Testimonials;
+export default AIAssistantBanner;
+````
+
+## File: Frontend/src/features/Landing Page/components/ChooseUs.tsx
+````typescript
+import {
+    FaUserMd,
+    FaLock,
+    FaCalendarCheck,
+    FaBoxOpen,
+    FaHeadset,
+    FaShieldAlt,
+} from "react-icons/fa";
+import img from "@/assets/shared/images/bannerImage.png"
+
+const features = [
+    { icon: <FaUserMd />, title: "Experienced\n& Verified Vets" },
+    { icon: <FaLock />, title: "Affordable\nPricing" },
+    { icon: <FaCalendarCheck />, title: "Fast & Easy\nBookings" },
+    { icon: <FaBoxOpen />, title: "Wide Range of\nQuality Products" },
+    { icon: <FaHeadset />, title: "24/7 Customer\nSupport" },
+    { icon: <FaShieldAlt />, title: "Secure & Safe\nPlatform" },
+];
+
+const WhyChoose = () => {
+    return (
+        <section className="bg-[#f5fbff] px-6 py-8 lg:px-16">
+            <div className="mx-auto max-w-7xl">
+                <h2 className="mb-7 text-center text-[20px] font-extrabold text-[#07182c]">
+                    Why Pet Parents Choose{" "}
+                    <span className="text-[#009f9d]">PetsVeta</span>
+                </h2>
+
+                <div className="flex flex-col items-center justify-between gap-8 lg:flex-row">
+                    <div className="grid w-full grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-6">
+                        {features.map((item) => (
+                            <div
+                                key={item.title}
+                                className="flex flex-col items-center border-slate-200 text-center lg:border-r last:border-r-0"
+                            >
+                                <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#d9f7f6] text-2xl text-[#008f8d]">
+                                    {item.icon}
+                                </div>
+
+                                <p className="whitespace-pre-line text-[13px] font-extrabold leading-5 text-[#07182c]">
+                                    {item.title}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="relative hidden w-[320px] shrink-0 lg:block">
+                        <div className="absolute -left-8 top-2 h-28 w-28 rounded-full border-[5px] border-[#9ee6e1]" />
+                        <img
+                            src={img}
+                            alt="Pets"
+                            className="relative z-10 w-full object-contain"
+                        />
+                    </div>
+                </div>
+            </div>
+        </section>
+    );
+};
+
+export default WhyChoose;
+````
+
+## File: Frontend/src/features/Landing Page/components/CTA.tsx
+````typescript
+import Button from "@/shared/components/Button/Button";
+import img from "@/assets/shared/images/bannerImage.png"
+
+const CTA = () => {
+    return (
+        <section className="bg-[#f5fbff] px-6 py-10 lg:px-16">
+            <div className="relative mx-auto flex max-w-7xl items-center justify-between overflow-hidden rounded-[34px] bg-gradient-to-r from-[#12aaa5] to-[#079895] px-8 py-10 shadow-xl md:px-14">
+                <img
+                    src={img}
+                    alt="Dog"
+                    className="absolute bottom-0 left-6 hidden h-[260px] object-contain md:block"
+                />
+
+                <div className="relative z-10 mx-auto max-w-2xl text-center">
+                    <h2 className="text-[30px] font-extrabold leading-tight text-white md:text-[42px]">
+                        Your pet’s health is our priority
+                        <br />
+                        Join PetsVeta today!
+                    </h2>
+
+                    <div className="mt-8 flex justify-center gap-5">
+                        <Button
+                            variant="primary"
+                            size="md"
+                            className="!rounded-2xl !border-white !bg-white !px-10 !text-[#009f9d] hover:!bg-white hover:!text-[#008f8d]"
+                        >
+                            Get Started
+                        </Button>
+
+                        <Button
+                            variant="outline"
+                            size="md"
+                            className="!rounded-2xl !border-white !bg-transparent !px-10 !text-white hover:!bg-white hover:!text-[#009f9d]"
+                        >
+                            Explore Features
+                        </Button>
+                    </div>
+                </div>
+
+                <img
+                    src={img}
+                    alt="Cat"
+                    className="absolute bottom-0 right-8 hidden h-[275px] object-contain md:block"
+                />
+            </div>
+        </section>
+    );
+};
+
+export default CTA;
+````
+
+## File: Frontend/src/features/Landing Page/components/Popular.tsx
+````typescript
+import { FaArrowRight, FaStar } from "react-icons/fa";
+import img from "@/assets/shared/images/bannerImage.png"
+
+const products = [
+    {
+        title: "Royal Canin\nDog Food",
+        price: "Rs. 2,450",
+        rating: "4.8",
+        image: img,
+    },
+    {
+        title: "Cat Litter\nPremium",
+        price: "Rs. 1,350",
+        rating: "4.6",
+        image: img,
+    },
+    {
+        title: "Chew Toy\nFor Dogs",
+        price: "Rs. 650",
+        rating: "4.7",
+        image: img,
+    },
+    {
+        title: "Pet Shampoo\nGentle Care",
+        price: "Rs. 890",
+        rating: "4.5",
+        image: img,
+    },
+    {
+        title: "Nutritional\nSupplements",
+        price: "Rs. 1,250",
+        rating: "4.6",
+        image: img,
+    },
+];
+
+const PopularMarketplace = () => {
+    return (
+        <section className="bg-[#f5fbff] px-6 py-8 lg:px-16">
+            <div className="mb-5 flex items-center justify-between">
+                <h2 className="text-[22px] font-extrabold text-[#07182c]">
+                    Popular in <span className="text-[#009f9d]">Marketplace</span>
+                </h2>
+
+                <button className="flex items-center gap-2 text-sm font-extrabold text-[#009f9d]">
+                    View All Products
+                    <FaArrowRight className="text-xs" />
+                </button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
+                {products.map((product) => (
+                    <div
+                        key={product.title}
+                        className="rounded-[20px] bg-white p-4 shadow-[0_10px_35px_rgba(15,23,42,0.08)]"
+                    >
+                        <div className="mb-4 flex h-[130px] items-center justify-center rounded-[16px] bg-gradient-to-br from-[#fff3ef] via-[#f8fbfb] to-[#edfafa]">
+                            <img
+                                src={product.image}
+                                alt={product.title}
+                                className="h-[110px] w-full object-contain"
+                            />
+                        </div>
+
+                        <h3 className="whitespace-pre-line text-[16px] font-extrabold leading-[19px] text-[#07182c]">
+                            {product.title}
+                        </h3>
+
+                        <p className="mt-2 text-[14px] font-extrabold text-[#009f9d]">
+                            {product.price}
+                        </p>
+
+                        <div className="mt-2 flex items-center gap-[2px]">
+                            {Array.from({ length: 5 }).map((_, index) => (
+                                <FaStar key={index} className="text-[13px] text-[#ffb020]" />
+                            ))}
+                            <span className="ml-2 text-[12px] font-semibold text-slate-500">
+                                ({product.rating})
+                            </span>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </section>
+    );
+};
+
+export default PopularMarketplace;
+````
+
+## File: Frontend/src/features/Landing Page/components/TopDoctor.tsx
+````typescript
+import { FaArrowRight, FaStar } from "react-icons/fa";
+import img from "@/assets/shared/images/bannerImage.png"
+
+
+const doctors = [
+    {
+        name: "Dr. Sarah Khan",
+        specialty: "Veterinary Surgeon",
+        rating: "4.9",
+        reviews: "120",
+        image: img,
+    },
+    {
+        name: "Dr. Ali Raza",
+        specialty: "Pet Specialist",
+        rating: "4.8",
+        reviews: "98",
+        image: img,
+    },
+    {
+        name: "Dr. Mehwish Noor",
+        specialty: "Dermatologist",
+        rating: "4.9",
+        reviews: "110",
+        image: img,
+    },
+    {
+        name: "Dr. Usman Ahmed",
+        specialty: "Orthopedic Vet",
+        rating: "4.7",
+        reviews: "85",
+        image: img,
+    },
+];
+
+const TopRatedDoctors = () => {
+    return (
+        <section className="bg-[#f5fbff] px-6 py-8 lg:px-16">
+            <div className="mx-auto max-w-7xl">
+                <div className="mb-5 flex items-center justify-between">
+                    <h2 className="text-[22px] font-extrabold text-[#07182c]">
+                        Top Rated <span className="text-[#009f9d]">Doctors</span>
+                    </h2>
+
+                    <button className="flex items-center gap-2 text-sm font-extrabold text-[#009f9d]">
+                        View All Doctors
+                        <FaArrowRight className="text-xs" />
+                    </button>
+                </div>
+
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
+                    {doctors.map((doctor) => (
+                        <div
+                            key={doctor.name}
+                            className="relative flex h-[140px] overflow-hidden rounded-[22px] bg-white shadow-[0_10px_30px_rgba(15,23,42,0.08)]"
+                        >
+                            <div className="relative w-[105px] shrink-0 bg-gradient-to-br from-[#eefafa] to-white">
+                                <img
+                                    src={doctor.image}
+                                    alt={doctor.name}
+                                    className="absolute bottom-0 left-0 h-[130px] w-full object-contain object-bottom"
+                                />
+
+                                <span className="absolute bottom-4 left-4 h-3 w-3 rounded-full bg-[#22c55e] ring-2 ring-white" />
+                            </div>
+
+                            <div className="flex flex-1 flex-col justify-center px-4">
+                                <h3 className="text-[15px] font-extrabold text-[#07182c]">
+                                    {doctor.name}
+                                </h3>
+
+                                <p className="mt-1 text-[12px] font-semibold text-slate-500">
+                                    {doctor.specialty}
+                                </p>
+
+                                <div className="mt-3 flex items-center gap-1">
+                                    <FaStar className="text-[13px] text-[#ffb020]" />
+                                    <span className="text-[13px] font-extrabold text-[#07182c]">
+                                        {doctor.rating}
+                                    </span>
+                                    <span className="text-[12px] font-semibold text-slate-400">
+                                        ({doctor.reviews})
+                                    </span>
+                                </div>
+
+                                <p className="mt-2 text-[12px] font-bold text-[#f7b731]">
+                                    Online Available
+                                </p>
+                            </div>
+
+                            <span className="absolute left-[98px] top-5 h-3 w-3 rounded-full bg-[#22c55e] ring-2 ring-white" />
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+};
+
+export default TopRatedDoctors;
 ````
 
 ## File: Frontend/src/features/Landing Page/pages/LandingPage.tsx
@@ -13839,448 +14809,360 @@ const LandingPage = () => {
 export default LandingPage;
 ````
 
-## File: Frontend/src/features/Landing Page/routes.tsx
+## File: Frontend/src/features/marketplace1/components/MarketplaceFilters.tsx
 ````typescript
-import LandingPage from "./pages/LandingPage";
-import LandingLayout from "../../layout/landing.layout";
+import Input from "@/shared/components/Input/Input";
+import Button from "@/shared/components/Button/Button";
+import type { MarketplaceFiltersProps } from "../types/marketplace.types";
 
-import { contactRoutes } from "../Contact/contact.route";
-import { aboutRoutes } from "../About/about.route";
-import servicesRoutes from "../Services/service.route";
-import { marketplaceRoutes } from "../Marketplace/marketplace.route";
-import { aiAssistantRoutes } from "../AiAssistance/aiAssistant.route";
+const MarketplaceFilters = ({
+  search,
+  category,
+  location,
+  onSearch,
+  onCategory,
+  onLocation,
+  onClear,
+}: MarketplaceFiltersProps) => {
+  return (
+    <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+      <div className="grid gap-4 md:grid-cols-4">
+        <Input
+          placeholder="Search pets, food, accessories..."
+          value={search}
+          onChange={(e) => onSearch(e.target.value)}
+        />
 
-const LandingPageRoutes = [
+        <select
+          value={category}
+          onChange={(e) => onCategory(e.target.value)}
+          className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-[#178f95]"
+        >
+          <option value="All">All Categories</option>
+          <option value="Pets">Pets</option>
+          <option value="Food">Food</option>
+          <option value="Accessories">Accessories</option>
+        </select>
+
+        <select
+          value={location}
+          onChange={(e) => onLocation(e.target.value)}
+          className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-[#178f95]"
+        >
+          <option value="All">All Locations</option>
+          <option value="Lahore">Lahore</option>
+          <option value="Karachi">Karachi</option>
+          <option value="Islamabad">Islamabad</option>
+          <option value="Multan">Multan</option>
+        </select>
+
+        <Button variant="outline" onClick={onClear}>
+          Clear Filters
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+export default MarketplaceFilters;
+````
+
+## File: Frontend/src/features/marketplace1/components/MarketplacePagination.tsx
+````typescript
+import Button from "@/shared/components/Button/Button";
+import type { MarketplacePaginationProps } from "../types/marketplace.types";
+
+const MarketplacePagination = ({
+  page,
+  totalPages,
+  onPageChange,
+}: MarketplacePaginationProps) => {
+  return (
+    <div className="mt-10 flex items-center justify-center gap-3">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => onPageChange(page - 1)}
+        disabled={page === 1}
+      >
+        Previous
+      </Button>
+
+      {Array.from({ length: totalPages }).map((_, index) => (
+        <Button
+          key={index}
+          size="sm"
+          variant={page === index + 1 ? "primary" : "outline"}
+          onClick={() => onPageChange(index + 1)}
+        >
+          {index + 1}
+        </Button>
+      ))}
+
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => onPageChange(page + 1)}
+        disabled={page === totalPages}
+      >
+        Next
+      </Button>
+    </div>
+  );
+};
+
+export default MarketplacePagination;
+````
+
+## File: Frontend/src/features/marketplace1/marketplace.routes.tsx
+````typescript
+// src/features/marketplace1/routes/marketplace.routes.tsx
+
+import MarketplacePage from "../marketplace1/pages/MarketplacePage";
+import MarketplaceProductDetailPage from "../marketplace1/pages/MarketplaceProductDetailPage";
+
+export const marketplaceRoutes = [
   {
-    path: "/",
-    element: <LandingLayout />,
-    children: [
-      {
-        index: true,
-        element: <LandingPage />,
-      },
-
-      ...aboutRoutes,
-      ...contactRoutes,
-      ...servicesRoutes,
-      ...marketplaceRoutes,
-      ...aiAssistantRoutes,
-    ],
+    path: "/marketplace1",
+    element: <MarketplacePage />,
+  },
+  {
+    path: "/marketplace",
+    element: <MarketplacePage />,
+  },
+  {
+    path: "/marketplace/product/:id",
+    element: <MarketplaceProductDetailPage />,
   },
 ];
-
-export default LandingPageRoutes;
 ````
 
-## File: Frontend/src/features/Marketplace/components/MarketplaceCategories.tsx
+## File: Frontend/src/features/marketplace1/pages/MarketplaceProductDetailPage.tsx
 ````typescript
-import { useState, useRef, useEffect } from "react";
-import { FaChevronDown, FaSearch, FaCheck } from "react-icons/fa";
-import backgroundImag from '@/assets/shared/images/MarketPlace Background.jpg';
+// src/features/marketplace1/pages/MarketplaceProductDetailPage.tsx
 
-const comprehensiveAnimalsList = [
-    { id: "dog", name: "Dog", icon: "🐶", group: "Common Pets" },
-    { id: "cat", name: "Cat", icon: "🐱", group: "Common Pets" },
-    { id: "parrot", name: "Parrot", icon: "🦜", group: "Exotic & Birds" },
-    { id: "deer", name: "Deer", icon: "🦌", group: "Exotic & Birds" },
-    { id: "cow", name: "Cow", icon: "🐮", group: "Livestock" },
-    { id: "goat", name: "Goat", icon: "🐐", group: "Livestock" },
-    { id: "horse", name: "Horse", icon: "🐴", group: "Livestock" },
-    { id: "rabbit", name: "Rabbit", icon: "🐰", group: "Common Pets" },
-    { id: "monkey", name: "Monkey", icon: "🐒", group: "Exotic & Birds" },
-];
-
-const MarketplaceCategories = () => {
-    const [isOpen, setIsOpen] = useState(false);
-    const [searchQuery, setSearchQuery] = useState("");
-    const [selectedAnimal, setSelectedAnimal] = useState(comprehensiveAnimalsList[0]);
-
-    const dropdownRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                setIsOpen(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
-
-    const filteredAnimals = comprehensiveAnimalsList.filter((animal) =>
-        animal.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        animal.group.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    return (
-        <section
-            className="relative overflow-hidden px-5 py-20 lg:px-16"
-            style={{
-                /* Increased the opacity of the black overlay (0.6) 
-                   to make the background significantly darker.
-                */
-                backgroundImage: `linear-gradient(to bottom right, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${backgroundImag})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-                backgroundColor: '#07182c' // Fallback solid color
-            }}
-        >
-            {/* Added a subtle dark overlay to ensure white text would be readable if needed, 
-                or keeping it clear as you requested */}
-            <div className="mx-auto max-w-3xl text-center relative z-10">
-                <div className="mb-8">
-                    <h2 className="text-4xl font-extrabold text-[#07182c] md:text-5xl tracking-tight">
-                        Choose your <span className="text-[#009f9d]">Companion</span>
-                    </h2>
-                    <p className="mt-4 text-[#07182c]/80 text-base max-w-lg mx-auto leading-relaxed font-medium">
-                        Explore our curated registry to find the perfect products for your unique animal friend.
-                    </p>
-                </div>
-
-                <div className="relative inline-block w-full max-w-md text-left" ref={dropdownRef}>
-                    <button
-                        type="button"
-                        onClick={() => setIsOpen(!isOpen)}
-                        className="flex w-full items-center justify-between rounded-3xl border border-[#009f9d]/20 bg-white/90 backdrop-blur-md px-6 py-5 text-base font-bold text-[#07182c] shadow-[0_8px_30px_rgba(0,159,157,0.1)] transition-all hover:bg-white hover:border-[#009f9d]/40"
-                    >
-                        <div className="flex items-center gap-4">
-                            <span className="text-3xl">{selectedAnimal.icon}</span>
-                            <div className="text-left">
-                                <span className="block text-[10px] font-extrabold uppercase tracking-widest text-[#009f9d]">Current Selection</span>
-                                <span className="text-lg">{selectedAnimal.name}</span>
-                            </div>
-                        </div>
-                        <FaChevronDown className={`text-slate-400 transition-transform duration-300 ${isOpen ? "rotate-180 text-[#009f9d]" : ""}`} />
-                    </button>
-
-                    {isOpen && (
-                        <div className="absolute left-0 mt-3 z-50 w-full rounded-3xl bg-white p-4 shadow-[0_20px_50px_rgba(7,24,44,0.15)] border border-slate-100 max-h-[380px] flex flex-col">
-                            <div className="relative mb-3 shrink-0">
-                                <FaSearch className="absolute left-4 top-4 text-slate-400" />
-                                <input
-                                    type="text"
-                                    placeholder="Search your animal..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full rounded-2xl bg-slate-50 py-3.5 pl-12 pr-4 text-sm font-semibold text-[#07182c] outline-none border-2 border-transparent focus:border-[#009f9d] focus:bg-white transition-all"
-                                    autoFocus
-                                />
-                            </div>
-
-                            <div className="overflow-y-auto pr-1 flex-1 scrollbar-thin">
-                                {filteredAnimals.map((animal) => {
-                                    const isSelected = selectedAnimal.id === animal.id;
-                                    return (
-                                        <button
-                                            key={animal.id}
-                                            onClick={() => { setSelectedAnimal(animal); setIsOpen(false); }}
-                                            className={`flex w-full items-center justify-between rounded-2xl px-4 py-4 text-sm font-bold transition-all mb-1
-                                                ${isSelected ? "bg-[#009f9d]/5 text-[#009f9d]" : "text-[#07182c] hover:bg-slate-50"}`}
-                                        >
-                                            <div className="flex items-center gap-4">
-                                                <span className="text-2xl">{animal.icon}</span>
-                                                <span className="text-base">{animal.name}</span>
-                                            </div>
-                                            {isSelected && <FaCheck />}
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </section>
-    );
-};
-
-export default MarketplaceCategories;
-````
-
-## File: Frontend/src/features/Marketplace/components/ProductCard.tsx
-````typescript
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
-    FaHeart,
-    FaShoppingCart,
-    FaStar,
+  FaHeart,
+  FaMapMarkerAlt,
+  FaStar,
+  FaStore,
+  FaShoppingCart,
+  FaShieldAlt,
 } from "react-icons/fa";
+import Button from "@/shared/components/Button/Button";
+import Card from "@/shared/components/Card/Card";
+import { addToCart } from "@/features/cart/utils/cartStorage";
+import {
+  fetchMarketplaceProductById,
+  getProductImage,
+  getProductPrice,
+  getSellerName,
+  saveMarketplaceListing,
+  toDisplayCategory,
+  type MarketplaceProduct,
+} from "../api/marketplace.api";
 
-type ProductCardProps = {
-    name: string;
-    category: string;
-    price: number;
-    oldPrice?: number;
-    rating: number;
-    reviews: number;
-    image: string;
-    badge?: string;
-};
+const MarketplaceProductDetailPage = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [product, setProduct] = useState<MarketplaceProduct | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [saveMessage, setSaveMessage] = useState("");
+  const [cartError, setCartError] = useState("");
 
-const ProductCard = ({
-    name,
-    category,
-    price,
-    oldPrice,
-    rating,
-    reviews,
-    image,
-    badge,
-}: ProductCardProps) => {
-    return (
-        <div className="group overflow-hidden rounded-2xl bg-white shadow-[0_8px_30px_rgba(15,23,42,0.06)] transition hover:-translate-y-1 hover:shadow-[0_15px_35px_rgba(15,23,42,0.1)]">
-            {/* Reduced height from h-[230px] to h-[180px] */}
-            <div className="relative h-[180px] overflow-hidden bg-[#f5fbff]">
-                <img
-                    src={image}
-                    alt={name}
-                    className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                />
+  useEffect(() => {
+    let ignore = false;
 
+    const loadProduct = async () => {
+      if (!id) {
+        setError("Product id missing.");
+        setLoading(false);
+        return;
+      }
 
-                {/* Slightly smaller action button */}
-                <button
-                    type="button"
-                    className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white text-xs text-[#07182c] shadow-sm transition hover:text-[#009f9d]"
-                >
-                    <FaHeart />
-                </button>
-            </div>
+      try {
+        const data = await fetchMarketplaceProductById(id);
 
-            {/* Reduced padding from p-5 to p-4 */}
-            <div className="p-4">
-                <p className="text-[10px] font-extrabold uppercase tracking-wide text-[#009f9d]">
-                    {category}
-                </p>
-
-                {/* Removed min-h, reduced text size to text-base, clamped to 2 lines max */}
-                <h3 className="mt-1 line-clamp-2 text-base font-extrabold leading-tight text-[#07182c]">
-                    {name}
-                </h3>
-
-                {/* Tightened margins */}
-                <div className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-slate-500">
-                    <FaStar className="text-[#ffb020]" />
-                    <span>{rating}</span>
-                    <span>({reviews})</span>
-                </div>
-
-                {/* Reduced font size from text-2xl to text-xl */}
-                <div className="mt-3 flex items-center gap-2">
-                    <h4 className="text-xl font-extrabold text-[#07182c]">
-                        ${price}
-                    </h4>
-
-                    {oldPrice && (
-                        <span className="text-xs font-bold text-slate-400 line-through">
-                            ${oldPrice}
-                        </span>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
-};
-
-export default ProductCard;
-````
-
-## File: Frontend/src/features/Marketplace/components/ProductsGrid.tsx
-````typescript
-import { FaSortAmountDown } from "react-icons/fa";
-
-import ProductCard from "./ProductCard";
-import { products } from "../data/marketplace.data";
-
-const ProductsGrid = () => {
-    return (
-        <section
-            className="px-5 py-16 lg:px-16"
-           
-        >
-            <div className="mx-auto max-w-7xl">
-                <div>
-                    <div className="mb-6 flex flex-col gap-4 rounded-3xl bg-white/90 p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <h2 className="text-2xl font-extrabold text-[#07182c]">
-                                Featured Products
-                            </h2>
-
-                            <p className="mt-1 text-sm font-semibold text-slate-500">
-                                Showing {products.length} pet products
-                            </p>
-                        </div>
-
-                        <div className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-sm border border-slate-100">
-                            <FaSortAmountDown className="text-[#009f9d]" />
-
-                            <select className="bg-transparent text-sm font-bold text-[#07182c] outline-none">
-                                <option>Sort by Popular</option>
-                                <option>Lowest Price</option>
-                                <option>Highest Rated</option>
-                                <option>Newest First</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                        {products.map((product) => (
-                            <ProductCard
-                                key={product.id}
-                                name={product.name}
-                                category={product.category}
-                                price={product.price}
-                                oldPrice={product.oldPrice}
-                                rating={product.rating}
-                                reviews={product.reviews}
-                                image={product.image}
-                                badge={product.badge}
-                            />
-                        ))}
-                    </div>
-                </div>
-            </div>
-        </section>
-    );
-};
-
-export default ProductsGrid;
-````
-
-## File: Frontend/src/features/Marketplace/data/marketplace.data.ts
-````typescript
-export const categories = [
-    "All Categories",
-    "Pet Food",
-    "Toys & Accessories",
-    "Health & Medicine",
-    "Grooming",
-    "Supplements",
-    "Beds & Furniture",
-    "Collars & Leashes",
-    "Training & Behavior",
-];
-
-export const products = Array.from({ length: 100 }, (_, index) => {
-    const categories = [
-        "Pet Food",
-        "Toys & Accessories",
-        "Supplements",
-        "Beds & Furniture",
-        "Collars & Leashes",
-        "Grooming",
-        "Health & Medicine",
-        "Training",
-        "Travel",
-        "Cat Supplies",
-    ];
-
-    const productNames = [
-        "Premium Dog Food",
-        "Interactive Pet Toy",
-        "Vitamin Supplement",
-        "Luxury Pet Bed",
-        "Adjustable Collar",
-        "Pet Shampoo",
-        "Dental Care Kit",
-        "Training Clicker",
-        "Travel Carrier",
-        "Cat Scratching Post",
-    ];
-
-    return {
-        id: index + 1,
-        name: `${productNames[index % productNames.length]} ${index + 1}`,
-        category: categories[index % categories.length],
-        price: +(Math.random() * 50 + 5).toFixed(2),
-        oldPrice: +(Math.random() * 60 + 10).toFixed(2),
-        rating: +(Math.random() * 1 + 4).toFixed(1), // 4.0 - 5.0
-        reviews: Math.floor(Math.random() * 500) + 50,
-        image: `https://picsum.photos/seed/pet${index + 1}/600/600`,
-        badge:
-            index % 5 === 0
-                ? "Best Seller"
-                : index % 3 === 0
-                    ? "20% OFF"
-                    : "",
+        if (!ignore) {
+          setProduct(data);
+        }
+      } catch {
+        if (!ignore) {
+          setError("Product not found.");
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
     };
-});
 
-export const benefits = [
-    {
-        title: "100% Genuine Products",
-        subtitle: "Trusted pet brands",
-    },
+    void loadProduct();
 
-    {
-        title: "Easy Returns",
-        subtitle: "Within 7 days",
-    },
+    return () => {
+      ignore = true;
+    };
+  }, [id]);
 
-    {
-        title: "Fast Delivery",
-        subtitle: "Quick & reliable",
-    },
+  const handleBuyNow = () => {
+    if (!product) return;
 
-    {
-        title: "Secure Payments",
-        subtitle: "100% protected",
-    },
-];
-````
+    const result = addToCart({
+      productId: product.id,
+      title: product.title,
+      price: getProductPrice(product),
+      image: getProductImage(product),
+      quantity: 1,
+      sellerId: product.sellerId,
+    });
 
-## File: Frontend/src/features/Marketplace/pages/MarketplacePage.tsx
-````typescript
-import MarketplaceHero from "../components/MarketplaceHero";
-import MarketplaceBenefits from "../components/MarketplaceBenefits";
-import MarketplaceCategories from "../components/MarketplaceCategories";
-import ProductsGrid from "../components/ProductsGrid";
-import MarketplaceBanner from "../components/MarketplaceBanner";
-import MarketplaceCTA from "../components/MarketplaceCTA";
+    if (!result.success) {
+      setCartError(result.message);
+      return;
+    }
 
-const MarketplacePage = () => {
+    navigate("/cart");
+  };
+
+  const handleSave = async () => {
+    if (!product) return;
+
+    try {
+      await saveMarketplaceListing(product.id);
+      setSaveMessage("Listing saved.");
+    } catch {
+      navigate("/login", {
+        state: { redirectTo: `/marketplace/product/${product.id}` },
+      });
+    }
+  };
+
+  if (loading) {
     return (
-        <>
-            <MarketplaceCategories />
-            <ProductsGrid />
-
-        </>
+      <div className="min-h-screen bg-[#f7fbfb] p-10">
+        <h1 className="text-2xl font-semibold text-gray-900">
+          Loading product...
+        </h1>
+      </div>
     );
+  }
+
+  if (!product || error) {
+    return (
+      <div className="min-h-screen bg-[#f7fbfb] p-10">
+        <h1 className="text-2xl font-semibold text-gray-900">
+          {error || "Product not found"}
+        </h1>
+      </div>
+    );
+  }
+
+  const image = getProductImage(product);
+  const price = getProductPrice(product);
+  const seller = getSellerName(product);
+  const displayCategory = toDisplayCategory(product.category);
+
+  return (
+    <main className="min-h-screen bg-[#f7fbfb] px-5 py-8 lg:px-12">
+      <p className="mb-5 text-sm text-gray-500">
+        Marketplace / {displayCategory} / {product.title}
+      </p>
+
+      <div className="grid gap-6 lg:grid-cols-[1fr_430px]">
+        <Card className="overflow-hidden p-0">
+          <div className="h-[520px] bg-white">
+            <img
+              src={image}
+              alt={product.title}
+              className="h-full w-full object-cover"
+            />
+          </div>
+        </Card>
+
+        <Card>
+          <span className="rounded-full bg-[#178f95]/10 px-3 py-1 text-sm font-semibold text-[#178f95]">
+            {displayCategory}
+          </span>
+
+          <h1 className="mt-4 text-3xl font-extrabold text-[#07182c]">
+            {product.title}
+          </h1>
+
+          <div className="mt-4 flex items-center gap-2">
+            <FaStar className="text-yellow-400" />
+            <span className="font-semibold text-gray-700">
+              New
+            </span>
+            <span className="text-gray-500">Active marketplace listing</span>
+          </div>
+
+          <p className="mt-6 text-3xl font-extrabold text-[#07182c]">
+            PKR {price.toLocaleString()}
+          </p>
+
+          <p className="mt-5 leading-7 text-gray-600">
+            {product.description || "No description provided."}
+          </p>
+
+          <div className="mt-6 space-y-3 text-sm text-gray-600">
+            <p className="flex items-center gap-2">
+              <FaStore className="text-[#178f95]" />
+              Seller: {seller}
+            </p>
+
+            <p className="flex items-center gap-2">
+              <FaMapMarkerAlt className="text-[#178f95]" />
+              Location: {product.location || product.seller?.city || "Pakistan"}
+            </p>
+
+            <p className="flex items-center gap-2">
+              <FaShieldAlt className="text-[#178f95]" />
+              Verified seller product
+            </p>
+          </div>
+
+          <p className="mt-5 text-sm font-medium text-green-600">
+            In Stock{" "}
+            <span className="text-gray-500">{product.stock} available</span>
+          </p>
+
+          <div className="mt-7 grid grid-cols-2 gap-3">
+            <Button className="gap-2" onClick={handleBuyNow}>
+              <FaShoppingCart />
+              Add to Cart
+            </Button>
+
+            <Button variant="outline" className="gap-2" onClick={handleSave}>
+              <FaHeart />
+              Save Listing
+            </Button>
+          </div>
+
+          {cartError && (
+            <p className="mt-3 rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-600">
+              {cartError}
+            </p>
+          )}
+
+          {saveMessage && (
+            <p className="mt-3 rounded-lg bg-green-50 px-4 py-2 text-sm font-medium text-green-700">
+              {saveMessage}
+            </p>
+          )}
+
+          <Button variant="outline" className="mt-3 w-full">
+            Message Seller
+          </Button>
+        </Card>
+      </div>
+    </main>
+  );
 };
 
-export default MarketplacePage;
-````
-
-## File: Frontend/src/features/Payment/page/PaymentCancelPage.tsx
-````typescript
-
-````
-
-## File: Frontend/src/features/Payment/page/PaymentSuccessPage.tsx
-````typescript
-
-````
-
-## File: Frontend/src/features/Payment/payment.routes.tsx
-````typescript
-// import AppointmentPaymentPage from "./page/AppointmentPaymentPage";
-// import PaymentSuccessPage from "./page/PaymentSuccessPage";
-// import PaymentCancelPage from "./page/PaymentCancelPage";
-
-// export const paymentRoutes = [
-//   {
-//     path: "/appointment-payment",
-//     element: <AppointmentPaymentPage />,
-//   },
-//   {
-//     path: "/payment/success",
-//     element: <PaymentSuccessPage />,
-//   },
-//   {
-//     path: "/payment/cancel",
-//     element: <PaymentCancelPage />,
-//   },
-// ];
+export default MarketplaceProductDetailPage;
 ````
 
 ## File: Frontend/src/features/Pet Owner/pet details/schemas/petIssueReport.schema.ts
@@ -14302,63 +15184,1819 @@ export const petIssueReportSchema = z.object({
 export type PetIssueReportFormData = z.infer<typeof petIssueReportSchema>;
 ````
 
+## File: Frontend/src/features/Pet Owner/pet profile/api/pets.api.ts
+````typescript
+import { api } from "@/features/api interface/axios.interface";
+
+import type { PetFormData } from "../schemas/pet.schema";
+
+import type {
+  PetResponse,
+  PetsResponse,
+} from "../types/petProfile.types";
+
+export const getMyPetsApi = async (): Promise<PetsResponse> => {
+  const response = await api.get<PetsResponse>("/petOwner/my-pets");
+
+  return response.data;
+};
+
+export const getPetByIdApi = async (
+  petId: string,
+): Promise<PetResponse> => {
+  const response = await api.get<PetResponse>(`/pets/${petId}`);
+
+  return response.data;
+};
+
+export const createPetApi = async (
+  payload: PetFormData,
+): Promise<PetResponse> => {
+  const response = await api.post<PetResponse>("/pets", payload);
+
+  return response.data;
+};
+
+export const updatePetApi = async (
+  petId: string,
+  payload: PetFormData,
+): Promise<PetResponse> => {
+  const response = await api.patch<PetResponse>(
+    `/pets/${petId}`,
+    payload,
+  );
+
+  return response.data;
+};
+
+export const deletePetApi = async (
+  petId: string,
+): Promise<{
+  success: boolean;
+  message: string;
+}> => {
+  const response = await api.delete<{
+    success: boolean;
+    message: string;
+  }>(`/pets/${petId}`);
+
+  return response.data;
+};
+````
+
+## File: Frontend/src/features/Pet Owner/pet profile/components/DeletePetModal.tsx
+````typescript
+import { useEffect, useRef, useState } from "react";
+
+import {
+  EllipsisVertical,
+  Pencil,
+  Trash2,
+} from "lucide-react";
+import type { PetActionsMenuProps } from "../types/petProfile.types";
+
+const PetActionsMenu = ({
+  petName,
+  onEdit,
+  onDelete,
+}: PetActionsMenuProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
+
+  const handleEdit = () => {
+    setIsOpen(false);
+    onEdit();
+  };
+
+  const handleDelete = () => {
+    setIsOpen(false);
+    onDelete();
+  };
+
+  return (
+    <div ref={menuRef} className="relative">
+      <button
+        type="button"
+        aria-label={`Open actions for ${petName}`}
+        aria-expanded={isOpen}
+        onClick={() => setIsOpen((previous) => !previous)}
+        className="flex h-9 w-9 items-center justify-center rounded-full text-[#101b3d] transition hover:bg-slate-100"
+      >
+        <EllipsisVertical size={21} />
+      </button>
+
+      {isOpen && (
+        <div className="absolute right-0 top-11 z-30 w-36 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-xl">
+          <button
+            type="button"
+            onClick={handleEdit}
+            className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-semibold text-[#101b3d] transition hover:bg-slate-50"
+          >
+            <Pencil size={16} />
+            Edit
+          </button>
+
+          <button
+            type="button"
+            onClick={handleDelete}
+            className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-semibold text-red-500 transition hover:bg-red-50"
+          >
+            <Trash2 size={16} />
+            Delete
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default PetActionsMenu;
+````
+
+## File: Frontend/src/features/Pet Owner/pet profile/components/PetActionsMenu.tsx
+````typescript
+import { useEffect, useRef, useState } from "react";
+
+import {
+  EllipsisVertical,
+  Pencil,
+  Trash2,
+} from "lucide-react";
+import type { PetActionsMenuProps } from "../types/petProfile.types";
+
+const PetActionsMenu = ({
+  petName,
+  onEdit,
+  onDelete,
+}: PetActionsMenuProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
+
+  const handleEdit = () => {
+    setIsOpen(false);
+    onEdit();
+  };
+
+  const handleDelete = () => {
+    setIsOpen(false);
+    onDelete();
+  };
+
+  return (
+    <div ref={menuRef} className="relative">
+      <button
+        type="button"
+        aria-label={`Open actions for ${petName}`}
+        aria-expanded={isOpen}
+        onClick={() => setIsOpen((previous) => !previous)}
+        className="flex h-9 w-9 items-center justify-center rounded-full text-[#101b3d] transition hover:bg-slate-100"
+      >
+        <EllipsisVertical size={21} />
+      </button>
+
+      {isOpen && (
+        <div className="absolute right-0 top-11 z-30 w-36 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-xl">
+          <button
+            type="button"
+            onClick={handleEdit}
+            className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-semibold text-[#101b3d] transition hover:bg-slate-50"
+          >
+            <Pencil size={16} />
+            Edit
+          </button>
+
+          <button
+            type="button"
+            onClick={handleDelete}
+            className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-semibold text-red-500 transition hover:bg-red-50"
+          >
+            <Trash2 size={16} />
+            Delete
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default PetActionsMenu;
+````
+
+## File: Frontend/src/features/Pet Owner/pet profile/components/PetProfileCard.tsx
+````typescript
+import { CalendarDays } from "lucide-react";
+
+import Button from "@/shared/components/Button/Button";
+import Card from "@/shared/components/Card/Card";
+
+import type {
+  PetCategory,
+  PetProfileCardProps,
+} from "../types/petProfile.types";
+
+import PetActionsMenu from "./PetActionsMenu";
+
+const categoryImages: Record<PetCategory, string> = {
+  DOG: "https://images.unsplash.com/photo-1568572933382-74d440642117?auto=format&fit=crop&w=700&q=80",
+  CAT: "https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=700&q=80",
+  REPTILE:
+    "https://images.unsplash.com/photo-1504450874802-0ba2bcd9b5ae?auto=format&fit=crop&w=700&q=80",
+  OTHER:
+    "https://images.unsplash.com/photo-1552728089-57bdde30beb3?auto=format&fit=crop&w=700&q=80",
+};
+
+const categoryStyles: Record<PetCategory, string> = {
+  DOG: "bg-cyan-50 text-cyan-700",
+  CAT: "bg-orange-50 text-orange-600",
+  REPTILE: "bg-green-50 text-green-700",
+  OTHER: "bg-slate-100 text-slate-700",
+};
+
+const formatCategory = (category: PetCategory) => {
+  return category.charAt(0) + category.slice(1).toLowerCase();
+};
+
+const PetProfileCard = ({
+  pet,
+  onEdit,
+  onDelete,
+  onBookAppointment,
+}: PetProfileCardProps) => {
+  const age = Number(pet.age);
+
+  return (
+    <Card className="overflow-visible p-3">
+      <div className="flex flex-col gap-4 sm:flex-row xl:flex-col">
+        <div className="h-52 w-full shrink-0 overflow-hidden rounded-2xl bg-[#EAF7F5] sm:w-48 xl:w-full">
+          {
+            pet.petPictures.map((picture, index) => (
+              <img
+                key={index}
+                src={picture.publicUrl}
+                alt={pet.name}
+                className="h-full w-full object-cover transition duration-300 hover:scale-105"
+              />
+            ))
+          }
+        </div>
+
+        <div className="flex min-w-0 flex-1 flex-col px-1 py-1">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h3 className="text-xl font-black text-[#101b3d]">
+                {pet.name}
+              </h3>
+
+              <span
+                className={`mt-3 inline-flex rounded-full px-3 py-1 text-[11px] font-black ${categoryStyles[pet.category]
+                  }`}
+              >
+                {formatCategory(pet.category)}
+              </span>
+            </div>
+
+            <PetActionsMenu
+              petName={pet.name}
+              onEdit={() => onEdit(pet.id)}
+              onDelete={() => onDelete(pet)}
+            />
+          </div>
+
+          <p className="mt-3 text-sm font-semibold text-slate-600">
+            {pet.breed}
+          </p>
+
+          <div className="mt-5 flex items-center gap-2 text-sm font-medium text-slate-600">
+            <CalendarDays size={16} className="text-[#078b91]" />
+
+            <span>
+              {age} {age === 1 ? "Year" : "Years"}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <Button
+        type="button"
+        variant="outline"
+        className="mt-4 flex h-11 w-full items-center justify-center gap-2 border-[#078b91] text-[#078b91] hover:bg-[#078b91] hover:text-white"
+        onClick={() => onBookAppointment(pet.id)}
+      >
+        <CalendarDays size={17} />
+        Book Appointment
+      </Button>
+    </Card>
+  );
+};
+
+export default PetProfileCard;
+````
+
+## File: Frontend/src/features/Pet Owner/pet profile/types/petProfile.types.ts
+````typescript
+import type { InputHTMLAttributes, ReactNode } from "react";
+import type { PetOwnerProfileFormData } from "../schemas/petOwnerProfile.schema";
+
+export type PetCategory = "DOG" | "CAT" | "REPTILE" | "OTHER";
+
+export type PetPicture = {
+  publicUrl: string;
+};
+
+export type PetOwnerProfile = {
+  id: string;
+  fullName: string;
+  username: string;
+  email: string;
+  phone: string;
+  profileImageUrl: string;
+};
+
+export type Pet = {
+  id: string;
+  petOwnerId?: string;
+  name: string;
+  age: number | string;
+  breed: string;
+  category: PetCategory;
+  petPictures: PetPicture[];
+};
+
+export type PetOwnerProfileResponse = {
+  success: boolean;
+  message: string;
+  data: PetOwnerProfile;
+};
+
+export type UpdatePetOwnerProfilePayload = {
+  fullName: string;
+  username: string;
+  phone?: string;
+  profileImage?: File | null;
+  profileImageUrl?: string;
+};
+
+export type PetsResponse = {
+  success: boolean;
+  message: string;
+  data: Pet[];
+};
+
+export type PetResponse = {
+  success: boolean;
+  message: string;
+  data: Pet;
+};
+
+export type EditPetOwnerProfileModalProps = {
+  profile: PetOwnerProfile;
+  isSaving: boolean;
+  error?: string;
+  onCancel: () => void;
+  onSubmit: (data: PetOwnerProfileFormData) => void;
+};
+
+export type PetOwnerProfileFieldProps = {
+  label: string;
+  error?: string;
+  inputProps: InputHTMLAttributes<HTMLInputElement>;
+};
+
+export type PetActionsMenuProps = {
+  petName: string;
+  onEdit: () => void;
+  onDelete: () => void;
+};
+
+export type MyPetsSectionProps = {
+  pets: Pet[];
+  onAddPet: () => void;
+  onEditPet: (petId: string) => void;
+  onDeletePet: (pet: Pet) => void;
+  onBookAppointment: (petId: string) => void;
+};
+
+export type PetProfileCardProps = {
+  pet: Pet;
+  onEdit: (petId: string) => void;
+  onDelete: (pet: Pet) => void;
+  onBookAppointment: (petId: string) => void;
+};
+
+export type PetOwnerProfileHeaderProps = {
+  profile: PetOwnerProfile;
+  onEditProfile: () => void;
+};
+
+export type ProfileMetaProps = {
+  icon: ReactNode;
+  value: string;
+};
+
+export interface PetFormProps {
+  onSubmitSuccess?: (newPet: PetResponse) => void;
+  onCancel?: () => void;
+}
+````
+
+## File: Frontend/src/features/Pet Owner/SelectPet/components/ExistingPetCard.tsx
+````typescript
+import {
+  CalendarDays,
+  MoreVertical,
+  UserRound,
+} from "lucide-react";
+
+import Button from "@/shared/components/Button/Button";
+import Card from "@/shared/components/Card/Card";
+
+import type { ExistingPet, ExistingPetCardProps } from "../types/selectPet.types";
+
+const formatCategory = (category: ExistingPet["category"]) => {
+  return (
+    category.charAt(0).toUpperCase() +
+    category.slice(1).toLowerCase()
+  );
+};
+
+const ExistingPetCard = ({
+  pet,
+  onSelect,
+}: ExistingPetCardProps) => {
+  return (
+    <Card
+      className="
+        overflow-hidden border border-slate-200
+        bg-white p-4 shadow-sm
+        transition duration-300
+        hover:-translate-y-1 hover:shadow-lg
+      "
+    >
+      <div className="flex gap-4">
+        <div className="h-40 w-36 shrink-0 overflow-hidden rounded-2xl bg-[#EAF7F5] sm:h-44 sm:w-40">
+          <img
+            src={pet.profileImageUrl}
+            alt={pet.name}
+            className="h-full w-full object-cover transition duration-300 hover:scale-105"
+          />
+        </div>
+
+        <div className="flex min-w-0 flex-1 flex-col">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-black text-[#101b3d]">
+                {pet.name}
+              </h2>
+
+              <p className="mt-2 text-sm font-semibold text-slate-500">
+                {formatCategory(pet.category)}
+
+                <span className="mx-2 text-[#078b91]">•</span>
+
+                {pet.breed}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              aria-label={`More options for ${pet.name}`}
+              className="rounded-lg p-1.5 text-slate-500 transition hover:bg-slate-100 hover:text-[#078b91]"
+            >
+              <MoreVertical size={20} />
+            </button>
+          </div>
+
+          <div className="mt-5 space-y-3">
+            <div className="flex items-center gap-2 text-sm font-medium text-slate-600">
+              <CalendarDays size={17} className="text-[#078b91]" />
+
+              <span>
+                {pet.age} {pet.age === 1 ? "Year" : "Years"}
+              </span>
+            </div>
+
+            {pet.gender && (
+              <div className="flex items-center gap-2 text-sm font-medium text-slate-600">
+                <UserRound size={17} className="text-[#078b91]" />
+                <span>{pet.gender}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <Button
+        type="button"
+        variant="outline"
+        className="
+          mt-4 h-11 w-full
+          border-[#078b91] text-[#078b91]
+          hover:bg-[#078b91] hover:text-white
+        "
+        onClick={() => onSelect(pet)}
+      >
+        Select Pet
+      </Button>
+    </Card>
+  );
+};
+
+export default ExistingPetCard;
+````
+
+## File: Frontend/src/features/Pet Owner/SelectPet/components/ExistingPetsSection.tsx
+````typescript
+import Card from "@/shared/components/Card/Card";
+
+import type { ExistingPetsSectionProps } from "../types/selectPet.types";
+import ExistingPetCard from "./ExistingPetCard";
+
+const ExistingPetsSection = ({
+  pets,
+  onSelectPet,
+}: ExistingPetsSectionProps) => {
+  if (pets.length === 0) {
+    return (
+      <Card
+        className="
+          mt-10 border border-dashed border-slate-300
+          bg-white px-6 py-12 text-center shadow-none
+        "
+      >
+        <h2 className="text-xl font-black text-[#101b3d]">
+          No existing pets found
+        </h2>
+
+        <p className="mt-2 text-sm font-medium text-slate-500">
+          Add a pet from your profile before continuing.
+        </p>
+      </Card>
+    );
+  }
+
+  return (
+    <section className="mt-10">
+      <div className="mb-5">
+        <h2 className="text-2xl font-black text-[#101b3d]">
+          Existing Pets
+        </h2>
+
+        <p className="mt-1 text-sm font-medium text-slate-500">
+          Select a pet to continue.
+        </p>
+      </div>
+
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {pets.map((pet) => (
+          <ExistingPetCard
+            key={pet.id}
+            pet={pet}
+            onSelect={onSelectPet}
+          />
+        ))}
+      </div>
+    </section>
+  );
+};
+
+export default ExistingPetsSection;
+````
+
+## File: Frontend/src/features/Pet Owner/SelectPet/types/selectPet.types.ts
+````typescript
+export type PetCategory = "DOG" | "CAT" | "BIRD" | "REPTILE" | "OTHER";
+
+export type ExistingPet = {
+  id: string;
+  name: string;
+  breed: string;
+  category: PetCategory;
+  age: number;
+  gender?: string;
+  profileImageUrl: string;
+};
+
+export type SelectPetAction = "report-issue" | "book-appointment";
+
+export type ExistingPetsSectionProps = {
+  pets: ExistingPet[];
+  onSelectPet: (pet: ExistingPet) => void;
+};
+
+export type ExistingPetCardProps = {
+  pet: ExistingPet;
+  onSelect: (pet: ExistingPet) => void;
+};
+````
+
+## File: Frontend/src/features/PetOwnerDashboard/api/petOwnerDashboard.api.ts
+````typescript
+import {api} from "@/features/api interface/axios.interface";
+
+import type {
+  PetOwnerDashboardResponse,
+} from "../types/petOwnerDashboard.types";
+
+export const getPetOwnerDashboardApi =
+  async (): Promise<PetOwnerDashboardResponse> => {
+    const response =
+      await api.get<PetOwnerDashboardResponse>(
+        "/pet-owner/dashboard",
+      );
+
+    return response.data;
+  };
+````
+
+## File: Frontend/src/features/PetOwnerDashboard/components/DashboardHeader.tsx
+````typescript
+import { Bell } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
+import type {
+  DashboardHeaderProps,
+} from "../types/petOwnerDashboard.types";
+
+const DashboardHeader = ({
+  user,
+}: DashboardHeaderProps) => {
+  const navigate = useNavigate();
+  const firstName =
+    user.fullName.split(" ")[0] || user.fullName;
+
+  return (
+    <header className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h1 className="text-3xl font-black tracking-[-0.04em] text-[#101b3d]">
+          Hi, {firstName}!
+        </h1>
+
+        <p className="mt-2 text-sm font-medium text-slate-500">
+          Here&apos;s what&apos;s happening with your pets today.
+        </p>
+      </div>
+
+      <div className="flex items-center gap-4">
+        <button
+          type="button"
+          aria-label="Notifications"
+          className="relative flex h-11 w-11 items-center justify-center rounded-full text-[#101b3d] transition hover:bg-slate-100"
+        >
+          <Bell size={23} />
+
+          <span className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-black text-white">
+            3
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => navigate("/pet-owner/profile")}
+          className="flex h-12 w-12 overflow-hidden rounded-full bg-[#EAF7F5] transition hover:ring-4 hover:ring-[#078b91]/10"
+          aria-label="Open pet owner profile"
+        >
+          <img
+            src={user.profileImageUrl}
+            alt={user.fullName}
+            className="h-full w-full object-cover"
+          />
+        </button>
+      </div>
+    </header>
+  );
+};
+
+export default DashboardHeader;
+````
+
+## File: Frontend/src/features/PetOwnerDashboard/components/DashboardStats.tsx
+````typescript
+import {
+  ArrowRight,
+  FileText,
+  PawPrint,
+} from "lucide-react";
+
+import { useNavigate } from "react-router-dom";
+
+import Card from "@/shared/components/Card/Card";
+
+import type {
+  DashboardStatsProps,
+  StatusCountProps,
+} from "../types/petOwnerDashboard.types";
+
+const DashboardStats = ({
+  counts,
+}: DashboardStatsProps) => {
+  const navigate = useNavigate();
+
+  return (
+    <section className="mt-7 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+      {/* Pets */}
+      <Card className="p-6">
+        <div className="flex items-center gap-5">
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-[#EAF7F5] text-[#078b91]">
+            <PawPrint size={35} />
+          </div>
+
+          <div>
+            <p className="text-sm font-black text-[#101b3d]">
+              My Pets
+            </p>
+
+            <h2 className="mt-1 text-4xl font-black text-[#101b3d]">
+              {counts.totalPets}
+            </h2>
+
+            <button
+              type="button"
+              onClick={() => navigate("/pet-owner/profile")}
+              className="mt-3 flex items-center gap-2 text-sm font-bold text-[#078b91]"
+            >
+              View all pets
+              <ArrowRight size={16} />
+            </button>
+          </div>
+        </div>
+      </Card>
+
+      {/* Appointments without icon */}
+      <Card className="p-6">
+        <div className="grid grid-cols-[1fr_auto] gap-6">
+          <div>
+            <p className="text-sm font-black text-[#101b3d]">
+              Total Appointments
+            </p>
+
+            <h2 className="mt-2 text-4xl font-black text-[#101b3d]">
+              {counts.totalAppointments}
+            </h2>
+
+            <button
+              type="button"
+              onClick={() =>
+                navigate("/pet-owner/appointments")
+              }
+              className="mt-4 flex items-center gap-2 text-sm font-bold text-blue-600"
+            >
+              View all appointments
+              <ArrowRight size={16} />
+            </button>
+          </div>
+
+          <div className="border-l border-slate-200 pl-6">
+            <StatusCount
+              label="Upcoming"
+              value={counts.upcomingAppointments}
+              className="text-blue-600"
+            />
+
+            <StatusCount
+              label="Completed"
+              value={counts.completedAppointments}
+              className="mt-3 text-emerald-600"
+            />
+
+            <StatusCount
+              label="Cancelled"
+              value={counts.cancelledAppointments}
+              className="mt-3 text-red-500"
+            />
+          </div>
+        </div>
+      </Card>
+
+      {/* Reports */}
+      <Card className="p-6 md:col-span-2 xl:col-span-1">
+        <div className="flex items-center gap-5">
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-orange-50 text-orange-500">
+            <FileText size={35} />
+          </div>
+
+          <div>
+            <p className="text-sm font-black text-[#101b3d]">
+              Reports
+            </p>
+
+            <h2 className="mt-1 text-4xl font-black text-[#101b3d]">
+              {counts.totalReports}
+            </h2>
+
+            <button
+              type="button"
+              onClick={() => navigate("/pet-owner/reports")}
+              className="mt-3 flex items-center gap-2 text-sm font-bold text-[#078b91]"
+            >
+              View all reports
+              <ArrowRight size={16} />
+            </button>
+          </div>
+        </div>
+      </Card>
+    </section>
+  );
+};
+
+const StatusCount = ({
+  label,
+  value,
+  className = "",
+}: StatusCountProps) => {
+  return (
+    <div className={className}>
+      <p className="text-xs font-bold">{label}</p>
+      <p className="mt-0.5 text-sm font-black">{value}</p>
+    </div>
+  );
+};
+
+export default DashboardStats;
+````
+
+## File: Frontend/src/features/PetOwnerDashboard/components/MyPetsPreview.tsx
+````typescript
+import {
+  ArrowRight,
+  PawPrint,
+  Plus,
+} from "lucide-react";
+
+import { useNavigate } from "react-router-dom";
+
+import Button from "@/shared/components/Button/Button";
+import Card from "@/shared/components/Card/Card";
+
+import type { MyPetsPreviewProps } from "../types/petOwnerDashboard.types";
+
+import PetPreviewCard from "./PetPreviewCard";
+
+const MyPetsPreview = ({ pets }: MyPetsPreviewProps) => {
+  const navigate = useNavigate();
+
+  return (
+    <Card className="min-w-0 p-5 sm:p-6">
+      {/* Header */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <PawPrint size={25} className="text-[#078b91]" />
+
+          <h2 className="text-xl font-black text-[#101b3d]">
+            My Pets
+          </h2>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => navigate("/pet-owner/profile")}
+          className="flex w-fit items-center gap-2 text-sm font-black text-[#078b91]"
+        >
+          View All Pets
+          <ArrowRight size={17} />
+        </button>
+      </div>
+
+      {pets.length === 0 ? (
+        <div className="mt-5 rounded-2xl border border-dashed border-slate-300 px-5 py-12 text-center">
+          <PawPrint
+            size={45}
+            className="mx-auto text-[#D4E2E0]"
+          />
+
+          <h3 className="mt-4 text-lg font-black text-[#101b3d]">
+            No pets added yet
+          </h3>
+
+          <p className="mt-2 text-sm font-medium text-slate-500">
+            Add your first pet to book appointments.
+          </p>
+
+          <Button
+            type="button"
+            className="mx-auto mt-5 flex w-auto items-center gap-2 px-5"
+            onClick={() => navigate("/pet-owner/pets/add")}
+          >
+            <Plus size={17} />
+            Add New Pet
+          </Button>
+        </div>
+      ) : (
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {pets.slice(0, 3).map((pet) => (
+            <PetPreviewCard key={pet.id} pet={pet} />
+          ))}
+        </div>
+      )}
+
+      {/* Bottom Add Pet Button */}
+      <div className="mt-5 flex justify-end">
+        <Button
+          type="button"
+          variant="outline"
+          className="flex h-10 w-auto items-center gap-2 border-[#078b91] px-5 text-[#078b91]"
+          onClick={() => navigate("/pet-owner/pets/add")}
+        >
+          <Plus size={17} />
+          Add New Pet
+        </Button>
+      </div>
+    </Card>
+  );
+};
+
+export default MyPetsPreview;
+````
+
+## File: Frontend/src/features/PetOwnerDashboard/components/PetPreviewCard.tsx
+````typescript
+import {
+  CalendarDays,
+  EllipsisVertical,
+} from "lucide-react";
+
+import { useNavigate } from "react-router-dom";
+
+import Button from "@/shared/components/Button/Button";
+import Card from "@/shared/components/Card/Card";
+
+import type {
+  PetCategory,
+  PetPreviewCardProps,
+} from "../types/petOwnerDashboard.types";
+
+const categoryImages: Record<PetCategory, string> = {
+  DOG: "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=700&q=80",
+
+  CAT: "https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=700&q=80",
+
+  REPTILE:
+    "https://images.unsplash.com/photo-1504450874802-0ba2bcd9b5ae?auto=format&fit=crop&w=700&q=80",
+
+  OTHER:
+    "https://images.unsplash.com/photo-1552728089-57bdde30beb3?auto=format&fit=crop&w=700&q=80",
+};
+
+const categoryLabels: Record<PetCategory, string> = {
+  DOG: "Dog",
+  CAT: "Cat",
+  REPTILE: "Reptile",
+  OTHER: "Bird",
+};
+
+const PetPreviewCard = ({ pet }: PetPreviewCardProps) => {
+  const navigate = useNavigate();
+
+  const age = Number(pet.age);
+
+  return (
+    <Card className="min-w-0 overflow-visible p-3">
+      {/* Image */}
+      <div className="relative h-44 overflow-hidden rounded-2xl bg-[#EAF7F5]">
+        <img
+          src={categoryImages[pet.category]}
+          alt={pet.name}
+          className="h-full w-full object-cover transition duration-300 hover:scale-105"
+        />
+
+        <span className="absolute right-3 top-3 rounded-lg bg-white/90 px-3 py-1 text-xs font-black text-[#078b91] shadow-sm">
+          {categoryLabels[pet.category]}
+        </span>
+      </div>
+
+      {/* Information */}
+      <div className="px-1 pb-1 pt-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h3 className="truncate text-lg font-black text-[#101b3d]">
+              {pet.name}
+            </h3>
+
+            <p className="mt-1 truncate text-sm font-semibold text-slate-500">
+              {pet.breed}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            aria-label={`More actions for ${pet.name}`}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[#101b3d] transition hover:bg-slate-100"
+          >
+            <EllipsisVertical size={19} />
+          </button>
+        </div>
+
+        <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-slate-500">
+          <CalendarDays size={16} className="shrink-0 text-[#078b91]" />
+
+          <span>
+            {age} {age === 1 ? "Year" : "Years"}
+          </span>
+        </div>
+      </div>
+
+      <Button
+        type="button"
+        variant="outline"
+        className="mt-4 flex h-10 w-full items-center justify-center gap-2 whitespace-nowrap border-[#078b91] px-3 text-xs text-[#078b91]"
+        onClick={() => navigate(`/doctors?petId=${pet.id}`)}
+      >
+        <CalendarDays size={15} />
+        Book Appointment
+      </Button>
+    </Card>
+  );
+};
+
+export default PetPreviewCard;
+````
+
+## File: Frontend/src/features/PetOwnerDashboard/components/QuickActions.tsx
+````typescript
+import {
+  ArrowRight,
+  CalendarPlus,
+  FileText,
+  HeartPulse,
+} from "lucide-react";
+
+import { useNavigate } from "react-router-dom";
+
+import Card from "@/shared/components/Card/Card";
+
+const quickActions = [
+  {
+    title: "Book Appointment",
+    description: "Find and book a vet appointment",
+    icon: <CalendarPlus size={26} />,
+    iconClass: "bg-[#EAF7F5] text-[#078b91]",
+    path: "/doctors",
+  },
+  {
+    title: "Report Issue",
+    description: "Report an issue for your pet",
+    icon: <FileText size={26} />,
+    iconClass: "bg-orange-50 text-orange-500",
+    path: "/pet-owner/select-pet?action=report-issue",
+  },
+  {
+    title: "Health Records",
+    description: "View your pet's health history",
+    icon: <HeartPulse size={26} />,
+    iconClass: "bg-blue-50 text-blue-600",
+    path: "/pet-owner/reports",
+  },
+];
+
+const QuickActions = () => {
+  const navigate = useNavigate();
+
+  return (
+    <Card className="p-5">
+      <h2 className="text-xl font-black text-[#101b3d]">
+        Quick Actions
+      </h2>
+
+      <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {quickActions.map((action) => (
+          <button
+            key={action.title}
+            type="button"
+            onClick={() => navigate(action.path)}
+            className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 text-left transition hover:-translate-y-0.5 hover:border-[#078b91]/30 hover:shadow-sm"
+          >
+            <div
+              className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full ${action.iconClass}`}
+            >
+              {action.icon}
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <h3 className="text-sm font-black text-[#101b3d]">
+                {action.title}
+              </h3>
+
+              <p className="mt-1 text-xs font-medium leading-5 text-slate-500">
+                {action.description}
+              </p>
+            </div>
+
+            <ArrowRight
+              size={18}
+              className="shrink-0 text-[#078b91]"
+            />
+          </button>
+        ))}
+      </div>
+    </Card>
+  );
+};
+
+export default QuickActions;
+````
+
+## File: Frontend/src/features/PetOwnerDashboard/components/UpcomingAppointments.tsx
+````typescript
+import {
+  ArrowRight,
+  CalendarDays,
+  Clock3,
+  MapPin,
+} from "lucide-react";
+
+import { useNavigate } from "react-router-dom";
+
+import Card from "@/shared/components/Card/Card";
+
+import type {
+  UpcomingAppointmentsProps,
+} from "../types/petOwnerDashboard.types";
+
+const petImages = [
+  "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=200&q=80",
+  "https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=200&q=80",
+];
+
+const formatDate = (date: string) => {
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(date));
+};
+
+const formatTime = (date: string) => {
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(date));
+};
+
+const UpcomingAppointments = ({
+  appointments,
+}: UpcomingAppointmentsProps) => {
+  const navigate = useNavigate();
+
+  return (
+    // <Card className="p-5">
+    //   <div className="flex items-center justify-between gap-3">
+    //     <h2 className="text-xl font-black text-[#101b3d]">
+    //       Upcoming Appointments
+    //     </h2>
+
+    //     <button
+    //       type="button"
+    //       onClick={() =>
+    //         navigate("/pet-owner/appointments")
+    //       }
+    //       className="flex items-center gap-2 text-sm font-black text-[#078b91]"
+    //     >
+    //       View All
+    //       <ArrowRight size={17} />
+    //     </button>
+    //   </div>
+
+    //   <div className="mt-5 space-y-3">
+    //     {appointments.length === 0 ? (
+    //       <div className="rounded-2xl border border-dashed border-slate-300 px-5 py-10 text-center">
+    //         <p className="text-sm font-bold text-slate-500">
+    //           No upcoming appointments.
+    //         </p>
+    //       </div>
+    //     ) : (
+    //       appointments.slice(0, 2).map((appointment, index) => (
+    //         <button
+    //           key={appointment.id}
+    //           type="button"
+    //           onClick={() =>
+    //             navigate(
+    //               `/pet-owner/appointments/${appointment.id}`,
+    //             )
+    //           }
+    //           className="flex w-full items-start gap-4 rounded-2xl border border-slate-200 p-4 text-left transition hover:border-[#078b91]/30 hover:bg-[#F8FCFB]"
+    //         >
+    //           <div className="h-14 w-14 shrink-0 overflow-hidden rounded-full bg-[#EAF7F5]">
+    //             <img
+    //               src={petImages[index % petImages.length]}
+    //               alt={appointment.petName}
+    //               className="h-full w-full object-cover"
+    //             />
+    //           </div>
+
+    //           <div className="min-w-0 flex-1">
+    //             <div className="flex items-start justify-between gap-3">
+    //               <div>
+    //                 <h3 className="font-black text-[#101b3d]">
+    //                   {appointment.petName}
+    //                 </h3>
+
+    //                 <p className="mt-1 text-sm font-semibold text-slate-600">
+    //                   {appointment.doctorName}
+    //                 </p>
+    //               </div>
+
+    //               <span className="rounded-lg bg-[#EAF7F5] px-3 py-1 text-xs font-black text-[#078b91]">
+    //                 {appointment.appointmentType}
+    //               </span>
+    //             </div>
+
+    //             <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-xs font-semibold text-slate-500">
+    //               <span className="flex items-center gap-2">
+    //                 <CalendarDays size={14} />
+    //                 {formatDate(appointment.checkupTime)}
+    //               </span>
+
+    //               <span className="flex items-center gap-2">
+    //                 <Clock3 size={14} />
+    //                 {formatTime(appointment.checkupTime)}
+    //               </span>
+
+    //               <span className="flex items-center gap-2">
+    //                 <MapPin size={14} />
+    //                 {appointment.clinicAddress}
+    //               </span>
+    //             </div>
+    //           </div>
+
+    //           <ArrowRight
+    //             size={18}
+    //             className="mt-5 shrink-0 text-[#078b91]"
+    //           />
+    //         </button>
+    //       ))
+    //     )}
+    //   </div>
+
+    //   <button
+    //     type="button"
+    //     onClick={() =>
+    //       navigate("/pet-owner/appointments")
+    //     }
+    //     className="mt-5 flex items-center gap-2 text-sm font-black text-[#078b91]"
+    //   >
+    //     View All Appointments
+    //     <ArrowRight size={17} />
+    //   </button>
+    // </Card>
+    <p>Hello</p>
+  );
+};
+
+export default UpcomingAppointments;
+````
+
+## File: Frontend/src/features/PetOwnerDashboard/data/dashboard.data.ts
+````typescript
+import type {
+  PetOwnerDashboardData,
+} from "../types/petOwnerDashboard.types";
+
+export const dashboardData: PetOwnerDashboardData = {
+  user: {
+    id: "user-1",
+    fullName: "Ayesha Khan",
+    profileImageUrl:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80",
+  },
+
+  counts: {
+    totalPets: 3,
+    totalAppointments: 8,
+    upcomingAppointments: 2,
+    completedAppointments: 5,
+    cancelledAppointments: 1,
+    totalReports: 4,
+  },
+
+  pets: [
+    {
+      id: "pet-1",
+      petOwnerId: "user-1",
+      name: "Bruno",
+      age: 3,
+      breed: "German Shepherd",
+      category: "DOG",
+    },
+    {
+      id: "pet-2",
+      petOwnerId: "user-1",
+      name: "Kitty",
+      age: 2,
+      breed: "Persian Cat",
+      category: "CAT",
+    },
+    {
+      id: "pet-3",
+      petOwnerId: "user-1",
+      name: "Coco",
+      age: 1,
+      breed: "Parrot",
+      category: "OTHER",
+    },
+  ],
+
+  upcomingAppointments: [
+    {
+      id: "appointment-1",
+      petId: "pet-1",
+      petName: "Bruno",
+      doctorId: "doctor-1",
+      doctorName: "Dr. Ayesha Khan",
+      appointmentType: "Checkup",
+      checkupTime: "2026-05-24T10:00:00.000Z",
+      clinicAddress: "Downtown Pet Clinic",
+      status: "PENDING",
+    },
+    {
+      id: "appointment-2",
+      petId: "pet-2",
+      petName: "Kitty",
+      doctorId: "doctor-2",
+      doctorName: "Dr. Ali Raza",
+      appointmentType: "Vaccination",
+      checkupTime: "2026-05-28T14:30:00.000Z",
+      clinicAddress: "City Pet Care Hospital",
+      status: "PENDING",
+    },
+  ],
+};
+````
+
+## File: Frontend/src/features/PetOwnerDashboard/pages/PetOwnerDashboardPage.tsx
+````typescript
+import DashboardBanner from "../components/DashboardBanner";
+import DashboardHeader from "../components/DashboardHeader";
+import DashboardSidebar from "../components/DashboardSidebar";
+import DashboardStats from "../components/DashboardStats";
+import MyPetsPreview from "../components/MyPetsPreview";
+import QuickActions from "../components/QuickActions";
+import UpcomingAppointments from "../components/UpcomingAppointments";
+
+import { dashboardData } from "../data/dashboard.data";
+
+const PetOwnerDashboardPage = () => {
+  return (
+    <main className="min-h-screen bg-[#F8FAFA] text-[#20263D]">
+      <DashboardSidebar />
+
+      <section className="min-h-screen px-4 py-6 sm:px-6 lg:ml-[260px] lg:px-8">
+        <div className="mx-auto max-w-[1500px]">
+          <DashboardHeader user={dashboardData.user} />
+
+          <DashboardStats counts={dashboardData.counts} />
+
+          <section className="mt-5 grid gap-5 2xl:grid-cols-[minmax(0,1fr)_390px]">
+            <MyPetsPreview pets={dashboardData.pets} />
+
+            <UpcomingAppointments
+              appointments={dashboardData.upcomingAppointments}
+            />
+          </section>
+
+          <div className="mt-5">
+            <QuickActions />
+          </div>
+
+          <div className="mt-5">
+            <DashboardBanner />
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+};
+
+export default PetOwnerDashboardPage;
+````
+
+## File: Frontend/src/features/PetOwnerDashboard/petOwnerDashboard.route.tsx
+````typescript
+import PetOwnerDashboardPage from "./pages/PetOwnerDashboardPage";
+
+export const petOwnerDashboardRoutes = [
+  {
+    path: "/pet-owner/dashboard",
+    element: <PetOwnerDashboardPage />,
+  },
+];
+````
+
+## File: Frontend/src/features/PetOwnerDashboard/types/petOwnerDashboard.types.ts
+````typescript
+import type { ReactNode } from "react";
+
+export type PetCategory = "DOG" | "CAT" | "REPTILE" | "OTHER";
+
+export type Pet = {
+  id: string;
+  petOwnerId: string;
+  name: string;
+  age: number | string;
+  breed: string;
+  category: PetCategory;
+};
+
+export type AppointmentStatus =
+  | "PENDING"
+  | "COMPLETED"
+  | "CANCELLED";
+
+export type DashboardAppointment = {
+  id: string;
+  petId: string;
+  petName: string;
+  doctorId: string;
+  doctorName: string;
+  appointmentType: string;
+  checkupTime: string;
+  clinicAddress: string;
+  status: AppointmentStatus;
+};
+
+export type DashboardCounts = {
+  totalPets: number;
+  totalAppointments: number;
+  upcomingAppointments: number;
+  completedAppointments: number;
+  cancelledAppointments: number;
+  totalReports: number;
+};
+
+export type DashboardUser = {
+  id: string;
+  fullName: string;
+  profileImageUrl: string;
+};
+
+export type PetOwnerDashboardData = {
+  user: DashboardUser;
+  counts: DashboardCounts;
+  pets: Pet[];
+  upcomingAppointments: DashboardAppointment[];
+};
+
+export type PetOwnerDashboardResponse = {
+  success: boolean;
+  message: string;
+  data: PetOwnerDashboardData;
+};
+
+export type DashboardHeaderProps = {
+  user: DashboardUser;
+};
+
+export type DashboardStatsProps = {
+  counts: DashboardCounts;
+};
+
+export type StatusCountProps = {
+  label: string;
+  value: number;
+  className?: string;
+};
+
+export type DashboardSidebarItem = {
+  label: string;
+  path: string;
+  icon: ReactNode;
+};
+
+export type UpcomingAppointmentsProps = {
+  appointments: DashboardAppointment[];
+};
+
+export type PetPreviewCardProps = {
+  pet: Pet;
+};
+
+export type MyPetsPreviewProps = {
+  pets: Pet[];
+};
+````
+
+## File: Frontend/src/features/seller/components/ProductPreviewCard.tsx
+````typescript
+import { FaMapMarkerAlt, FaShoppingBag } from "react-icons/fa";
+import Button from "@/shared/components/Button/Button";
+import Card from "@/shared/components/Card/Card";
+import type { ProductPreviewCardProps } from "../types/seller.types";
+
+const ProductPreviewCard = ({
+  image,
+  title,
+  category,
+  price,
+  stock,
+  location,
+  description,
+  status,
+}: ProductPreviewCardProps) => {
+  return (
+    <Card>
+      <div className="mb-5 flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-gray-900">
+          Marketplace Preview
+        </h2>
+
+        <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
+          {status}
+        </span>
+      </div>
+
+      <div className="flex h-56 items-center justify-center rounded-xl bg-gray-50">
+        {image ? (
+          <img
+            src={image}
+            alt={title}
+            className="h-full max-h-56 rounded-xl object-contain"
+          />
+        ) : (
+          <p className="text-sm text-gray-400">Product image preview</p>
+        )}
+      </div>
+
+      <div className="mt-5">
+        <h3 className="text-base font-semibold text-gray-900">{title}</h3>
+        <p className="mt-1 text-sm text-gray-500">{category}</p>
+
+        <p className="mt-3 text-lg font-bold text-gray-900">PKR {price}</p>
+
+        <p className="mt-3 text-sm leading-6 text-gray-600">{description}</p>
+
+        <div className="mt-5 space-y-3 text-sm text-gray-600">
+          <p className="flex items-center gap-2">
+            <FaShoppingBag className="text-gray-400" />
+            Stock: {stock}
+          </p>
+
+          <p className="flex items-center gap-2">
+            <FaMapMarkerAlt className="text-gray-400" />
+            {location}
+          </p>
+        </div>
+
+        <Button className="mt-6 w-full">View in Marketplace</Button>
+      </div>
+    </Card>
+  );
+};
+
+export default ProductPreviewCard;
+````
+
+## File: Frontend/src/features/seller/components/SellerSidebar.tsx
+````typescript
+import { NavLink } from "react-router-dom";
+import {
+  FaBox,
+  FaChartPie,
+  FaClipboardList,
+  FaHeart,
+  FaPlusCircle,
+  FaShoppingCart,
+  FaStore,
+  FaUser,
+} from "react-icons/fa";
+
+const links = [
+  { label: "Dashboard", icon: FaChartPie, path: "/seller/dashboard" },
+  { label: "My Listings", icon: FaClipboardList, path: "/seller/listings" },
+  { label: "Add Product", icon: FaPlusCircle, path: "/seller/add-product" },
+  { label: "Orders", icon: FaShoppingCart, path: "/seller/orders" },
+  { label: "Stock", icon: FaBox, path: "/seller/stock" },
+  { label: "Saved Listings", icon: FaHeart, path: "/seller/saved-listings" },
+  { label: "Marketplace", icon: FaStore, path: "/marketplace1" },
+  { label: "Profile", icon: FaUser, path: "/seller/profile" },
+];
+
+const SellerSidebar = () => {
+  return (
+    <aside className="flex min-h-screen w-64 flex-col border-r border-gray-100 bg-white px-5 py-6">
+      <div className="mb-10">
+        <h2 className="text-xl font-bold text-[#178f95]">Pets Veta</h2>
+        <p className="text-xs text-gray-400">Care. Love. Trust.</p>
+      </div>
+
+      <nav className="flex-1 space-y-2">
+        {links.map(({ label, icon: Icon, path }) => (
+          <NavLink
+            key={label}
+            to={path}
+            className={({ isActive }) =>
+              `flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition ${
+                isActive
+                  ? "bg-[#e8f7f7] text-[#178f95]"
+                  : "text-gray-600 hover:bg-gray-50"
+              }`
+            }
+          >
+            <Icon className="text-sm" />
+            {label}
+          </NavLink>
+        ))}
+      </nav>
+
+      <div className="rounded-lg bg-[#178f95] p-4 text-white">
+        <p className="text-sm font-semibold">Need Help?</p>
+        <p className="text-xs opacity-90">Contact Support</p>
+      </div>
+    </aside>
+  );
+};
+
+export default SellerSidebar;
+````
+
+## File: Frontend/src/features/seller/components/SellerStatCard.tsx
+````typescript
+import Card from "@/shared/components/Card/Card";
+import type { SellerStatCardProps } from "../types/seller.types";
+
+const SellerStatCard = ({ title, value, subtitle }: SellerStatCardProps) => {
+  return (
+    <Card>
+      <p className="text-sm font-medium text-gray-500">{title}</p>
+      <h3 className="mt-2 text-2xl font-bold text-gray-900">{value}</h3>
+      <p className="mt-1 text-xs text-gray-400">{subtitle}</p>
+    </Card>
+  );
+};
+
+export default SellerStatCard;
+````
+
+## File: Frontend/src/features/seller/seller.routes.tsx
+````typescript
+// src/features/seller/routes/seller.routes.tsx
+
+import SellerDashboardPage from "../seller/pages/SellerDashboardPage";
+import SellerProductsPage from "../seller/pages/SellerProductsPage";
+import SellerProductFormPage from "../seller/pages/SellerProductFormPage";
+import SellerOrdersStockPage from "../seller/pages/SellerOrdersStockPage";
+import SellerSavedListingsPage from "../seller/pages/SellerSavedListingsPage";
+export const sellerRoutes = [
+  {
+    path: "/seller/dashboard",
+    element: <SellerDashboardPage />,
+  },
+  {
+    path: "/seller/listings",
+    element: <SellerProductsPage />,
+  },
+
+   {
+    path: "/seller/add-product",
+    element: <SellerProductFormPage />,
+  },
+  {
+    path: "/seller/edit-product/:id",
+    element: <SellerProductFormPage />,
+  },
+
+   {
+    path: "/seller/orders",
+    element: <SellerOrdersStockPage />,
+  },
+  {
+    path: "/seller/stock",
+    element: <SellerOrdersStockPage />,
+  },
+  {
+    path: "/seller/saved-listings",
+    element: <SellerSavedListingsPage />,
+  },
+];
+````
+
+## File: Frontend/src/features/Services/components/ServiceCard.tsx
+````typescript
+import type { ServiceCardProps } from "../types/services.types";
+
+const ServiceCard = ({
+  title,
+  description,
+  icon: Icon,
+  color,
+}: ServiceCardProps) => {
+  return (
+    <div className="group rounded-3xl bg-white p-6 shadow-[0_10px_35px_rgba(15,23,42,0.08)] transition hover:-translate-y-1 hover:shadow-[0_18px_45px_rgba(15,23,42,0.12)]">
+      <div
+        className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${color} text-2xl text-[#009f9d]`}
+      >
+        <Icon />
+      </div>
+
+      <h3 className="text-xl font-extrabold text-[#07182c]">
+        {title}
+      </h3>
+
+      <p className="mt-3 text-sm leading-6 text-slate-600">
+        {description}
+      </p>
+
+      <button
+        type="button"
+        className="mt-5 text-sm font-extrabold text-[#009f9d] transition group-hover:underline"
+      >
+        Learn More
+      </button>
+    </div>
+  );
+};
+
+export default ServiceCard;
+````
+
 ## File: Frontend/src/features/Services/index.tsx
 ````typescript
 export { default as servicesRoutes } from "./service.route";
 ````
 
-## File: Frontend/src/index.css
-````css
-@import "tailwindcss";
-
-
-html {
-    overflow-y: scroll;
-    /* Forces a single scrollbar track */
-    height: auto;
-}
-
-body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    overflow-x: hidden;
-}
-
-html.lenis,
-html.lenis body {
-    height: auto;
-}
-
-.lenis.lenis-smooth {
-    scroll-behavior: auto !important;
-}
-
-.lenis.lenis-smooth [data-lenis-prevent] {
-    overscroll-behavior: contain;
-}
-
-.lenis.lenis-stopped {
-    overflow: hidden;
-}
-
-.lenis.lenis-scrolling iframe {
-    pointer-events: none;
-}
-````
-
-## File: Frontend/src/main.tsx
+## File: Frontend/src/Global Provider/SmoothScroller.tsx
 ````typescript
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './app/App.tsx'
+import { useEffect } from "react";
+import Lenis from "@studio-freight/lenis";
 
+export default function SmoothScroll({ children }: { children: React.ReactNode }) {
+    useEffect(() => {
+        const lenis = new Lenis({
+            duration: 0.9,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            orientation: "vertical",
+            gestureOrientation: "vertical",
+            smoothWheel: true,
+            wheelMultiplier: 0.95,
+            touchMultiplier: 1.5,
+            infinite: false,
+            syncTouch: false,
+        });
 
-createRoot(document.getElementById('root')!).render(
+        // 1. Function to instantly snap Lenis to the top
+        const handleScrollToTop = () => {
+            lenis.scrollTo(0, { immediate: true });
+        };
 
-  <App />
+        // 2. Listen to browser navigation history changes natively
+        window.addEventListener("popstate", handleScrollToTop);
 
-)
+        // 3. Patch the standard history pushState to catch programmatic route clicks
+        const originalPushState = history.pushState;
+        history.pushState = function (...args) {
+            originalPushState.apply(this, args);
+            handleScrollToTop(); // Trigger scroll up when a new page is pushed
+        };
+
+        let rafId: number;
+        function raf(time: number) {
+            lenis.raf(time);
+            rafId = requestAnimationFrame(raf);
+        }
+
+        rafId = requestAnimationFrame(raf);
+
+        return () => {
+            lenis.destroy();
+            cancelAnimationFrame(rafId);
+            window.removeEventListener("popstate", handleScrollToTop);
+            history.pushState = originalPushState; // Restore native behavior on cleanup
+        };
+    }, []);
+
+    return <>{children}</>;
+}
 ````
 
 ## File: Frontend/src/ProtectedRoutes/DoctorProtectedRoutes.tsx
@@ -14774,67 +17412,92 @@ export default SearchBar;
 }
 ````
 
-## File: Backend/app/controllers/payment.controller.js
+## File: Backend/app/middleware/auth.middleware.js
 ````javascript
-const catchAsync = require('../utils/CatchAsync');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
-const { stripe } = require('../config/stripe');
-const prisma = require('../config/prisma');
-const { PaymentStatus } = require('@prisma/client')
-
-const stripeWebhook = async (req, res) => {
-    let event;
-
+const protect = async (req, res, next) => {
     try {
-        const sig = req.headers["stripe-signature"];
+        const authHeader = req.headers.authorization || "";
+        const bearerToken = authHeader.startsWith("Bearer ")
+            ? authHeader.split(" ")[1]
+            : null;
+        const token = req.cookies.accessToken || bearerToken;
+        console.log("Cookies in protect are ", req.cookies)
+        if (!token) {
+            console.log("No Token!");
+            return res.status(401).json({ success: false, err: 'Access token missing' });
 
-        event = stripe.webhooks.constructEvent(
-            req.body,
-            sig,
-            process.env.STRIPE_WEBHOOK_SECRET
-        );
-    } catch (err) {
-        console.log("Webhook signature error:", err.message);
-        return res.status(400).send(`Webhook Error: ${err.message}`);
+        }
+        const secret = process.env.JWT_ACCESS_SECRET;
+        const decoded = jwt.verify(token, secret);
+
+        req.user = decoded;
+        console.log("Requset is ", req.user);
+        next();
+
+    } catch (error) {
+        console.log("Error in jwt middleware", error.message);
+        if (error.name === "TokenExpiredError" || error.name === "JsonWebTokenError") {
+            return res.status(401).json({ success: false, err: "Token expired or invalid" });
+        }
+
+        return res.status(500).json({ success: false, err: error.message })
     }
+}
+
+const protectRefresh = async (req, res, next) => {
+    try {
+        const token = req.cookies.refreshToken;
+        if (!token) {
+            console.log("No Refresh Token Found!");
+            return res.status(401).json({ success: false, err: 'Session expired. Please log in again.' });
+        }
+
+        const secret = process.env.JWT_REFRESH_SECRET;
+        const decoded = jwt.verify(token, secret);
+
+        req.user = decoded;
+        next();
+
+    } catch (error) {
+        console.log("Error in refresh token middleware:", error.message);
 
 
-    switch (event.type) {
-
-
-        case "checkout.session.completed": {
-            const session = event.data.object;
-
-            const appointmentId = session.metadata.appointmentId;
-
-            await prisma.appointment.update({
-                where: { id: appointmentId },
-                data: {
-                    paymentStatus: PaymentStatus.PAID,
-
-                },
-            });
-
-            console.log("Payment successful:", appointmentId);
-            break;
+        if (error.name === "TokenExpiredError" || error.name === "JsonWebTokenError") {
+            return res.status(401).json({ success: false, err: "Session expired. Please log in again." });
         }
 
 
-        case "payment_intent.payment_failed": {
-            console.log("Payment failed");
-            break;
-        }
-
-        default:
-            console.log(`Unhandled event type: ${event.type}`);
+        return res.status(500).json({ success: false, err: error.message });
     }
+}
 
-    res.json({ received: true });
-};
+const protectOtp = async (req, res, next) => {
+    try {
+        const otpToken = req.cookies.otpToken;
+        console.log("OTP token is ", req.cookies.otpToken);
 
+        if (!otpToken) {
+            return res.status(400).json({ err: 'Invalid Cookie' })
+        }
+        const decoded = jwt.verify(otpToken, process.env.JWT_OTP_SECRET);
+        if (!decoded) {
+            return res.status(400).json({ err: 'Invalid Decoding in auth middleware' })
+        }
+        req.user = decoded;
+        next();
 
+    } catch (error) {
+        console.log("Protect Otp Err", error.message);
+        return res.status(500).json({ tokenErr: error.message })
+    }
+}
 module.exports = {
-    stripeWebhook
+    protect,
+    protectRefresh,
+    protectOtp
 }
 ````
 
@@ -14911,52 +17574,6 @@ Router
 
 
 
-module.exports = Router;
-````
-
-## File: Backend/app/routes/payment.routes.js
-````javascript
-const express = require('express');
-const Router = express.Router();
-const paymentController = require('../controllers/payment.controller');
-
-
-Router.post(
-    '/webhook',
-    express.raw({ type: 'application/json' }),
-    paymentController.stripeWebhook
-);
-
-module.exports = Router;
-````
-
-## File: Backend/app/routes/petOwner.routes.js
-````javascript
-const express = require('express');
-const authMiddleware = require('../middleware/auth.middleware');
-const authenticateRole = require('../middleware/authorizeRole.middleware');
-const petOwnerController = require('../controllers/petOwner.controller');
-const { petOwnerLimiter } = require('../middleware/rateLimiter')
-
-const Router = express.Router();
-
-
-
-Router
-    .route('/submit/pet-data')
-    .post(petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.registerPet)
-
-Router
-    .route('/submit/pet-issue')
-    .post(petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.registerPetIssue)
-
-Router
-    .route('/petOwner-data')
-    .get(petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.getPetOwnerById)
-
-Router
-    .route('/pets-data')
-    .get(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.getPetsData)
 module.exports = Router;
 ````
 
@@ -15129,6 +17746,59 @@ const handleAxiosError = (error: any) => {
         console.error("Non-Axios Error:", error);
     }
 };
+````
+
+## File: Frontend/src/features/Admin/components/AdminNavbar.tsx
+````typescript
+import { memo } from 'react';
+import { Bell, Menu } from 'lucide-react'
+import { useAuth } from '@/features/Auth/hooks/authhook';
+import type { AdminNavbarProps } from "../types/admin.types";
+
+const AdminNavbar = ({ onMenuClick }: AdminNavbarProps) => {
+    const { user } = useAuth();
+    return (
+        <header className="sticky top-0 z-30 flex h-[68px] items-center justify-between gap-4 border-b border-slate-200 bg-white px-4 shadow-sm sm:h-[76px] sm:px-6 lg:justify-end lg:px-10">
+            <button
+                type="button"
+                onClick={onMenuClick}
+                aria-label="Open sidebar"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-[#0f172a] transition hover:bg-slate-100 lg:hidden"
+            >
+                <Menu size={24} strokeWidth={2.4} />
+            </button>
+
+            <div className="flex items-center justify-end gap-3 sm:gap-8">
+            <button
+                type="button"
+                aria-label="Notifications"
+                className="relative cursor-pointer rounded-lg p-2 text-[#0f172a] transition hover:bg-slate-100"
+            >
+                <Bell size={27} strokeWidth={2.4} />
+                <span className="absolute right-0 top-0 flex h-5 w-5 items-center justify-center rounded-full bg-[#ef4444] text-[11px] font-black text-white">
+                    4
+                </span>
+            </button>
+
+            <button type="button" className="cursor-pointer flex items-center gap-2">
+                <img
+                    src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png"
+                    alt="Admin"
+                    className="h-10 w-10 rounded-full bg-[#dff5f3] sm:h-11 sm:w-11"
+                />
+                <div className="flex items-center gap-2">
+
+                    <p className="max-w-28 truncate rounded-full bg-[#078b91]/10 px-3 py-1 text-sm font-bold tracking-wider text-[#078b91] lowercase sm:max-w-none sm:text-[15px]">
+                        {user?.data?.role === 'Admin' ? user.data.username : 'Admin'}
+                    </p>
+                </div>
+            </button>
+            </div>
+        </header>
+    );
+};
+
+export default memo(AdminNavbar);
 ````
 
 ## File: Frontend/src/features/Admin/components/cards/StatsCard.tsx
@@ -15324,22 +17994,6 @@ export default StatCard
 // export default Sidebar;
 ````
 
-## File: Frontend/src/features/Admin/layout/MobileSidebar.tsx
-````typescript
-import Sidebar from "./Sidebar";
-
-interface Props {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-const MobileSidebar = ({ open, setOpen }: Props) => {
-  return <Sidebar sidebarOpen={open} setSidebarOpen={setOpen} />;
-};
-
-export default MobileSidebar;
-````
-
 ## File: Frontend/src/features/Admin/pages/AdminDoctorPage.tsx
 ````typescript
 import DoctorRequests from "../components/doctors/DoctorRequests";
@@ -15351,463 +18005,6 @@ const AdminDoctorPage = () => {
 };
 
 export default AdminDoctorPage;
-````
-
-## File: Frontend/src/features/Appointment/pages/BookAppointmentPage.tsx
-````typescript
-import { useEffect, useState } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { CheckCircle2, ArrowLeft } from "lucide-react";
-import PetForm from "../../Pet Owner/pet details/components/PetForm";
-import PetIssueReportForm from "../../Pet Owner/pet details/components/PetIssueReportForm";
-import Button from "../../../shared/components/Button/Button";
-import { useAuth } from "@/features/Auth/hooks/authhook";
-
-type CreatedPet = {
-  id: string;
-  name: string;
-};
-
-const BookAppointmentPage = () => {
-  const { id: doctorId } = useParams<{ id: string }>();
-  const [searchParams] = useSearchParams();
-  const { user } = useAuth()
-  const navigate = useNavigate();
-  const selectedCheckupTime = searchParams.get("checkupTime") || "";
-
-  const [step, setStep] = useState<1 | 2 | 3>(1);
-  const [createdPet, setCreatedPet] = useState<CreatedPet | null>(null);
-
-  const handlePetSubmitSuccess = (newPet: CreatedPet) => {
-    console.log("Successfully added pet for appointment:", newPet);
-    setCreatedPet(newPet);
-    setStep(2);
-  };
-
-  const handleIssueSubmitSuccess = (issueReport: unknown) => {
-    console.log("Successfully submitted issue report:", issueReport);
-    setStep(3);
-  };
-
-  const handleCancel = () => {
-    navigate(-1);
-  };
-  
-  if (step === 3) {
-    return (
-      <main className="min-h-screen bg-gradient-to-br from-[#f8fafc] to-[#f1f5f9] px-4 py-12 flex flex-col items-center justify-center font-sans">
-        <div className="w-full max-w-md bg-white rounded-3xl shadow-[0_15px_40px_rgba(15,23,42,0.06)] border border-slate-100 overflow-hidden p-8 flex flex-col items-center justify-center text-center">
-          <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mb-6 text-emerald-500 animate-bounce">
-            <CheckCircle2 size={48} />
-          </div>
-          <h2 className="text-3xl font-extrabold text-slate-800 mb-3">
-            Appointment Booked!
-          </h2>
-          <p className="text-slate-500 max-w-sm mb-8 leading-relaxed">
-            Your pet&apos;s issue report has been successfully submitted and the appointment has been booked. You will receive updates shortly.
-          </p>
-          <Button
-            onClick={() => navigate("/doctors")}
-            className="bg-[#0B8F5A] hover:bg-[#097b4d] text-white w-full py-4 rounded-2xl font-bold shadow-lg shadow-emerald-900/10 transition-transform duration-200 active:scale-[0.98]"
-          >
-            Return to Doctors List
-          </Button>
-        </div>
-      </main>
-    );
-  }
-
-  return (
-    <div className="relative min-h-screen flex flex-col">
-      {/* Sticky Step Progress Header bar */}
-      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 px-6 py-4 flex items-center justify-between shadow-sm">
-        <button
-          onClick={handleCancel}
-          className="flex items-center gap-2 text-slate-500 hover:text-slate-850 font-bold transition-colors duration-200"
-        >
-          <ArrowLeft size={18} />
-          <span>Back</span>
-        </button>
-
-        {/* Step Indicators */}
-        <div className="flex items-center gap-6">
-          {/* Step 1 */}
-          <div className="flex items-center gap-2">
-            <div
-              className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 ${step >= 1
-                ? "bg-[#6D3DD9] text-white"
-                : "bg-slate-100 text-slate-400"
-                }`}
-            >
-              1
-            </div>
-            <span className={`text-sm font-extrabold hidden sm:inline ${step === 1 ? "text-[#6D3DD9]" : "text-slate-400"}`}>
-              Register Pet
-            </span>
-          </div>
-
-          {/* Line separator */}
-          <div className="w-8 h-[2px] bg-slate-200" />
-
-          {/* Step 2 */}
-          <div className="flex items-center gap-2">
-            <div
-              className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 ${step >= 2
-                ? "bg-[#0B8F5A] text-white"
-                : "bg-slate-100 text-slate-400"
-                }`}
-            >
-              2
-            </div>
-            <span className={`text-sm font-extrabold hidden sm:inline ${step === 2 ? "text-[#0B8F5A]" : "text-slate-400"}`}>
-              Pet Issue Details
-            </span>
-          </div>
-        </div>
-
-        <div className="w-10 sm:w-16" /> {/* Spacer to center the progress indicator */}
-      </div>
-
-      {/* Render current step component */}
-      <div className="flex-1">
-        {step === 1 ? (
-          <PetForm
-            onSubmitSuccess={handlePetSubmitSuccess}
-            onCancel={handleCancel}
-          />
-        ) : (
-          <PetIssueReportForm
-            preselectedPetId={createdPet?.id}
-            doctorId={doctorId || ""}
-            preselectedCheckupTime={selectedCheckupTime}
-            onSubmitSuccess={handleIssueSubmitSuccess}
-            onCancel={handleCancel}
-          />
-        )}
-      </div>
-    </div>
-  );
-};
-
-export default BookAppointmentPage;
-````
-
-## File: Frontend/src/features/Appointment/pages/DoctorProfilePage.tsx
-````typescript
-import { Link, useParams } from "react-router-dom";
-import {
-    FaArrowLeft,
-    FaCheckCircle,
-    FaGraduationCap,
-    FaUserMd,
-
-} from "react-icons/fa";
-import { User } from 'lucide-react'
-
-import { getDoctorProfileData, type BookableSlot } from "../apis/doctorProfile.api";
-import { useEffect, useState } from "react";
-
-type DoctorType = {
-    id: string;
-    name: string;
-    image: string;
-    status: string;
-    specialty: string;
-    experience: number;
-    rating: number;
-    reviews: number;
-    location: string;
-    fees: number;
-    tags: string[];
-    about: string;
-    education: string;
-    qualification: string;
-    certification: string;
-    nextSlot: string;
-    specialization: string;
-    availableSlots: BookableSlot[];
-    todaySlots: BookableSlot[];
-    nextAvailable: BookableSlot | null;
-} | null;
-
-
-const DoctorProfilePage = () => {
-    console.log("Hittig Compoenents");
-    const { id } = useParams();
-    console.log("Id is ", id);
-
-    const [doctor, setDoctor] = useState<DoctorType>(null);
-    const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        const doctorProfileData = async () => {
-            setLoading(true);
-            if (id) {
-                const data = await getDoctorProfileData(id);
-                console.log("Doctor Profile Data", data);
-                console.log("Doctor is ", data);
-                setDoctor(data);
-            }
-            setLoading(false);
-        };
-        doctorProfileData();
-    }, [id])
-
-    if (!doctor) {
-        return (
-            <section className="min-h-screen bg-[#f5fbff] px-5 py-12 lg:px-16">
-                <div className="mx-auto max-w-4xl rounded-3xl bg-white p-8 text-center shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
-                    <h1 className="text-3xl font-extrabold text-[#07182c]">
-                        {loading ? "Loading..." : "Doctor Not Found"}
-                    </h1>
-
-                    <p className="mt-2 text-slate-500">
-                        The doctor profile you are looking for does not exist.
-                    </p>
-
-                    <Link
-                        to="/doctors"
-                        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#009f9d] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#007f7d]"
-                    >
-                        <FaArrowLeft />
-                        Back to Doctors
-                    </Link>
-                </div>
-            </section>
-        );
-    }
-
-    return (
-        <section className="min-h-screen bg-[#f5fbff] px-5 py-12 lg:px-16">
-            <div className="mx-auto max-w-7xl">
-                <Link
-                    to="/doctors"
-                    className="mb-6 inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-bold text-[#009f9d] shadow-sm transition hover:bg-[#eefafa]"
-                >
-                    <FaArrowLeft />
-                    Back to Doctors
-                </Link>
-
-                <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
-                    <div className="space-y-6">
-                        <div className="rounded-3xl bg-white p-6 shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
-                            <div className="grid gap-6 md:grid-cols-[220px_1fr]">
-                                <div className="relative h-60 overflow-hidden rounded-3xl bg-[#eefafa] flex justify-center items-center">
-                                    {
-                                        doctor.image.startsWith('/') ?
-                                            <img
-                                                src={doctor.image}
-                                                alt={doctor.name}
-                                                className="h-full w-full object-cover"
-                                            /> :
-                                            <User size={112} />
-                                    }
-
-                                   
-                                </div>
-
-                                <div>
-                                    <div className="flex flex-wrap items-center gap-2">
-                                        <h1 className="text-3xl font-extrabold text-[#07182c]">
-                                            {doctor.name}
-                                        </h1>
-
-                                        <FaCheckCircle className="text-xl text-[#009f9d]" />
-                                    </div>
-
-                                    <p className="mt-2 text-lg font-bold text-slate-500">
-                                        {doctor.specialization}
-                                    </p>
-
-                                    <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                                        <div className="rounded-2xl bg-[#f5fbff] p-4">
-                                            <p className="text-sm font-semibold text-slate-500">
-                                                Experience
-                                            </p>
-                                            <h3 className="mt-1 text-xl font-extrabold text-[#07182c]">
-                                                {doctor.experience} Years
-                                            </h3>
-                                        </div>
-
-
-
-
-
-                                        <div className="rounded-2xl bg-[#f5fbff] p-4">
-                                            <p className="text-sm font-semibold text-slate-500">
-                                                Consultation Fee
-                                            </p>
-                                            <h3 className="mt-1 text-xl font-extrabold text-[#07182c]">
-                                                Rs. {doctor.fees}
-                                            </h3>
-                                        </div>
-                                    </div>
-
-
-                                </div>
-                            </div>
-                        </div>
-                        <div className="rounded-3xl bg-white p-6 shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
-                            <h2 className="mb-4 flex items-center gap-2 text-xl font-extrabold text-[#07182c]">
-                                <FaGraduationCap className="text-[#009f9d]" />
-                                Education & Qualification
-                            </h2>
-
-                            <div className="space-y-4">
-                                <div>
-                                    <p className="text-sm font-bold text-slate-500">
-                                        Education
-                                    </p>
-                                    <p className="mt-1 font-semibold text-[#07182c]">
-                                        {doctor.education}
-                                    </p>
-                                </div>
-
-                                <div>
-                                    <p className="text-sm font-bold text-slate-500">
-                                        Qualification
-                                    </p>
-                                    <p className="mt-1 font-semibold text-[#07182c]">
-                                        {doctor.specialization}
-                                    </p>
-                                </div>
-
-
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <aside className="h-fit rounded-3xl bg-white p-6 shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
-                        <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#eefafa] text-2xl text-[#009f9d]">
-                            <FaUserMd />
-                        </div>
-
-                        <h2 className="text-2xl font-extrabold text-[#07182c]">
-                            Select Slot to Book Appointment
-                        </h2>
-
-                        <p className="mt-2 text-sm leading-6 text-slate-500">
-                            Select this doctor and continue to appointment form.
-                        </p>
-
-                        <div className="mt-5">
-                            <h3 className="text-sm font-extrabold text-[#07182c]">
-                                Available Slots
-                            </h3>
-
-                            {doctor.availableSlots?.length > 0 ? (
-                                <div className="mt-3 grid grid-cols-2 gap-2">
-                                    {doctor.availableSlots.slice(0, 8).map((slot) => (
-                                        <Link
-                                            key={`${slot.scheduleId}-${slot.startDateTime}`}
-                                            to={`/book-appointment/${id}?checkupTime=${encodeURIComponent(slot.startDateTime)}`}
-                                            className="rounded-xl border border-slate-200 px-3 py-2 text-center text-xs font-extrabold text-[#07182c] transition hover:border-[#009f9d] hover:bg-[#eefafa]"
-                                        >
-                                            <span className="block text-[11px] text-slate-500">
-                                                {slot.day}
-                                            </span>
-                                            {slot.startTime} - {slot.endTime}
-                                        </Link>
-                                    ))}
-                                </div>
-                            ) : (
-                                <p className="mt-3 rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-500">
-                                    No appointment slots available.
-                                </p>
-                            )}
-                        </div>
-
-                       
-                    </aside>
-                </div>
-            </div>
-        </section>
-    );
-};
-
-export default DoctorProfilePage;
-````
-
-## File: Frontend/src/features/Auth/api/loginuser.api.ts
-````typescript
-import axios from "axios"
-import type { LoginFormData } from "../schemas/login.schema";
-import { api } from "@/features/api interface/axios.interface";
-
-type Data = {
-    id: string,
-    email: string,
-    role: string,
-    username: string
-}
-
-export type ApiResponse = {
-    success: boolean,
-    message: string,
-    data: Data
-}
-
-export const userLogin = async<T>(data: LoginFormData): Promise<T> => {
-    try {
-        const response = await api.post("auth/login/user", data)
-        return response.data;
-    } catch (error) {
-        if (axios.isAxiosError(error)) {
-            if (error.response) {
-                if (error.response.status == 429) {
-                    throw new Error("Please wait for a minute")
-                }
-                console.log("Status Code", error.response?.status);
-                console.log("Response Data", error.response?.data)
-            }
-            else if (error.request) {
-                console.log("No Request Response Recieved from server", error.request)
-            }
-            else {
-                console.error("Axios setup error:", error.message);
-            }
-
-        }
-        else {
-            console.error("Non-Axios Error:", error);
-        }
-        throw error
-
-    }
-}
-
-
-export const verifyUser = async (): Promise<ApiResponse> => {
-
-    try {
-        const response = await api.get("auth/me",
-            {
-                withCredentials: true
-            }
-        )
-        return response.data;
-    } catch (error) {
-        if (axios.isAxiosError(error)) {
-            if (error.response) {
-                console.log("Status Code", error.response?.status);
-                console.log("Response Data", error.response?.data)
-            }
-            else if (error.request) {
-                console.log("No Request Response Recieved from server", error.request)
-            }
-            else {
-                console.error("Axios setup error:", error.message);
-            }
-
-        }
-        else {
-            console.error("Non-Axios Error:", error);
-        }
-        throw error
-
-    }
-}
 ````
 
 ## File: Frontend/src/features/Auth/api/petOwner.api.ts
@@ -16208,6 +18405,282 @@ export default function VerifyOtpForm() {
 }
 ````
 
+## File: Frontend/src/features/cart/pages/CheckoutPage.tsx
+````typescript
+import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import Button from "@/shared/components/Button/Button";
+import Input from "@/shared/components/Input/Input";
+import Card from "@/shared/components/Card/Card";
+import { clearCart, getCartItems } from "../utils/cartStorage";
+import { api } from "@/features/api interface/axios.interface";
+import {
+  checkoutSchema,
+  type CheckoutFormData,
+} from "../schemas/checkout.schema";
+import type { CartApiError } from "../types/cart.types";
+
+const CheckoutPage = () => {
+  const navigate = useNavigate();
+  const [cart, setCart] = useState(getCartItems());
+
+  const [error, setError] = useState("");
+  const [placingOrder, setPlacingOrder] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CheckoutFormData>({
+    resolver: zodResolver(checkoutSchema),
+    defaultValues: {
+      phoneNumber: "",
+      shippingAddress: "",
+    },
+  });
+
+  const total = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+
+  const handlePlaceOrder = async (data: CheckoutFormData) => {
+    setError("");
+
+    if (cart.length === 0) {
+      setError("Your cart is empty.");
+      return;
+    }
+
+    const orderPayload = {
+      items: cart.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+      })),
+      shippingAddress: data.shippingAddress,
+      phoneNumber: data.phoneNumber,
+    };
+
+    try {
+      setPlacingOrder(true);
+      await api.post("orders", orderPayload);
+      clearCart();
+      setCart([]);
+      navigate("/marketplace1");
+    } catch (err) {
+      const apiError = err as CartApiError;
+
+      if (apiError.response?.status === 401) {
+        navigate("/login", {
+          state: { redirectTo: "/checkout" },
+        });
+        return;
+      }
+
+      setError(apiError.response?.data?.message || "Unable to place the order. Please try again.");
+    } finally {
+      setPlacingOrder(false);
+    }
+  };
+
+  return (
+    <main className="min-h-screen bg-[#f7fbfb] px-6 py-8 lg:px-12">
+      <h1 className="text-3xl font-bold text-[#07182c]">Checkout</h1>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,560px)_360px]">
+      <Card>
+        <form onSubmit={handleSubmit(handlePlaceOrder)}>
+        {error && (
+          <p className="mb-4 rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-600">
+            {error}
+          </p>
+        )}
+
+        <Input
+          label="Phone Number"
+          placeholder="03000000000"
+          error={errors.phoneNumber?.message}
+          {...register("phoneNumber")}
+        />
+
+        <div className="mt-4">
+          <Input
+            label="Shipping Address"
+            placeholder="Lahore, Pakistan"
+            error={errors.shippingAddress?.message}
+            {...register("shippingAddress")}
+          />
+        </div>
+
+        <Button
+          className="mt-6 w-full"
+          type="submit"
+          disabled={placingOrder}
+        >
+          {placingOrder ? "Placing Order..." : "Place Order"}
+        </Button>
+        </form>
+      </Card>
+
+      <Card>
+        <h2 className="text-xl font-bold text-[#07182c]">Order Summary</h2>
+
+        <div className="mt-5 space-y-4">
+          {cart.length === 0 && (
+            <p className="text-sm text-gray-500">Your cart is empty.</p>
+          )}
+
+          {cart.map((item) => (
+            <div
+              key={item.productId}
+              className="flex items-center justify-between gap-4 border-b border-gray-100 pb-3"
+            >
+              <div className="flex min-w-0 items-center gap-3">
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="h-12 w-12 rounded-lg object-cover"
+                />
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-gray-900">
+                    {item.title}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    Qty {item.quantity}
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-sm font-semibold text-gray-900">
+                PKR {(item.price * item.quantity).toLocaleString()}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-5 flex justify-between text-base font-bold">
+          <span>Total</span>
+          <span>PKR {total.toLocaleString()}</span>
+        </div>
+
+        <Button
+          variant="outline"
+          className="mt-5 w-full"
+          onClick={() => navigate("/cart")}
+        >
+          Back to Cart
+        </Button>
+      </Card>
+      </div>
+    </main>
+  );
+};
+
+export default CheckoutPage;
+````
+
+## File: Frontend/src/features/Contact/components/ContactForm.tsx
+````typescript
+import Button from "../../../shared/components/Button";
+import Input from "@/shared/components/Input";
+
+const ContactForm = () => {
+  return (
+    <section className="bg-[#f5fbff] px-5 py-16 lg:px-16">
+      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1fr_420px]">
+        <div className="rounded-3xl bg-white p-8 shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
+          <div className="mb-8">
+            <h2 className="text-3xl font-extrabold text-[#07182c]">
+              Send Us a Message
+            </h2>
+
+            <p className="mt-2 text-slate-500">
+              Fill the form and our support team will contact you shortly.
+            </p>
+          </div>
+
+          <form className="space-y-5">
+            <div className="grid gap-5 md:grid-cols-2">
+              <Input label="Full Name" placeholder="Enter your name" />
+
+              <Input
+                label="Email Address"
+                placeholder="Enter your email"
+                type="email"
+              />
+            </div>
+
+            <div className="grid gap-5 md:grid-cols-2">
+              <Input
+                label="Phone Number"
+                placeholder="03xx xxxxxxx"
+              />
+
+              <Input label="Subject" placeholder="Enter subject" />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Message
+              </label>
+
+              <textarea
+                rows={6}
+                placeholder="Write your message..."
+                className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-[#178f95] focus:ring-2 focus:ring-[#178f95]/20"
+              />
+            </div>
+
+            <Button>Send Message</Button>
+          </form>
+        </div>
+
+        <div className="rounded-3xl bg-gradient-to-br from-[#bdf0ee] via-[#f5fbff] to-[#fff3ec] p-8 shadow-[0_18px_50px_rgba(15,23,42,0.10)]">
+          <h2 className="text-3xl font-extrabold text-[#07182c]">
+            Why Contact PetsVeta?
+          </h2>
+
+          <div className="mt-8 space-y-5">
+            <div className="rounded-2xl bg-white p-5 shadow-sm">
+              <h3 className="font-extrabold text-[#07182c]">
+                Doctor Assistance
+              </h3>
+
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Get support regarding appointments, schedules and consultations.
+              </p>
+            </div>
+
+            <div className="rounded-2xl bg-white p-5 shadow-sm">
+              <h3 className="font-extrabold text-[#07182c]">
+                Marketplace Help
+              </h3>
+
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Need help with pet products or orders? Our team is here.
+              </p>
+            </div>
+
+            <div className="rounded-2xl bg-white p-5 shadow-sm">
+              <h3 className="font-extrabold text-[#07182c]">
+                AI Assistance
+              </h3>
+
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Ask questions about AI symptom assistance and smart pet-care.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default ContactForm;
+````
+
 ## File: Frontend/src/features/Doctor/api/doctorAvailabilityServices.ts
 ````typescript
 import axios from "axios";
@@ -16352,376 +18825,373 @@ export const deleteDoctorService = async (serviceId: string) => {
 }
 ````
 
-## File: Frontend/src/features/Doctor/components/DoctorAvailability/DoctorAvailability.tsx
+## File: Frontend/src/features/Doctor/components/DoctorHeader.tsx
 ````typescript
-import { useEffect, useState, type ChangeEvent } from "react";
-import ScheduleModal from "./ScheduleModal";
-import ScheduleTable from "./ScheduleTable";
-import { createDoctorAvailabilitySlot, getDoctorAvailability } from "../../api/doctorAvailabilityServices";
+import { Plus } from "lucide-react";
+import Button from "../../../shared/components/Button/Button";
+import type { DoctorHeaderProps } from "../doctor.types";
 
-interface ScheduleFormData {
-  date: string;
-  startTime: string;
-  endTime: string;
-}
+const DoctorHeader = ({ onOpenModal }: DoctorHeaderProps) => {
+  return (
+    <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div>
+        <p className="text-xs font-black uppercase tracking-[0.25em] text-[#078b91]">
+          Doctor Panel
+        </p>
 
+        <h1 className="mt-2 text-3xl font-black tracking-[-0.03em] text-[#101b3d]">
+          My Availability
+        </h1>
 
-interface BackendScheduleItem {
-  id: string;
-  doctorId: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  isBooked: boolean;
-}
+        <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-slate-500">
+          Set your appointment date and time slots so pet owners can book
+          according to your schedule.
+        </p>
+      </div>
 
-const DoctorAvailability = () => {
-  
-  const [schedule, setSchedule] = useState<ScheduleFormData>({
-    date: "",
-    startTime: "",
-    endTime: ""
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <Button
+          type="button"
+          className="flex h-12 w-auto items-center justify-center gap-2 px-5"
+          onClick={onOpenModal}
+        >
+          <Plus size={18} />
+          Add Time Slot
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+export default DoctorHeader;
+````
+
+## File: Frontend/src/features/Doctor/components/PatientCard.tsx
+````typescript
+import { CalendarClock, Mail, PawPrint, Phone, Wallet } from "lucide-react";
+import type { PatientCardProps } from "../doctor.types";
+
+const formatDateTime = (value: string) => {
+  return new Date(value).toLocaleString("en-US", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
   });
+};
 
-
-  const [schedulesList, setSchedulesList] = useState<BackendScheduleItem[]>([]);
-  const [error, setError] = useState<string>("");
-  const [openModal, setOpenModal] = useState<boolean>(false);
-
-  // Reusable helper to pull data directly into state
-  const loadDoctorSchedule = async () => {
-    try {
-      const response = await getDoctorAvailability();
-      // Handle standard wrappers (like response.data) if your API instance utilizes them
-      const data = response?.data || response;
-      if (Array.isArray(data)) {
-        setSchedulesList(data);
-      }
-    } catch (err) {
-      console.error("Failed to load doctor availability slots:", err);
-      setError("Could not retrieve your active schedule list.");
-    }
-  };
-
-  // Initial fetch on component mounting
-  useEffect(() => {
-    loadDoctorSchedule();
-  }, []);
-
-  const handleSchedule = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setSchedule((prevData) => ({
-      ...prevData,
-      [name]: value
-    }));
-  };
-
-  const scheduleApiFunc = () => {
-    if (!schedule.date || !schedule.startTime || !schedule.endTime) {
-      setError("Schedule timing data is missing.");
-      return;
-    }
-
-    if (schedule.startTime >= schedule.endTime) {
-      setError("Starting time must be earlier than the ending time.");
-      return;
-    }
-
-    const selectedDate = new Date(`${schedule.date}T${schedule.startTime}`);
-    const currentTime = new Date();
-    const [startHours, startMinutes] = schedule.startTime.split(':').map(Number);
-    const [endHours, endingMinutes] = schedule.endTime.split(":").map(Number);
-
-    const totalStartTime = (startHours * 60) + startMinutes;
-    const totalEndTime = (endHours * 60) + endingMinutes;
-    const durationMinutes = totalEndTime - totalStartTime;
-
-    if (durationMinutes % 60 !== 0) {
-      setError("Please select full-hour increments only.");
-      return;
-    }
-
-    if (selectedDate <= currentTime) {
-      setError("Please select a future date and time.");
-      return;
-    }
-
-    setError("");
-    setOpenModal(true);
-  };
-
-  const handleDoctorSchedule = async () => {
-    try {
-      setError("");
-      console.log("Finalized Schedule ready for Database API: ", schedule);
-
-
-      await createDoctorAvailabilitySlot(schedule);
-
-    
-      setSchedule({
-        date: "",
-        startTime: "",
-        endTime: ""
-      });
-
-      setOpenModal(false);
-
-     
-      await loadDoctorSchedule();
-    } catch (err) {
-      console.error("Error creating schedule slot:", err);
-      setError("Failed to sync new slot generation with database records.");
-      setOpenModal(false);
-    }
-  };
+const PatientCard = ({ appointment }: PatientCardProps) => {
+  const patient = appointment.petIssueReport.user;
+  const pet = appointment.petIssueReport.pet;
 
   return (
-    <main className="mx-auto max-w-5xl p-6">
-      <section>
-        <h1 className="mb-6 text-3xl font-extrabold tracking-tight text-slate-900">
-          Set Your Schedule
-        </h1>
-        <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            <div className="flex flex-col gap-2">
-              <label htmlFor="date" className="text-sm font-bold text-slate-700">
-                Select Date
-              </label>
-              <input
-                type="date"
-                id="date"
-                name="date"
-                value={schedule.date}
-                onChange={handleSchedule}
-                className="h-12 w-full rounded-xl border border-slate-200 px-4 text-sm font-semibold text-slate-700 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-50"
-              />
-            </div>
+    <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-[#078b91]/40 hover:shadow-md">
+      <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+        <div className="flex gap-4">
+          {/* <img
+            src={
+              patient.profileImageUrl ||
+            
+            }
+            alt={patient.fullName}
+            className="h-16 w-16 rounded-2xl object-cover"
+          /> */}
 
-            <div className="flex flex-col gap-2">
-              <label htmlFor="startTime" className="text-sm font-bold text-slate-700">
-                Start Time
-              </label>
-              <input
-                name="startTime"
-                type="time"
-                id="startTime"
-                value={schedule.startTime}
-                onChange={handleSchedule}
-                className="h-12 w-full rounded-xl border border-slate-200 px-4 text-sm font-semibold text-slate-700 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-50"
-              />
-            </div>
+          <div>
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 className="text-lg font-black text-[#101b3d]">
+                {patient.fullName}
+              </h2>
 
-            <div className="flex flex-col gap-2">
-              <label htmlFor="endTime" className="text-sm font-bold text-slate-700">
-                End Time
-              </label>
-              <input
-                type="time"
-                name="endTime"
-                id="endTime"
-                value={schedule.endTime}
-                onChange={handleSchedule}
-                className="h-12 w-full rounded-xl border border-slate-200 px-4 text-sm font-semibold text-slate-700 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-50"
-              />
-            </div>
-          </div>
-
-          {error && (
-            <div className="mb-5 mt-5 flex items-center gap-3 rounded-xl border border-red-100 bg-red-50 p-4 text-sm font-bold text-red-600">
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-red-500 text-xs font-black text-white">
-                !
+              <span className="rounded-full bg-amber-50 px-3 py-1 text-[11px] font-black text-amber-700">
+                {appointment.status}
               </span>
-              <p>{error}</p>
             </div>
-          )}
 
-          <div className="mt-6 flex justify-end border-t border-slate-100 pt-6">
-            <button
-              onClick={scheduleApiFunc}
-              type="button"
-              className="rounded-xl bg-teal-600 px-6 py-3 text-sm font-bold text-white transition hover:bg-teal-700"
-            >
-              Add Time Slot
-            </button>
+            <div className="mt-3 flex flex-wrap gap-3 text-xs font-semibold text-slate-500">
+              <span className="inline-flex items-center gap-1.5">
+                <Mail size={14} />
+                {patient.email}
+              </span>
+
+              <span className="inline-flex items-center gap-1.5">
+                <Phone size={14} />
+                {patient.phone || "No phone"}
+              </span>
+            </div>
           </div>
         </div>
-      </section>
 
-      <section className="mt-10">
-        <h2 className="mb-4 text-xl font-extrabold text-slate-900">
-          Generated Schedule List
-        </h2>
-        {/* Sends backend-compliant type layout safely downstream */}
-        <ScheduleTable schedules={schedulesList} />
-      </section>
+        <div className="rounded-xl bg-[#F0FAF7] px-4 py-3 text-sm font-black text-[#078b91]">
+          <CalendarClock size={17} className="mr-2 inline" />
+          {formatDateTime(appointment.checkupTime)}
+        </div>
+      </div>
 
-      <ScheduleModal
-        isOpen={openModal}
-        onClose={() => setOpenModal(false)}
-        schedule={schedule}
-        setSchedule={setSchedule}
-        error={error}
-        setError={setError}
-        onConfirm={handleDoctorSchedule}
-      />
-    </main>
+      <div className="mt-5 grid gap-4 md:grid-cols-[1fr_1.4fr_150px]">
+        <div className="rounded-xl bg-slate-50 p-4">
+          <p className="flex items-center gap-2 text-xs font-black uppercase text-slate-400">
+            <PawPrint size={15} />
+            Pet
+          </p>
+
+          <h3 className="mt-2 font-black text-[#101b3d]">{pet.name}</h3>
+          <p className="mt-1 text-sm font-semibold text-slate-500">
+            {pet.category} · {pet.breed}
+          </p>
+        </div>
+
+        <div className="rounded-xl bg-slate-50 p-4">
+          <p className="text-xs font-black uppercase text-slate-400">
+            Issue
+          </p>
+
+          <p className="mt-2 line-clamp-3 text-sm font-semibold leading-6 text-slate-600">
+            {appointment.petIssueReport.issue}
+          </p>
+        </div>
+
+        <div className="rounded-xl bg-slate-50 p-4">
+          <p className="flex items-center gap-2 text-xs font-black uppercase text-slate-400">
+            <Wallet size={15} />
+            Fees
+          </p>
+
+          <h3 className="mt-2 font-black text-[#101b3d]">
+            Rs. {appointment.fees}
+          </h3>
+        </div>
+      </div>
+    </article>
   );
 };
 
-export default DoctorAvailability;
+export default PatientCard;
 ````
 
-## File: Frontend/src/features/Doctor/components/DoctorSideBar.tsx
+## File: Frontend/src/features/Doctor/components/ServiceTable.tsx
 ````typescript
-import { CalendarDays, DollarSignIcon, Home, LogOut, Users, X } from "lucide-react";
-import { NavLink } from "react-router-dom";
-import Logo from "@/shared/components/Logo/Logo";
+import { useState, useEffect } from "react";
+import { Edit2, Trash2, ShieldAlert, Activity } from "lucide-react";
+import { getDoctorServices } from "../api/doctorServices";
+import DeleteModal from "./DeleteModal";
+import type {
+    DoctorServiceData,
+    DoctorServicesTableProps,
+} from "../doctor.types";
 
-type DoctorSidebarProps = {
-    sidebarOpen: boolean;
-    setSidebarOpen: (open: boolean) => void;
-};
+const DoctorServicesTable = ({ onEdit, onDelete }: DoctorServicesTableProps) => {
+    const [services, setServices] = useState<DoctorServiceData[] | undefined>(undefined)
+    const [loading, setLoading] = useState(true);
+    const [fetchError, setFetchError] = useState('');
+    const [isDeleteModal, setDeleteModal] = useState(false);
+    const [deleteItem, setDeleteItem] = useState<{ id: string; skill: string; price: string } | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
-export const DoctorSidebar = ({ sidebarOpen, setSidebarOpen }: DoctorSidebarProps) => {
-    const sidebarLinks = [
-        { id: 1, label: "Dashboard", icon: Home, address: "doctor-dashboard" },
-        { id: 2, label: "Appointments", icon: CalendarDays, address: "appointments" },
-        { id: 3, label: "Patients", icon: Users, address: "pateints" },
-        { id: 4, label: "Availability", icon: CalendarDays, address: "doctor-availability" },
-        { id: 5, label: "Pricing", icon: DollarSignIcon, address: "doctor-pricing" },
-        { id: 6, label: "Profile", icon: Users, address: "doctor-dashboard-profile" },
-    ];
+    const openDeleteModal = (item: DoctorServiceData) => {
+        setDeleteItem(item);
+        setDeleteModal(true);
+    }
+
+    const closeDeleteModal = () => {
+        setDeleteModal(false);
+        setDeleteItem(null);
+    }
+
+    const handleConfirmDelete = async (itemId: string) => {
+        setIsDeleting(true);
+        try {
+            await onDelete(itemId);
+            closeDeleteModal();
+            // Refresh services list after delete
+            const response = await getDoctorServices();
+            if (response?.success && Array.isArray(response.data)) {
+                setServices(response.data);
+            }
+        } catch (err) {
+            console.error("Delete Error:", err);
+        } finally {
+            setIsDeleting(false);
+        }
+    }
+
+
+    useEffect(() => {
+        const loadServices = async () => {
+            setLoading(true);
+            try {
+                const response = await getDoctorServices();
+                console.log("Initial database payload:", response?.data);
+
+                if (response?.success && Array.isArray(response.data)) {
+                    setServices(response.data);
+                    setFetchError('');
+                } else {
+                    setFetchError(response?.message || "Failed to parse service records.");
+                }
+            } catch (err) {
+                setFetchError("Internal network connection error.");
+                console.error("Fetch Error:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadServices();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="w-full p-8 text-center text-sm text-slate-500 bg-white border border-slate-100 rounded-xl shadow-sm">
+                <div className="animate-pulse flex flex-col items-center gap-2">
+                    <div className="h-4 w-4 bg-emerald-500 rounded-full animate-ping" />
+                    <span>Loading your medical catalog updates...</span>
+                </div>
+            </div>
+        );
+    }
+
+    if (fetchError) {
+        return (
+            <div className="w-full p-5 text-center text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl flex items-center gap-2 justify-center">
+                <ShieldAlert className="w-4 h-4" />
+                <span>Error: {fetchError}</span>
+            </div>
+        );
+    }
 
     return (
-        <>
-            {sidebarOpen && (
-                <button
-                    type="button"
-                    onClick={() => setSidebarOpen(false)}
-                    className="fixed inset-0 z-40 bg-slate-900/40 lg:hidden"
-                    aria-label="Close sidebar"
+        <div className="w-full bg-white border border-slate-100 rounded-xl shadow-sm overflow-hidden">
+
+            {/* Header Meta Info */}
+            <div className="bg-emerald-50/50 px-6 py-4 border-b border-emerald-100/60 flex items-center gap-2">
+                <Activity className="w-5 h-5 text-emerald-600" />
+                <h3 className="text-emerald-900 font-semibold text-base">
+                    Offered Services & Custom Pricing
+                </h3>
+                <span className="ml-auto bg-emerald-100 text-emerald-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                    {services?.length} Total
+                </span>
+            </div>
+
+            {/* Table Core Layout */}
+            <div className="overflow-x-auto">
+                {services?.length === 0 ? (
+                    <div className="p-8 text-center text-slate-400 text-sm">
+                        No active clinical services found. Choose a skill above to start.
+                    </div>
+                ) : (
+                    <table className="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr className="bg-slate-50 border-b border-slate-100 text-slate-600 font-medium">
+                                <th className="p-4 pl-6">Service</th>
+                                <th className="p-4">Price (PKR)</th>
+                                <th className="p-4 pr-6 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 text-slate-700">
+                            {services?.map((item) => (
+                                <tr key={item.id} className="hover:bg-emerald-50/20 transition-colors">
+                                    {/* Service Name Column */}
+                                    <td className="p-4 pl-6 font-medium text-slate-800" >
+                                        {item.skill}
+                                    </td>
+
+                                    {/* Price Tag Column */}
+                                    <td className="p-4 text-emerald-700 font-semibold">
+                                        Rs. {Number(item.price).toLocaleString()}
+                                    </td>
+
+                                    {/* Edit and Delete Buttons Column */}
+                                    <td className="p-4 pr-6 text-right">
+                                        <div className="flex justify-end gap-2">
+                                            <button
+                                                onClick={() => onEdit(item)}
+                                                className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-md transition-all"
+                                                title="Edit Service Price"
+                                            >
+                                                <Edit2 className="w-4 h-4" />
+                                            </button>
+                                            <button
+                                                onClick={() => openDeleteModal(item)}
+                                                className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-all"
+                                                title="Delete Service Option"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
+            </div>
+
+            {/* Delete Modal */}
+            {deleteItem && (
+                <DeleteModal
+                    isOpen={isDeleteModal}
+                    serviceName={deleteItem.skill}
+                    price={deleteItem.price}
+                    itemId={deleteItem.id}
+                    onCancel={closeDeleteModal}
+                    onConfirmDelete={handleConfirmDelete}
+                    isLoading={isDeleting}
                 />
             )}
-
-            <aside
-                className={`fixed left-0 top-0 z-50 h-screen w-72 border-r border-slate-200 bg-white transition-transform duration-300 lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
-                    }`}
-            >
-                <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5">
-                    <div className="flex items-center gap-3">
-                        <Logo />
-                    </div>
-
-                    <button
-                        type="button"
-                        onClick={() => setSidebarOpen(false)}
-                        className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:hidden"
-                        aria-label="Close sidebar"
-                    >
-                        <X size={22} />
-                    </button>
-                </div>
-
-                <nav className="space-y-2 px-4 py-5">
-                    {sidebarLinks.map((link) => {
-                        const Icon = link.icon;
-
-                        return (
-                            <NavLink
-                                to={link.address}
-                                key={link.id}
-                                onClick={() => setSidebarOpen(false)}
-                                className={({ isActive }) => `outline-none flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold transition ${isActive
-                                    ? "bg-teal-700 text-white shadow-md shadow-teal-700/20"
-                                    : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
-                                    }`}
-                            >
-                                <Icon size={19} />
-                                {link.label}
-                            </NavLink>
-                        );
-                    })}
-
-                    <div className="pt-8">
-                        <button
-                            type="button"
-                            className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold text-red-500 transition hover:bg-red-50"
-                        >
-                            <LogOut size={19} />
-                            Logout
-                        </button>
-                    </div>
-                </nav>
-            </aside>
-        </>
+        </div>
     );
 };
+
+export default DoctorServicesTable;
 ````
 
-## File: Frontend/src/features/Doctorcart/apis/getDoctors.api.ts
+## File: Frontend/src/features/Doctorcart/component/DoctorsList.tsx
 ````typescript
-export type DoctorApiResponse = {
-  success: boolean;
-  message: string;
-  data: {
-    data: Doctor[];
-    meta: {
-      page: number;
-      limit: number;
-      total: number;
-      totalPages: number;
-    };
-  };
+import DoctorCard from "./DoctorCard";
+import type { DoctorsListProps } from "../types/doctorcart.types";
+
+const DoctorsList = ({
+    doctors,
+    loading,
+    onBookAppointment,
+}: DoctorsListProps) => {
+    if (loading) {
+        return (
+            <div className="rounded-3xl bg-white p-10 text-center font-black text-[#078b91]">
+                Loading doctors...
+            </div>
+        );
+    }
+
+    if (doctors.length === 0) {
+        return (
+            <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center">
+                <h2 className="text-xl font-black">No doctors found</h2>
+                <p className="mt-2 text-sm text-slate-500">
+                    Try changing your search.
+                </p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="space-y-5">
+            {doctors.map((doctor) => (
+                <DoctorCard
+                    key={doctor.id}
+                    doctor={doctor}
+                    onBookAppointment={onBookAppointment}
+                />
+            ))}
+        </div>
+    );
 };
 
-export type Doctor = {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  specialization: string;
-  education: string;
-  experience: number;
-  profileImage?: string;
-  status: "active" | "inactive";
-  availableDays: string[];
-  todaySlots: {
-    scheduleId: string;
-    date: string;
-    day: string;
-    startTime: string;
-    endTime: string;
-    startDateTime: string;
-    endDateTime: string;
-  }[];
-  nextAvailable: {
-    scheduleId: string;
-    date: string;
-    day: string;
-    startTime: string;
-    endTime: string;
-    startDateTime: string;
-    endDateTime: string;
-  } | null;
-};
-
-export const getApprovedDoctors = async (
-  page: number,
-  limit: number,
-  search: string
-): Promise<DoctorApiResponse> => {
-  const response = await fetch(
-    `http://localhost:8000/api/v1/user/approved-doctors?page=${page}&limit=${limit}&search=${search}`
-  );
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch doctors");
-  }
-  console.log("DOctor Fetching Error is ", response);
-
-  return response.json();
-};
+export default DoctorsList;
 ````
 
 ## File: Frontend/src/features/Doctorcart/component/EditDoctorProfileForm.tsx
@@ -17039,61 +19509,2323 @@ const EditDoctorProfileForm = () => {
 export default EditDoctorProfileForm;
 ````
 
+## File: Frontend/src/features/Doctorcart/hooks/useGetDoctors.ts
+````typescript
+import { useQuery, type UseQueryOptions } from '@tanstack/react-query'
+import { getApprovedDoctors, type DoctorApiResponse } from '../apis/getDoctors.api'
+import type { GetDoctorsParams } from '../types/doctorcart.types'
+
+export const useApprovedDoctors = (
+    { page, limit, search }: GetDoctorsParams,
+    options?: Omit<UseQueryOptions<DoctorApiResponse, Error>, 'queryKey' | 'queryFn'>
+
+) => {
+    return useQuery({
+        queryKey: ['approved-doctors', page, limit, search],
+        queryFn: () => getApprovedDoctors(page, limit, search),
+        ...options,
+    })
+}
+````
+
+## File: Frontend/src/features/Landing Page/components/Testimonials.tsx
+````typescript
+import { FaPaw, FaQuoteRight, FaStar } from "react-icons/fa";
+import img from "@/assets/shared/images/bannerImage.png"
+
+const testimonials = [
+    {
+        name: "Aisha Malik",
+        image: img,
+        text: "Booked a vet consultation for my cat. The experience was amazing!",
+    },
+    {
+        name: "Bilal Ahmed",
+        image: img,
+        text: "Great products and fast delivery. Highly recommended PetsVeta!",
+    },
+    {
+        name: "Sana Farooq",
+        image: img,
+        text: "AI Assistant helped me a lot with my dog's health queries.",
+    },
+];
+
+const Testimonials = () => {
+    return (
+        <section className="bg-[#f5fbff] px-6 py-10 lg:px-16">
+            <div className="mx-auto max-w-7xl">
+                <h2 className="mb-8 flex items-center justify-center gap-2 text-center text-[22px] font-extrabold text-[#07182c]">
+                    What Our <span className="text-[#009f9d]">Pet Parents</span> Say
+                    <FaPaw className="text-[#009f9d]" />
+                </h2>
+
+                <div className="grid gap-7 md:grid-cols-3">
+                    {testimonials.map((item) => (
+                        <div
+                            key={item.name}
+                            className="relative rounded-[18px] bg-white px-7 py-6 shadow-[0_10px_30px_rgba(15,23,42,0.08)]"
+                        >
+                            <FaQuoteRight className="absolute right-6 top-5 text-2xl text-[#b8efeb]" />
+
+                            <div className="mb-5 flex items-center gap-4">
+                                <div className="relative">
+                                    <img
+                                        src={item.image}
+                                        alt={item.name}
+                                        className="h-14 w-14 rounded-full object-cover"
+                                    />
+                                    <span className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-[#20c997] ring-2 ring-white" />
+                                </div>
+
+                                <div>
+                                    <h3 className="text-sm font-extrabold text-[#07182c]">
+                                        {item.name}
+                                    </h3>
+
+                                    <div className="mt-1 flex gap-1 text-[12px] text-[#ffb020]">
+                                        {Array.from({ length: 5 }).map((_, index) => (
+                                            <FaStar key={index} />
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p className="text-[15px] font-medium leading-7 text-[#07182c]">
+                                {item.text}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="mt-7 flex justify-center gap-2">
+                    <span className="h-3 w-3 rounded-full bg-[#009f9d]" />
+                    <span className="h-3 w-3 rounded-full bg-slate-300" />
+                    <span className="h-3 w-3 rounded-full bg-slate-300" />
+                </div>
+            </div>
+        </section>
+    );
+};
+
+export default Testimonials;
+````
+
+## File: Frontend/src/features/marketplace1/components/MarketplaceDetailPanel.tsx
+````typescript
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  FaCheckCircle,
+  FaHeart,
+  FaShoppingCart,
+  FaStar,
+  FaTimes,
+} from "react-icons/fa";
+import Button from "@/shared/components/Button/Button";
+import Card from "@/shared/components/Card/Card";
+import { addToCart } from "@/features/cart/utils/cartStorage";
+import {
+  getProductImage,
+  getProductPrice,
+  getSellerName,
+  saveMarketplaceListing,
+  toDisplayCategory,
+} from "../api/marketplace.api";
+import type { MarketplaceDetailPanelProps } from "../types/marketplace.types";
+
+const MarketplaceDetailPanel = ({
+  product,
+  onClose,
+}: MarketplaceDetailPanelProps) => {
+  const navigate = useNavigate();
+  const [cartError, setCartError] = useState("");
+
+  const handleBuyNow = () => {
+    const image = getProductImage(product);
+    const price = getProductPrice(product);
+
+    const result = addToCart({
+      productId: product.id,
+      title: product.title,
+      price,
+      image,
+      quantity: 1,
+      sellerId: product.sellerId,
+    });
+
+    if (!result.success) {
+      setCartError(result.message);
+      return;
+    }
+
+    navigate("/cart");
+  };
+
+  const handleSave = async () => {
+    try {
+      await saveMarketplaceListing(product.id);
+    } catch {
+      navigate("/login", {
+        state: {
+          redirectTo: "/marketplace1",
+        },
+      });
+    }
+  };
+
+  const image = getProductImage(product);
+  const price = getProductPrice(product);
+  const seller = getSellerName(product);
+
+  return (
+    <Card className="sticky top-6 max-h-[calc(100vh-48px)] overflow-y-auto p-5">
+      <div className="mb-5 flex items-center justify-between">
+        <h2 className="text-lg font-bold text-[#07182c]">Product Detail</h2>
+
+        <button
+          type="button"
+          onClick={onClose}
+          className="flex h-9 w-9 items-center justify-center rounded-full text-gray-400 transition hover:bg-red-50 hover:text-red-500"
+        >
+          <FaTimes />
+        </button>
+      </div>
+
+      <div className="flex gap-4">
+        <img
+          src={image}
+          alt={product.title}
+          className="h-32 w-32 shrink-0 rounded-lg object-cover"
+        />
+
+        <div className="min-w-0 flex-1">
+          <span className="inline-flex rounded-md bg-[#e8f7f7] px-3 py-1 text-xs font-semibold text-[#178f95]">
+            {toDisplayCategory(product.category)}
+          </span>
+
+          <h3 className="mt-4 line-clamp-2 text-base font-bold text-[#07182c]">
+            {product.title}
+          </h3>
+
+          <p className="mt-1 text-xs text-gray-500">
+            {seller}{" "}
+            <span className="rounded border border-green-400 px-1 text-[10px] text-green-600">
+              Verified
+            </span>
+          </p>
+        </div>
+      </div>
+
+      <p className="mt-5 text-xl font-bold text-[#178f95]">
+        PKR {price.toLocaleString()}
+      </p>
+
+      <p className="mt-3 flex items-center gap-2 text-sm text-gray-600">
+        <FaStar className="text-yellow-400" />
+        New listing
+      </p>
+
+      <p className="mt-3 text-sm text-green-600">
+        In Stock{" "}
+        <span className="ml-2 text-gray-500">{product.stock} available</span>
+      </p>
+
+      <div className="my-5 border-t border-gray-100" />
+
+      <h3 className="text-sm font-bold text-[#07182c]">About this pet</h3>
+
+      <p className="mt-3 text-sm leading-6 text-gray-600">
+        {product.description || "No description provided."}
+      </p>
+
+      <Button className="mt-6 w-full gap-2" onClick={handleBuyNow}>
+        <FaShoppingCart />
+        Add to Cart
+      </Button>
+
+      {cartError && (
+        <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-600">
+          {cartError}
+        </p>
+      )}
+
+      <Button variant="outline" className="mt-3 w-full gap-2" onClick={handleSave}>
+        <FaHeart />
+        Save Listing
+      </Button>
+
+      <div className="mt-6 grid grid-cols-3 gap-3 text-center text-xs text-gray-500">
+        <div>
+          <FaCheckCircle className="mx-auto mb-2 text-[#178f95]" />
+          <p>Secure Payment</p>
+        </div>
+
+        <div>
+          <FaCheckCircle className="mx-auto mb-2 text-[#178f95]" />
+          <p>Easy Returns</p>
+        </div>
+
+        <div>
+          <FaCheckCircle className="mx-auto mb-2 text-[#178f95]" />
+          <p>Seller Verified</p>
+        </div>
+      </div>
+    </Card>
+  );
+};
+
+export default MarketplaceDetailPanel;
+````
+
+## File: Frontend/src/features/marketplace1/components/MarketplaceProductCard.tsx
+````typescript
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  FaHeart,
+  FaRegHeart,
+  FaMapMarkerAlt,
+  FaStar,
+  FaStore,
+} from "react-icons/fa";
+import Button from "@/shared/components/Button/Button";
+import Card from "@/shared/components/Card/Card";
+import { addToCart } from "@/features/cart/utils/cartStorage";
+import {
+  getProductImage,
+  getProductPrice,
+  getSellerName,
+  toDisplayCategory,
+} from "../api/marketplace.api";
+import type { MarketplaceProductCardProps } from "../types/marketplace.types";
+
+const MarketplaceProductCard = ({
+  product,
+  saved,
+  onSave,
+  onDetails,
+}: MarketplaceProductCardProps) => {
+  const navigate = useNavigate();
+  const [cartError, setCartError] = useState("");
+
+  const handleBuyNow = () => {
+    const image = getProductImage(product);
+    const price = getProductPrice(product);
+
+    const result = addToCart({
+      productId: product.id,
+      title: product.title,
+      price,
+      image,
+      quantity: 1,
+      sellerId: product.sellerId,
+    });
+
+    if (!result.success) {
+      setCartError(result.message);
+      return;
+    }
+
+    navigate("/cart");
+  };
+
+  const image = getProductImage(product);
+  const price = getProductPrice(product);
+  const seller = getSellerName(product);
+
+  return (
+    <Card className="overflow-hidden p-0">
+      <div className="relative h-48 bg-gray-50">
+        <button
+          type="button"
+          onClick={() => navigate(`/marketplace/product/${product.id}`)}
+          className="block h-full w-full overflow-hidden text-left"
+          aria-label={`View details for ${product.title}`}
+        >
+          <img
+            src={image}
+            alt={product.title}
+            className="h-full w-full object-cover transition duration-300 hover:scale-105"
+          />
+        </button>
+
+        <span className="absolute left-3 top-3 rounded-md bg-[#e8f7f7] px-3 py-1 text-xs font-semibold text-[#178f95]">
+          {toDisplayCategory(product.category)}
+        </span>
+
+        <button
+          type="button"
+          onClick={onSave}
+          className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#07182c] shadow-sm"
+        >
+          {saved ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
+        </button>
+      </div>
+
+      <div className="p-4">
+        <h3 className="text-base font-bold text-[#07182c]">{product.title}</h3>
+
+        <p className="mt-2 flex items-center gap-2 text-sm text-gray-500">
+          <FaStore className="text-[#178f95]" />
+          {seller}
+        </p>
+
+        <div className="mt-3 flex items-center justify-between">
+          <p className="text-lg font-bold text-[#178f95]">
+            PKR {price.toLocaleString()}
+          </p>
+
+          <div className="flex items-center gap-3 text-sm">
+            <span className="flex items-center gap-1 text-gray-700">
+              <FaStar className="text-yellow-400" />
+              New
+            </span>
+
+            <span className="flex items-center gap-1 text-gray-500">
+              <FaMapMarkerAlt />
+              {product.location || "Pakistan"}
+            </span>
+          </div>
+        </div>
+
+        <div className="mt-4 grid grid-cols-2 gap-3">
+          <Button variant="outline" size="sm" onClick={onDetails}>
+            Details
+          </Button>
+
+          <Button
+            size="sm"
+            onClick={handleBuyNow}
+            className="bg-[#F9C5A8] text-[#c94d00] hover:bg-[#f7b58f]"
+          >
+            Add to Cart
+          </Button>
+        </div>
+
+        {cartError && (
+          <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-600">
+            {cartError}
+          </p>
+        )}
+      </div>
+    </Card>
+  );
+};
+
+export default MarketplaceProductCard;
+````
+
+## File: Frontend/src/features/marketplace1/pages/MarketplacePage.tsx
+````typescript
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  FaPaw,
+  FaShoppingBag,
+  FaSlidersH,
+  FaThLarge,
+  FaUndo,
+} from "react-icons/fa";
+import Button from "@/shared/components/Button/Button";
+import Input from "@/shared/components/Input/Input";
+import MarketplaceProductCard from "../components/MarketplaceProductCard";
+import MarketplaceDetailPanel from "../components/MarketplaceDetailPanel";
+import MarketplacePagination from "../components/MarketplacePagination";
+import {
+  fetchMarketplaceProducts,
+  fetchSavedMarketplaceListings,
+  removeMarketplaceListing,
+  saveMarketplaceListing,
+  toBackendCategory,
+  type MarketplaceProduct,
+} from "../api/marketplace.api";
+
+const ITEMS_PER_PAGE = 12;
+
+const MarketplacePage = () => {
+  const navigate = useNavigate();
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("All");
+  const [location, setLocation] = useState("All");
+  const [page, setPage] = useState(1);
+  const [savedIds, setSavedIds] = useState<string[]>([]);
+  const [products, setProducts] = useState<MarketplaceProduct[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const [selectedProduct, setSelectedProduct] =
+    useState<MarketplaceProduct | null>(null);
+
+  const categories = ["All", "Pets", "Food", "Accessories"];
+
+  const queryCategory = useMemo(
+    () => (category === "All" ? "" : toBackendCategory(category)),
+    [category]
+  );
+
+  useEffect(() => {
+    let ignore = false;
+
+    const loadProducts = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const data = await fetchMarketplaceProducts({
+          page,
+          limit: ITEMS_PER_PAGE,
+          search,
+          category: queryCategory,
+          location: location === "All" ? "" : location,
+        });
+
+        if (ignore) return;
+
+        setProducts(data.products);
+        setTotalPages(data.pagination.totalPages || 1);
+        setSelectedProduct((current) => {
+          if (current && data.products.some((product) => product.id === current.id)) {
+            return current;
+          }
+
+          return data.products[0] || null;
+        });
+      } catch {
+        if (!ignore) {
+          setError("Unable to load marketplace products. Please check your connection and try again.");
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadProducts();
+
+    return () => {
+      ignore = true;
+    };
+  }, [page, search, queryCategory, location]);
+
+  useEffect(() => {
+    const loadSaved = async () => {
+      try {
+        const saved = await fetchSavedMarketplaceListings();
+        setSavedIds(saved.map((item) => item.productId));
+      } catch {
+        setSavedIds([]);
+      }
+    };
+
+    void loadSaved();
+  }, []);
+
+  const toggleSave = async (id: string) => {
+    const isSaved = savedIds.includes(id);
+
+    try {
+      if (isSaved) {
+        await removeMarketplaceListing(id);
+        setSavedIds((prev) => prev.filter((savedId) => savedId !== id));
+        return;
+      }
+
+      await saveMarketplaceListing(id);
+      setSavedIds((prev) => [...prev, id]);
+    } catch {
+      navigate("/login", {
+        state: {
+          redirectTo: "/marketplace1",
+        },
+      });
+    }
+  };
+
+  const clearFilters = () => {
+    setSearch("");
+    setCategory("All");
+    setLocation("All");
+    setPage(1);
+  };
+
+  return (
+    <main className="min-h-screen bg-[#f7fbfb] px-6 py-8 lg:px-12">
+      <section className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+          <h1 className="text-4xl font-bold text-[#07182c]">
+            Pet Marketplace
+          </h1>
+
+          <p className="mt-2 text-gray-500">
+            Buy pets, food, and accessories from verified sellers.
+          </p>
+        </div>
+
+        <Button className="gap-2" onClick={() => navigate("/seller/add-product")}>
+          <FaShoppingBag />
+          Sell Your Product
+        </Button>
+      </section>
+
+      <section className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+        <div className="grid gap-4 lg:grid-cols-[1.4fr_0.9fr_0.9fr_auto]">
+          <Input
+            placeholder="Search pets, food, accessories..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+          />
+
+          <select
+            value={category}
+            onChange={(e) => {
+              setCategory(e.target.value);
+              setPage(1);
+            }}
+            className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-[#178f95]"
+          >
+            <option>All</option>
+            <option>Pets</option>
+            <option>Food</option>
+            <option>Accessories</option>
+          </select>
+
+          <select
+            value={location}
+            onChange={(e) => {
+              setLocation(e.target.value);
+              setPage(1);
+            }}
+            className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-[#178f95]"
+          >
+            <option>All</option>
+            <option>Lahore</option>
+            <option>Karachi</option>
+            <option>Islamabad</option>
+            <option>Multan</option>
+          </select>
+
+          <Button variant="outline" className="gap-2" onClick={clearFilters}>
+            <FaUndo />
+            Clear Filters
+          </Button>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-3">
+          {categories.map((item) => (
+            <button
+              key={item}
+              onClick={() => {
+                setCategory(item);
+                setPage(1);
+              }}
+              className={`flex items-center gap-2 rounded-full border px-5 py-2 text-sm font-semibold transition ${
+                category === item
+                  ? "border-[#178f95] bg-[#178f95] text-white"
+                  : "border-gray-200 bg-white text-gray-600 hover:border-[#178f95] hover:text-[#178f95]"
+              }`}
+            >
+              <FaPaw />
+              {item}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section
+        className={`mt-6 grid gap-6 ${
+          selectedProduct ? "xl:grid-cols-[1fr_330px]" : "grid-cols-1"
+        }`}
+      >
+        <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+          <div className="mb-5 flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-[#07182c]">
+                Latest Pet Listings
+              </h2>
+
+              <p className="text-sm text-gray-500">
+                Showing {products.length} available listings
+              </p>
+            </div>
+
+            <div className="hidden items-center gap-3 lg:flex">
+              <Button variant="outline" size="sm" className="gap-2">
+                <FaSlidersH />
+                Sort by: Newest First
+              </Button>
+
+              <Button variant="outline" size="sm">
+                <FaThLarge />
+              </Button>
+            </div>
+          </div>
+
+          <div
+            className={`grid gap-5 ${
+              selectedProduct
+                ? "lg:grid-cols-2 2xl:grid-cols-3"
+                : "md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+            }`}
+          >
+            {loading && (
+              <p className="col-span-full rounded-lg bg-gray-50 p-5 text-sm text-gray-500">
+                Loading marketplace products...
+              </p>
+            )}
+
+            {error && (
+              <p className="col-span-full rounded-lg bg-red-50 p-5 text-sm font-medium text-red-600">
+                {error}
+              </p>
+            )}
+
+            {!loading && !error && products.length === 0 && (
+              <p className="col-span-full rounded-lg bg-gray-50 p-5 text-sm text-gray-500">
+                No active listings found.
+              </p>
+            )}
+
+            {products.map((product) => (
+              <MarketplaceProductCard
+                key={product.id}
+                product={product}
+                saved={savedIds.includes(product.id)}
+                onSave={() => toggleSave(product.id)}
+                onDetails={() => setSelectedProduct(product)}
+              />
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <MarketplacePagination
+              page={page}
+              totalPages={totalPages}
+              onPageChange={(nextPage) => {
+                setPage(nextPage);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            />
+          )}
+        </div>
+
+        {selectedProduct && (
+          <MarketplaceDetailPanel
+            product={selectedProduct}
+            onClose={() => setSelectedProduct(null)}
+          />
+        )}
+      </section>
+    </main>
+  );
+};
+
+export default MarketplacePage;
+````
+
 ## File: Frontend/src/features/Payment/components/PaymentSummaryCard.tsx
 ````typescript
 
 ````
 
-## File: Frontend/src/features/Payment/page/AppointmentPaymentPage.tsx
+## File: Frontend/src/features/Pet Owner/pet details/schemas/pet.schema.ts
 ````typescript
+import { z } from "zod";
 
+export const petSchema = z.object({
+  name: z.string().min(2, "Pet name must be at least 2 characters"),
+
+  age: z.coerce
+    .number({
+      message: "Age is required",
+    })
+    .positive("Age must be greater than 0")
+    .max(100, "Age is too high"),
+
+  breed: z.string().min(2, "Breed is required"),
+
+  category: z.enum(["DOG", "CAT", "REPTILE", "OTHER"], {
+    message: "Please select pet category",
+  }),
+
+  photos: z
+    .custom<FileList>()
+    .refine((files) => files && files.length > 0, "At least one pet photo is required"),
+});
+
+export type PetFormInput = z.input<typeof petSchema>;
+export type PetFormData = z.output<typeof petSchema>;
 ````
 
-## File: Frontend/src/features/Pet Owner/pet details/apis/pet.api.ts
+## File: Frontend/src/features/Pet Owner/pet profile/api/petOwnerProfile.api.ts
 ````typescript
-import { api, handleAxiosError } from "@/features/api interface/axios.interface";
-import type { PetFormData } from "../schemas/pet.schema";
-import type { PetIssueReportFormData } from "../schemas/petIssueReport.schema";
+import { api } from "@/features/api interface/axios.interface";
 
-export interface PetResponse {
-  id: string;
-  name: string;
-  age: number;
-  breed: string;
-  category: string;
-}
+import type {
+  PetOwnerProfileResponse,
+  UpdatePetOwnerProfilePayload,
+} from "../types/petProfile.types";
 
-export const submitPetData = async (data: PetFormData & { petOwnerId: string }): Promise<PetResponse | undefined> => {
-  try {
-    const response = await api.post("petOwner/submit/pet-data", data);
-    return response.data?.data;
-  } catch (error) {
-    handleAxiosError(error);
-    throw error;
-  }
-};
+export const getPetOwnerProfileApi =
+  async (): Promise<PetOwnerProfileResponse> => {
+    const response = await api.get<PetOwnerProfileResponse>(
+      "/petOwner/pet-profile",
+    );
 
-export const submitPetIssue = async (
-  data: PetIssueReportFormData & { petOwnerId: string; doctorId: string },
-): Promise<unknown> => {
-  try {
-    const response = await api.post("petOwner/submit/pet-issue", data);
     return response.data;
-  } catch (error) {
-    handleAxiosError(error);
-    throw error;
+  };
+
+export const updatePetOwnerProfileApi = async (
+  payload: UpdatePetOwnerProfilePayload,
+): Promise<PetOwnerProfileResponse> => {
+  const formData = new FormData();
+
+  formData.append("fullName", payload.fullName);
+  formData.append("username", payload.username);
+  formData.append("phone", payload.phone || "");
+
+  if (payload.profileImage) {
+    formData.append("profileImage", payload.profileImage);
   }
+
+  const response = await api.patch<PetOwnerProfileResponse>(
+    "/petOwner/pet-profile",
+    formData,
+  );
+
+  return response.data;
+};
+````
+
+## File: Frontend/src/features/Pet Owner/pet profile/components/MyPetsSection.tsx
+````typescript
+import { PawPrint, Plus } from "lucide-react";
+
+import Button from "@/shared/components/Button/Button";
+import Card from "@/shared/components/Card/Card";
+
+import type { MyPetsSectionProps } from "../types/petProfile.types";
+
+import PetProfileCard from "./PetProfileCard";
+
+const MyPetsSection = ({
+  pets,
+  onAddPet,
+  onEditPet,
+  onDeletePet,
+  onBookAppointment,
+}: MyPetsSectionProps) => {
+
+  return (
+    <section className="mt-8">
+      <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-3">
+          <PawPrint
+            size={28}
+            className="mt-0.5 shrink-0 text-[#078b91]"
+          />
+
+          <div>
+            <h2 className="text-2xl font-black text-[#101b3d]">
+              My Pets
+            </h2>
+
+            <p className="mt-1 text-sm font-medium text-slate-500">
+              Manage your pets and book veterinary appointments.
+            </p>
+          </div>
+        </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          className="flex h-11 w-auto items-center justify-center gap-2 border-[#078b91] px-5 text-[#078b91]"
+          onClick={onAddPet}
+        >
+          <Plus size={18} />
+          Add New Pet
+        </Button>
+      </div>
+
+      {pets.length === 0 ? (
+        <Card className="border-dashed py-14 text-center shadow-none">
+          <PawPrint size={50} className="mx-auto text-[#D4E2E0]" />
+
+          <h3 className="mt-4 text-xl font-black text-[#101b3d]">
+            No pets added yet
+          </h3>
+
+          <p className="mx-auto mt-2 max-w-md text-sm font-medium leading-6 text-slate-500">
+            Add your first pet to start booking veterinary appointments.
+          </p>
+
+
+        </Card>
+      ) : (
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {pets.map((pet) => (
+            console.log("Pets in loop are ", pets),
+            < PetProfileCard
+              key={pet.id}
+              pet={pet}
+              onEdit={onEditPet}
+              onDelete={onDeletePet}
+              onBookAppointment={onBookAppointment}
+            />
+          ))}
+        </div>
+      )}
+    </section>
+  );
 };
 
-export const getPetsData = async (): Promise<PetResponse[] | undefined> => {
-  try {
-    const response = await api.get("petOwner/pets-data");
-    return response.data?.data;
-  } catch (error) {
-    handleAxiosError(error);
-    throw error;
-  }
+export default MyPetsSection;
+````
+
+## File: Frontend/src/features/Pet Owner/pet profile/components/PetForm.tsx
+````typescript
+import { Calendar, List, PawPrint, Shield, User, ImagePlus } from "lucide-react";
+import { useForm, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+
+import Input from "../../../../shared/components/Input/Input";
+import Button from "../../../../shared/components/Button/Button";
+import {
+  petSchema,
+  type PetFormInput,
+  type PetFormData,
+} from "../schemas/pet.schema";
+import { useAuth } from "@/features/Auth/hooks/authhook";
+import type { PetFormProps } from "../types/petProfile.types";
+// import { type submitPetData } from "../apis/pet.api";
+
+const PetForm = ({ onCancel }: PetFormProps) => {
+  const { user } = useAuth();
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [previews, setPreviews] = useState<string[]>([]);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    control,
+    formState: { errors, isSubmitting },
+  } = useForm<PetFormInput, unknown, PetFormData>({
+    resolver: zodResolver(petSchema),
+    defaultValues: {
+      name: "",
+      age: "",
+      breed: "",
+      category: undefined,
+    },
+  });
+
+  // Watch the photos field to trigger preview generation
+  const selectedPhotos = useWatch({ control, name: "photos" });
+
+  useEffect(() => {
+    if (!selectedPhotos || selectedPhotos.length === 0) {
+      setPreviews([]);
+      return;
+    }
+
+    const objectUrls = Array.from(selectedPhotos).map((file) =>
+      URL.createObjectURL(file as File)
+    );
+
+    setPreviews(objectUrls);
+
+    return () => {
+      objectUrls.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [selectedPhotos]);
+
+  const onSubmit = async (data: PetFormData) => {
+    setSubmitError(null);
+    console.log("Pet Form Data:", data);
+    const petOwnerId = user?.data?.id;
+    if (!petOwnerId) {
+      setSubmitError("You must be logged in to register a pet.");
+      return;
+    }
+  };
+
+  return (
+    <section className="w-full max-w-2xl overflow-hidden rounded-3xl bg-white shadow-2xl shadow-purple-200/60 text-[#1F1F2E]">
+      <div className="relative h-36 bg-gradient-to-br from-[#F4ECFF] to-[#E9DDFF] px-6 flex flex-col justify-center">
+        <h1 className="text-2xl font-black tracking-tight text-[#4c249f] sm:text-3xl">
+          Register Pet
+        </h1>
+        <p className="mt-1 text-sm font-semibold text-[#8B64D7]">
+          Please enter your pet details
+        </p>
+
+        <span className="absolute right-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-[#6D3DD9] shadow-lg shadow-purple-100">
+          <PawPrint size={28} />
+        </span>
+      </div>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 px-6 py-6">
+        {submitError && (
+          <div className="bg-red-50 text-red-650 p-3 rounded-2xl text-xs font-semibold border border-red-100 mb-3">
+            {submitError}
+          </div>
+        )}
+
+        {/* Photo Upload Section - Full Width */}
+        <div className="w-full">
+          <label className="mb-2 block text-sm font-black">
+            Pet Photos
+          </label>
+          <label className="flex flex-col items-center justify-center w-full h-28 rounded-xl border-2 border-dashed border-purple-200 bg-[#F6F0FF]/50 hover:bg-[#F4ECFF] transition-colors cursor-pointer focus-within:border-[#6D3DD9] focus-within:ring-4 focus-within:ring-purple-100">
+            <div className="flex flex-col items-center justify-center pt-4 pb-4 text-[#6D3DD9]">
+              <ImagePlus size={26} className="mb-1 opacity-80" />
+              <p className="text-xs font-semibold">
+                Click to upload <span className="font-normal text-slate-500">or drag and drop</span>
+              </p>
+            </div>
+            <input
+              type="file"
+              multiple
+              className="hidden"
+              accept="image/*"
+              {...register("photos")}
+            />
+          </label>
+
+          {/* Previews Grid */}
+          {previews.length > 0 && (
+            <div className="mt-3 grid grid-cols-6 gap-2">
+              {previews.map((src, i) => (
+                <div key={src} className="relative aspect-square rounded-lg overflow-hidden border border-purple-100 shadow-sm">
+                  <img src={src} alt={`preview-${i}`} className="object-cover w-full h-full" />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {errors.photos && (
+            <p className="mt-1 text-xs font-semibold text-red-500">
+              {errors.photos.message as string}
+            </p>
+          )}
+        </div>
+
+        {/* Row 1: Name and Age */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            label="Pet Name"
+            type="text"
+            placeholder="Enter pet name"
+            error={errors.name?.message}
+            icon={<User size={18} />}
+            {...register("name")}
+          />
+
+          <Input
+            label="Age"
+            type="number"
+            placeholder="Enter age"
+            error={errors.age?.message}
+            icon={<Calendar size={18} />}
+            rightText="Years"
+            {...register("age")}
+          />
+        </div>
+
+        {/* Row 2: Breed and Category */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            label="Breed"
+            type="text"
+            placeholder="Enter breed"
+            error={errors.breed?.message}
+            icon={<Shield size={18} />}
+            {...register("breed")}
+          />
+
+          <div>
+            <label className="mb-2 block text-sm font-black">
+              Category <span className="text-red-500">*</span>
+            </label>
+
+            <div className="relative flex h-14 items-center rounded-xl border border-slate-200 bg-white px-4 transition focus-within:border-[#6D3DD9] focus-within:ring-4 focus-within:ring-purple-100">
+              <List size={18} className="mr-3 text-[#6D3DD9]" />
+
+              <select
+                {...register("category")}
+                className="h-full w-full bg-transparent text-sm font-semibold text-slate-600 outline-none"
+              >
+                <option value="">Select category</option>
+                <option value="DOG">Dog</option>
+                <option value="CAT">Cat</option>
+                <option value="REPTILE">Reptile</option>
+                <option value="OTHER">Other</option>
+              </select>
+            </div>
+
+            {errors.category && (
+              <p className="mt-1 text-xs font-semibold text-red-500">
+                {errors.category.message}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Info Box - Full Width */}
+        <div className="rounded-2xl border border-purple-100 bg-[#F6F0FF] p-4">
+          <h3 className="text-sm font-black text-[#4B2DB5]">
+            About Pet Categories
+          </h3>
+          <p className="mt-1 text-xs leading-5 text-slate-600">
+            Choose the correct category to help us provide better care for your pet.
+          </p>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="grid grid-cols-2 gap-3 pt-2">
+          <Button
+            type="button"
+            variant="outline"
+            className="border-[#6D3DD9]/35 text-[#6D3DD9]"
+            onClick={() => {
+              reset();
+              setPreviews([]);
+              if (onCancel) onCancel();
+            }}
+          >
+            Cancel
+          </Button>
+
+          <Button
+            type="submit"
+            isSubmitting={isSubmitting}
+            className="bg-[#6D3DD9] hover:bg-[#5630B2] hover:text-white"
+          >
+            Save Pet
+          </Button>
+        </div>
+      </form>
+    </section>
+  );
 };
+
+export default PetForm;
+````
+
+## File: Frontend/src/features/Pet Owner/pet profile/components/PetOwnerProfileHeader.tsx
+````typescript
+import {
+  Mail,
+  PawPrint,
+  Pencil,
+  Phone,
+  UserRound,
+} from "lucide-react";
+
+import Card from "@/shared/components/Card/Card";
+
+import type {
+  PetOwnerProfileHeaderProps,
+  ProfileMetaProps,
+} from "../types/petProfile.types";
+
+const PetOwnerProfileHeader = ({
+  profile,
+  onEditProfile,
+}: PetOwnerProfileHeaderProps) => {
+  const fallbackProfileImage =
+    "https://ui-avatars.com/api/?name=Pet+Owner&background=EAF7F5&color=078b91";
+  const profileImage =
+    profile.profileImageUrl &&
+    !profile.profileImageUrl.toLowerCase().includes("enter your image")
+      ? profile.profileImageUrl
+      : fallbackProfileImage;
+
+  return (
+    <Card className="p-5 sm:p-7 lg:p-8">
+      <div className="flex flex-col gap-6 md:flex-row md:items-center">
+        <div className="relative mx-auto shrink-0 md:mx-0">
+          <div className="h-36 w-36 overflow-hidden rounded-full border-4 border-white bg-[#EAF7F5] shadow-lg sm:h-40 sm:w-40">
+            <img
+              src={profileImage}
+              alt={profile.fullName}
+              className="h-full w-full object-cover"
+              onError={(event) => {
+                event.currentTarget.src = fallbackProfileImage;
+              }}
+            />
+          </div>
+
+          <button
+            type="button"
+            onClick={onEditProfile}
+            aria-label="Edit profile"
+            className="absolute bottom-1 right-1 flex h-11 w-11 items-center justify-center rounded-full border-4 border-white bg-white text-[#078b91] shadow-md transition hover:bg-[#078b91] hover:text-white"
+          >
+            <Pencil size={18} />
+          </button>
+        </div>
+
+        <div className="min-w-0 flex-1 text-center md:text-left">
+          <div className="flex flex-wrap items-center justify-center gap-3 md:justify-start">
+            <h1 className="text-3xl font-black tracking-[-0.04em] text-[#101b3d] sm:text-4xl">
+              {profile.fullName}
+            </h1>
+
+            <span className="inline-flex items-center gap-2 rounded-full bg-[#EAF7F5] px-4 py-2 text-xs font-black text-[#078b91]">
+              <PawPrint size={15} />
+              Pet Parent
+            </span>
+          </div>
+
+          <p className="mt-2 text-sm font-bold text-slate-500">
+            {profile.username}
+          </p>
+
+          <p className="mt-5 max-w-2xl text-sm font-medium leading-7 text-slate-600">
+            Manage your pets, veterinary appointments, and health information
+            from one place.
+          </p>
+
+          <div className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm font-semibold text-slate-600 md:justify-start">
+            <ProfileMeta
+              icon={<Mail size={18} />}
+              value={profile.email}
+            />
+
+            {profile.phone && (
+              <ProfileMeta
+                icon={<Phone size={18} />}
+                value={profile.phone}
+              />
+            )}
+
+            <ProfileMeta
+              icon={<UserRound size={18} />}
+              value="Pet Owner"
+            />
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+};
+
+const ProfileMeta = ({
+  icon,
+  value,
+}: ProfileMetaProps) => {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-[#078b91]">{icon}</span>
+      <span>{value}</span>
+    </div>
+  );
+};
+
+export default PetOwnerProfileHeader;
+````
+
+## File: Frontend/src/features/Pet Owner/pet profile/pages/PetOwnerProfilePage.tsx
+````typescript
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import PetForm from "../../pet details/components/PetForm";
+import Button from "@/shared/components/Button/Button";
+import Card from "@/shared/components/Card/Card";
+import { useAuth } from "@/features/Auth/hooks/authhook";
+
+import EditPetOwnerProfileModal from "../components/EditPetOwnerProfileModal";
+import MyPetsSection from "../components/MyPetsSection";
+import PetOwnerProfileHeader from "../components/PetOwnerProfileHeader";
+
+import {
+  getPetOwnerProfileApi,
+  updatePetOwnerProfileApi,
+} from "../api/petOwnerProfile.api";
+import {
+  deletePetApi,
+  getMyPetsApi,
+} from "../api/pets.api";
+
+import type {
+  Pet,
+  PetOwnerProfile,
+} from "../types/petProfile.types";
+import type { PetOwnerProfileFormData } from "../schemas/petOwnerProfile.schema";
+
+const PetOwnerProfilePage = () => {
+  const navigate = useNavigate();
+  const { setUser } = useAuth();
+
+  const [profile, setProfile] = useState<PetOwnerProfile | null>(null);
+  const [pets, setPets] = useState<Pet[]>([]);
+  const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [error, setError] = useState("");
+  const [profileError, setProfileError] = useState("");
+  const [openPetForm, setOpenPetForm] = useState<boolean>(false);
+  const [openProfileForm, setOpenProfileForm] = useState(false);
+
+  const fetchProfileData = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError("");
+
+      const [profileResponse, petsResponse] = await Promise.all([
+        getPetOwnerProfileApi(),
+        getMyPetsApi(),
+      ]);
+   
+      setProfile(profileResponse.data);
+      setPets(petsResponse.data);
+    } catch (fetchError) {
+      console.error("Pet owner profile fetch error:", fetchError);
+      setError("Unable to load your profile. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void Promise.resolve().then(fetchProfileData);
+  }, [fetchProfileData]);
+
+  // Lock body scroll when the modal form is active
+  useEffect(() => {
+    if (openPetForm) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [openPetForm]);
+
+  const handleDeletePet = async () => {
+    if (!selectedPet) return;
+
+    try {
+      setIsDeleting(true);
+
+      await deletePetApi(selectedPet.id);
+
+      setPets((previousPets) =>
+        previousPets.filter((pet) => pet.id !== selectedPet.id),
+      );
+
+      setSelectedPet(null);
+    } catch (deleteError) {
+      console.error("Delete pet error:", deleteError);
+      setError("Unable to delete pet. Please try again.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handlePetAddedSuccess = () => {
+    setOpenPetForm(false);
+    void fetchProfileData();
+  };
+
+  const handleProfileUpdate = async (data: PetOwnerProfileFormData) => {
+    if (!profile) return;
+
+    try {
+      setIsSavingProfile(true);
+      setProfileError("");
+
+      const response = await updatePetOwnerProfileApi({
+        fullName: data.fullName,
+        username: data.username,
+        phone: data.phone,
+        profileImage: data.profileImage,
+      });
+
+      setProfile(response.data);
+      setUser((currentUser) =>
+        currentUser
+          ? {
+              ...currentUser,
+              data: {
+                ...currentUser.data,
+                name: response.data.fullName,
+                username: response.data.username,
+                profileImageUrl: response.data.profileImageUrl,
+              },
+            }
+          : currentUser,
+      );
+      setOpenProfileForm(false);
+    } catch (updateError) {
+      console.error("Pet owner profile update error:", updateError);
+      const message =
+        axios.isAxiosError(updateError) &&
+        typeof updateError.response?.data?.message === "string"
+          ? updateError.response.data.message
+          : "Unable to update your profile. Please try again.";
+
+      setProfileError(message);
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <main className="min-h-screen bg-[#F8FAFA] px-4 py-6 sm:px-6 lg:px-10">
+        <section className="mx-auto max-w-7xl space-y-6">
+          <div className="h-64 animate-pulse rounded-3xl bg-slate-200" />
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {[1, 2, 3].map((item) => (
+              <div
+                key={item}
+                className="h-96 animate-pulse rounded-3xl bg-slate-200"
+              />
+            ))}
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  if (error && !profile) {
+    return (
+      <main className="min-h-screen bg-[#F8FAFA] px-4 py-6 sm:px-6 lg:px-10">
+        <Card className="mx-auto max-w-xl py-12 text-center">
+          <h1 className="text-xl font-black text-[#101b3d]">
+            Unable to load profile
+          </h1>
+          <p className="mt-2 text-sm font-medium text-slate-500">
+            {error}
+          </p>
+          <Button
+            type="button"
+            className="mx-auto mt-5 w-auto px-6"
+            onClick={() => void fetchProfileData()}
+          >
+            Try Again
+          </Button>
+        </Card>
+      </main>
+    );
+  }
+
+  return (
+    <>
+      <main className="min-h-screen bg-[#F8FAFA] px-4 py-6 text-[#20263D] sm:px-6 lg:px-10">
+        <section className="mx-auto max-w-7xl">
+          {error && (
+            <div className="mb-5 rounded-2xl border border-red-100 bg-red-50 px-5 py-3 text-sm font-semibold text-red-600">
+              {error}
+            </div>
+          )}
+
+          {profile && (
+            <PetOwnerProfileHeader
+              profile={profile}
+              onEditProfile={() => setOpenProfileForm(true)}
+            />
+          )}
+
+          <MyPetsSection
+            pets={pets}
+            onAddPet={() => setOpenPetForm(true)}
+            onEditPet={(petId) =>
+              navigate(`/pet-owner/pets/${petId}/edit`)
+            }
+            onDeletePet={setSelectedPet}
+            onBookAppointment={(petId) =>
+              navigate(`/doctors?petId=${petId}`)
+            }
+          />
+
+        </section>
+      </main>
+
+      {/* Lightweight, High-Performance Scroll-Trapped Overlay */}
+      {openPetForm && (
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 overscroll-contain text-center"
+          role="dialog"
+          aria-modal="true"
+        >
+          {/* Outer flex container wraps the custom scroll scope */}
+          <div className="flex min-h-[100dvh] items-center justify-center p-4 sm:p-6">
+            <div className="w-full max-w-md my-8 text-left">
+              <PetForm
+                onSubmitSuccess={handlePetAddedSuccess}
+                onCancel={() => setOpenPetForm(false)}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {openProfileForm && profile && (
+        <EditPetOwnerProfileModal
+          profile={profile}
+          isSaving={isSavingProfile}
+          error={profileError}
+          onCancel={() => {
+            setOpenProfileForm(false);
+            setProfileError("");
+          }}
+          onSubmit={handleProfileUpdate}
+        />
+      )}
+
+      {selectedPet && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4"
+          role="dialog"
+          aria-modal="true"
+        >
+          <Card className="w-full max-w-md p-6 text-center">
+            <h2 className="text-2xl font-black text-[#101b3d]">
+              Delete {selectedPet.name}?
+            </h2>
+            <p className="mt-3 text-sm font-medium leading-6 text-slate-500">
+              This pet will be removed from your profile.
+            </p>
+
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-center">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full sm:w-auto"
+                onClick={() => setSelectedPet(null)}
+                disabled={isDeleting}
+              >
+                Cancel
+              </Button>
+
+              <Button
+                type="button"
+                className="w-full !border-red-500 !bg-red-500 !text-white hover:!bg-red-600 hover:!text-white sm:w-auto"
+                loading={isDeleting}
+                loadingText="Deleting..."
+                onClick={() => void handleDeletePet()}
+              >
+                Delete Pet
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default PetOwnerProfilePage;
+````
+
+## File: Frontend/src/features/Pet Owner/pet profile/petProfile.route.tsx
+````typescript
+import PetOwnerProfilePage from "./pages/PetOwnerProfilePage";
+import PetFormPage from "../pet details/pages/PetFormPage";
+import EditPetPage from "./pages/EditPetPage";
+
+export const petProfileRoutes = [
+  {
+    path: "/pet-owner/profile",
+    element: <PetOwnerProfilePage />,
+  },
+  {
+    path: "/pet-owner/pets/add",
+    element: <PetFormPage />,
+  },
+  {
+    path: "/pet-owner/pets/:petId/edit",
+    element: <EditPetPage />,
+  },
+];
+````
+
+## File: Frontend/src/features/PetOwnerDashboard/components/DashboardSidebar.tsx
+````typescript
+import {
+  CalendarDays,
+  LayoutDashboard,
+  LogOut,
+  PawPrint,
+  Settings,
+  ShoppingCart,
+  Stethoscope,
+  UserRound,
+  FileText,
+} from "lucide-react";
+
+import { NavLink, useNavigate } from "react-router-dom";
+import type { DashboardSidebarItem } from "../types/petOwnerDashboard.types";
+
+const sidebarItems: DashboardSidebarItem[] = [
+  {
+    label: "Dashboard",
+    path: "/pet-owner/dashboard",
+    icon: <LayoutDashboard size={20} />,
+  },
+  {
+    label: "Appointments",
+    path: "/pet-owner/appointments",
+    icon: <CalendarDays size={20} />,
+  },
+  // {
+  //   label: "Reports",
+  //   path: "/pet-owner/reports",
+  //   icon: <FileText size={20} />,
+  // },
+  {
+    label: "Find Doctor",
+    path: "/doctors",
+    icon: <Stethoscope size={20} />,
+  },
+  {
+    label: "Marketplace",
+    path: "/marketplace1",
+    icon: <ShoppingCart size={20} />,
+  },
+  {
+    label: "Cart",
+    path: "/cart",
+    icon: <ShoppingCart size={20} />,
+  },
+  {
+    label: "Profile",
+    path: "/pet-owner/profile",
+    icon: <UserRound size={20} />,
+  },
+  // {
+  //   label: "Settings",
+  //   path: "/pet-owner/settings",
+  //   icon: <Settings size={20} />,
+  // },
+];
+
+const DashboardSidebar = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
+  return (
+    <aside className="fixed left-0 top-0 hidden h-screen w-[260px] border-r border-slate-200 bg-white lg:flex lg:flex-col">
+      {/* Logo */}
+      <div className="flex items-center gap-3 border-b border-slate-100 px-7 py-6">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EAF7F5] text-[#078b91]">
+          <PawPrint size={27} />
+        </div>
+
+        <div>
+          <h1 className="text-xl font-black text-[#078b91]">
+            Pets Veta
+          </h1>
+
+          <p className="text-xs font-semibold text-slate-500">
+            Care • Love • Heal
+          </p>
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 space-y-2 px-4 py-6">
+        {sidebarItems.map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            className={({ isActive }) =>
+              `flex items-center gap-4 rounded-xl px-4 py-3.5 text-sm font-bold transition ${
+                isActive
+                  ? "bg-[#EAF7F5] text-[#078b91]"
+                  : "text-[#20263D] hover:bg-slate-50"
+              }`
+            }
+          >
+            {item.icon}
+            {item.label}
+          </NavLink>
+        ))}
+      </nav>
+
+      {/* Small sidebar info */}
+      {/* <div className="mx-4 mb-5 rounded-2xl bg-[#F1FAF8] p-5">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-[#078b91]">
+          <PawPrint size={24} />
+        </div>
+
+        <h3 className="mt-4 text-lg font-black text-[#101b3d]">
+          We care for your pets
+        </h3>
+
+        <p className="mt-2 text-sm font-medium leading-6 text-slate-500">
+          Book appointments and track your pet&apos;s health easily.
+        </p>
+      </div> */}
+
+      {/* Logout */}
+      <button
+        type="button"
+        onClick={handleLogout}
+        className="mx-5 mb-6 flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-red-500 transition hover:bg-red-50"
+      >
+        <LogOut size={20} />
+        Logout
+      </button>
+    </aside>
+  );
+};
+
+export default DashboardSidebar;
+````
+
+## File: Frontend/src/features/seller/components/OrdersTable.tsx
+````typescript
+import { FaEllipsisV } from "react-icons/fa";
+import Card from "@/shared/components/Card/Card";
+import Button from "@/shared/components/Button/Button";
+import { getProductImage } from "@/features/marketplace1/api/marketplace.api";
+import type { OrdersTableProps } from "../types/seller.types";
+
+const statusClass: Record<string, string> = {
+  PENDING: "bg-yellow-100 text-yellow-700",
+  CONFIRMED: "bg-green-100 text-green-700",
+  SHIPPED: "bg-blue-100 text-blue-700",
+  COMPLETED: "bg-emerald-100 text-emerald-700",
+  CANCELLED: "bg-red-100 text-red-700",
+};
+
+const OrdersTable = ({ orders }: OrdersTableProps) => {
+  return (
+    <Card className="p-0 overflow-hidden">
+      <div className="max-h-[310px] overflow-y-auto">
+        <table className="w-full text-left text-sm">
+          <thead className="sticky top-0 z-10 bg-white text-xs text-gray-500">
+            <tr className="border-b border-gray-100">
+              <th className="px-5 py-4">Order ID</th>
+              <th className="px-5 py-4">Product</th>
+              <th className="px-5 py-4">Buyer</th>
+              <th className="px-5 py-4">Quantity</th>
+              <th className="px-5 py-4">Amount</th>
+              <th className="px-5 py-4">Status</th>
+              <th className="px-5 py-4">Date</th>
+              <th className="px-5 py-4"></th>
+            </tr>
+          </thead>
+
+          <tbody className="divide-y divide-gray-100">
+            {orders.map((order) => {
+              const firstItem = order.items[0];
+              const product = firstItem?.product;
+              const quantity = order.items.reduce(
+                (total, item) => total + item.quantity,
+                0
+              );
+              const amount = Number(order.totalAmount || 0);
+
+              return (
+                <tr key={order.id} className="hover:bg-gray-50">
+                  <td className="px-5 py-4 font-medium text-[#178f95]">
+                    {order.orderNumber}
+                  </td>
+
+                  <td className="px-5 py-4">
+                    <div className="flex items-center gap-3">
+                      {product && (
+                        <img
+                          src={getProductImage(product)}
+                          alt={product.title}
+                          className="h-9 w-9 rounded-md object-cover"
+                        />
+                      )}
+                      <span className="font-medium text-gray-800">
+                        {product?.title || "Product"}
+                      </span>
+                    </div>
+                  </td>
+
+                  <td className="px-5 py-4 text-gray-600">
+                    {order.buyer?.fullName || order.buyer?.email || "Buyer"}
+                  </td>
+                  <td className="px-5 py-4 text-gray-600">{quantity}</td>
+                  <td className="px-5 py-4 text-gray-700">
+                    PKR {amount.toLocaleString()}
+                  </td>
+
+                  <td className="px-5 py-4">
+                    <span
+                      className={`rounded-full px-3 py-1 text-xs font-medium ${
+                        statusClass[order.status] || "bg-gray-100 text-gray-600"
+                      }`}
+                    >
+                      {order.status.replace("_", " ")}
+                    </span>
+                  </td>
+
+                  <td className="px-5 py-4 text-gray-500">
+                    {new Date(order.createdAt).toLocaleDateString()}
+                  </td>
+
+                  <td className="px-5 py-4">
+                    <Button variant="outline" size="sm">
+                      <FaEllipsisV />
+                    </Button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </Card>
+  );
+};
+
+export default OrdersTable;
+````
+
+## File: Frontend/src/features/seller/components/ProductCard.tsx
+````typescript
+import Button from "@/shared/components/Button/Button";
+import Card from "@/shared/components/Card/Card";
+import {
+  getProductImage,
+  getProductPrice,
+  toDisplayCategory,
+} from "@/features/marketplace1/api/marketplace.api";
+import type { ProductCardProps } from "../types/seller.types";
+
+const statusClass: Record<string, string> = {
+  ACTIVE: "bg-green-100 text-green-700",
+  SOLD_OUT: "bg-red-100 text-red-700",
+  DRAFT: "bg-gray-100 text-gray-600",
+  ARCHIVED: "bg-gray-100 text-gray-600",
+};
+
+const ProductCard = ({ product, onEdit, onDelete, onView }: ProductCardProps) => {
+  const image = getProductImage(product);
+  const price = getProductPrice(product);
+
+  return (
+    <Card className="p-0 overflow-hidden">
+      <div className="relative h-44 bg-gray-50">
+        <img src={image} alt={product.title} className="h-full w-full object-cover" />
+
+        <span
+          className={`absolute right-3 top-3 rounded-full px-3 py-1 text-xs font-medium ${
+            statusClass[product.status] || "bg-gray-100 text-gray-600"
+          }`}
+        >
+          {product.status.replace("_", " ")}
+        </span>
+      </div>
+
+      <div className="p-4">
+        <h3 className="text-sm font-semibold text-gray-900">{product.title}</h3>
+        <p className="mt-1 text-xs text-gray-500">
+          {toDisplayCategory(product.category)}
+        </p>
+
+        <div className="mt-3 flex items-center justify-between">
+          <p className="text-sm font-semibold text-gray-900">
+            PKR {price.toLocaleString()}
+          </p>
+          <p className="text-xs text-gray-500">Stock: {product.stock}</p>
+        </div>
+
+        <div className="mt-4 grid grid-cols-2 gap-3">
+          <Button variant="outline" size="sm" onClick={onEdit}>
+            Edit
+          </Button>
+
+          <Button variant="outline" size="sm" onClick={onDelete}>
+            Delete
+          </Button>
+        </div>
+
+        <button
+          type="button"
+          onClick={onView}
+          className="mt-3 w-full text-center text-xs font-medium text-[#178f95]"
+        >
+          View in Marketplace
+        </button>
+      </div>
+    </Card>
+  );
+};
+
+export default ProductCard;
+````
+
+## File: Frontend/src/features/seller/components/ProductImageUpload.tsx
+````typescript
+import { FaCloudUploadAlt } from "react-icons/fa";
+import type { ProductImageUploadProps } from "../types/seller.types";
+
+const ProductImageUpload = ({
+  previews,
+  onImageChange,
+}: ProductImageUploadProps) => {
+  return (
+    <div>
+      <label className="mb-2 block text-sm font-medium text-gray-700">
+        Product Images
+      </label>
+
+      <p className="mb-3 text-xs text-gray-400">Upload up to 5 images</p>
+
+      <label className="flex h-36 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 bg-white text-center transition hover:border-[#178f95] hover:bg-[#f2fbfb]">
+        <FaCloudUploadAlt className="mb-2 text-3xl text-gray-400" />
+
+        <p className="text-sm font-semibold text-gray-700">Click to upload</p>
+        <p className="text-xs text-gray-400">or drag and drop</p>
+        <p className="text-xs text-gray-400">PNG, JPG up to 5MB</p>
+
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          className="hidden"
+          onChange={(e) => {
+            const files = Array.from(e.target.files || []).slice(0, 5);
+            if (files.length) onImageChange(files);
+          }}
+        />
+      </label>
+
+      <div className="mt-3 flex gap-3">
+        {[0, 1, 2, 3, 4].map((item) => (
+          <div
+            key={item}
+            className="flex h-14 w-14 items-center justify-center rounded-lg border border-gray-200 bg-gray-50"
+          >
+            {previews[item] ? (
+              <img
+                src={previews[item]}
+                alt="preview"
+                className="h-full w-full rounded-lg object-cover"
+              />
+            ) : (
+              <span className="text-xs text-gray-400">Img</span>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default ProductImageUpload;
+````
+
+## File: Frontend/src/features/seller/components/RecentOrders.tsx
+````typescript
+import Button from "@/shared/components/Button/Button";
+import Card from "@/shared/components/Card/Card";
+import type { RecentOrdersProps } from "../types/seller.types";
+
+const statusClass: Record<string, string> = {
+  PENDING: "bg-yellow-100 text-yellow-700",
+  CONFIRMED: "bg-green-100 text-green-700",
+  SHIPPED: "bg-blue-100 text-blue-700",
+  COMPLETED: "bg-emerald-100 text-emerald-700",
+  CANCELLED: "bg-red-100 text-red-700",
+};
+
+const RecentOrders = ({ orders, onViewAll }: RecentOrdersProps) => {
+  return (
+    <Card>
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-gray-900">Recent Orders</h2>
+
+        <Button variant="outline" size="sm" onClick={onViewAll}>
+          View all
+        </Button>
+      </div>
+
+      <div className="max-h-[320px] overflow-y-auto pr-2">
+        <table className="w-full text-left text-sm">
+          <thead className="sticky top-0 bg-white text-xs text-gray-500">
+            <tr>
+              <th className="pb-3">Order ID</th>
+              <th className="pb-3">Product</th>
+              <th className="pb-3">Buyer</th>
+              <th className="pb-3">Amount</th>
+              <th className="pb-3">Status</th>
+              <th className="pb-3">Date</th>
+            </tr>
+          </thead>
+
+          <tbody className="divide-y divide-gray-100">
+            {orders.map((order) => {
+              const product = order.items[0]?.product;
+              const amount = Number(order.totalAmount || 0);
+
+              return (
+                <tr key={order.id}>
+                  <td className="py-3 font-medium text-[#178f95]">
+                    {order.orderNumber}
+                  </td>
+                  <td className="py-3 text-gray-700">{product?.title || "Product"}</td>
+                  <td className="py-3 text-gray-600">
+                    {order.buyer?.fullName || order.buyer?.email || "Buyer"}
+                  </td>
+                  <td className="py-3 text-gray-700">
+                    PKR {amount.toLocaleString()}
+                  </td>
+                  <td className="py-3">
+                    <span
+                      className={`rounded-full px-3 py-1 text-xs font-medium ${
+                        statusClass[order.status] || "bg-gray-100 text-gray-600"
+                      }`}
+                    >
+                      {order.status.replace("_", " ")}
+                    </span>
+                  </td>
+                  <td className="py-3 text-gray-500">
+                    {new Date(order.createdAt).toLocaleDateString()}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </Card>
+  );
+};
+
+export default RecentOrders;
+````
+
+## File: Frontend/src/features/seller/components/StockOverview.tsx
+````typescript
+import Card from "@/shared/components/Card/Card";
+import type { StockOverviewProps } from "../types/seller.types";
+
+const StockOverview = ({ products }: StockOverviewProps) => {
+  const total = products.length;
+  const lowStock = products.filter(
+    (product) => product.stock > 0 && product.stock <= 3
+  ).length;
+  const outOfStock = products.filter(
+    (product) => product.stock <= 0 || product.status === "SOLD_OUT"
+  ).length;
+  const inStock = Math.max(total - lowStock - outOfStock, 0);
+  const inStockPercent = total ? Math.round((inStock / total) * 100) : 0;
+  const lowStockPercent = total ? Math.round((lowStock / total) * 100) : 0;
+  const outPercent = total ? Math.round((outOfStock / total) * 100) : 0;
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-3 gap-3">
+        <Card className="p-4">
+          <p className="text-xs text-gray-500">Total Products</p>
+          <h3 className="mt-2 text-2xl font-bold text-[#178f95]">{total}</h3>
+        </Card>
+
+        <Card className="p-4">
+          <p className="text-xs text-gray-500">Low Stock Items</p>
+          <h3 className="mt-2 text-2xl font-bold text-red-500">{lowStock}</h3>
+        </Card>
+
+        <Card className="p-4">
+          <p className="text-xs text-gray-500">Out of Stock</p>
+          <h3 className="mt-2 text-2xl font-bold text-gray-900">{outOfStock}</h3>
+        </Card>
+      </div>
+
+      <Card>
+        <h3 className="mb-5 text-sm font-semibold text-gray-900">
+          Stock Overview
+        </h3>
+
+        <div className="flex items-center gap-6">
+          <div
+            className="relative h-32 w-32 rounded-full"
+            style={{
+              background: `conic-gradient(#178f95 0 ${inStockPercent}%, #f5b942 ${inStockPercent}% ${
+                inStockPercent + lowStockPercent
+              }%, #ef4444 ${inStockPercent + lowStockPercent}% ${
+                inStockPercent + lowStockPercent + outPercent
+              }%, #8aa3a3 ${inStockPercent + lowStockPercent + outPercent}% 100%)`,
+            }}
+          >
+            <div className="absolute inset-8 rounded-full bg-white" />
+          </div>
+
+          <div className="space-y-3 text-sm">
+            <p className="flex items-center gap-2">
+              <span className="h-3 w-3 rounded-sm bg-[#178f95]" />
+              In Stock {inStockPercent}%
+            </p>
+
+            <p className="flex items-center gap-2">
+              <span className="h-3 w-3 rounded-sm bg-[#f5b942]" />
+              Low Stock {lowStockPercent}%
+            </p>
+
+            <p className="flex items-center gap-2">
+              <span className="h-3 w-3 rounded-sm bg-red-500" />
+              Out of Stock {outPercent}%
+            </p>
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+export default StockOverview;
+````
+
+## File: Frontend/src/features/seller/components/StockTable.tsx
+````typescript
+import Button from "@/shared/components/Button/Button";
+import Card from "@/shared/components/Card/Card";
+import {
+  getProductImage,
+} from "@/features/marketplace1/api/marketplace.api";
+import type { StockTableProps } from "../types/seller.types";
+
+const StockTable = ({ products, onStockChange }: StockTableProps) => {
+  return (
+    <Card className="overflow-hidden p-0">
+      <div className="grid grid-cols-[1.6fr_100px_120px_150px] border-b border-gray-100 px-5 py-4 text-xs font-semibold text-gray-500">
+        <p>Product</p>
+        <p className="text-center">Stock</p>
+        <p className="text-center">Status</p>
+        <p className="text-center">Update</p>
+      </div>
+
+      <div className="divide-y divide-gray-100">
+        {products.map((item) => {
+          const isOut = item.stock <= 0 || item.status === "SOLD_OUT";
+          const isLowStock = item.stock > 0 && item.stock <= 3;
+
+          return (
+            <div
+              key={item.id}
+              className="grid grid-cols-[1.6fr_100px_120px_150px] items-center px-5 py-4 hover:bg-gray-50"
+            >
+              <div className="flex min-w-0 items-center gap-3">
+                <img
+                  src={getProductImage(item)}
+                  alt={item.title}
+                  className="h-12 w-12 shrink-0 rounded-lg object-cover"
+                />
+
+                <p className="truncate text-sm font-medium text-gray-900">
+                  {item.title}
+                </p>
+              </div>
+
+              <p className="text-center text-sm font-medium text-gray-700">
+                {item.stock}
+              </p>
+
+              <div className="flex justify-center">
+                <span
+                  className={`rounded-full px-3 py-1 text-xs font-medium ${
+                    isOut
+                      ? "bg-red-100 text-red-700"
+                      : isLowStock
+                        ? "bg-yellow-100 text-yellow-700"
+                        : "bg-green-100 text-green-700"
+                  }`}
+                >
+                  {isOut ? "Out" : isLowStock ? "Low" : "In Stock"}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-9 w-9 px-0"
+                  onClick={() => onStockChange(item.id, Math.max(item.stock - 1, 0))}
+                >
+                  -
+                </Button>
+
+                <span className="w-8 text-center text-sm font-semibold text-gray-900">
+                  {item.stock}
+                </span>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-9 w-9 px-0"
+                  onClick={() => onStockChange(item.id, item.stock + 1)}
+                >
+                  +
+                </Button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </Card>
+  );
+};
+
+export default StockTable;
+````
+
+## File: Frontend/src/features/seller/pages/SellerSavedListingsPage.tsx
+````typescript
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Card from "@/shared/components/Card/Card";
+import Button from "@/shared/components/Button/Button";
+import SellerHeader from "../components/SellerHeader";
+import SellerSidebar from "../components/SellerSidebar";
+import MarketplaceProductCard from "@/features/marketplace1/components/MarketplaceProductCard";
+import {
+  fetchSavedMarketplaceListings,
+  removeMarketplaceListing,
+  type MarketplaceProduct,
+} from "@/features/marketplace1/api/marketplace.api";
+import type { SellerApiError } from "../types/seller.types";
+
+const SellerSavedListingsPage = () => {
+  const navigate = useNavigate();
+  const [products, setProducts] = useState<MarketplaceProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let ignore = false;
+
+    const loadSavedListings = async () => {
+      try {
+        const listings = await fetchSavedMarketplaceListings();
+
+        if (!ignore) {
+          setProducts(listings.map((listing) => listing.product).filter(Boolean));
+        }
+      } catch (err) {
+        const apiError = err as SellerApiError;
+
+        if (apiError.response?.status === 401) {
+          navigate("/login", {
+            state: { redirectTo: "/seller/saved-listings" },
+          });
+          return;
+        }
+
+        if (!ignore) {
+          setError("Unable to load saved listings. Please check your connection and try again.");
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadSavedListings();
+
+    return () => {
+      ignore = true;
+    };
+  }, [navigate]);
+
+  const handleRemoveSaved = async (productId: string) => {
+    try {
+      await removeMarketplaceListing(productId);
+      setProducts((prev) => prev.filter((product) => product.id !== productId));
+    } catch {
+      setError("Unable to remove the saved listing. Please try again.");
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen bg-[#f7fbfb]">
+      <SellerSidebar />
+
+      <main className="flex-1">
+        <SellerHeader />
+
+        <section className="p-7">
+          <div className="flex flex-col gap-4 rounded-xl bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold text-[#178f95]">
+                Pet Marketplace
+              </p>
+              <h1 className="mt-1 text-2xl font-semibold text-gray-900">
+                Saved Listings
+              </h1>
+              <p className="mt-2 text-sm text-gray-500">
+                Marketplace products you have saved.
+              </p>
+            </div>
+
+            <Button onClick={() => navigate("/marketplace1")}>
+              Browse Marketplace
+            </Button>
+          </div>
+
+          {loading && (
+            <Card className="mt-6 text-sm text-gray-500">
+              Loading saved listings...
+            </Card>
+          )}
+
+          {error && (
+            <Card className="mt-6 text-sm font-medium text-red-600">
+              {error}
+            </Card>
+          )}
+
+          {!loading && !error && products.length === 0 && (
+            <Card className="mt-6 text-center">
+              <h2 className="text-xl font-semibold text-gray-900">
+                No saved listings
+              </h2>
+              <p className="mt-2 text-sm text-gray-500">
+                Save marketplace products to see them here.
+              </p>
+              <Button className="mt-5" onClick={() => navigate("/marketplace1")}>
+                Go to Marketplace
+              </Button>
+            </Card>
+          )}
+
+          {!loading && !error && products.length > 0 && (
+            <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+              {products.map((product) => (
+                <MarketplaceProductCard
+                  key={product.id}
+                  product={product}
+                  saved
+                  onSave={() => void handleRemoveSaved(product.id)}
+                  onDetails={() => navigate(`/marketplace/product/${product.id}`)}
+                />
+              ))}
+            </div>
+          )}
+        </section>
+      </main>
+    </div>
+  );
+};
+
+export default SellerSavedListingsPage;
 ````
 
 ## File: Frontend/src/features/Services/components/Banner.tsx
@@ -17238,6 +21970,46 @@ const servicesRoutes = [
 export default servicesRoutes;
 ````
 
+## File: Frontend/src/index.css
+````css
+@import "tailwindcss";
+
+
+html {
+    overflow-y: scroll;
+    /* Forces a single scrollbar track */
+    height: auto;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+html.lenis,
+html.lenis body {
+    height: auto;
+}
+
+.lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+    overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+    pointer-events: none;
+}
+````
+
 ## File: Frontend/src/layout/landing.layout.tsx
 ````typescript
 import { Outlet } from "react-router-dom";
@@ -17256,6 +22028,20 @@ const LandingLayout = () => {
 };
 
 export default LandingLayout;
+````
+
+## File: Frontend/src/main.tsx
+````typescript
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './app/App.tsx'
+
+
+createRoot(document.getElementById('root')!).render(
+
+  <App />
+
+)
 ````
 
 ## File: Frontend/src/shared/components/Logo/Logo.tsx
@@ -17281,55 +22067,6 @@ const Logo = () => {
 };
 
 export default Logo;
-````
-
-## File: Frontend/src/shared/components/Navbar/navbar.data.ts
-````typescript
-interface NavData {
-    id: number;
-    title: string;
-    path: string;
-}
-
-const NAVLINK: NavData[] = [
-    {
-        id: 1,
-        title: "Home",
-        path: "/"
-    },
-    {
-        id: 2,
-        title: "Marketplace",
-        path: "/marketplace"
-    },
-    {
-        id: 3,
-        title: "Services",
-        path: "/services"
-    },
-    {
-        id: 4,
-        title: "Doctors",
-        path: "/doctors"
-    },
-    {
-        id: 5,
-        title: "AI Assistant",
-        path: "/ai-assistant"
-    },
-    {
-        id: 6,
-        title: "About",
-        path: "/about"
-    },
-    {
-        id: 7,
-        title: "Contact",
-        path: "/contact"
-    }
-];
-
-export default NAVLINK;
 ````
 
 ## File: Backend/app/controllers/doctorSchedule.controller.js
@@ -17399,283 +22136,6 @@ Router
     .get(userDoctorController.getDoctorById)
 
 module.exports = Router;
-````
-
-## File: Backend/app/services/doctorSchedule.service.js
-````javascript
-const { default: prisma } = require("../config/prisma");
-const requireFields = require('../utils/validateRequest')
-const AppError = require('../utils/AppError')
-
-
-const createDoctorScheduleService = async (req) => {
-    const userId = req.user.id;
-    const doctor = await prisma.doctor.findUnique({
-        where: {
-            userId: userId
-        }
-    })
-
-    if (!doctor) {
-        throw new AppError("Doctor is Not Valid", 400);
-    }
-    const doctorId = doctor.id;
-
-    requireFields(["date", "startTime", "endTime"], req.body);
-    const { date, startTime, endTime } = req.body;
-
-
-    const startDateTime = new Date(`${date}T${startTime}:00`);
-    const endDateTime = new Date(`${date}T${endTime}:00`);
-
-
-
-    if (isNaN(startDateTime.getTime()) || isNaN(endDateTime.getTime())) {
-        throw new AppError("Invalid date or time format provided", 400);
-    }
-
-    const durationInMs = endDateTime.getTime() - startDateTime.getTime();
-    const totalHours = Math.floor(durationInMs / (1000 * 60 * 60));
-
-    if (totalHours < 1) {
-        throw new AppError("Availability block must be at least 1 hour", 400);
-    }
-
-    const slots = Array.from({ length: totalHours }).map((_, index) => {
-        const slotStart = new Date(startDateTime.getTime() + index * 60 * 60 * 1000);
-        const slotEnd = new Date(slotStart.getTime() + 60 * 60 * 1000);
-        return {
-            doctorId,
-            date: new Date(`${date}T00:00:00Z`),
-            startTime: slotStart,
-            endTime: slotEnd,
-            isBooked: false,
-        };
-    });
-
-    const result = await prisma.doctorSchedule.createMany({
-        data: slots,
-        skipDuplicates: true
-    });
-
-    return result;
-};
-
-const getDoctorScheduleService = async (req) => {
-    const doctor = await prisma.doctor.findUnique({
-        where: {
-            userId: req.user.id
-        }
-    });
-    const doctorId = doctor.id
-    const schedules = await prisma.doctorSchedule.findMany({
-        where: {
-            doctorId: doctor.id,
-        },
-        orderBy: {
-            startTime: "asc",
-        },
-    });
-    console.log('Schedule is ', schedules);
-    return schedules;
-};
-
-
-const getDoctorSchedulesByDoctorIdService = async (doctorId) => {
-    const doctor = await prisma.doctor.findUnique({
-        where: { id: doctorId },
-    });
-
-    if (!doctor) {
-        throw new AppError("Doctor not found", 400);
-    }
-
-    const schedules = await prisma.doctorSchedule.findMany({
-        where: {
-            doctorId: doctor.id,
-        },
-        orderBy: {
-            startTime: "asc",
-        },
-    });
-
-    return schedules;
-};
-
-module.exports = {
-    createDoctorScheduleService,
-    getDoctorScheduleService,
-    getDoctorSchedulesByDoctorIdService,
-};
-````
-
-## File: Frontend/src/features/Admin/components/doctors/DoctorRequestCard.tsx
-````typescript
-import {
-  Award,
-  BriefcaseMedical,
-  Check,
-  Eye,
-  FileText,
-  Mail,
-  Phone,
-  Stethoscope,
-  X,
-} from "lucide-react";
-import doctorLogo from "../../../../assets/icons/doctor.png";
-import { InfoPill } from "./InfoPill";
-import { ContactRow } from "./ContactRow";
-import { type DoctorData } from "../../apis/doctorquery.api";
-
-type DoctorRequestCardProps = {
-  doctor: DoctorData;
-  onApprove: (doctorId: string) => void;
-  onReject: (doctorId: string) => void;
-  doctorRequestProceed: boolean;
-};
-
-const DoctorRequestCard = ({
-  doctor,
-  onApprove,
-  onReject,
-  doctorRequestProceed,
-}: DoctorRequestCardProps) => {
-  const isPending = doctor.isVerified === "PENDING";
-
-  return (
-    <article className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_16px_40px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(15,23,42,0.12)]">
-      <div className="h-3 bg-gradient-to-r from-[#078b91] via-[#82d5cf] to-[#f9c5a8]" />
-
-      <div className="p-5 sm:p-6">
-        <div className="flex flex-col gap-5 sm:flex-row">
-          <img
-            src={doctorLogo}
-            alt={doctor.user.fullName}
-            className="h-28 w-28 shrink-0 rounded-2xl bg-[#e7f4f2] object-cover object-top"
-          />
-
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div className="min-w-0">
-                <h2 className="truncate text-2xl font-black text-[#0f1b2f]">
-                  {doctor.user.fullName}
-                </h2>
-
-                <p className="mt-1 font-semibold text-[#078b91]">
-                  {doctor.specialization}
-                </p>
-              </div>
-
-              <span
-                className={`rounded-full px-3 py-1 text-xs font-black uppercase tracking-wide ${
-                  isPending
-                    ? "bg-orange-100 text-orange-600"
-                    : "bg-green-100 text-green-700"
-                }`}
-              >
-                {isPending ? "Pending" : "Approved"}
-              </span>
-            </div>
-
-            <div className="mt-4 flex flex-wrap gap-2">
-              <InfoPill
-                icon={<BriefcaseMedical size={16} />}
-                text={`${doctor.experience} Yrs Experience`}
-              />
-              <InfoPill icon={<Award size={16} />} text={doctor.education} />
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-6 grid gap-3 text-sm text-[#26364f] sm:grid-cols-2">
-          <ContactRow icon={<Mail size={18} />} text={doctor.user.email} />
-          <ContactRow
-            icon={<Phone size={18} />}
-            text={doctor.user.phone || "No phone provided"}
-          />
-          <ContactRow
-            icon={<Stethoscope size={18} />}
-            text={doctor.specialization}
-            className="sm:col-span-2"
-          />
-        </div>
-
-        <div className="mt-6 rounded-2xl border border-slate-200 bg-[#f8fbfb] p-4">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#d9f3ef] text-[#078b91]">
-              <FileText size={26} />
-            </div>
-
-            <div className="min-w-0 flex-1">
-              <p className="mt-1 text-sm font-medium text-[#587087]">
-                Degree Certificate
-              </p>
-            </div>
-
-            <a
-              href={doctor.degreeLicenseUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="hidden h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-sm font-black text-[#078b91] transition hover:border-[#078b91] hover:bg-[#eefaf8] sm:flex"
-            >
-              <Eye size={17} />
-              View
-            </a>
-          </div>
-
-          <a
-            href={doctor.degreeLicenseUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-4 flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white text-sm font-black text-[#078b91] transition hover:border-[#078b91] hover:bg-[#eefaf8] sm:hidden"
-          >
-            <Eye size={17} />
-            View Certificate
-          </a>
-        </div>
-
-        {isPending ? (
-          <div className="mt-5 grid grid-cols-2 gap-3">
-            <button
-              disabled={doctorRequestProceed}
-              type="button"
-              onClick={() => onReject(doctor.id)}
-              className={`flex h-11 items-center justify-center gap-2 rounded-xl border border-red-200 bg-white font-black transition ${
-                doctorRequestProceed
-                  ? "cursor-not-allowed text-red-300"
-                  : "cursor-pointer text-red-500 hover:bg-red-50"
-              }`}
-            >
-              <X size={19} />
-              {doctorRequestProceed ? "Rejecting..." : "Reject"}
-            </button>
-
-            <button
-              type="button"
-              disabled={doctorRequestProceed}
-              onClick={() => onApprove(doctor.id)}
-              className={`flex h-11 items-center justify-center gap-2 rounded-xl font-black text-white shadow-lg shadow-cyan-100 transition ${
-                doctorRequestProceed
-                  ? "cursor-not-allowed bg-[#0aa082]/70"
-                  : "cursor-pointer bg-[#078b91] hover:bg-[#06777d]"
-              }`}
-            >
-              <Check size={19} />
-              {doctorRequestProceed ? "Approving..." : "Approve"}
-            </button>
-          </div>
-        ) : (
-          <div className="mt-5 flex h-11 items-center justify-center gap-2 rounded-xl bg-green-50 font-black text-green-700">
-            <Check size={19} />
-            Approved Doctor
-          </div>
-        )}
-      </div>
-    </article>
-  );
-};
-
-export default DoctorRequestCard;
 ````
 
 ## File: Frontend/src/features/Admin/components/doctors/DoctorRequests.tsx
@@ -17930,34 +22390,6 @@ const DoctorRequests = () => {
 export default DoctorRequests;
 ````
 
-## File: Frontend/src/features/Admin/components/doctors/DoctorStatusBadge.tsx
-````typescript
-interface Props {
-  status: string;
-}
-
-const DoctorStatusBadge = ({ status }: Props) => {
-  return (
-    <span
-      className={`px-3 py-1 rounded-full text-sm font-medium
-
-      ${
-        status === "Approved"
-          ? "bg-green-100 text-green-600"
-          : status === "Pending"
-            ? "bg-orange-100 text-orange-600"
-            : "bg-red-100 text-red-600"
-      }
-      `}
-    >
-      {status}
-    </span>
-  );
-};
-
-export default DoctorStatusBadge;
-````
-
 ## File: Frontend/src/features/Admin/data/sidebar.data.ts
 ````typescript
 import {
@@ -17993,6 +22425,18 @@ export const sidebarItems = [
     icon: FaCog,
   },
 ];
+````
+
+## File: Frontend/src/features/Admin/layout/MobileSidebar.tsx
+````typescript
+import Sidebar from "./Sidebar";
+import type { MobileSidebarProps } from "../types/admin.types";
+
+const MobileSidebar = ({ open, setOpen }: MobileSidebarProps) => {
+  return <Sidebar sidebarOpen={open} setSidebarOpen={setOpen} />;
+};
+
+export default MobileSidebar;
 ````
 
 ## File: Frontend/src/features/api interface/axios.interface.ts
@@ -18078,6 +22522,89 @@ export const createDoctorAccount = async (data: FormData): Promise<ApiResponse> 
     catch (error) {
         handleAxiosError(error)
         throw error
+    }
+}
+````
+
+## File: Frontend/src/features/Auth/api/loginuser.api.ts
+````typescript
+import axios from "axios"
+import type { LoginFormData } from "../schemas/login.schema";
+import { api } from "@/features/api interface/axios.interface";
+
+type Data = {
+    id: string,
+    name?: string,
+    email: string,
+    role: string,
+    username: string,
+    profileImageUrl?: string
+}
+
+export type ApiResponse = {
+    success: boolean,
+    message: string,
+    data: Data
+}
+
+export const userLogin = async<T>(data: LoginFormData): Promise<T> => {
+    try {
+        const response = await api.post("auth/login/user", data)
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            if (error.response) {
+                if (error.response.status == 429) {
+                    throw new Error("Please wait for a minute", { cause: error })
+                }
+                console.log("Status Code", error.response?.status);
+                console.log("Response Data", error.response?.data)
+            }
+            else if (error.request) {
+                console.log("No Request Response Recieved from server", error.request)
+            }
+            else {
+                console.error("Axios setup error:", error.message);
+            }
+
+        }
+        else {
+            console.error("Non-Axios Error:", error);
+        }
+        throw error
+
+    }
+}
+
+
+export const verifyUser = async (): Promise<ApiResponse> => {
+
+    try {
+        const response = await api.get("auth/me",
+            {
+                withCredentials: true
+            }
+        )
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            if (error.response) {
+                console.log("Status Code", error.response?.status);
+                console.log("Response Data", error.response?.data)
+            }
+            else if (error.request) {
+                console.log("No Request Response Recieved from server", error.request)
+            }
+            else {
+                console.error("Axios setup error:", error.message);
+            }
+
+        }
+        else {
+            console.error("Non-Axios Error:", error);
+        }
+        throw error
+
     }
 }
 ````
@@ -18591,6 +23118,297 @@ export type DoctorFormData = z.infer<typeof doctorSchema>;
 export type DoctorFormInput = z.input<typeof doctorSchema>;
 ````
 
+## File: Frontend/src/features/Doctor/components/DoctorAvailability/DoctorAvailability.tsx
+````typescript
+import { useEffect, useState, type ChangeEvent } from "react";
+import ScheduleModal from "./ScheduleModal";
+import ScheduleTable from "./ScheduleTable";
+import { createDoctorAvailabilitySlot, getDoctorAvailability } from "../../api/doctorAvailabilityServices";
+import type {
+  BackendScheduleItem,
+  ScheduleFormData,
+} from "../../doctor.types";
+
+const DoctorAvailability = () => {
+  
+  const [schedule, setSchedule] = useState<ScheduleFormData>({
+    date: "",
+    startTime: "",
+    endTime: ""
+  });
+
+
+  const [schedulesList, setSchedulesList] = useState<BackendScheduleItem[]>([]);
+  const [error, setError] = useState<string>("");
+  const [openModal, setOpenModal] = useState<boolean>(false);
+
+  // Reusable helper to pull data directly into state
+  const loadDoctorSchedule = async () => {
+    try {
+      const response = await getDoctorAvailability();
+      // Handle standard wrappers (like response.data) if your API instance utilizes them
+      const data = response?.data || response;
+      if (Array.isArray(data)) {
+        setSchedulesList(data);
+      }
+    } catch (err) {
+      console.error("Failed to load doctor availability slots:", err);
+      setError("Could not retrieve your active schedule list.");
+    }
+  };
+
+  // Initial fetch on component mounting
+  useEffect(() => {
+    loadDoctorSchedule();
+  }, []);
+
+  const handleSchedule = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setSchedule((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
+
+  const scheduleApiFunc = () => {
+    if (!schedule.date || !schedule.startTime || !schedule.endTime) {
+      setError("Schedule timing data is missing.");
+      return;
+    }
+
+    if (schedule.startTime >= schedule.endTime) {
+      setError("Starting time must be earlier than the ending time.");
+      return;
+    }
+
+    const selectedDate = new Date(`${schedule.date}T${schedule.startTime}`);
+    const currentTime = new Date();
+    const [startHours, startMinutes] = schedule.startTime.split(':').map(Number);
+    const [endHours, endingMinutes] = schedule.endTime.split(":").map(Number);
+
+    const totalStartTime = (startHours * 60) + startMinutes;
+    const totalEndTime = (endHours * 60) + endingMinutes;
+    const durationMinutes = totalEndTime - totalStartTime;
+
+    if (durationMinutes % 60 !== 0) {
+      setError("Please select full-hour increments only.");
+      return;
+    }
+
+    if (selectedDate <= currentTime) {
+      setError("Please select a future date and time.");
+      return;
+    }
+
+    setError("");
+    setOpenModal(true);
+  };
+
+  const handleDoctorSchedule = async () => {
+    try {
+      setError("");
+      console.log("Finalized Schedule ready for Database API: ", schedule);
+
+
+      await createDoctorAvailabilitySlot(schedule);
+
+    
+      setSchedule({
+        date: "",
+        startTime: "",
+        endTime: ""
+      });
+
+      setOpenModal(false);
+
+     
+      await loadDoctorSchedule();
+    } catch (err) {
+      console.error("Error creating schedule slot:", err);
+      setError("Failed to sync new slot generation with database records.");
+      setOpenModal(false);
+    }
+  };
+
+  return (
+    <main className="mx-auto max-w-5xl p-6">
+      <section>
+        <h1 className="mb-6 text-3xl font-extrabold tracking-tight text-slate-900">
+          Set Your Schedule
+        </h1>
+        <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <div className="flex flex-col gap-2">
+              <label htmlFor="date" className="text-sm font-bold text-slate-700">
+                Select Date
+              </label>
+              <input
+                type="date"
+                id="date"
+                name="date"
+                value={schedule.date}
+                onChange={handleSchedule}
+                className="h-12 w-full rounded-xl border border-slate-200 px-4 text-sm font-semibold text-slate-700 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-50"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label htmlFor="startTime" className="text-sm font-bold text-slate-700">
+                Start Time
+              </label>
+              <input
+                name="startTime"
+                type="time"
+                id="startTime"
+                value={schedule.startTime}
+                onChange={handleSchedule}
+                className="h-12 w-full rounded-xl border border-slate-200 px-4 text-sm font-semibold text-slate-700 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-50"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label htmlFor="endTime" className="text-sm font-bold text-slate-700">
+                End Time
+              </label>
+              <input
+                type="time"
+                name="endTime"
+                id="endTime"
+                value={schedule.endTime}
+                onChange={handleSchedule}
+                className="h-12 w-full rounded-xl border border-slate-200 px-4 text-sm font-semibold text-slate-700 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-50"
+              />
+            </div>
+          </div>
+
+          {error && (
+            <div className="mb-5 mt-5 flex items-center gap-3 rounded-xl border border-red-100 bg-red-50 p-4 text-sm font-bold text-red-600">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-red-500 text-xs font-black text-white">
+                !
+              </span>
+              <p>{error}</p>
+            </div>
+          )}
+
+          <div className="mt-6 flex justify-end border-t border-slate-100 pt-6">
+            <button
+              onClick={scheduleApiFunc}
+              type="button"
+              className="rounded-xl bg-teal-600 px-6 py-3 text-sm font-bold text-white transition hover:bg-teal-700"
+            >
+              Add Time Slot
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section className="mt-10">
+        <h2 className="mb-4 text-xl font-extrabold text-slate-900">
+          Generated Schedule List
+        </h2>
+        {/* Sends backend-compliant type layout safely downstream */}
+        <ScheduleTable schedules={schedulesList} />
+      </section>
+
+      <ScheduleModal
+        isOpen={openModal}
+        onClose={() => setOpenModal(false)}
+        schedule={schedule}
+        setSchedule={setSchedule}
+        error={error}
+        setError={setError}
+        onConfirm={handleDoctorSchedule}
+      />
+    </main>
+  );
+};
+
+export default DoctorAvailability;
+````
+
+## File: Frontend/src/features/Doctor/components/DoctorSideBar.tsx
+````typescript
+import { CalendarDays, DollarSignIcon, Home, LogOut, Users, X } from "lucide-react";
+import { NavLink } from "react-router-dom";
+import Logo from "@/shared/components/Logo/Logo";
+import type { DoctorSidebarProps } from "../doctor.types";
+
+export const DoctorSidebar = ({ sidebarOpen, setSidebarOpen }: DoctorSidebarProps) => {
+    const sidebarLinks = [
+        { id: 1, label: "Dashboard", icon: Home, address: "doctor-dashboard" },
+        { id: 2, label: "Appointments", icon: CalendarDays, address: "appointments" },
+        { id: 3, label: "Patients", icon: Users, address: "pateints" },
+        { id: 4, label: "Availability", icon: CalendarDays, address: "doctor-availability" },
+        { id: 5, label: "Pricing", icon: DollarSignIcon, address: "doctor-pricing" },
+        { id: 6, label: "Profile", icon: Users, address: "doctor-dashboard-profile" },
+    ];
+
+    return (
+        <>
+            {sidebarOpen && (
+                <button
+                    type="button"
+                    onClick={() => setSidebarOpen(false)}
+                    className="fixed inset-0 z-40 bg-slate-900/40 lg:hidden"
+                    aria-label="Close sidebar"
+                />
+            )}
+
+            <aside
+                className={`fixed left-0 top-0 z-50 h-screen w-72 border-r border-slate-200 bg-white transition-transform duration-300 lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+                    }`}
+            >
+                <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+                    <div className="flex items-center gap-3">
+                        <Logo />
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={() => setSidebarOpen(false)}
+                        className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:hidden"
+                        aria-label="Close sidebar"
+                    >
+                        <X size={22} />
+                    </button>
+                </div>
+
+                <nav className="space-y-2 px-4 py-5">
+                    {sidebarLinks.map((link) => {
+                        const Icon = link.icon;
+
+                        return (
+                            <NavLink
+                                to={link.address}
+                                key={link.id}
+                                onClick={() => setSidebarOpen(false)}
+                                className={({ isActive }) => `outline-none flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold transition ${isActive
+                                    ? "bg-teal-700 text-white shadow-md shadow-teal-700/20"
+                                    : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
+                                    }`}
+                            >
+                                <Icon size={19} />
+                                {link.label}
+                            </NavLink>
+                        );
+                    })}
+
+                    <div className="pt-8">
+                        <button
+                            type="button"
+                            className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold text-red-500 transition hover:bg-red-50"
+                        >
+                            <LogOut size={19} />
+                            Logout
+                        </button>
+                    </div>
+                </nav>
+            </aside>
+        </>
+    );
+};
+````
+
 ## File: Frontend/src/features/Doctor/components/DoctorSkill.tsx
 ````typescript
 import { useState, useRef, useEffect } from "react";
@@ -18791,100 +23609,1273 @@ const SkillForm = () => {
 export default SkillForm;
 ````
 
-## File: Frontend/src/features/Doctorcart/component/DoctorCard.tsx
+## File: Frontend/src/features/Doctorcart/apis/getDoctors.api.ts
 ````typescript
-import { CalendarDays, GraduationCap, ShieldCheck, User } from "lucide-react";
-import { type Doctor } from "../apis/getDoctors.api";
-import { NavLink } from "react-router-dom";
-
-interface DoctorCardProps {
-    doctor: Doctor;
-    onBookAppointment: (doctorId: string, checkupTime?: string) => void;
-}
-
-const DoctorCard = ({ doctor }: DoctorCardProps) => {
-    return (
-        <div
-            key={doctor.id}
-            className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"
-        >
-            <div className="grid gap-6 2xl:grid-cols-[1.1fr_0.75fr_1fr_210px]">
-                <div className="flex gap-5">
-                    <div>
-                        {
-                            doctor?.profileImage?.startsWith('/') ? (
-                                <img
-                                    src={doctor.profileImage}
-                                    alt="Doctor"
-                                    className="h-28 w-28 rounded-3xl object-cover"
-                                />
-                            ) : (
-                                <User
-                                    size={112}
-                                    className="rounded-3xl border p-4 text-gray-400"
-                                />
-                            )
-                        }
-
-
-                    </div>
-
-                    <div>
-                        <div className="flex items-center gap-2">
-                            <h2 className="text-2xl font-black">{doctor.name}</h2>
-                            <ShieldCheck size={20} className="text-[#078b91]" />
-                        </div>
-
-                        <p className="mt-1 text-sm font-semibold text-slate-500">
-                            {doctor.specialization}
-                        </p>
-
-                        <p className="mt-4 flex items-center gap-2 text-sm text-slate-600">
-                            <CalendarDays size={17} />
-                            {doctor.experience} years
-                        </p>
-
-                        <p className="mt-3 flex items-center gap-2 text-sm text-slate-600">
-                            <GraduationCap size={17} />
-                            {doctor.education}
-                        </p>
-                    </div>
-                </div>
-
-                <div className="border-slate-200 2xl:border-l 2xl:pl-6">
-
-
-                    <h3 className="mt-5 text-sm font-black">Next Available</h3>
-
-                    <p className="mt-2 text-sm text-slate-600">
-                        {doctor.nextAvailable
-                            ? `${doctor.nextAvailable.day}, ${doctor.nextAvailable.startTime} - ${doctor.nextAvailable.endTime}`
-                            : "No upcoming slot"}
-                    </p>
-                </div>
-
-
-
-                <div className="flex flex-col justify-center gap-3 w-full">
-                    <NavLink
-                        to={`/doctor-profile/${doctor.id}`}
-                        className="flex h-11 w-full items-center justify-center rounded-xl bg-[#078b91] text-sm font-black text-white transition hover:bg-[#101b3d]"
-                    >
-                        Book Appointment
-                    </NavLink>
-                </div>
-            </div>
-        </div>
-    );
+export type DoctorApiResponse = {
+  success: boolean;
+  message: string;
+  data: {
+    data: Doctor[];
+    meta: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+  };
 };
 
+export type Doctor = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  specialization: string;
+  education: string;
+  experience: number;
+  profileImage?: string;
+  status: "active" | "inactive";
+  availableDays: string[];
+  todaySlots: {
+    scheduleId: string;
+    date: string;
+    day: string;
+    startTime: string;
+    endTime: string;
+    startDateTime: string;
+    endDateTime: string;
+  }[];
+  nextAvailable: {
+    scheduleId: string;
+    date: string;
+    day: string;
+    startTime: string;
+    endTime: string;
+    startDateTime: string;
+    endDateTime: string;
+  } | null;
+};
 
-export default DoctorCard;
+export const getApprovedDoctors = async (
+  page: number,
+  limit: number,
+  search: string
+): Promise<DoctorApiResponse> => {
+  const response = await fetch(
+    `http://localhost:8000/api/v1/user/approved-doctors?page=${page}&limit=${limit}&search=${search}`
+  );
+  console.log("Doctor Response is ", response);
+  if (!response.ok) {
+    throw new Error("Failed to fetch doctors");
+  }
+
+  return response.json();
+};
 ````
 
-## File: Frontend/src/features/Payment/api/payment.api.ts
+## File: Frontend/src/features/Landing Page/components/Banner.tsx
 ````typescript
+import { Link } from "react-router-dom";
 
+import {
+  FaShieldAlt,
+  FaLock,
+  FaHeadset,
+  FaUsers,
+  FaCalendarAlt,
+  FaShoppingBag,
+  FaPaw,
+} from "react-icons/fa";
+
+import img from "@/assets/shared/images/bannerImage.png";
+import Button from "../../../shared/components/Button/Button";
+import DashboardHomeMenu from "./DashboardHomeMenu";
+
+export const Banner = () => {
+  return (
+    <section className="relative overflow-hidden bg-gradient-to-br from-[#f4fbff] via-white to-[#e8fbfa] px-6 py-16 lg:px-16 lg:py-20 flex flex-col lg:flex-row items-center justify-between gap-10">
+      <div className="w-full lg:w-1/2 z-10">
+        <div className="inline-flex items-center gap-2 bg-white text-[#07182c] font-semibold px-5 py-3 rounded-full shadow-lg mb-7">
+          <FaPaw className="text-[#009f9d]" />
+          <span>Trusted by 10,000+ pet parents</span>
+        </div>
+
+        <h1 className="text-[40px] md:text-[56px] lg:text-[64px] leading-tight font-extrabold text-[#07182c] mb-6">
+          Better care for <br />
+          your pets, <span className="text-[#00a7a5]">every day.</span>
+        </h1>
+
+        <p className="text-base md:text-lg text-slate-700 leading-7 max-w-xl mb-8">
+          PetsVeta is your all-in-one platform for expert care, trusted vets,
+          quality products and a loving community.
+        </p>
+
+        <div className="flex flex-wrap gap-4 mb-8">
+          <Link to="/doctors">
+            <Button
+              variant="primary"
+              size="md"
+              className="inline-flex items-center gap-3 !bg-[#009f9d] !border-[#009f9d] !text-white hover:!bg-[#008f8d] hover:!text-white rounded-2xl shadow-xl"
+            >
+              <FaCalendarAlt />
+              Book a Vet Appointment
+            </Button>
+          </Link>
+
+          <Link to="/marketplace1">
+            <Button
+              variant="outline"
+              size="md"
+              className="inline-flex items-center gap-3 !bg-white !text-[#07182c] !border-white hover:!bg-white hover:!text-[#009f9d] rounded-2xl shadow-lg"
+            >
+              <FaShoppingBag />
+              Explore Marketplace
+            </Button>
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+          <div className="flex items-center gap-3 text-sm font-bold text-[#07182c]">
+            <span className="w-10 h-10 rounded-full bg-[#d9f7f6] text-[#008f8d] flex items-center justify-center shrink-0">
+              <FaShieldAlt />
+            </span>
+            Verified Vets
+          </div>
+
+          <div className="flex items-center gap-3 text-sm font-bold text-[#07182c]">
+            <span className="w-10 h-10 rounded-full bg-[#d9f7f6] text-[#008f8d] flex items-center justify-center shrink-0">
+              <FaLock />
+            </span>
+            Secure Bookings
+          </div>
+
+          <div className="flex items-center gap-3 text-sm font-bold text-[#07182c]">
+            <span className="w-10 h-10 rounded-full bg-[#d9f7f6] text-[#008f8d] flex items-center justify-center shrink-0">
+              <FaHeadset />
+            </span>
+            24/7 Support
+          </div>
+
+          <div className="flex items-center gap-3 text-sm font-bold text-[#07182c]">
+            <span className="w-10 h-10 rounded-full bg-[#d9f7f6] text-[#008f8d] flex items-center justify-center shrink-0">
+              <FaUsers />
+            </span>
+            Trusted by Pet Parents
+          </div>
+        </div>
+      </div>
+
+      <div className="relative w-full lg:w-1/2 min-h-[360px] lg:min-h-[520px] flex items-end justify-center">
+        <div className="absolute w-[330px] h-[330px] md:w-[480px] md:h-[480px] rounded-full bg-gradient-to-br from-[#4fd4d1] to-[#009f9d] bottom-4" />
+
+        <img
+          src={img}
+          alt="PetsVeta pets"
+          className="relative z-10 w-full max-w-[620px] object-contain"
+        />
+      </div>
+
+      <DashboardHomeMenu />
+    </section>
+  );
+};
+````
+
+## File: Frontend/src/features/Landing Page/routes.tsx
+````typescript
+import LandingPage from "./pages/LandingPage";
+import LandingLayout from "../../layout/landing.layout";
+import type { RouteObject } from "react-router-dom";
+
+import { contactRoutes } from "../Contact/contact.route";
+import { aboutRoutes } from "../About/about.route";
+import servicesRoutes from "../Services/service.route";
+import { marketplaceRoutes } from "../marketplace1/marketplace.routes";
+import { aiAssistantRoutes } from "../AiAssistance/aiAssistant.route";
+import DashboardHomeMenu from "./components/DashboardHomeMenu";
+
+const withDashboardMenu = (routes: RouteObject[]): RouteObject[] =>
+  routes.map((route) => ({
+    ...route,
+    element: (
+      <>
+        {route.element}
+        <DashboardHomeMenu />
+      </>
+    ),
+  }));
+
+const LandingPageRoutes = [
+  {
+    path: "/",
+    element: <LandingLayout />,
+    children: [
+      {
+        index: true,
+        element: <LandingPage />,
+      },
+
+      ...aboutRoutes,
+      ...contactRoutes,
+      ...servicesRoutes,
+      ...withDashboardMenu(marketplaceRoutes),
+      ...aiAssistantRoutes,
+    ],
+  },
+];
+
+export default LandingPageRoutes;
+````
+
+## File: Frontend/src/features/Payment/page/AppointmentPaymentPage.tsx
+````typescript
+import { useMemo, useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+
+import { createAppointmentPaymentIntent } from "../api/payment.api";
+import AppointmentPaymentForm from "../components/AppointmentPayment";
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+
+const AppointmentPaymentPage = () => {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  const appointmentId = searchParams.get("appointmentId");
+
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [amount, setAmount] = useState<number | null>(null);
+  const [currency, setCurrency] = useState<string>("pkr");
+  const [isCreatingIntent, setIsCreatingIntent] = useState(false);
+  const [error, setError] = useState("");
+
+  const appearance = useMemo(
+    () => ({
+      theme: "stripe" as const,
+      variables: {
+        colorPrimary: "#0B8F5A",
+        borderRadius: "12px",
+      },
+    }),
+    []
+  );
+
+  const handleContinuePayment = async () => {
+    if (!appointmentId) {
+      setError("Appointment ID missing. Please select slot again.");
+      return;
+    }
+
+    try {
+      setIsCreatingIntent(true);
+      setError("");
+
+      const result = await createAppointmentPaymentIntent(appointmentId);
+
+      console.log("Payment intent response:", result);
+
+      if (!result?.success || !result?.data?.clientSecret) {
+        setError("Failed to start payment. Please try again.");
+        return;
+      }
+
+      setClientSecret(result.data.clientSecret);
+      setAmount(result.data.amount);
+      setCurrency(result.data.currency || "pkr");
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong while starting payment."
+      );
+    } finally {
+      setIsCreatingIntent(false);
+    }
+  };
+
+  const formattedAmount =
+    amount !== null ? `${(amount / 100).toFixed(2)} ${currency.toUpperCase()}` : null;
+
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-[#F3FAF7] px-4 py-10">
+      <section className="w-full max-w-md rounded-3xl bg-white p-8 text-center shadow-xl">
+        <h1 className="text-2xl font-extrabold text-slate-800">
+          Appointment Payment
+        </h1>
+
+        <p className="mt-3 text-sm leading-6 text-slate-500">
+          Your pet issue report has been submitted successfully. Continue to pay
+          your appointment fee.
+        </p>
+
+        <div className="mt-6 rounded-2xl border border-slate-100 bg-slate-50 p-4 text-left">
+          <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+            Appointment ID
+          </p>
+
+          <p className="mt-2 break-all text-sm font-bold text-slate-700">
+            {appointmentId || "Missing appointment ID"}
+          </p>
+
+          {formattedAmount && (
+            <div className="mt-4 border-t border-slate-200 pt-4">
+              <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+                Amount
+              </p>
+              <p className="mt-1 text-lg font-extrabold text-[#0B8F5A]">
+                {formattedAmount}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {!appointmentId && (
+          <p className="mt-4 rounded-xl bg-red-50 p-3 text-sm font-semibold text-red-600">
+            Appointment ID missing. Please select slot again.
+          </p>
+        )}
+
+        {error && (
+          <p className="mt-4 rounded-xl bg-red-50 p-3 text-sm font-semibold text-red-600">
+            {error}
+          </p>
+        )}
+
+        {!clientSecret && (
+          <div className="mt-6 grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => navigate("/doctors")}
+              className="rounded-xl border border-slate-200 px-4 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50"
+            >
+              Back
+            </button>
+
+            <button
+              type="button"
+              disabled={!appointmentId || isCreatingIntent}
+              onClick={handleContinuePayment}
+              className="rounded-xl bg-[#0B8F5A] px-4 py-3 text-sm font-bold text-white hover:bg-[#097b4d] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isCreatingIntent ? "Starting..." : "Continue Payment"}
+            </button>
+          </div>
+        )}
+
+        {clientSecret && appointmentId && (
+          <Elements
+            stripe={stripePromise}
+            options={{
+              clientSecret,
+              appearance,
+            }}
+          >
+            <AppointmentPaymentForm appointmentId={appointmentId} />
+          </Elements>
+        )}
+      </section>
+    </main>
+  );
+};
+
+export default AppointmentPaymentPage;
+````
+
+## File: Frontend/src/features/Payment/page/PaymentCancelPage.tsx
+````typescript
+const PaymentCancelPage = () => {
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-red-50 px-4">
+      <section className="rounded-3xl bg-white p-8 text-center shadow-xl">
+        <h1 className="text-2xl font-extrabold text-red-600">
+          Payment Cancelled
+        </h1>
+        <p className="mt-3 text-sm text-slate-500">
+          Your payment was cancelled or not completed.
+        </p>
+      </section>
+    </main>
+  );
+};
+
+export default PaymentCancelPage;
+````
+
+## File: Frontend/src/features/Payment/payment.routes.tsx
+````typescript
+import AppointmentPaymentPage from "./page/AppointmentPaymentPage";
+import PaymentSuccessPage from "./page/PaymentSuccessPage";
+import PaymentCancelPage from "./page/PaymentCancelPage";
+
+export const paymentRoutes = [
+  {
+    path: "/payment",
+    element: <AppointmentPaymentPage />,
+  },
+  {
+    path: "/payment-success",
+    element: <PaymentSuccessPage />,
+  },
+  {
+    path: "/payment-cancel",
+    element: <PaymentCancelPage />,
+  },
+];
+````
+
+## File: Frontend/src/features/seller/pages/SellerDashboardPage.tsx
+````typescript
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Button from "@/shared/components/Button/Button";
+import Card from "@/shared/components/Card/Card";
+import SellerHeader from "../components/SellerHeader";
+import SellerSidebar from "../components/SellerSidebar";
+import SellerStatCard from "../components/SellerStatCard";
+import RecentOrders from "../components/RecentOrders";
+import { FaPlusCircle, FaStore, FaShoppingBag } from "react-icons/fa";
+import type { MarketplaceProduct } from "@/features/marketplace1/api/marketplace.api";
+import {
+  fetchSellerOrders,
+  fetchSellerProducts,
+  type SellerOrder,
+} from "../api/seller.api";
+import type { SellerApiError } from "../types/seller.types";
+
+const SellerDashboardPage = () => {
+  const navigate = useNavigate();
+  const [products, setProducts] = useState<MarketplaceProduct[]>([]);
+  const [orders, setOrders] = useState<SellerOrder[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let ignore = false;
+
+    const loadDashboard = async () => {
+      try {
+        const [productData, orderData] = await Promise.all([
+          fetchSellerProducts(),
+          fetchSellerOrders(),
+        ]);
+
+        if (!ignore) {
+          setProducts(productData);
+          setOrders(orderData);
+        }
+      } catch (err) {
+        const apiError = err as SellerApiError;
+
+        if (apiError.response?.status === 401) {
+          navigate("/login", { state: { redirectTo: "/seller/dashboard" } });
+          return;
+        }
+
+        if (!ignore) {
+          setError("Unable to load the seller dashboard. Please check your connection and try again.");
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadDashboard();
+
+    return () => {
+      ignore = true;
+    };
+  }, [navigate]);
+
+  const stats = useMemo(() => {
+    const activeProducts = products.filter((product) => product.status === "ACTIVE").length;
+    const lowStock = products.filter(
+      (product) => product.stock > 0 && product.stock <= 3
+    ).length;
+    const pendingOrders = orders.filter((order) => order.status === "PENDING").length;
+    const revenue = orders.reduce(
+      (total, order) => total + Number(order.totalAmount || 0),
+      0
+    );
+
+    return [
+      { title: "Total Products", value: String(products.length), subtitle: "All listings" },
+      { title: "Active Listings", value: String(activeProducts), subtitle: "Live on Marketplace" },
+      { title: "Low Stock Items", value: String(lowStock), subtitle: "Requires attention" },
+      { title: "Total Orders", value: String(orders.length), subtitle: "All time" },
+      { title: "Pending Orders", value: String(pendingOrders), subtitle: "Awaiting action" },
+      { title: "Revenue", value: `PKR ${revenue.toLocaleString()}`, subtitle: "All time" },
+    ];
+  }, [products, orders]);
+
+  return (
+    <div className="flex min-h-screen bg-[#f7fbfb]">
+      <SellerSidebar />
+
+      <main className="flex-1">
+        <SellerHeader />
+
+        <section className="p-7">
+          {loading && (
+            <p className="mb-5 rounded-lg bg-white p-4 text-sm text-gray-500">
+              Loading seller dashboard...
+            </p>
+          )}
+
+          {error && (
+            <p className="mb-5 rounded-lg bg-red-50 p-4 text-sm font-medium text-red-600">
+              {error}
+            </p>
+          )}
+
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {stats.map((stat) => (
+              <SellerStatCard key={stat.title} {...stat} />
+            ))}
+          </div>
+
+          <div className="mt-6">
+            <RecentOrders
+              orders={orders.slice(0, 6)}
+              onViewAll={() => navigate("/seller/orders")}
+            />
+          </div>
+
+          <Card className="mt-6">
+            <h2 className="mb-4 text-lg font-semibold text-gray-900">
+              Quick Actions
+            </h2>
+
+            <div className="grid gap-4 md:grid-cols-3">
+              <Button className="gap-2" onClick={() => navigate("/seller/add-product")}>
+                <FaPlusCircle /> Add Product
+              </Button>
+
+              <Button variant="outline" className="gap-2" onClick={() => navigate("/marketplace1")}>
+                <FaStore /> View Marketplace
+              </Button>
+
+              <Button variant="outline" className="gap-2" onClick={() => navigate("/seller/orders")}>
+                <FaShoppingBag /> Manage Orders
+              </Button>
+            </div>
+          </Card>
+        </section>
+      </main>
+    </div>
+  );
+};
+
+export default SellerDashboardPage;
+````
+
+## File: Frontend/src/features/seller/pages/SellerOrdersStockPage.tsx
+````typescript
+import { useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { FaFilter } from "react-icons/fa";
+import Button from "@/shared/components/Button/Button";
+import Input from "@/shared/components/Input/Input";
+import SellerHeader from "../components/SellerHeader";
+import SellerSidebar from "../components/SellerSidebar";
+import OrdersTable from "../components/OrdersTable";
+import StockOverview from "../components/StockOverview";
+import StockTable from "../components/StockTable";
+import type { MarketplaceProduct } from "@/features/marketplace1/api/marketplace.api";
+import {
+  fetchSellerOrders,
+  fetchSellerProducts,
+  updateSellerProductStock,
+  type SellerOrder,
+} from "../api/seller.api";
+import type { SellerApiError } from "../types/seller.types";
+
+const orderTabs = ["All", "Pending", "Confirmed", "Shipped", "Completed", "Cancelled"];
+
+const SellerOrdersStockPage = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isStockPage = location.pathname.includes("/stock");
+  const [products, setProducts] = useState<MarketplaceProduct[]>([]);
+  const [orders, setOrders] = useState<SellerOrder[]>([]);
+  const [search, setSearch] = useState("");
+  const [activeStatus, setActiveStatus] = useState("All");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let ignore = false;
+
+    const loadData = async () => {
+      try {
+        const [productData, orderData] = await Promise.all([
+          fetchSellerProducts(),
+          fetchSellerOrders(),
+        ]);
+
+        if (!ignore) {
+          setProducts(productData);
+          setOrders(orderData);
+        }
+      } catch (err) {
+        const apiError = err as SellerApiError;
+
+        if (apiError.response?.status === 401) {
+          navigate("/login", { state: { redirectTo: location.pathname } });
+          return;
+        }
+
+        if (!ignore) {
+          setError("Unable to load seller orders and stock. Please check your connection and try again.");
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadData();
+
+    return () => {
+      ignore = true;
+    };
+  }, [location.pathname, navigate]);
+
+  const filteredOrders = useMemo(() => {
+    return orders.filter((order) => {
+      const productName = order.items[0]?.product?.title || "";
+      const buyer = order.buyer?.fullName || order.buyer?.email || "";
+      const searchMatch = `${order.orderNumber} ${productName} ${buyer}`
+        .toLowerCase()
+        .includes(search.toLowerCase());
+      const statusMatch =
+        activeStatus === "All" || order.status === activeStatus.toUpperCase();
+
+      return searchMatch && statusMatch;
+    });
+  }, [orders, search, activeStatus]);
+
+  const handleStockChange = async (productId: string, stock: number) => {
+    try {
+      const updatedProduct = await updateSellerProductStock(productId, stock);
+      setProducts((prev) =>
+        prev.map((product) =>
+          product.id === productId ? updatedProduct : product
+        )
+      );
+    } catch {
+      setError("Unable to update stock. Please try again.");
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen bg-[#f7fbfb]">
+      <SellerSidebar />
+
+      <main className="flex-1">
+        <SellerHeader />
+
+        <section className="p-6">
+          <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <h1 className="text-2xl font-semibold text-gray-900">
+                {isStockPage ? "Stock" : "Orders"}
+              </h1>
+              <p className="text-sm text-gray-500">
+                {isStockPage
+                  ? "Update stock levels for all marketplace products."
+                  : "Manage and track all customer orders."}
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <Input
+                placeholder="Search orders..."
+                className="w-72"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+
+              <Button className="gap-2">
+                <FaFilter />
+                Filter
+              </Button>
+            </div>
+          </div>
+
+          {loading && (
+            <p className="mb-5 rounded-lg bg-white p-4 text-sm text-gray-500">
+              Loading seller data...
+            </p>
+          )}
+
+          {error && (
+            <p className="mb-5 rounded-lg bg-red-50 p-4 text-sm font-medium text-red-600">
+              {error}
+            </p>
+          )}
+
+          {!isStockPage && (
+            <>
+              <div className="mb-4 flex flex-wrap gap-3">
+                {orderTabs.map((tab) => (
+                  <Button
+                    key={tab}
+                    variant={activeStatus === tab ? "primary" : "outline"}
+                    size="sm"
+                    onClick={() => setActiveStatus(tab)}
+                  >
+                    {tab}
+                  </Button>
+                ))}
+              </div>
+
+              <OrdersTable orders={filteredOrders} />
+            </>
+          )}
+
+          <div className={isStockPage ? "" : "mt-6"}>
+            <h2 className="mb-4 text-lg font-semibold text-gray-900">
+              Stock Management
+            </h2>
+
+            <div className="grid gap-5 xl:grid-cols-[360px_minmax(0,1fr)]">
+              <StockOverview products={products} />
+              <StockTable products={products} onStockChange={handleStockChange} />
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+};
+
+export default SellerOrdersStockPage;
+````
+
+## File: Frontend/src/features/seller/pages/SellerProductFormPage.tsx
+````typescript
+import { useEffect, useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, useWatch } from "react-hook-form";
+import { useNavigate, useParams } from "react-router-dom";
+import Button from "@/shared/components/Button/Button";
+import Input from "@/shared/components/Input/Input";
+import Card from "@/shared/components/Card/Card";
+import SellerHeader from "../components/SellerHeader";
+import SellerSidebar from "../components/SellerSidebar";
+import ProductImageUpload from "../components/ProductImageUpload";
+import ProductPreviewCard from "../components/ProductPreviewCard";
+import {
+  toBackendCategory,
+  toDisplayCategory,
+} from "@/features/marketplace1/api/marketplace.api";
+import {
+  createSellerProduct,
+  fetchSellerProducts,
+  updateSellerProduct,
+} from "../api/seller.api";
+import {
+  sellerProductSchema,
+  type SellerProductFormData,
+} from "../schemas/sellerProduct.schema";
+import type { SellerApiError } from "../types/seller.types";
+
+const toBackendStatus = (status: string) => {
+  const map: Record<string, string> = {
+    Active: "ACTIVE",
+    Draft: "DRAFT",
+    "Sold Out": "SOLD_OUT",
+  };
+
+  return map[status] || status;
+};
+
+const toDisplayStatus = (status: string) => {
+  const map: Record<string, string> = {
+    ACTIVE: "Active",
+    DRAFT: "Draft",
+    SOLD_OUT: "Sold Out",
+  };
+
+  return map[status] || status;
+};
+
+const productFormDefaultValues: SellerProductFormData = {
+  title: "",
+  category: "Food",
+  price: "",
+  stock: "1",
+  location: "",
+  description: "",
+  status: "Active",
+};
+
+const SellerProductFormPage = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [previews, setPreviews] = useState<string[]>([]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm<SellerProductFormData>({
+    resolver: zodResolver(sellerProductSchema),
+    defaultValues: productFormDefaultValues,
+  });
+  const form = useWatch({ control });
+
+  const isEditMode = Boolean(id);
+
+  useEffect(() => {
+    let ignore = false;
+
+    const loadProductForEdit = async () => {
+      if (!id) return;
+
+      try {
+        const products = await fetchSellerProducts();
+        const product = products.find((item) => item.id === id);
+
+        if (!product) {
+          setError("Product not found.");
+          return;
+        }
+
+        if (!ignore) {
+          reset({
+            title: product.title,
+            category: toDisplayCategory(product.category) as SellerProductFormData["category"],
+            price: String(product.price),
+            stock: String(product.stock),
+            location: product.location || "",
+            description: product.description || "",
+            status: toDisplayStatus(product.status) as SellerProductFormData["status"],
+          });
+          setPreviews(product.images?.map((image) => image.publicUrl) || []);
+        }
+      } catch (err) {
+        const apiError = err as SellerApiError;
+
+        if (apiError.response?.status === 401) {
+          navigate("/login", { state: { redirectTo: `/seller/edit-product/${id}` } });
+          return;
+        }
+
+        if (!ignore) {
+          setError("Unable to load the product for editing. Please try again.");
+        }
+      }
+    };
+
+    void loadProductForEdit();
+
+    return () => {
+      ignore = true;
+    };
+  }, [id, navigate, reset]);
+
+  const onSubmit = async (data: SellerProductFormData) => {
+    try {
+      setSaving(true);
+      setError("");
+      setMessage("");
+
+      const payload = new FormData();
+      payload.append("title", data.title);
+      payload.append("description", data.description || "");
+      payload.append("category", toBackendCategory(data.category));
+      payload.append("status", toBackendStatus(data.status));
+      payload.append("price", data.price);
+      payload.append("stock", data.stock);
+      payload.append("location", data.location || "");
+
+      imageFiles.forEach((file) => {
+        payload.append("images", file);
+      });
+
+      if (id) {
+        await updateSellerProduct(id, payload);
+      } else {
+        await createSellerProduct(payload);
+      }
+
+      setMessage(isEditMode ? "Product updated successfully." : "Product saved successfully.");
+      navigate("/seller/listings");
+    } catch (err) {
+      const apiError = err as SellerApiError;
+
+      if (apiError.response?.status === 401) {
+        navigate("/login", { state: { redirectTo: "/seller/add-product" } });
+        return;
+      }
+
+      setError(apiError.response?.data?.message || "Unable to save the product. Please try again.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen bg-[#f7fbfb]">
+      <SellerSidebar />
+
+      <main className="flex-1">
+        <SellerHeader />
+
+        <section className="p-6">
+          <div className="mb-5">
+            <h1 className="text-2xl font-semibold text-gray-900">
+              {isEditMode ? "Edit Product Listing" : "Add Product Listing"}
+            </h1>
+            <p className="mt-1 text-sm text-gray-500">
+              Dashboard / Add / Edit Product
+            </p>
+          </div>
+
+          <div className="grid gap-5 xl:grid-cols-[1fr_360px]">
+            <Card>
+              <h2 className="mb-5 text-lg font-semibold text-gray-900">
+                Product Information
+              </h2>
+
+              {message && (
+                <p className="mb-4 rounded-lg bg-green-50 px-4 py-2 text-sm font-medium text-green-700">
+                  {message}
+                </p>
+              )}
+
+              {error && (
+                <p className="mb-4 rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-600">
+                  {error}
+                </p>
+              )}
+
+              <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="grid gap-4 md:grid-cols-2">
+                <Input
+                  label="Product Title"
+                  error={errors.title?.message}
+                  {...register("title")}
+                />
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
+                    Category
+                  </label>
+                  <select
+                    {...register("category")}
+                    className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-[#178f95]"
+                  >
+                    <option>Food</option>
+                    <option>Pets</option>
+                    <option>Accessories</option>
+                  </select>
+                </div>
+
+                <Input
+                  label="Price (PKR)"
+                  type="number"
+                  min="1"
+                  error={errors.price?.message}
+                  {...register("price")}
+                />
+
+                <Input
+                  label="Stock Quantity"
+                  type="number"
+                  min="0"
+                  error={errors.stock?.message}
+                  {...register("stock")}
+                />
+
+                <div className="md:col-span-2">
+                  <Input
+                    label="Location"
+                    error={errors.location?.message}
+                    {...register("location")}
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
+                    Description
+                  </label>
+                  <textarea
+                    rows={4}
+                    {...register("description")}
+                    className="w-full resize-none rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#178f95]"
+                  />
+                  {errors.description && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.description.message}
+                    </p>
+                  )}
+                </div>
+
+                <ProductImageUpload
+                  previews={previews}
+                  onImageChange={(files) => {
+                    setImageFiles(files);
+                    setPreviews(files.map((file) => URL.createObjectURL(file)));
+                  }}
+                />
+
+                <div className="grid content-start gap-4">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Status
+                    </label>
+                    <select
+                      {...register("status")}
+                      className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-[#178f95]"
+                    >
+                      <option>Active</option>
+                      <option>Draft</option>
+                      <option>Sold Out</option>
+                    </select>
+                  </div>
+
+                </div>
+              </div>
+
+              <div className="mt-6 flex justify-end gap-3">
+                <Button variant="outline" onClick={() => navigate("/seller/listings")}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={saving}>
+                  {saving ? "Saving..." : "Save Product"}
+                </Button>
+              </div>
+              </form>
+            </Card>
+
+            <ProductPreviewCard
+              image={previews[0] || ""}
+              title={form.title || ""}
+              category={form.category || ""}
+              price={form.price || ""}
+              stock={form.stock || ""}
+              location={form.location || ""}
+              description={form.description || ""}
+              status={form.status || ""}
+            />
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+};
+
+export default SellerProductFormPage;
+````
+
+## File: Frontend/src/features/seller/pages/SellerProductsPage.tsx
+````typescript
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { FaFilter, FaPlus } from "react-icons/fa";
+import Button from "@/shared/components/Button/Button";
+import Input from "@/shared/components/Input/Input";
+import Card from "@/shared/components/Card/Card";
+import SellerHeader from "../components/SellerHeader";
+import SellerSidebar from "../components/SellerSidebar";
+import ProductCard from "../components/ProductCard";
+import { productTabs } from "../data/sellerProducts.data";
+import { fetchSellerProducts, deleteSellerProduct } from "../api/seller.api";
+import type { MarketplaceProduct } from "@/features/marketplace1/api/marketplace.api";
+import type { SellerApiError } from "../types/seller.types";
+
+const SellerProductsPage = () => {
+  const navigate = useNavigate();
+  const [products, setProducts] = useState<MarketplaceProduct[]>([]);
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("Category");
+  const [activeTab, setActiveTab] = useState("All");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let ignore = false;
+
+    const loadProducts = async () => {
+      try {
+        const data = await fetchSellerProducts();
+
+        if (!ignore) {
+          setProducts(data);
+        }
+      } catch (err) {
+        const apiError = err as SellerApiError;
+
+        if (apiError.response?.status === 401) {
+          navigate("/login", { state: { redirectTo: "/seller/listings" } });
+          return;
+        }
+
+        if (!ignore) {
+          setError("Unable to load seller products. Please check your connection and try again.");
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadProducts();
+
+    return () => {
+      ignore = true;
+    };
+  }, [navigate]);
+
+  const filteredProducts = useMemo(() => {
+    return products.filter((product) => {
+      const searchMatch = product.title
+        .toLowerCase()
+        .includes(search.toLowerCase());
+      const categoryMatch =
+        category === "Category" || product.category === category.toUpperCase();
+      const tabCategoryMatch =
+        !["Pets", "Food", "Accessories"].includes(activeTab) ||
+        product.category === activeTab.toUpperCase();
+      const tabStatusMatch =
+        !["Active", "Sold Out", "Draft"].includes(activeTab) ||
+        product.status === activeTab.toUpperCase().replace(" ", "_");
+
+      return searchMatch && categoryMatch && tabCategoryMatch && tabStatusMatch;
+    });
+  }, [products, search, category, activeTab]);
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteSellerProduct(id);
+      setProducts((prev) => prev.filter((product) => product.id !== id));
+    } catch {
+      setError("Unable to delete the product. Please try again.");
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen bg-[#f7fbfb]">
+      <SellerSidebar />
+
+      <main className="flex-1">
+        <SellerHeader />
+
+        <section className="p-7">
+          <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <h1 className="text-2xl font-semibold text-gray-900">
+                My Listings
+              </h1>
+              <p className="text-sm text-gray-500">
+                Manage all your product listings and their status.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Input
+                placeholder="Search products..."
+                className="w-full sm:w-72"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-600 outline-none focus:border-[#178f95]"
+              >
+                <option>Category</option>
+                <option>Pets</option>
+                <option>Food</option>
+                <option>Accessories</option>
+              </select>
+
+              <Button className="gap-2">
+                <FaFilter />
+                Filter
+              </Button>
+            </div>
+          </div>
+
+          <div className="mb-5 flex flex-wrap gap-3">
+            {productTabs.map((tab, index) => (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setActiveTab(tab)}
+                className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                  activeTab === tab || (index === 0 && activeTab === "All")
+                    ? "bg-[#178f95] text-white"
+                    : "bg-white text-gray-600 hover:bg-[#e8f7f7] hover:text-[#178f95]"
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            <Card className="flex min-h-[320px] flex-col items-center justify-center border-dashed border-gray-300 text-center">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 text-gray-700">
+                <FaPlus className="text-xl" />
+              </div>
+
+              <h3 className="text-base font-semibold text-gray-900">
+                Add New Product
+              </h3>
+
+              <p className="mt-2 max-w-[220px] text-sm text-gray-500">
+                Create a new listing for your products
+              </p>
+
+              <Button className="mt-5" onClick={() => navigate("/seller/add-product")}>
+                Add Product
+              </Button>
+            </Card>
+
+            {loading && (
+              <Card className="min-h-[180px] text-sm text-gray-500">
+                Loading seller products...
+              </Card>
+            )}
+
+            {error && (
+              <Card className="min-h-[180px] text-sm font-medium text-red-600">
+                {error}
+              </Card>
+            )}
+
+            {!loading && !error && filteredProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onEdit={() => navigate(`/seller/edit-product/${product.id}`)}
+                onDelete={() => void handleDelete(product.id)}
+                onView={() => navigate(`/marketplace/product/${product.id}`)}
+              />
+            ))}
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+};
+
+export default SellerProductsPage;
 ````
 
 ## File: Frontend/src/shared/components/Button/Button.tsx
@@ -19147,404 +25138,559 @@ module.exports = {
 };
 ````
 
-## File: Backend/app/controllers/petOwner.controller.js
+## File: Backend/app/controllers/payment.controller.js
 ````javascript
-const catchAsync = require('../utils/CatchAsync');
-const AppError = require('../utils/AppError');
-const requireFields = require('../utils/validateRequest');
-const petOwnerServices = require('../services/petOwner.services');
-const sendResponse = require('../utils/SendResponse');
-const authServices = require('../services/auth.services');
-const { stripe } = require('../config/stripe');
-const prisma = require('../config/prisma');
+const catchAsync = require("../utils/CatchAsync");
+const sendResponse = require("../utils/SendResponse");
+const stripeService = require("../services/stripe.service");
 
-const registerPet = catchAsync(async (req, res) => {
-    requireFields(["petOwnerId", "name", "age", "breed", "category"], req.body);
-    const { petOwnerId, name, age, breed, category } = req.body;
+const { stripe } = require("../config/stripe");
+const prisma = require("../config/prisma");
 
-    const pet = {
-        petOwnerId: petOwnerId,
-        name: name,
-        age: parseFloat(age),
-        category: category,
-        breed: breed
-    }
-    const newPet = await petOwnerServices.saveUserPet(pet);
-    if (!newPet) {
-        return sendResponse(res, 400, "Failed to create Pet", newPet);
-    }
-    return sendResponse(res, 200, "Successfuly created Pet", newPet);
+const {
+  PaymentStatus,
+  AppointmentStatus,
+  ScheduleStatus,
+} = require("@prisma/client");
+
+const createPaymentIntent = catchAsync(async (req, res) => {
+  const petOwnerId = req.user?.id;
+
+  if (!petOwnerId) {
+    return sendResponse(res, 401, "Please login first", {});
+  }
+
+  const appointmentId = req.params.appointmentId || req.body.appointmentId;
+
+  if (!appointmentId) {
+    return sendResponse(res, 400, "Appointment ID is required", {});
+  }
+
+  const result = await stripeService.createAppointmentPaymentIntent({
+    appointmentId,
+    petOwnerId,
+  });
+
+  return sendResponse(res, 200, "Payment intent created successfully", result);
 });
 
-const registerPetIssue = catchAsync(async (req, res) => {
-    requireFields(["petOwnerId", "petId", "issue", "doctorId", "checkupTime"], req.body);
-    const { petOwnerId, petId, issue, doctorId, checkupTime } = req.body;
+const getPaymentStatus = catchAsync(async (req, res) => {
+  const petOwnerId = req.user?.id;
 
-    const petIssue = {
-        petOwnerId: petOwnerId,
-        petId: petId,
-        issue: issue,
-        doctorId: doctorId,
-        checkupTime: checkupTime
-    }
+  if (!petOwnerId) {
+    return sendResponse(res, 401, "Please login first", {});
+  }
 
-    const savePetIssue = await petOwnerServices.registerPetIssue(petIssue);
-    if (!savePetIssue || !savePetIssue.appointment || !savePetIssue.appointment.fees) {
-        return sendResponse(res, 400, "Failed to Submit Issue...");
-    }
-    const appointment = savePetIssue.appointment;
+  const { appointmentId } = req.params;
 
-    const session = await stripe.checkout.sessions.create({
-        mode: 'payment',
-        line_items: [
-            {
-                price_data: {
-                    currency: "usd",
-                    unit_amount: appointment.fees * 100,
-                    product_data: {
-                        name: "Pet Doctor Consultation",
-                    },
+  if (!appointmentId) {
+    return sendResponse(res, 400, "Appointment ID is required", {});
+  }
 
-                },
-                quantity: 1,
-            }
-        ],
-        success_url: `${process.env.FRONTEND_URL}/payment-success?session_id=CHECKOUT_SESSION_ID`,
-        cancel_url: `${process.env.FRONTEND_URL}/payment-cancel`,
-        metadata: {
-            appointmentId: appointment.id
-        }
-    });
+  const result = await stripeService.getAppointmentPaymentStatus({
+    appointmentId,
+    petOwnerId,
+  });
 
-    await petOwnerServices.updateAppointmentStripeId(appointment.id, session.id)
-
-
-    if (!savePetIssue) {
-        return sendResponse(res, 400, "Failed to Submit Issue Try Again", savePetIssue);
-    }
-    return sendResponse(res, 201, "Successfully Submitted ", {
-        checkoutUrl: session.url
-    });
-
+  return sendResponse(res, 200, "Appointment payment status fetched", result);
 });
 
+const stripeWebhook = async (req, res) => {
+  let event;
 
+  try {
+    const sig = req.headers["stripe-signature"];
 
-const getPetOwnerById = catchAsync(async (req, res) => {
-    const { id } = req.user;
-    const getPetOwner = await authServices.getUserById(id);
+    event = stripe.webhooks.constructEvent(
+      req.body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
+  } catch (err) {
+    console.error("Webhook signature verification failed:", err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
 
-    if (!getPetOwner) {
-        return sendResponse(res, 400, "Invalid User", {});
+  try {
+    const existingEvent = await prisma.paymentEvent.findUnique({
+      where: {
+        stripeEventId: event.id,
+      },
+    });
+
+    if (existingEvent?.processed) {
+      return res.status(200).json({
+        received: true,
+        duplicate: true,
+      });
     }
-    const user = {
-        username: getPetOwner.username,
-        email: getPetOwner.email,
-        address: getPetOwner.phone || "",
-        role: 'PetOwner'
-    }
 
-    return sendResponse(res, 200, "Successfully Send User", user);
-})
+    const paymentIntent = event.data.object;
+    const appointmentIdFromMetadata = paymentIntent.metadata?.appointmentId;
 
-const getPetsData = catchAsync(async (req, res) => {
-    const { id } = req.user;
-
-    const petsData = await petOwnerServices.getUserPets(id);
-
-    if (!petsData) {
-        return sendResponse(res, 400, "Not Pets Data Found", petsData)
-    }
-
-    return sendResponse(res, 200, "Successfully Send Data", petsData);
-
-})
-
-
-module.exports = {
-    registerPetIssue,
-    getPetOwnerById,
-    registerPet,
-    getPetsData
-}
-````
-
-## File: Backend/app/services/petOwner.services.js
-````javascript
-const { default: prisma, } = require('../config/prisma');
-const AppError = require('../utils/AppError');
-
-
-const saveUserPet = async (pet) => {
-    const newPet = await prisma.pet.create({
+    const paymentEvent =
+      existingEvent ||
+      (await prisma.paymentEvent.create({
         data: {
-            petOwnerId: pet.petOwnerId,
-            name: pet.name,
-            age: pet.age,
-            breed: pet.breed,
-            category: pet.category
-        }
-    });
-    return newPet;
-}
-
-const registerPetIssue = async (petIssue) => {
-    if (!petIssue) {
-        return false;
-    }
-
-    const checkupTime = new Date(petIssue.checkupTime);
-
-    if (Number.isNaN(checkupTime.getTime())) {
-        throw new Error("Invalid appointment time");
-    }
-
-    const doctor = await prisma.doctor.findUnique({
-        where: {
-            id: petIssue.doctorId,
+          stripeEventId: event.id,
+          eventType: event.type,
+          appointmentId: appointmentIdFromMetadata || null,
+          stripePaymentIntentId: paymentIntent.id || null,
+          payload: event,
+          processed: false,
         },
-        select: {
-            id: true,
-            fees: true,
-        },
-    });
+      }));
 
-    if (!doctor) {
-        throw new Error("Doctor not found");
-    }
+    switch (event.type) {
+      case "payment_intent.processing": {
+        await handlePaymentIntentProcessing(paymentIntent, paymentEvent.id);
+        break;
+      }
 
-    const existingAppointment = await prisma.appointment.findFirst({
-        where: {
-            doctorId: petIssue.doctorId,
-            checkupTime,
-        },
-    });
-    console.log("Appointment is ", existingAppointment);
-    if (existingAppointment) {
-        console.log("Check Existin Appointemtn Condition Running")
-        throw new Error("This appointment slot is already booked");
-        return;
-    }
-    console.log("Outside Appointment COndition here");
+      case "payment_intent.succeeded": {
+        await handlePaymentIntentSucceeded(paymentIntent, paymentEvent.id);
+        break;
+      }
 
-    const newPetIssue = await prisma.$transaction(async (tx) => {
-        const createdPetIssue = await tx.petIssueReport.create({
-            data: {
-                petOwnerId: petIssue.petOwnerId,
-                petId: petIssue.petId,
-                issue: petIssue.issue,
-            }
+      case "payment_intent.payment_failed": {
+        await handlePaymentIntentFailed(paymentIntent, paymentEvent.id);
+        break;
+      }
+
+      case "payment_intent.canceled": {
+        await handlePaymentIntentCanceled(paymentIntent, paymentEvent.id);
+        break;
+      }
+
+      default: {
+        await prisma.paymentEvent.update({
+          where: {
+            id: paymentEvent.id,
+          },
+          data: {
+            processed: true,
+            processedAt: new Date(),
+          },
         });
 
-        const appointment = await tx.appointment.create({
-            data: {
-                doctorId: petIssue.doctorId,
-                petIssueReportId: createdPetIssue.id,
-                fees: doctor.fees,
-                checkupTime,
-
-
-            },
-        });
-
-        return {
-            petIssue: createdPetIssue,
-            appointment,
-        };
-    });
-
-    return newPetIssue;
-}
-
-const registerPetAppointment = async () => {
-
-}
-
-const getUserPets = async (userId) => {
-    if (!userId) {
-        return false;
-    }
-    const pets = await prisma.pet.findMany({
-        where: {
-            petOwnerId: userId
-        },
-        select: {
-            id: true,
-            name: true,
-            age: true,
-            breed: true,
-            category: true
-        }
-
-    });
-
-    return pets;
-}
-
-const updateAppointmentStripeId = async (appointmentId, sessionId) => {
-    if (!appointmentId || !sessionId) {
-        throw new AppError("Appointment or Session Id is Invalid", 400);
+        console.log(`Unhandled Stripe event type: ${event.type}`);
+      }
     }
 
-    const result = await prisma.appointment.update({
-        where: { id: appointmentId },
-        data: {
-            stripeSessionId: sessionId,
-        },
+    return res.status(200).json({ received: true });
+  } catch (error) {
+    console.error("Webhook processing failed:", error);
+
+    return res.status(500).json({
+      received: false,
+      error: error.message,
     });
-
-    return result;
-};
-module.exports = {
-    saveUserPet,
-    registerPetIssue, getUserPets,
-    updateAppointmentStripeId
-}
-````
-
-## File: Backend/app/services/userdoctor.services.js
-````javascript
-const { PrismaClient, VerificationStatus } = require("@prisma/client");
-const prisma = new PrismaClient();
-
-const getUpcomingSlotsFilter = (currentDate) => ({
-  isBooked: false,
-  endTime: { gte: currentDate },
-});
-
-
-const formatSingleSlot = (slot) => ({
-  scheduleId: slot.id,
-  date: slot.date,
-  day: slot.date.toLocaleDateString("en-US", { weekday: "long" }).toUpperCase(),
-  startTime: slot.startTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }),
-  endTime: slot.endTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }),
-  startDateTime: slot.startTime.toISOString(),
-  endDateTime: slot.endTime.toISOString(),
-});
-
-const compileScheduleInfo = (doctorSchedules, currentDate) => {
-  const todayString = currentDate.toDateString();
-  const slots = doctorSchedules.map(formatSingleSlot);
-
-  return {
-    availableSlots: slots,
-    todaySlots: slots.filter((s) => new Date(s.startDateTime).toDateString() === todayString),
-    availableDays: [...new Set(slots.map((s) => s.day))],
-    status: doctorSchedules.some((s) => currentDate >= s.startTime && currentDate < s.endTime) ? "active" : "inactive",
-    nextAvailable: slots[0] || null,
-  };
+  }
 };
 
+const handlePaymentIntentProcessing = async (paymentIntent, paymentEventId) => {
+  const payment = await prisma.payment.findUnique({
+    where: {
+      stripePaymentIntentId: paymentIntent.id,
+    },
+  });
 
+  if (!payment) {
+    throw new Error(`Payment not found for PaymentIntent ${paymentIntent.id}`);
+  }
 
-
-const getApprovedDoctorsForUsers = async ({ page = 1, limit = 5, search = "" }) => {
-  const skip = (page - 1) * limit;
-  const currentDate = new Date();
-  const slotsFilter = getUpcomingSlotsFilter(currentDate);
-
-  const whereCondition = {
-    isVerified: VerificationStatus.APPROVED,
-    doctorSchedules: { some: slotsFilter },
-    ...(search && {
-      OR: [
-        { user: { fullName: { contains: search, mode: "insensitive" } } },
-        { specialization: { contains: search, mode: "insensitive" } },
-        { education: { contains: search, mode: "insensitive" } },
-      ],
+  await prisma.$transaction([
+    prisma.payment.update({
+      where: {
+        id: payment.id,
+      },
+      data: {
+        status: PaymentStatus.PROCESSING,
+      },
     }),
-  };
 
-  const [total, doctors] = await Promise.all([
-    prisma.doctor.count({ where: whereCondition }),
-    prisma.doctor.findMany({
-      where: whereCondition,
-      skip,
-      take: limit,
-      select: {
-        id: true,
-        specialization: true,
-        education: true,
-        experience: true,
-        user: {
-          select: { fullName: true, email: true, phone: true, profileImageUrl: true },
-        },
-        doctorSchedules: {
-          where: slotsFilter,
-          orderBy: { startTime: "asc" },
-        },
+    prisma.appointment.update({
+      where: {
+        id: payment.appointmentId,
+      },
+      data: {
+        paymentStatus: PaymentStatus.PROCESSING,
+        status: AppointmentStatus.PAYMENT_PROCESSING,
+      },
+    }),
+
+    prisma.paymentEvent.update({
+      where: {
+        id: paymentEventId,
+      },
+      data: {
+        paymentId: payment.id,
+        appointmentId: payment.appointmentId,
+        processed: true,
+        processedAt: new Date(),
       },
     }),
   ]);
-
-  const formattedDoctors = doctors.map((doctor) => ({
-    id: doctor.id,
-    name: doctor.user.fullName,
-    email: doctor.user.email,
-    phone: doctor.user.phone,
-    specialization: doctor.specialization,
-    education: doctor.education,
-    experience: doctor.experience,
-    profileImage: doctor.user.profileImageUrl,
-    ...compileScheduleInfo(doctor.doctorSchedules, currentDate), // 👈 Beautifully lightweight mapping
-  }));
-
-  return {
-    data: formattedDoctors,
-    meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
-  };
 };
 
+const handlePaymentIntentSucceeded = async (paymentIntent, paymentEventId) => {
+  const appointmentIdFromMetadata = paymentIntent.metadata?.appointmentId;
 
-const getSpecificDoctor = async (doctorId) => {
-  const currentDate = new Date();
-
-  const doctor = await prisma.doctor.findUnique({
-    where: { id: doctorId },
-    select: {
-      id: true,
-      education: true,
-      fees: true,
-      specialization: true,
-      experience: true,
-      isAvailable: true,
-      isVerified: true,
-      user: {
-        select: { fullName: true, profileImageUrl: true },
-      },
-      doctorSchedules: {
-        where: getUpcomingSlotsFilter(currentDate),
-        orderBy: { startTime: "asc" },
+  const payment = await prisma.payment.findUnique({
+    where: {
+      stripePaymentIntentId: paymentIntent.id,
+    },
+    include: {
+      appointment: {
+        include: {
+          doctorSchedule: true,
+        },
       },
     },
   });
 
-  if (!doctor) return null;
+  if (!payment) {
+    throw new Error(`Payment not found for PaymentIntent ${paymentIntent.id}`);
+  }
 
-  return {
-    id: doctor.id,
-    name: doctor.user?.fullName || "Unknown Doctor",
-    image: doctor.user?.profileImageUrl || null,
-    specialization: doctor.specialization,
-    experience: doctor.experience,
-    education: doctor.education,
-    fees: doctor.fees,
-    isVerified: doctor.isVerified,
-    ...compileScheduleInfo(doctor.doctorSchedules, currentDate),
-  };
+  if (
+    appointmentIdFromMetadata &&
+    appointmentIdFromMetadata !== payment.appointmentId
+  ) {
+    throw new Error(
+      "PaymentIntent metadata appointmentId does not match DB payment appointmentId"
+    );
+  }
+
+  if (payment.amount !== paymentIntent.amount) {
+    throw new Error("Payment amount mismatch");
+  }
+
+  if (payment.currency.toLowerCase() !== paymentIntent.currency.toLowerCase()) {
+    throw new Error("Payment currency mismatch");
+  }
+
+  const appointment = payment.appointment;
+
+  await prisma.$transaction(async (tx) => {
+    if (appointment.status === AppointmentStatus.CONFIRMED) {
+      await tx.paymentEvent.update({
+        where: {
+          id: paymentEventId,
+        },
+        data: {
+          paymentId: payment.id,
+          appointmentId: appointment.id,
+          processed: true,
+          processedAt: new Date(),
+        },
+      });
+
+      return;
+    }
+
+    if (
+      appointment.doctorSchedule.status !== ScheduleStatus.HELD ||
+      appointment.doctorSchedule.lockedByAppointmentId !== appointment.id
+    ) {
+      throw new Error("Schedule is not held by this appointment");
+    }
+
+    await tx.payment.update({
+      where: {
+        id: payment.id,
+      },
+      data: {
+        status: PaymentStatus.SUCCEEDED,
+        paidAt: new Date(),
+        stripeChargeId:
+          typeof paymentIntent.latest_charge === "string"
+            ? paymentIntent.latest_charge
+            : null,
+      },
+    });
+
+    await tx.appointment.update({
+      where: {
+        id: appointment.id,
+      },
+      data: {
+        status: AppointmentStatus.CONFIRMED,
+        paymentStatus: PaymentStatus.SUCCEEDED,
+        confirmedAt: new Date(),
+      },
+    });
+
+    await tx.doctorSchedule.update({
+      where: {
+        id: appointment.scheduleId,
+      },
+      data: {
+        status: ScheduleStatus.BOOKED,
+        lockedByAppointmentId: appointment.id,
+      },
+    });
+
+    await tx.paymentEvent.update({
+      where: {
+        id: paymentEventId,
+      },
+      data: {
+        paymentId: payment.id,
+        appointmentId: appointment.id,
+        processed: true,
+        processedAt: new Date(),
+      },
+    });
+  });
 };
 
+const handlePaymentIntentFailed = async (paymentIntent, paymentEventId) => {
+  const payment = await prisma.payment.findUnique({
+    where: {
+      stripePaymentIntentId: paymentIntent.id,
+    },
+  });
 
-const getBookableSlotsByDoctorId = async (doctorId) => {
-  const doctor = await getSpecificDoctor(doctorId);
-  return doctor ? doctor.availableSlots : null;
+  if (!payment) {
+    throw new Error(`Payment not found for PaymentIntent ${paymentIntent.id}`);
+  }
+
+  const failureMessage =
+    paymentIntent.last_payment_error?.message || "Payment failed";
+
+  await prisma.$transaction([
+    prisma.payment.update({
+      where: {
+        id: payment.id,
+      },
+      data: {
+        status: PaymentStatus.FAILED,
+        failureReason: failureMessage,
+      },
+    }),
+
+    prisma.appointment.update({
+      where: {
+        id: payment.appointmentId,
+      },
+      data: {
+        paymentStatus: PaymentStatus.FAILED,
+        status: AppointmentStatus.PAYMENT_FAILED,
+      },
+    }),
+
+    prisma.paymentEvent.update({
+      where: {
+        id: paymentEventId,
+      },
+      data: {
+        paymentId: payment.id,
+        appointmentId: payment.appointmentId,
+        processed: true,
+        processedAt: new Date(),
+        processingError: failureMessage,
+      },
+    }),
+  ]);
+};
+
+const handlePaymentIntentCanceled = async (paymentIntent, paymentEventId) => {
+  const payment = await prisma.payment.findUnique({
+    where: {
+      stripePaymentIntentId: paymentIntent.id,
+    },
+    include: {
+      appointment: true,
+    },
+  });
+
+  if (!payment) {
+    throw new Error(`Payment not found for PaymentIntent ${paymentIntent.id}`);
+  }
+
+  await prisma.$transaction([
+    prisma.payment.update({
+      where: {
+        id: payment.id,
+      },
+      data: {
+        status: PaymentStatus.CANCELLED,
+        cancelledAt: new Date(),
+      },
+    }),
+
+    prisma.appointment.update({
+      where: {
+        id: payment.appointmentId,
+      },
+      data: {
+        paymentStatus: PaymentStatus.CANCELLED,
+        status: AppointmentStatus.EXPIRED,
+      },
+    }),
+
+    prisma.doctorSchedule.update({
+      where: {
+        id: payment.appointment.scheduleId,
+      },
+      data: {
+        status: ScheduleStatus.AVAILABLE,
+        lockedByUserId: null,
+        lockedByAppointmentId: null,
+        lockedAt: null,
+      },
+    }),
+
+    prisma.paymentEvent.update({
+      where: {
+        id: paymentEventId,
+      },
+      data: {
+        paymentId: payment.id,
+        appointmentId: payment.appointmentId,
+        processed: true,
+        processedAt: new Date(),
+      },
+    }),
+  ]);
 };
 
 module.exports = {
-  getApprovedDoctorsForUsers,
-  getSpecificDoctor,
-  getBookableSlotsByDoctorId,
+  createPaymentIntent,
+  getPaymentStatus,
+  stripeWebhook,
+};
+````
+
+## File: Backend/app/routes/payment.routes.js
+````javascript
+const express = require("express");
+const Router = express.Router();
+
+const paymentController = require("../controllers/payment.controller");
+const { protect } = require("../middleware/auth.middleware");
+
+Router.post(
+    "/appointments/:appointmentId/create-payment-intent",
+    protect,
+    paymentController.createPaymentIntent
+);
+
+Router.get(
+    "/appointments/:appointmentId/status",
+    protect,
+    paymentController.getPaymentStatus
+);
+
+module.exports = Router;
+````
+
+## File: Backend/app/services/doctorSchedule.service.js
+````javascript
+const   prisma  = require("../config/prisma");
+const requireFields = require('../utils/validateRequest')
+const AppError = require('../utils/AppError')
+
+
+const createDoctorScheduleService = async (req) => {
+    const userId = req.user.id;
+    const doctor = await prisma.doctor.findUnique({
+        where: {
+            userId: userId
+        }
+    })
+
+    if (!doctor) {
+        throw new AppError("Doctor is Not Valid", 400);
+    }
+    const doctorId = doctor.id;
+
+    requireFields(["date", "startTime", "endTime"], req.body);
+    const { date, startTime, endTime } = req.body;
+
+
+    const startDateTime = new Date(`${date}T${startTime}:00`);
+    const endDateTime = new Date(`${date}T${endTime}:00`);
+
+
+
+    if (isNaN(startDateTime.getTime()) || isNaN(endDateTime.getTime())) {
+        throw new AppError("Invalid date or time format provided", 400);
+    }
+
+    const durationInMs = endDateTime.getTime() - startDateTime.getTime();
+    const totalHours = Math.floor(durationInMs / (1000 * 60 * 60));
+
+    if (totalHours < 1) {
+        throw new AppError("Availability block must be at least 1 hour", 400);
+    }
+
+    const slots = Array.from({ length: totalHours }).map((_, index) => {
+        const slotStart = new Date(startDateTime.getTime() + index * 60 * 60 * 1000);
+        const slotEnd = new Date(slotStart.getTime() + 60 * 60 * 1000);
+        return {
+            doctorId,
+            date: new Date(`${date}T00:00:00Z`),
+            startTime: slotStart,
+            endTime: slotEnd,
+    
+        };
+    });
+
+    const result = await prisma.doctorSchedule.createMany({
+        data: slots,
+        skipDuplicates: true
+    });
+
+    return result;
+};
+
+const getDoctorScheduleService = async (req) => {
+    const doctor = await prisma.doctor.findUnique({
+        where: {
+            userId: req.user.id
+        }
+    });
+    const doctorId = doctor.id
+    const schedules = await prisma.doctorSchedule.findMany({
+        where: {
+            doctorId: doctor.id,
+        },
+        orderBy: {
+            startTime: "asc",
+        },
+    });
+    console.log('Schedule is ', schedules);
+    return schedules;
+};
+
+
+const getDoctorSchedulesByDoctorIdService = async (doctorId) => {
+    const doctor = await prisma.doctor.findUnique({
+        where: { id: doctorId },
+    });
+
+    if (!doctor) {
+        throw new AppError("Doctor not found", 400);
+    }
+
+    const schedules = await prisma.doctorSchedule.findMany({
+        where: {
+            doctorId: doctor.id,
+        },
+        orderBy: {
+            startTime: "asc",
+        },
+    });
+
+    return schedules;
+};
+
+module.exports = {
+    createDoctorScheduleService,
+    getDoctorScheduleService,
+    getDoctorSchedulesByDoctorIdService,
 };
 ````
 
@@ -19668,6 +25814,194 @@ const adminRoutes = [
 export default adminRoutes;
 ````
 
+## File: Frontend/src/features/Admin/components/doctors/DoctorRequestCard.tsx
+````typescript
+import {
+  Award,
+  BriefcaseMedical,
+  Check,
+  Eye,
+  FileText,
+  Mail,
+  Phone,
+  Stethoscope,
+  X,
+} from "lucide-react";
+import doctorLogo from "../../../../assets/icons/doctor.png";
+import { InfoPill } from "./InfoPill";
+import { ContactRow } from "./ContactRow";
+import type { DoctorRequestCardProps } from "../../types/admin.types";
+
+const DoctorRequestCard = ({
+  doctor,
+  onApprove,
+  onReject,
+  doctorRequestProceed,
+}: DoctorRequestCardProps) => {
+  const isPending = doctor.isVerified === "PENDING";
+
+  return (
+    <article className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_16px_40px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(15,23,42,0.12)]">
+      <div className="h-3 bg-gradient-to-r from-[#078b91] via-[#82d5cf] to-[#f9c5a8]" />
+
+      <div className="p-5 sm:p-6">
+        <div className="flex flex-col gap-5 sm:flex-row">
+          <img
+            src={doctorLogo}
+            alt={doctor.user.fullName}
+            className="h-28 w-28 shrink-0 rounded-2xl bg-[#e7f4f2] object-cover object-top"
+          />
+
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h2 className="truncate text-2xl font-black text-[#0f1b2f]">
+                  {doctor.user.fullName}
+                </h2>
+
+                <p className="mt-1 font-semibold text-[#078b91]">
+                  {doctor.specialization}
+                </p>
+              </div>
+
+              <span
+                className={`rounded-full px-3 py-1 text-xs font-black uppercase tracking-wide ${
+                  isPending
+                    ? "bg-orange-100 text-orange-600"
+                    : "bg-green-100 text-green-700"
+                }`}
+              >
+                {isPending ? "Pending" : "Approved"}
+              </span>
+            </div>
+
+            <div className="mt-4 flex flex-wrap gap-2">
+              <InfoPill
+                icon={<BriefcaseMedical size={16} />}
+                text={`${doctor.experience} Yrs Experience`}
+              />
+              <InfoPill icon={<Award size={16} />} text={doctor.education} />
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 grid gap-3 text-sm text-[#26364f] sm:grid-cols-2">
+          <ContactRow icon={<Mail size={18} />} text={doctor.user.email} />
+          <ContactRow
+            icon={<Phone size={18} />}
+            text={doctor.user.phone || "No phone provided"}
+          />
+          <ContactRow
+            icon={<Stethoscope size={18} />}
+            text={doctor.specialization}
+            className="sm:col-span-2"
+          />
+        </div>
+
+        <div className="mt-6 rounded-2xl border border-slate-200 bg-[#f8fbfb] p-4">
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#d9f3ef] text-[#078b91]">
+              <FileText size={26} />
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <p className="mt-1 text-sm font-medium text-[#587087]">
+                Degree Certificate
+              </p>
+            </div>
+
+            <a
+              href={doctor.degreeLicenseUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="hidden h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-sm font-black text-[#078b91] transition hover:border-[#078b91] hover:bg-[#eefaf8] sm:flex"
+            >
+              <Eye size={17} />
+              View
+            </a>
+          </div>
+
+          <a
+            href={doctor.degreeLicenseUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-4 flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white text-sm font-black text-[#078b91] transition hover:border-[#078b91] hover:bg-[#eefaf8] sm:hidden"
+          >
+            <Eye size={17} />
+            View Certificate
+          </a>
+        </div>
+
+        {isPending ? (
+          <div className="mt-5 grid grid-cols-2 gap-3">
+            <button
+              disabled={doctorRequestProceed}
+              type="button"
+              onClick={() => onReject(doctor.id)}
+              className={`flex h-11 items-center justify-center gap-2 rounded-xl border border-red-200 bg-white font-black transition ${
+                doctorRequestProceed
+                  ? "cursor-not-allowed text-red-300"
+                  : "cursor-pointer text-red-500 hover:bg-red-50"
+              }`}
+            >
+              <X size={19} />
+              {doctorRequestProceed ? "Rejecting..." : "Reject"}
+            </button>
+
+            <button
+              type="button"
+              disabled={doctorRequestProceed}
+              onClick={() => onApprove(doctor.id)}
+              className={`flex h-11 items-center justify-center gap-2 rounded-xl font-black text-white shadow-lg shadow-cyan-100 transition ${
+                doctorRequestProceed
+                  ? "cursor-not-allowed bg-[#0aa082]/70"
+                  : "cursor-pointer bg-[#078b91] hover:bg-[#06777d]"
+              }`}
+            >
+              <Check size={19} />
+              {doctorRequestProceed ? "Approving..." : "Approve"}
+            </button>
+          </div>
+        ) : (
+          <div className="mt-5 flex h-11 items-center justify-center gap-2 rounded-xl bg-green-50 font-black text-green-700">
+            <Check size={19} />
+            Approved Doctor
+          </div>
+        )}
+      </div>
+    </article>
+  );
+};
+
+export default DoctorRequestCard;
+````
+
+## File: Frontend/src/features/Admin/components/doctors/DoctorStatusBadge.tsx
+````typescript
+import type { DoctorStatusBadgeProps } from "../../types/admin.types";
+
+const DoctorStatusBadge = ({ status }: DoctorStatusBadgeProps) => {
+  return (
+    <span
+      className={`px-3 py-1 rounded-full text-sm font-medium
+
+      ${
+        status === "Approved"
+          ? "bg-green-100 text-green-600"
+          : status === "Pending"
+            ? "bg-orange-100 text-orange-600"
+            : "bg-red-100 text-red-600"
+      }
+      `}
+    >
+      {status}
+    </span>
+  );
+};
+
+export default DoctorStatusBadge;
+````
+
 ## File: Frontend/src/features/Admin/layout/AdminLayout.tsx
 ````typescript
 import { useState } from "react";
@@ -19696,6 +26030,1353 @@ const AdminLayout = () => {
 export default AdminLayout;
 ````
 
+## File: Frontend/src/features/Appointment/pages/BookAppointmentPage.tsx
+````typescript
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  ClipboardPlus,
+  Info,
+  Pencil,
+  Send,
+} from "lucide-react";
+import SelectPetStep from "../components/SelectPetComponent";
+import Button from "../../../shared/components/Button/Button";
+import { submitPetIssue } from "../../Pet Owner/pet details/apis/pet.api";
+
+const BookAppointmentPage = () => {
+  const navigate = useNavigate();
+  const [step, setStep] = useState<1 | 2>(1);
+  const [issue, setIssue] = useState("");
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handlePetSelectComplete = (petId: string) => {
+    localStorage.setItem("petPatientId", petId);
+    setStep(2);
+  };
+
+  const handleBack = () => {
+    if (step === 2) {
+      setStep(1);
+      setIssue("");
+      setError("");
+      return;
+    }
+
+    navigate(-1);
+  };
+
+  const handleSubmit = async () => {
+    const petId = localStorage.getItem("petPatientId");
+    const appointmentId = localStorage.getItem("appointmentId");
+
+    const trimmedIssue = issue.trim();
+
+    if (!appointmentId) {
+      setError("Appointment is missing. Please select the slot again.");
+      return;
+    }
+
+    if (!petId) {
+      setError("Please select a pet first.");
+      setStep(1);
+      return;
+    }
+
+    if (!trimmedIssue) {
+      setError("Please describe the issue your pet is facing.");
+      return;
+    }
+
+    if (trimmedIssue.length < 10) {
+      setError("Issue description must be at least 10 characters.");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      setError("");
+
+      const result = await submitPetIssue({
+        appointmentId,
+        petId,
+        issue: trimmedIssue,
+      });
+
+      console.log("Report submit result is:", result);
+
+      if (result?.success) {
+        localStorage.removeItem("petPatientId");
+
+        setIssue("");
+
+        // Report submit ho gayi, ab payment page par jao
+        navigate(`/payment?appointmentId=${appointmentId}`);
+      } else {
+        setError("Failed to submit issue report.");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // if (step === 3) {
+  //   return (
+  //     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-[#f8fafc] to-[#f1f5f9] px-4 py-12">
+  //       <div className="flex w-full max-w-md flex-col items-center rounded-3xl border border-slate-100 bg-white p-8 text-center shadow-[0_15px_40px_rgba(15,23,42,0.06)]">
+  //         <div className="mb-6 flex h-20 w-20 animate-bounce items-center justify-center rounded-full bg-emerald-50 text-emerald-500">
+  //           <CheckCircle2 size={48} />
+  //         </div>
+  //         <h2 className="mb-3 text-3xl font-extrabold text-slate-800">
+  //           Issue Submitted!
+  //         </h2>
+  //         <p className="mb-8 max-w-sm leading-relaxed text-slate-500">
+  //           Your pet&apos;s issue has been submitted successfully.
+  //         </p>
+  //         <Button
+  //           onClick={() => navigate("/doctors")}
+  //           className="w-full rounded-2xl bg-[#0B8F5A] py-4 font-bold text-white hover:bg-[#097b4d]"
+  //         >
+  //           Return to Doctors List
+  //         </Button>
+  //       </div>
+  //     </main>
+  //   );
+  // }
+
+  return (
+    <div className="flex min-h-screen flex-col">
+      <div className="sticky top-0 z-50 flex items-center justify-between border-b border-slate-100 bg-white/80 px-6 py-4 shadow-sm backdrop-blur-md">
+        <button
+          onClick={handleBack}
+          className="flex items-center gap-2 font-bold text-slate-500 transition-colors duration-200 hover:text-slate-800"
+        >
+          <ArrowLeft size={18} />
+          <span>{step === 2 ? "Back to Pet Selection" : "Back"}</span>
+        </button>
+
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
+            <div
+              className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${step >= 1
+                ? "bg-[#6D3DD9] text-white"
+                : "bg-slate-100 text-slate-400"
+                }`}
+            >
+              {step > 1 ? <CheckCircle2 size={16} /> : "1"}
+            </div>
+            <span
+              className={`hidden text-sm font-extrabold sm:inline ${step === 1 ? "text-[#6D3DD9]" : "text-slate-400"
+                }`}
+            >
+              Select Pet
+            </span>
+          </div>
+
+          <div className="h-[2px] w-8 bg-slate-200" />
+
+          <div className="flex items-center gap-2">
+            <div
+              className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${step >= 2
+                ? "bg-[#0B8F5A] text-white"
+                : "bg-slate-100 text-slate-400"
+                }`}
+            >
+              2
+            </div>
+            <span
+              className={`hidden text-sm font-extrabold sm:inline ${step === 2 ? "text-[#0B8F5A]" : "text-slate-400"
+                }`}
+            >
+              Describe Issue
+            </span>
+          </div>
+        </div>
+
+        <div className="w-10 sm:w-16" />
+      </div>
+
+      <div className="flex-1">
+        {step === 1 ? (
+          <SelectPetStep onNextStep={handlePetSelectComplete} />
+        ) : (
+          <main className="min-h-[calc(100vh-65px)] bg-[#F3FAF7] px-4 py-8 text-[#17233F]">
+            <section className="mx-auto max-w-md overflow-hidden rounded-[28px] bg-white shadow-2xl shadow-emerald-100">
+              <div className="relative h-36 bg-gradient-to-br from-[#F4FFFA] to-[#DFF5EA] px-6 py-6">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#0B8F5A] text-white">
+                  <ClipboardPlus size={22} />
+                </div>
+
+                <div className="relative z-10 mt-4">
+                  <h1 className="text-2xl font-black">Describe the Issue</h1>
+                  <p className="mt-1 max-w-[260px] text-sm leading-5 text-slate-600">
+                    Tell us what&apos;s going on with your pet
+                  </p>
+                </div>
+
+                <img
+                  src="https://images.unsplash.com/photo-1592194996308-7b43878e84a6?auto=format&fit=crop&w=500&q=80"
+                  alt="Pet"
+                  className="absolute bottom-0 right-5 h-32 w-32 object-cover mix-blend-multiply"
+                />
+              </div>
+
+              <div className="space-y-5 px-5 py-6">
+                {error && (
+                  <div className="rounded-xl border border-red-100 bg-red-50 p-3 text-sm font-semibold text-red-600">
+                    {error}
+                  </div>
+                )}
+
+                <div>
+                  <label className="mb-2 block text-sm font-black">
+                    Issue Details <span className="text-red-500">*</span>
+                  </label>
+
+                  <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 transition focus-within:border-[#0B8F5A] focus-within:ring-4 focus-within:ring-emerald-100">
+                    <div className="flex gap-3">
+                      <span className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-[#0B8F5A]">
+                        <Pencil size={18} />
+                      </span>
+
+                      <textarea
+                        value={issue}
+                        onChange={(e) => {
+                          setIssue(e.target.value);
+                          if (error) setError("");
+                        }}
+                        maxLength={500}
+                        placeholder="Describe the issue your pet is facing..."
+                        className="min-h-32 w-full resize-none bg-transparent text-sm font-semibold text-slate-600 outline-none placeholder:text-slate-400"
+                      />
+                    </div>
+
+                    <p className="text-right text-xs font-semibold text-slate-400">
+                      {issue.length}/500
+                    </p>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-emerald-100 bg-[#EFFBF5] p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#0B8F5A] text-white">
+                      <Info size={16} />
+                    </div>
+
+                    <div>
+                      <h3 className="text-sm font-black text-[#0B8F5A]">
+                        Helpful Tip
+                      </h3>
+                      <p className="mt-1 text-xs leading-5 text-slate-600">
+                        Add symptoms, duration, and behavior changes for better
+                        understanding.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 pt-1">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleBack}
+                    className="h-12 rounded-xl border-slate-300 font-bold text-slate-600 hover:bg-slate-50"
+                  >
+                    Back
+                  </Button>
+
+                  <Button
+                    type="button"
+                    onClick={handleSubmit}
+                    disabled={isSubmitting}
+                    className="h-12 rounded-xl bg-[#0B8F5A] font-bold text-white hover:bg-[#097b4d] disabled:opacity-50"
+                  >
+                    {isSubmitting ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                        Submitting...
+                      </span>
+                    ) : (
+                      <span className="flex items-center justify-center gap-2">
+                        <Send size={17} />
+                        Submit
+                      </span>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </section>
+          </main>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default BookAppointmentPage;
+````
+
+## File: Frontend/src/features/Appointment/pages/DoctorProfilePage.tsx
+````typescript
+import { Link, useNavigate, useParams } from "react-router-dom";
+import {
+    FaArrowLeft,
+    FaCheckCircle,
+    FaGraduationCap,
+    FaUserMd,
+} from "react-icons/fa";
+import { User } from 'lucide-react'
+
+import { getDoctorProfileData } from "../apis/doctorProfile.api";
+import { useEffect, useState } from "react";
+import BookingModal from "../components/BookSlotModal";
+import { bookDoctorSlot } from "../apis/bookSlot";
+import { type BookableSlot } from "../apis/doctorProfile.api";
+import type { DoctorProfileViewData } from "../types/appointment.types";
+
+
+const DoctorProfilePage = () => {
+    const { id } = useParams();
+
+    const [doctor, setDoctor] = useState<DoctorProfileViewData>(null);
+    const [loading, setLoading] = useState(false);
+
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedSlot, setSelectedSlot] = useState<BookableSlot | null>(null);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const doctorProfileData = async () => {
+            setLoading(true);
+            if (id) {
+                const data = await getDoctorProfileData(id);
+                setDoctor(data);
+            }
+
+            setLoading(false);
+        };
+        doctorProfileData();
+    }, [id]);
+
+    const handleConfirmBooking = async (scheduleId: string) => {
+        console.log("Confirmed booking for Schedule ID:", scheduleId);
+
+        if (!scheduleId || !doctor?.id) {
+            console.log("IDs not found");
+            return;
+        }
+
+        const schedule = {
+            slotId: scheduleId,
+            doctorId: doctor.id,
+        };
+
+        try {
+            const response = await bookDoctorSlot(schedule);
+
+            console.log("Slot lock response is:", response);
+
+            if (!response?.success || !response?.data?.appointmentId) {
+                console.log("Failed to lock slot");
+                return;
+            }
+
+            // Pehle old booking data clear kar do taake stale data issue na aaye
+            localStorage.removeItem("doctorId");
+            localStorage.removeItem("scheduleId");
+            localStorage.removeItem("appointmentId");
+            localStorage.removeItem("petPatientId");
+
+            // New booking data save karo
+            localStorage.setItem("doctorId", doctor.id);
+            localStorage.setItem("scheduleId", scheduleId);
+            localStorage.setItem("appointmentId", response.data.appointmentId);
+
+            setIsModalOpen(false);
+            setSelectedSlot(null);
+
+            navigate("/book-appointment");
+        } catch (error) {
+            console.log("Slot booking error:", error);
+        }
+    };
+
+    if (!doctor) {
+        return (
+            <section className="min-h-screen bg-[#f5fbff] px-5 py-12 lg:px-16">
+                <div className="mx-auto max-w-4xl rounded-3xl bg-white p-8 text-center shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
+                    <h1 className="text-3xl font-extrabold text-[#07182c]">
+                        {loading ? "Loading..." : "Doctor Not Found"}
+                    </h1>
+                    <p className="mt-2 text-slate-500">
+                        The doctor profile you are looking for does not exist.
+                    </p>
+                    <Link
+                        to="/doctors"
+                        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#009f9d] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#007f7d]"
+                    >
+                        <FaArrowLeft />
+                        Back to Doctors
+                    </Link>
+                </div>
+            </section>
+        );
+    }
+
+    return (
+        <section className="min-h-screen bg-[#f5fbff] px-5 py-12 lg:px-16">
+            <div className="mx-auto max-w-7xl">
+                <Link
+                    to="/doctors"
+                    className="mb-6 inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-bold text-[#009f9d] shadow-sm transition hover:bg-[#eefafa]"
+                >
+                    <FaArrowLeft />
+                    Back to Doctors
+                </Link>
+
+                <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
+                    <div className="space-y-6">
+                        {/* Profile Card */}
+                        <div className="rounded-3xl bg-white p-6 shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
+                            <div className="grid gap-6 md:grid-cols-[220px_1fr]">
+                                <div className="relative h-60 overflow-hidden flex justify-center items-center rounded-3xl bg-[#eefafa]">
+                                    {doctor.image.startsWith('/') ? (
+                                        <img
+                                            src={doctor.image}
+                                            alt={doctor.name}
+                                            className="h-full w-full object-cover"
+                                        />
+                                    ) : (
+                                        <User size={112} className="text-slate-300" />
+                                    )}
+                                </div>
+
+                                <div>
+                                    <div className="flex flex-wrap items-center gap-2">
+                                        <h1 className="text-3xl font-extrabold text-[#07182c]">
+                                            {doctor.name}
+                                        </h1>
+                                        <FaCheckCircle className="text-xl text-[#009f9d]" />
+                                    </div>
+                                    <p className="mt-2 text-lg font-bold text-slate-500">
+                                        {doctor.specialization}
+                                    </p>
+
+                                    <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                                        <div className="rounded-2xl bg-[#f5fbff] p-4">
+                                            <p className="text-sm font-semibold text-slate-500">
+                                                Experience
+                                            </p>
+                                            <h3 className="mt-1 text-xl font-extrabold text-[#07182c]">
+                                                {doctor.experience} Years
+                                            </h3>
+                                        </div>
+                                        <div className="rounded-2xl bg-[#f5fbff] p-4">
+                                            <p className="text-sm font-semibold text-slate-500">
+                                                Consultation Fee
+                                            </p>
+                                            <h3 className="mt-1 text-xl font-extrabold text-[#07182c]">
+                                                Rs. {doctor.fees}
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Education Card */}
+                        <div className="rounded-3xl bg-white p-6 shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
+                            <h2 className="mb-4 flex items-center gap-2 text-xl font-extrabold text-[#07182c]">
+                                <FaGraduationCap className="text-[#009f9d]" />
+                                Education & Qualification
+                            </h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <p className="text-sm font-bold text-slate-500">Education</p>
+                                    <p className="mt-1 font-semibold text-[#07182c]">{doctor.education}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-bold text-slate-500">Qualification</p>
+                                    <p className="mt-1 font-semibold text-[#07182c]">{doctor.specialization}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Booking Sidebar */}
+                    <aside className="h-fit rounded-3xl bg-white p-6 shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
+                        <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#eefafa] text-2xl text-[#009f9d]">
+                            <FaUserMd />
+                        </div>
+
+                        <h2 className="text-2xl font-extrabold text-[#07182c]">
+                            Select Slot to Book Appointment
+                        </h2>
+                        <p className="mt-2 text-sm leading-6 text-slate-500">
+                            Select this doctor and continue to appointment form.
+                        </p>
+
+                        <div className="mt-5">
+                            <h3 className="text-sm font-extrabold text-[#07182c]">
+                                Available Slots
+                            </h3>
+
+                            {doctor.availableSlots?.length > 0 ? (
+                                <div className="mt-3 grid grid-cols-2 gap-3">
+                                    {doctor.availableSlots.slice(0, 8).map((slot) => {
+                                        // Format the date to show on the button (e.g., Jun 19)
+                                        const shortDate = new Date(slot.date).toLocaleDateString("en-US", {
+                                            month: "short",
+                                            day: "numeric",
+                                        });
+
+                                        return (
+                                            <button
+                                                key={slot.scheduleId}
+                                                id={slot.scheduleId}
+                                                onClick={() => {
+                                                    setSelectedSlot(slot);
+                                                    setIsModalOpen(true);
+                                                }}
+                                                className="flex flex-col items-center justify-center rounded-xl border border-slate-200 px-2 py-3 text-center text-xs font-extrabold text-[#07182c] transition hover:border-[#009f9d] hover:bg-[#eefafa]"
+                                            >
+                                                <span className="mb-1 block text-[11px] font-bold text-[#009f9d]">
+                                                    {shortDate} • {slot.day.slice(0, 3)}
+                                                </span>
+                                                <span>
+                                                    {slot.startTime} - {slot.endTime}
+                                                </span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            ) : (
+                                <p className="mt-3 rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-500">
+                                    No appointment slots available.
+                                </p>
+                            )}
+                        </div>
+                    </aside>
+                </div>
+            </div>
+
+            {/* Render the Modal */}
+            <BookingModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onConfirm={handleConfirmBooking}
+                slot={selectedSlot}
+            />
+        </section>
+    );
+};
+
+export default DoctorProfilePage;
+````
+
+## File: Frontend/src/features/Doctor/doctor.route.tsx
+````typescript
+import DoctorDashboardPage from "./pages/DoctorDashboardPage";
+import DoctorProfilePage from "./pages/DoctorProfilePage";
+import { DoctorProtectedRoute } from "@/ProtectedRoutes/DoctorProtectedRoutes";
+import DoctorSkill from "./pages/SkillPricing";
+import { DoctorLayout } from "./Layout/doctor.layout";
+import DoctorAvailabilityPage from "./pages/DoctorAvailabilityPage";
+import PatientsPage from "./pages/PatientsPage";
+
+export const doctorDashboardRoutes = [
+  {
+    path: "/",
+    element: (
+      <DoctorProtectedRoute>
+        <DoctorLayout />
+      </DoctorProtectedRoute>
+    ),
+    children: [
+      {
+        path: "doctor-dashboard",
+        element: <DoctorDashboardPage />,
+      },
+      {
+        path: "doctor-dashboard-profile",
+        element: <DoctorProfilePage />,
+      },
+      {
+        path: "doctor-pricing",
+        element: <DoctorSkill />,
+      },
+      {
+        path: "doctor-availability",
+        element: <DoctorAvailabilityPage />,
+      },
+      {
+        path: "pateints",
+        element: <PatientsPage />
+      }
+    ],
+  },
+];
+````
+
+## File: Frontend/src/features/Doctorcart/component/DoctorCard.tsx
+````typescript
+import { CalendarDays, GraduationCap, ShieldCheck, User } from "lucide-react";
+import { NavLink } from "react-router-dom";
+import type { DoctorCardProps } from "../types/doctorcart.types";
+
+const DoctorCard = ({ doctor }: DoctorCardProps) => {
+    return (
+        <div
+            key={doctor.id}
+            className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"
+        >
+            <div className="grid gap-6 2xl:grid-cols-[1.1fr_0.75fr_1fr_210px]">
+                <div className="flex gap-5">
+                    <div>
+                        {
+                            doctor?.profileImage?.startsWith('/') ? (
+                                <img
+                                    src={doctor.profileImage}
+                                    alt="Doctor"
+                                    className="h-28 w-28 rounded-3xl object-cover"
+                                />
+                            ) : (
+                                <User
+                                    size={112}
+                                    className="rounded-3xl border p-4 text-gray-400"
+                                />
+                            )
+                        }
+
+
+                    </div>
+
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <h2 className="text-2xl font-black">{doctor.name}</h2>
+                            <ShieldCheck size={20} className="text-[#078b91]" />
+                        </div>
+
+                        <p className="mt-1 text-sm font-semibold text-slate-500">
+                            {doctor.specialization}
+                        </p>
+
+                        <p className="mt-4 flex items-center gap-2 text-sm text-slate-600">
+                            <CalendarDays size={17} />
+                            {doctor.experience} years
+                        </p>
+
+                        <p className="mt-3 flex items-center gap-2 text-sm text-slate-600">
+                            <GraduationCap size={17} />
+                            {doctor.education}
+                        </p>
+                    </div>
+                </div>
+
+                <div className="border-slate-200 2xl:border-l 2xl:pl-6">
+
+
+                    <h3 className="mt-5 text-sm font-black">Next Available</h3>
+
+                    <p className="mt-2 text-sm text-slate-600">
+                        {doctor.nextAvailable
+                            ? `${doctor.nextAvailable.day}, ${doctor.nextAvailable.startTime} - ${doctor.nextAvailable.endTime}`
+                            : "No upcoming slot"}
+                    </p>
+                </div>
+
+
+
+                <div className="flex flex-col justify-center gap-3 w-full">
+                    <NavLink
+                        to={`/doctor-profile/${doctor.id}`}
+                        className="flex h-11 w-full items-center justify-center rounded-xl bg-[#078b91] text-sm font-black text-white transition hover:bg-[#101b3d]"
+                    >
+                        Book Appointment
+                    </NavLink>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+
+export default DoctorCard;
+````
+
+## File: Frontend/src/features/Landing Page/components/Services.tsx
+````typescript
+import {
+  FaPaw,
+  FaShoppingBasket,
+  FaStethoscope,
+  FaRobot,
+  FaCheck,
+  FaShieldAlt,
+  FaAward,
+  FaLock,
+  FaHeadset,
+  FaArrowRight,
+} from "react-icons/fa";
+
+import img from "@/assets/shared/images/bannerImage.png"
+import { NavLink } from "react-router-dom";
+
+const services = [
+  {
+    title: "Pet Marketplace",
+    desc: "Shop a wide range of trusted pet products delivered to your doorstep.",
+    icon: <FaShoppingBasket />,
+    color: "text-[#159f9b]",
+    checkBg: "bg-[#159f9b]",
+    iconBg: "bg-[#d8f4ef]",
+    bg: "from-[#eefbf7] to-[#f8fffd]",
+    btn: "!bg-[#119f98] !border-[#119f98]",
+    image: img,
+    items: [
+      "Premium pet food",
+      "Toys & accessories",
+      "Medications & supplements",
+      "Grooming essentials",
+    ],
+    button: "Explore Marketplace",
+    url:"/marketplace1"
+  },
+  {
+    title: "Vet Consultation",
+    desc: "Connect with verified veterinarians and book appointments with ease.",
+    icon: <FaStethoscope />,
+    color: "text-[#168dcc]",
+    checkBg: "bg-[#168dcc]",
+    iconBg: "bg-[#d9f0fb]",
+    bg: "from-[#eef8ff] to-[#f7fcff]",
+    btn: "!bg-[#168dcc] !border-[#168dcc]",
+    image: img,
+    items: [
+      "Book online appointments",
+      "Verified & experienced vets",
+      "Video & in-clinic consultation",
+      "Health records & prescriptions",
+    ],
+    button: "Book a Consultation",
+    url:"/doctors"
+  },
+  {
+    title: "AI Assistant",
+    desc: "Get 24/7 AI support for your pet's health, nutrition and well-being.",
+    icon: <FaRobot />,
+    color: "text-[#6e36b8]",
+    checkBg: "bg-[#6e36b8]",
+    iconBg: "bg-[#eadcf8]",
+    bg: "from-[#faf4ff] to-[#fff9ff]",
+    btn: "!bg-[#6e36b8] !border-[#6e36b8]",
+    image: img,
+    items: [
+      "Instant answers to your questions",
+      "Health & symptom checker",
+      "Nutrition & diet guidance",
+      "Care tips & reminders",
+    ],
+    button: "Ask AI Assistant",
+    url:"/ai-assistant"
+  },
+];
+
+const bottomFeatures = [
+  {
+    icon: <FaShieldAlt />,
+    title: "Trusted & Secure",
+    desc: "100% genuine products and reliable care",
+  },
+  {
+    icon: <FaAward />,
+    title: "Verified Experts",
+    desc: "Experienced vets & pet care professionals",
+  },
+  {
+    icon: <FaLock />,
+    title: "Safe & Private",
+    desc: "Your pet's data is protected with top security",
+  },
+  {
+    icon: <FaHeadset />,
+    title: "24/7 Support",
+    desc: "We're always here for you and your pets",
+  },
+];
+
+const Services = () => {
+  return (
+    <section className="bg-white px-6 py-12 lg:px-16">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-10 text-center">
+          <p className="mb-2 flex items-center justify-center gap-2 text-sm font-extrabold uppercase tracking-wider text-[#009f9d]">
+            Our Services <FaPaw />
+          </p>
+
+          <h2 className="text-[28px] font-extrabold leading-tight text-[#07182c] md:text-[36px]">
+            Everything your pet needs, in{" "}
+            <span className="text-[#009f9d]">one place</span>
+          </h2>
+
+          <p className="mx-auto mt-4 max-w-3xl text-base leading-7 text-slate-600">
+            From shopping the best products to expert care and AI support,
+            <br className="hidden md:block" />
+            we make pet parenting easier, smarter and worry-free.
+          </p>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-3">
+          {services.map((service) => (
+            <div
+              key={service.title}
+              className={`rounded-[24px] bg-gradient-to-br ${service.bg} p-6 shadow-[0_12px_35px_rgba(15,23,42,0.08)]`}
+            >
+              <div className="mb-6 flex items-start gap-4">
+                <div
+                  className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-full ${service.iconBg} ${service.color} text-3xl`}
+                >
+                  {service.icon}
+                </div>
+
+                <div>
+                  <h3 className="mb-2 text-[20px] font-extrabold text-[#07182c]">
+                    {service.title}
+                  </h3>
+                  <p className="text-sm leading-6 text-slate-600">
+                    {service.desc}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mb-6 space-y-3">
+                {service.items.map((item) => (
+                  <div
+                    key={item}
+                    className="flex items-center gap-3 text-sm font-medium text-[#07182c]"
+                  >
+                    <span
+                      className={`flex h-5 w-5 items-center justify-center rounded-full ${service.checkBg} text-white`}
+                    >
+                      <FaCheck className="text-[10px]" />
+                    </span>
+                    {item}
+                  </div>
+                ))}
+              </div>
+
+              <div className="mb-6 flex h-[230px] items-end justify-center overflow-hidden rounded-3xl">
+                <img
+                  src={service.image}
+                  alt={service.title}
+                  className="h-full w-full object-contain object-bottom"
+                />
+              </div>
+
+              <NavLink
+                to={service.url}
+                className={`inline-flex items-center gap-3 p-3 !rounded-xl !text-white hover:!text-white ${service.btn}`}
+              >
+                {service.button}hh
+                <FaArrowRight />
+              </NavLink>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-8 grid gap-6 rounded-[22px] bg-white px-7 py-5 shadow-[0_10px_35px_rgba(15,23,42,0.08)] md:grid-cols-2 lg:grid-cols-4">
+          {bottomFeatures.map((feature) => (
+            <div key={feature.title} className="flex items-center gap-4">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#e0f7f5] text-2xl text-[#009f9d]">
+                {feature.icon}
+              </div>
+              <div>
+                <h4 className="text-base font-extrabold text-[#07182c]">
+                  {feature.title}
+                </h4>
+                <p className="text-sm leading-5 text-slate-600">
+                  {feature.desc}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Services;
+````
+
+## File: Frontend/src/features/Payment/page/PaymentSuccessPage.tsx
+````typescript
+import { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { CheckCircle2, Loader2, AlertCircle } from "lucide-react";
+import { getAppointmentPaymentStatus } from "../api/payment.api";
+
+type AppointmentStatusResponse = {
+  id: string;
+  status: string;
+  paymentStatus: string;
+  confirmedAt?: string | null;
+  doctor?: {
+    user?: {
+      fullName?: string;
+    };
+    specialization?: string;
+  };
+  doctorSchedule?: {
+    status?: string;
+    startTime?: string;
+    endTime?: string;
+  };
+  payment?: {
+    status?: string;
+    amount?: number;
+    currency?: string;
+    paidAt?: string | null;
+  };
+};
+
+const PaymentSuccessPage = () => {
+  const [searchParams] = useSearchParams();
+  const appointmentId = searchParams.get("appointmentId");
+
+  const [appointment, setAppointment] =
+    useState<AppointmentStatusResponse | null>(null);
+
+  const [isChecking, setIsChecking] = useState(true);
+  const [error, setError] = useState("");
+  const [attempts, setAttempts] = useState(0);
+
+  const isConfirmed =
+    appointment?.status === "CONFIRMED" &&
+    appointment?.paymentStatus === "SUCCEEDED";
+
+  const isFailed =
+    appointment?.status === "PAYMENT_FAILED" ||
+    appointment?.paymentStatus === "FAILED" ||
+    appointment?.paymentStatus === "CANCELLED" ||
+    appointment?.status === "EXPIRED";
+
+  useEffect(() => {
+    if (!appointmentId) {
+      setError("Appointment ID missing.");
+      setIsChecking(false);
+      return;
+    }
+
+    let intervalId: number | undefined;
+    let currentAttempts = 0;
+
+    const fetchStatus = async () => {
+      try {
+        currentAttempts += 1;
+        setAttempts(currentAttempts);
+
+        const result = await getAppointmentPaymentStatus(appointmentId);
+
+        if (!result?.success) {
+          setError(result?.message || "Could not fetch appointment status.");
+          return;
+        }
+
+        const data = result.data as AppointmentStatusResponse;
+        setAppointment(data);
+
+        const confirmed =
+          data.status === "CONFIRMED" && data.paymentStatus === "SUCCEEDED";
+
+        const failed =
+          data.status === "PAYMENT_FAILED" ||
+          data.paymentStatus === "FAILED" ||
+          data.paymentStatus === "CANCELLED" ||
+          data.status === "EXPIRED";
+
+        if (confirmed || failed) {
+          setIsChecking(false);
+          if (intervalId) window.clearInterval(intervalId);
+        }
+
+        if (currentAttempts >= 15) {
+          setIsChecking(false);
+          if (intervalId) window.clearInterval(intervalId);
+        }
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Something went wrong while checking status."
+        );
+        setIsChecking(false);
+        if (intervalId) window.clearInterval(intervalId);
+      }
+    };
+
+    fetchStatus();
+
+    intervalId = window.setInterval(fetchStatus, 2000);
+
+    return () => {
+      if (intervalId) window.clearInterval(intervalId);
+    };
+  }, [appointmentId]);
+
+  const amount =
+    appointment?.payment?.amount && appointment?.payment?.currency
+      ? `${(appointment.payment.amount / 100).toFixed(2)} ${appointment.payment.currency.toUpperCase()}`
+      : null;
+
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-emerald-50 px-4 py-10">
+      <section className="w-full max-w-md rounded-3xl bg-white p-8 text-center shadow-xl">
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50">
+          {isConfirmed ? (
+            <CheckCircle2 className="h-12 w-12 text-emerald-600" />
+          ) : isFailed ? (
+            <AlertCircle className="h-12 w-12 text-red-500" />
+          ) : (
+            <Loader2 className="h-12 w-12 animate-spin text-[#0B8F5A]" />
+          )}
+        </div>
+
+        <h1 className="mt-6 text-2xl font-extrabold text-slate-800">
+          {isConfirmed
+            ? "Appointment Confirmed!"
+            : isFailed
+              ? "Payment Status Issue"
+              : "Confirming Appointment..."}
+        </h1>
+
+        <p className="mt-3 text-sm leading-6 text-slate-500">
+          {isConfirmed
+            ? "Your payment was successful and your appointment has been confirmed."
+            : isFailed
+              ? "Your payment could not be confirmed. Please contact support or try booking again."
+              : "Your payment was submitted. We are waiting for final confirmation from Stripe."}
+        </p>
+
+        {error && (
+          <div className="mt-5 rounded-xl bg-red-50 p-3 text-sm font-semibold text-red-600">
+            {error}
+          </div>
+        )}
+
+        <div className="mt-6 rounded-2xl border border-slate-100 bg-slate-50 p-4 text-left text-sm">
+          <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+            Appointment ID
+          </p>
+          <p className="mt-1 break-all font-bold text-slate-700">
+            {appointmentId || "Missing"}
+          </p>
+
+          <div className="mt-4 grid grid-cols-2 gap-3 border-t border-slate-200 pt-4">
+            <div>
+              <p className="text-xs font-bold text-slate-400">Appointment</p>
+              <p className="mt-1 font-extrabold text-slate-700">
+                {appointment?.status || "Checking..."}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-xs font-bold text-slate-400">Payment</p>
+              <p className="mt-1 font-extrabold text-slate-700">
+                {appointment?.paymentStatus || "Checking..."}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-xs font-bold text-slate-400">Schedule</p>
+              <p className="mt-1 font-extrabold text-slate-700">
+                {appointment?.doctorSchedule?.status || "Checking..."}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-xs font-bold text-slate-400">Attempts</p>
+              <p className="mt-1 font-extrabold text-slate-700">{attempts}</p>
+            </div>
+          </div>
+
+          {appointment?.doctor?.user?.fullName && (
+            <div className="mt-4 border-t border-slate-200 pt-4">
+              <p className="text-xs font-bold text-slate-400">Doctor</p>
+              <p className="mt-1 font-bold text-slate-700">
+                Dr. {appointment.doctor.user.fullName}
+              </p>
+            </div>
+          )}
+
+          {amount && (
+            <div className="mt-4 border-t border-slate-200 pt-4">
+              <p className="text-xs font-bold text-slate-400">Paid Amount</p>
+              <p className="mt-1 text-lg font-extrabold text-[#0B8F5A]">
+                {amount}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {isChecking && !isConfirmed && !isFailed && (
+          <p className="mt-4 text-xs font-semibold text-slate-400">
+            Checking status every 2 seconds...
+          </p>
+        )}
+
+        <div className="mt-6 grid grid-cols-1 gap-3">
+          <Link
+            to="/doctors"
+            className="rounded-xl bg-[#0B8F5A] px-5 py-3 text-sm font-bold text-white hover:bg-[#097b4d]"
+          >
+            Back to Doctors
+          </Link>
+        </div>
+      </section>
+    </main>
+  );
+};
+
+export default PaymentSuccessPage;
+````
+
+## File: Frontend/src/shared/components/Navbar/navbar.data.ts
+````typescript
+interface NavData {
+    id: number;
+    title: string;
+    path: string;
+}
+
+const NAVLINK: NavData[] = [
+    {
+        id: 1,
+        title: "Home",
+        path: "/"
+    },
+    {
+        id: 2,
+        title: "Marketplace",
+        path: "/marketplace1"
+    },
+    {
+        id: 3,
+        title: "Services",
+        path: "/services"
+    },
+    {
+        id: 4,
+        title: "Doctors",
+        path: "/doctors"
+    },
+    {
+        id: 5,
+        title: "AI Assistant",
+        path: "/ai-assistant"
+    },
+    {
+        id: 6,
+        title: "About",
+        path: "/about"
+    },
+    {
+        id: 7,
+        title: "Contact",
+        path: "/contact"
+    }
+];
+
+export default NAVLINK;
+````
+
+## File: Backend/app/routes/admin.routes.js
+````javascript
+const express = require('express');
+const authMiddleware = require('../middleware/auth.middleware');
+const adminController = require('../controllers/admin.controller');
+const authenticateRole = require('../middleware/authorizeRole.middleware')
+const { adminLimiter } = require('../middleware/rateLimiter');
+
+const Router = express.Router();
+
+Router
+    .route('/all/doctors')
+    .get(authMiddleware.protect, authenticateRole.authenticateUserRole('Admin'), adminController.allDoctorList)
+
+Router
+    .route('/doctor-stats')
+    .get(adminLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('Admin'), adminController.fetchDoctorStats)
+
+Router
+    .route('/pending/doctors')
+    .get(adminLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('Admin'), adminController.pendingDoctorList)
+
+Router
+    .route('/approved/doctors')
+    .get(adminLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('Admin'), adminController.approvedDoctor)
+
+Router
+    .route('/approve-pending/doctor')
+    .post(authMiddleware.protect, authenticateRole.authenticateUserRole('Admin'), adminController.approveupdateDoctor)
+
+Router
+    .route('/reject/doctor')
+    .post(authMiddleware.protect, authenticateRole.authenticateUserRole('Admin'), adminController.rejectDoctor)
+
+module.exports = Router;
+````
+
+## File: Backend/app/services/userdoctor.services.js
+````javascript
+const { PrismaClient, VerificationStatus, ScheduleStatus } = require("@prisma/client");
+const prisma = new PrismaClient();
+
+const getUpcomingSlotsFilter = (currentDate) => ({
+  status: ScheduleStatus.AVAILABLE,
+    endTime: { gte: currentDate },
+});
+
+
+const formatSingleSlot = (slot) => ({
+  scheduleId: slot.id,
+  date: slot.date,
+  day: slot.date.toLocaleDateString("en-US", { weekday: "long" }).toUpperCase(),
+  startTime: slot.startTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }),
+  endTime: slot.endTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }),
+  startDateTime: slot.startTime.toISOString(),
+  endDateTime: slot.endTime.toISOString(),
+});
+
+const compileScheduleInfo = (doctorSchedules, currentDate) => {
+  const todayString = currentDate.toDateString();
+  const slots = doctorSchedules.map(formatSingleSlot);
+
+  return {
+    availableSlots: slots,
+    todaySlots: slots.filter((s) => new Date(s.startDateTime).toDateString() === todayString),
+    availableDays: [...new Set(slots.map((s) => s.day))],
+    status: doctorSchedules.some((s) => currentDate >= s.startTime && currentDate < s.endTime) ? "active" : "inactive",
+    nextAvailable: slots[0] || null,
+  };
+};
+
+
+const getApprovedDoctorsForUsers = async ({ page = 1, limit = 5, search = "" }) => {
+  const skip = (page - 1) * limit;
+  const currentDate = new Date();
+  const slotsFilter = getUpcomingSlotsFilter(currentDate);
+
+  const whereCondition = {
+    isVerified: VerificationStatus.APPROVED,
+    doctorSchedules: { some: slotsFilter },
+    ...(search && {
+      OR: [
+        { user: { fullName: { contains: search, mode: "insensitive" } } },
+        { specialization: { contains: search, mode: "insensitive" } },
+        { education: { contains: search, mode: "insensitive" } },
+      ],
+    }),
+  };
+
+  const [total, doctors] = await Promise.all([
+    prisma.doctor.count({ where: whereCondition }),
+    prisma.doctor.findMany({
+      where: whereCondition,
+      skip,
+      take: limit,
+      select: {
+        id: true,
+        specialization: true,
+        education: true,
+        experience: true,
+        user: {
+          select: { fullName: true, email: true, phone: true, profileImageUrl: true },
+        },
+        doctorSchedules: {
+          where: slotsFilter,
+          orderBy: { startTime: "asc" },
+        },
+      },
+    }),
+  ]);
+
+  const formattedDoctors = doctors.map((doctor) => ({
+    id: doctor.id,
+    name: doctor.user.fullName,
+    email: doctor.user.email,
+    phone: doctor.user.phone,
+    specialization: doctor.specialization,
+    education: doctor.education,
+    experience: doctor.experience,
+    profileImage: doctor.user.profileImageUrl,
+    ...compileScheduleInfo(doctor.doctorSchedules, currentDate), // 👈 Beautifully lightweight mapping
+  }));
+
+  return {
+    data: formattedDoctors,
+    meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
+  };
+};
+
+
+const getSpecificDoctor = async (doctorId) => {
+  const currentDate = new Date();
+
+  const doctor = await prisma.doctor.findUnique({
+    where: { id: doctorId },
+    select: {
+      id: true,
+      education: true,
+      fees: true,
+      specialization: true,
+      experience: true,
+      isAvailable: true,
+      isVerified: true,
+      user: {
+        select: { fullName: true, profileImageUrl: true },
+      },
+      doctorSchedules: {
+        where: getUpcomingSlotsFilter(currentDate),
+        orderBy: { startTime: "asc" },
+      },
+    },
+  });
+
+  if (!doctor) return null;
+
+  return {
+    id: doctor.id,
+    name: doctor.user?.fullName || "Unknown Doctor",
+    image: doctor.user?.profileImageUrl || null,
+    specialization: doctor.specialization,
+    experience: doctor.experience,
+    education: doctor.education,
+    fees: doctor.fees,
+    isVerified: VerificationStatus.APPROVED,
+    ...compileScheduleInfo(doctor.doctorSchedules, currentDate),
+  };
+};
+
+
+const getBookableSlotsByDoctorId = async (doctorId) => {
+  const doctor = await getSpecificDoctor(doctorId);
+  return doctor ? doctor.availableSlots : null;
+};
+
+module.exports = {
+  getApprovedDoctorsForUsers,
+  getSpecificDoctor,
+  getBookableSlotsByDoctorId,
+};
+````
+
 ## File: Frontend/src/features/Admin/layout/Sidebar.tsx
 ````typescript
 import Logo from "../../../shared/components/Logo/Logo";
@@ -19703,11 +27384,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { sidebarItems } from "../data/sidebar.data";
 import { LogOut, X } from 'lucide-react'
 import { logoutAdmin } from '../apis/adminlogin.api'
-
-type SidebarProps = {
-  sidebarOpen: boolean;
-  setSidebarOpen: (open: boolean) => void;
-};
+import type { SidebarProps } from "../types/admin.types";
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const navigate = useNavigate();
@@ -19803,6 +27480,8 @@ import { AuthSuccess } from "./components/AuthSuccess";
 import ForgotPasswordPage from "./pages/forgot-password";
 import VerifyOtpPage from "./pages/verify-otp";
 import ResetPasswordPage from "./pages/reset-password";
+import DashboardChoicePage from "./pages/DashboardChoicePage";
+import { ProtectedRoutes } from "@/ProtectedRoutes/ProtectedRoutes";
 
 
 const AuthRouter = [
@@ -19837,60 +27516,23 @@ const AuthRouter = [
   {
     path: "/reset-password",
     element: <ResetPasswordPage />,
+  },
+  {
+    path: "/choose-dashboard",
+    element: (
+      <ProtectedRoutes>
+        <DashboardChoicePage />
+      </ProtectedRoutes>
+    ),
   }
 ];
 
 export default AuthRouter;
 ````
 
-## File: Frontend/src/features/Doctor/doctor.route.tsx
-````typescript
-import DoctorDashboardPage from "./pages/DoctorDashboardPage";
-import DoctorProfilePage from "./pages/DoctorProfilePage";
-import { DoctorProtectedRoute } from "@/ProtectedRoutes/DoctorProtectedRoutes";
-import DoctorSkill from "./pages/SkillPricing";
-import { DoctorLayout } from "./Layout/doctor.layout";
-import DoctorAvailabilityPage from "./pages/DoctorAvailabilityPage";
-import PatientsPage from "./pages/PatientsPage";
-
-export const doctorDashboardRoutes = [
-  {
-    path: "/",
-    element: (
-      <DoctorProtectedRoute>
-        <DoctorLayout />
-      </DoctorProtectedRoute>
-    ),
-    children: [
-      {
-        path: "doctor-dashboard",
-        element: <DoctorDashboardPage />,
-      },
-      {
-        path: "doctor-dashboard-profile",
-        element: <DoctorProfilePage />,
-      },
-      {
-        path: "doctor-pricing",
-        element: <DoctorSkill />,
-      },
-      {
-        path: "doctor-availability",
-        element: <DoctorAvailabilityPage />,
-      },
-      {
-        path: "pateints",
-        element: <PatientsPage />
-      }
-    ],
-  },
-];
-````
-
 ## File: Frontend/src/features/Doctorcart/component/FindDoctor.tsx
 ````typescript
 import { useState } from "react";
-import { type Doctor } from "../apis/getDoctors.api";
 import { useApprovedDoctors } from "../hooks/useGetDoctors";
 import DoctorsList from "./DoctorsList";
 import FilterSidebar from "./FilterSidebar";
@@ -19951,272 +27593,497 @@ const FindDoctor = () => {
 export default FindDoctor;
 ````
 
-## File: Frontend/src/features/Pet Owner/pet details/components/PetForm.tsx
+## File: Frontend/src/features/Payment/api/payment.api.ts
 ````typescript
-import { Calendar, List, PawPrint, Shield, User } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { api, handleAxiosError } from "@/features/api interface/axios.interface";
 
-import Input from "../../../../shared/components/Input/Input";
-import Button from "../../../../shared/components/Button/Button";
-import {
-  petSchema,
-  type PetFormInput,
-  type PetFormData,
-} from "../schemas/pet.schema";
-import { useAuth } from "@/features/Auth/hooks/authhook";
-import { submitPetData } from "../apis/pet.api";
-
-interface PetFormProps {
-  onSubmitSuccess?: (newPet: any) => void;
-  onCancel?: () => void;
-}
-
-const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
-  const { user } = useAuth();
-  const [submitError, setSubmitError] = useState<string | null>(null);
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isSubmitting },
-  } = useForm<PetFormInput, unknown, PetFormData>({
-    resolver: zodResolver(petSchema),
-    defaultValues: {
-      name: "",
-      age: "",
-      breed: "",
-      category: undefined,
-    },
-  });
-
-  const onSubmit = async (data: PetFormData) => {
-    setSubmitError(null);
-    console.log("Pet Form Data:", data);
-    const petOwnerId = user?.data?.id;
-    if (!petOwnerId) {
-      setSubmitError("You must be logged in to register a pet.");
-      return;
-    }
-
+export const createAppointmentPaymentIntent = async (appointmentId: string) => {
     try {
-      const newPet = await submitPetData({
-        ...data,
-        age: Number(data.age),
-        petOwnerId,
-      });
+        const response = await api.post(
+            `/payment/appointments/${appointmentId}/create-payment-intent`
+        );
 
-      if (newPet) {
-        reset();
-        if (onSubmitSuccess) {
-          onSubmitSuccess(newPet);
-        }
-      } else {
-        setSubmitError("Failed to save pet. Please check inputs.");
-      }
-    } catch (err: any) {
-      setSubmitError(err?.response?.data?.message || "An error occurred while saving the pet.");
+        return response.data;
+    } catch (error) {
+        handleAxiosError(error);
     }
-  };
-
-  return (
-    <main className="min-h-screen bg-[#F7F3FF] px-4 py-8 text-[#1F1F2E]">
-      <section className="mx-auto max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl shadow-purple-200/60">
-        <div className="relative h-44 bg-gradient-to-br from-[#F4ECFF] to-[#E9DDFF] px-6 py-6">
-          <h1 className="text-2xl font-black tracking-tight text-[#4c249f] sm:text-3xl">
-            Register Pet
-          </h1>
-          <p className="mt-1 text-sm font-semibold text-[#8B64D7]">
-            Please enter your pet details
-          </p>
-
-          <span className="absolute bottom-6 right-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-[#6D3DD9] shadow-lg shadow-purple-100">
-            <PawPrint size={32} />
-          </span>
-        </div>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 px-5 py-6">
-          {submitError && (
-            <div className="bg-red-50 text-red-650 p-3 rounded-2xl text-xs font-semibold border border-red-100 mb-3">
-              {submitError}
-            </div>
-          )}
-
-          <Input
-            label="Pet Name"
-            type="text"
-            placeholder="Enter pet name"
-            error={errors.name?.message}
-            icon={<User size={18} />}
-            {...register("name")}
-          />
-
-          <Input
-            label="Age"
-            type="number"
-            placeholder="Enter age"
-            error={errors.age?.message}
-            icon={<Calendar size={18} />}
-            rightText="Years"
-            {...register("age")}
-          />
-
-          <Input
-            label="Breed"
-            type="text"
-            placeholder="Enter breed"
-            error={errors.breed?.message}
-            icon={<Shield size={18} />}
-            {...register("breed")}
-          />
-
-          <div>
-            <label className="mb-2 block text-sm font-black">
-              Category <span className="text-red-500">*</span>
-            </label>
-
-            <div className="relative flex h-14 items-center rounded-xl border border-slate-200 bg-white px-4 transition focus-within:border-[#6D3DD9] focus-within:ring-4 focus-within:ring-purple-100">
-              <List size={18} className="mr-3 text-[#6D3DD9]" />
-
-              <select
-                {...register("category")}
-                className="h-full w-full bg-transparent text-sm font-semibold text-slate-600 outline-none"
-              >
-                <option value="">Select category</option>
-                <option value="DOG">Dog</option>
-                <option value="CAT">Cat</option>
-                <option value="REPTILE">Reptile</option>
-                <option value="OTHER">Other</option>
-              </select>
-            </div>
-
-            {errors.category && (
-              <p className="mt-1 text-xs font-semibold text-red-500">
-                {errors.category.message}
-              </p>
-            )}
-          </div>
-
-          <div className="rounded-2xl border border-purple-100 bg-[#F6F0FF] p-4">
-            <h3 className="text-sm font-black text-[#4B2DB5]">
-              About Pet Categories
-            </h3>
-            <p className="mt-1 text-xs leading-5 text-slate-600">
-              Choose the correct category to help us provide better care for your
-              pet.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3 pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              className="border-[#6D3DD9]/35 text-[#6D3DD9]"
-              onClick={() => {
-                reset();
-                if (onCancel) onCancel();
-              }}
-            >
-              Cancel
-            </Button>
-
-            <Button
-              type="submit"
-              isSubmitting={isSubmitting}
-              className="bg-[#6D3DD9] hover:bg-[#5630B2] hover:text-white"
-            >
-              Save Pet
-            </Button>
-          </div>
-        </form>
-      </section>
-    </main>
-  );
 };
 
-export default PetForm;
+export const getAppointmentPaymentStatus = async (appointmentId: string) => {
+    try {
+        const response = await api.get(
+            `/payment/appointments/${appointmentId}/status`
+        );
+
+        return response.data;
+    } catch (error) {
+        handleAxiosError(error);
+    }
+};
 ````
 
-## File: Backend/app/routes/admin.routes.js
-````javascript
-const express = require('express');
-const authMiddleware = require('../middleware/auth.middleware');
-const adminController = require('../controllers/admin.controller');
-const authenticateRole = require('../middleware/authorizeRole.middleware')
-const { adminLimiter } = require('../middleware/rateLimiter');
+## File: Frontend/src/features/Pet Owner/pet details/apis/pet.api.ts
+````typescript
+import { api, handleAxiosError } from "@/features/api interface/axios.interface";
+import type { PetFormData } from "../schemas/pet.schema";
+import type { PetIssueReportFormData } from "../schemas/petIssueReport.schema";
 
-const Router = express.Router();
+export interface PetResponse {
+  id: string;
+  name: string;
+  age: number;
+  breed: string;
+  category: string;
+}
 
-Router
-    .route('/all/doctors')
-    .get(authMiddleware.protect, authenticateRole.authenticateUserRole('Admin'), adminController.allDoctorList)
-
-Router
-    .route('/doctor-stats')
-    .get(adminLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('Admin'), adminController.fetchDoctorStats)
-
-Router
-    .route('/pending/doctors')
-    .get(adminLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('Admin'), adminController.pendingDoctorList)
-
-Router
-    .route('/approved/doctors')
-    .get(adminLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('Admin'), adminController.approvedDoctor)
-
-Router
-    .route('/approve-pending/doctor')
-    .post(authMiddleware.protect, authenticateRole.authenticateUserRole('Admin'), adminController.approveupdateDoctor)
-
-Router
-    .route('/reject/doctor')
-    .post(authMiddleware.protect, authenticateRole.authenticateUserRole('Admin'), adminController.rejectDoctor)
-
-module.exports = Router;
-````
-
-## File: Backend/package.json
-````json
-{
-  "name": "pets-veta-backend",
-  "version": "1.0.0",
-  "description": "",
-  "license": "ISC",
-  "author": "",
-  "type": "commonjs",
-  "main": "app.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
-  },
-  "prisma": {
-    "seed": "node prisma/seed.js"
-  },
-  "dependencies": {
-    "@prisma/client": "^6.19.3",
-    "bcrypt": "^6.0.0",
-    "cloudinary": "^2.10.0",
-    "cookie-parser": "^1.4.7",
-    "cors": "^2.8.6",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "express-rate-limit": "^8.5.2",
-    "google-auth-library": "^10.6.2",
-    "jsonwebtoken": "^9.0.3",
-    "multer": "^2.1.1",
-    "nodemailer": "^8.0.7",
-    "pg": "^8.20.0",
-    "rate-limit-redis": "^5.0.0",
-    "redis": "^6.0.0",
-    "stripe": "^22.2.0",
-    "zod": "^4.4.3"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.14",
-    "prisma": "^6.19.3"
+export interface SubmitIssueResponse {
+  success: boolean,
+  message: string,
+  data: {
+    checkoutUrl: string
   }
 }
+
+export const submitPetData = async (data: PetFormData & { petOwnerId: string }): Promise<PetResponse | undefined> => {
+  try {
+    const formData = new FormData();
+
+    formData.append("name", data.name);
+    formData.append("age", String(data.age));
+    formData.append("breed", data.breed);
+    formData.append("category", data.category);
+
+    Array.from(data.photos).forEach((photo) => {
+      formData.append("photos", photo);
+    });
+
+    const response = await api.post("petOwner/submit/pet-data", formData);
+    return response.data?.data;
+  } catch (error) {
+    handleAxiosError(error);
+    throw error;
+  }
+};
+export const submitPetIssue = async (payload: {
+  appointmentId: string;
+  petId: string;
+  issue: string;
+}) => {
+  try {
+    const response = await api.post("petOwner/submit/pet-issue", payload);
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error);
+  }
+};
+
+
+
+export const getPetsData = async (): Promise<PetResponse[] | undefined> => {
+  try {
+    const response = await api.get("petOwner/pets-data");
+    return response.data?.data;
+  } catch (error) {
+    handleAxiosError(error);
+    throw error;
+  }
+};
+````
+
+## File: Backend/app/controllers/admin.controller.js
+````javascript
+const doctorServices = require('../services/admin.services');
+const sendResponse = require('../utils/SendResponse');
+const catchAsync = require('../utils/CatchAsync');
+const AppError = require('../utils/AppError');
+const requireFields = require('../utils/validateRequest');
+const authUtils = require('../utils/auth.utils');
+const cloudinaryUtils = require('../utils/cloudinary.utils');
+
+
+const allDoctorList = catchAsync(async (req, res) => {
+    const limit = parseInt(req.query.limit);
+    const page = parseInt(req.query.page);
+
+    console.log("Limit and Page is ", limit, page);
+
+
+    const { doctors, totalCount } = await doctorServices.allDoctors(limit, page);
+
+    if (!doctors || doctors.length === 0) {
+        return sendResponse(res, 200, 'No  Doctors Found', []);
+    }
+
+    return sendResponse(res, 200, 'Success', { doctors, totalCount });
+});
+
+
+
+const pendingDoctorList = catchAsync(async (req, res) => {
+    const limit = parseInt(req.query.limit);
+    const page = parseInt(req.query.page);
+    const { doctors, totalCount } = await doctorServices.sendPendingDoctors(limit, page);
+
+    if (!doctors || doctors.length === 0) {
+        return sendResponse(res, 200, 'No Pending Doctors Found', []);
+    }
+
+    return sendResponse(res, 200, 'Success', { doctors, totalCount });
+});
+
+
+
+const approvedDoctor = catchAsync(async (req, res) => {
+    const limit = parseInt(req.query.limit);
+    const page = parseInt(req.query.page);
+
+    const { doctors, totalCount } = await doctorServices.approvedDoctor(limit, page);
+    if (!doctors || doctors.length === 0) {
+        return sendResponse(res, 200, 'No Approved Doctors Found', []);
+    }
+    return sendResponse(
+        res,
+        200,
+        'Approved doctors Send',
+        { doctors, totalCount }
+    );
+});
+
+
+
+const rejectDoctor = catchAsync(async (req, res) => {
+    console.log("Req.body", req.body);
+    requireFields(['doctorId'], req.body);
+
+    const { doctorId } = req.body;
+
+    const certificate = await doctorServices.getDoctorWithCertificate(doctorId);
+    console.log("Certificate", certificate);
+    const deleteFromCloudinary = await cloudinaryUtils.deleteFromCloudinary(certificate.publicId);
+    console.log("Delete Status is ", deleteFromCloudinary);
+
+    const rejectedDoctor = await doctorServices.rejectDoctor(doctorId);
+    console.log("rejected Doctor is ", rejectedDoctor);
+    authUtils.sendStatusEmail(rejectedDoctor.user.email, "rejected")
+        .then((mesg) => {
+            console.log("Otp Mesg", mesg)
+        })
+        .catch((err) => {
+            console.log("Error is sending the OTP");
+        })
+    return sendResponse(
+        res,
+        200,
+        'Successfully rejected doctor',
+        {}
+    );
+});
+
+
+
+const approveupdateDoctor = catchAsync(async (req, res) => {
+    const { doctorId } = req.body;
+    console.log("Htting", doctorId);
+    if (!doctorId) {
+        return sendResponse(res, 400, "No Doctor Id");
+    }
+
+    const approvedDoctor = await doctorServices.approveupdateDoctor(doctorId);
+    authUtils.sendStatusEmail(approvedDoctor.user.email, "approved")
+        .then((mesg) => {
+            console.log("Otp Mesg", mesg)
+        })
+        .catch((err) => {
+            console.log("Error is sending the OTP");
+        })
+
+    return sendResponse(res, 200, "Doctor approved successfully", {
+        status: "approved",
+        doctor: approvedDoctor,
+    });
+});
+
+
+
+const fetchDoctorStats = catchAsync(async (req, res) => {
+    if (!req.user) {
+        throw new AppError("User is not valid", 400)
+    }
+
+    const stats = await doctorServices.giveDoctorState();
+    const processedStats = {
+        pending: stats[0],
+        approved: stats[1],
+        total: stats[2]
+    }
+
+    sendResponse(res, 200, "Doctor Stats", processedStats);
+
+});
+
+
+
+module.exports = {
+    pendingDoctorList,
+    approvedDoctor,
+    rejectDoctor,
+    approveupdateDoctor,
+    allDoctorList,
+    fetchDoctorStats
+};
+````
+
+## File: Backend/app/services/admin.services.js
+````javascript
+const { default: prisma } = require('../config/prisma');
+const { VerificationStatus, Prisma } = require('@prisma/client');
+const AppError = require('../utils/AppError');
+
+const allDoctors = async (limit, page) => {
+
+  const skip = (page - 1) * limit;
+  const [doctors, totalCount] = await prisma.$transaction([
+    prisma.doctor.findMany({
+      skip: skip,
+      take: limit,
+      select: {
+        id: true,
+        specialization: true,
+        education: true,
+        experience: true,
+        isVerified: true,
+        user: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+            phone: true,
+            doctorCertificate: {
+              select: {
+                publicUrl: true,
+                publicId: true
+              }
+            }
+          }
+        }
+
+      },
+      orderBy: {
+        id: 'asc'
+      }
+    }),
+    prisma.doctor.count()
+  ])
+  return { doctors, totalCount };
+}
+
+const sendPendingDoctors = async (limit, page) => {
+  const skip = (page - 1) * limit;
+  const [doctors, totalCount] = await prisma.$transaction([
+    prisma.doctor.findMany({
+      skip: skip,
+      take: limit,
+      where: {
+        isVerified: VerificationStatus.PENDING,
+      },
+      select: {
+        id: true,
+        specialization: true,
+        education: true,
+        experience: true,
+        isVerified: true,
+        user: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+            phone: true,
+            doctorCertificate: {
+              select: {
+                publicUrl: true
+              }
+            }
+          },
+
+        }
+      },
+    }),
+    prisma.doctor.count({
+      where: {
+        isVerified: VerificationStatus.PENDING
+      }
+    })
+  ])
+  return { doctors, totalCount };
+
+};
+
+const findDoctorById = async (doctorId) => {
+  return await prisma.doctor.findUnique({
+    where: {
+      id: doctorId,
+    },
+    select: {
+      id: true,
+      specialization: true,
+      education: true,
+      degreeLicenseUrl: true,
+      experience: true,
+      isVerified: true,
+      user: {
+        select: {
+          id: true,
+          fullName: true,
+          email: true,
+          phone: true
+        }
+      }
+    },
+  });
+};
+
+const rejectDoctor = async (doctorId) => {
+  let doctor = await prisma.doctor.findUnique({
+    where: {
+      id: doctorId
+    },
+    select: {
+      userId: true,
+      user: {
+        select: {
+          email: true
+        }
+      }
+    }
+  });
+
+  if (!doctor) {
+    throw new AppError("No Doctor with Id found", 400)
+    return;
+  }
+  const deletedDoctor = await prisma.user.delete({
+    where: {
+      id: doctor.userId
+    },
+    include: {
+      doctors: true
+    }
+  })
+  return doctor;
+};
+
+const approvedDoctor = async (limit, page) => {
+  const skip = (page - 1) * limit;
+  const [doctors, totalCount] = await prisma.$transaction([
+    prisma.doctor.findMany({
+      skip: skip,
+      take: limit,
+      where: {
+        isVerified: VerificationStatus.APPROVED,
+      },
+      select: {
+        id: true,
+        specialization: true,
+        education: true,
+        experience: true,
+        isVerified: true,
+        user: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+            phone: true,
+            doctorCertificate: {
+              select: {
+                publicUrl: true
+              }
+            }
+          }
+        }
+      },
+    }),
+    prisma.doctor.count({
+      where: {
+        isVerified: VerificationStatus.APPROVED
+      }
+    })
+  ])
+  return { doctors, totalCount };
+};
+
+const approveupdateDoctor = async (doctorId) => {
+
+  const isDoctor = await prisma.doctor.findUnique({
+    where: {
+      id: doctorId
+    }
+  });
+
+  if (!isDoctor) {
+    throw new AppError("Doctor Not Available", 400);
+    return;
+  }
+
+  return await prisma.doctor.update({
+    where: {
+      id: doctorId,
+    },
+    data: {
+      isVerified: VerificationStatus.APPROVED,
+    },
+    select: {
+      id: true,
+      user: {
+        select: {
+          email: true
+        }
+      }
+    },
+  });
+};
+
+
+
+const giveDoctorState = async () => {
+  const stats = await prisma.$transaction([
+    prisma.doctor.count({ where: { isVerified: VerificationStatus.PENDING } }),
+    prisma.doctor.count({ where: { isVerified: VerificationStatus.APPROVED } }),
+    prisma.doctor.count()
+  ])
+  return stats;
+}
+const getDoctorWithCertificate = async (doctorId) => {
+  if (!doctorId) {
+    throw new AppError("Doctor Id not provided...", 400);
+  }
+  const doctor = await prisma.doctor.findUnique({
+    where: {
+      id: doctorId
+    }
+  })
+  if (!doctor) {
+    throw new AppError("Doctor Donot exist to delete...", 400)
+  }
+  const certificate = await prisma.doctorCertificate.findUnique({
+    where: {
+      userId: doctor.userId
+    }
+
+  })
+
+  return certificate;
+}
+
+module.exports = {
+  sendPendingDoctors,
+  approvedDoctor,
+  rejectDoctor,
+  approveupdateDoctor,
+  findDoctorById,
+  allDoctors,
+  giveDoctorState,
+  getDoctorWithCertificate
+};
 ````
 
 ## File: Frontend/package.json
@@ -20234,6 +28101,8 @@ module.exports = Router;
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@reduxjs/toolkit": "^2.12.0",
+    "@stripe/react-stripe-js": "^6.6.0",
     "@stripe/stripe-js": "^9.8.0",
     "@studio-freight/lenis": "^1.0.42",
     "@tailwindcss/vite": "^4.3.0",
@@ -20245,6 +28114,7 @@ module.exports = Router;
     "react-dom": "^19.2.6",
     "react-hook-form": "^7.75.0",
     "react-icons": "^5.6.0",
+    "react-redux": "^9.3.0",
     "react-router-dom": "^7.15.0",
     "sonner": "^2.0.7",
     "tailwindcss": "^4.3.0",
@@ -20300,6 +28170,205 @@ function App() {
 export default App
 ````
 
+## File: Frontend/src/features/Auth/components/doctor-form.tsx
+````typescript
+import { useForm, type SubmitErrorHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { type ApiResponse } from "../api/doctor.api";
+
+
+import Input from "../../../shared/components/Input/Input";
+import Button from "../../../shared/components/Button/Button";
+import { useDoctorAccountHook } from "../hooks/useDoctorAccount";
+
+import {
+  doctorSchema,
+  type DoctorFormData,
+  type DoctorFormInput,
+} from "../schemas/doctor.schema";
+
+const doctorFields = [
+  { name: "fullName", label: "Full Name", type: "text", placeholder: "Enter Name" },
+  { name: "username", label: "User Name", type: "text", placeholder: "Enter UserName" },
+  { name: "email", label: "Email Address", type: "email", placeholder: "example@gmail.com" },
+  { name: "phone", label: "Phone Number", type: "tel", placeholder: "+923001234567" },
+  { name: "experience", label: "Years of Experience", type: "number", placeholder: "5" },
+  { name: "fees", label: "Fees", type: "number", placeholder: "Enter Checkup Fees" },
+  { name: "medicalLicenseNumber", label: "Medical License Number", type: "text", placeholder: "LIC-123456" },
+  { name: "education", label: "Education/Qualifications", type: "text", placeholder: "e.g., DVM, BVSc" },
+  { name: "address", label: "Clinic Address", type: "text", placeholder: "Clinic Address" },
+  { name: "document", label: "Upload Document", type: "file", placeholder: "" },
+  { name: "password", label: "Password", type: "password", placeholder: "******" },
+  { name: "confirmPassword", label: "Confirm Password", type: "password", placeholder: "******" },
+] as const;
+
+const specializations = ["General Veterinary", "Pet Surgeon", "Animal Dentist"];
+
+
+export default function DoctorForm() {
+  const [showPassword, setShowPassword] = useState(false);
+  const [responseMessage, setResponseMessage] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<DoctorFormInput, unknown, DoctorFormData>({
+    resolver: zodResolver(doctorSchema),
+    mode: "onChange",
+  });
+
+  const { mutate: createAccount } = useDoctorAccountHook({
+    onSuccess: (response: ApiResponse) => {
+      if (response.success) {
+        setResponseMessage(response.message || "Account Created Successfully")
+        reset();
+      }
+    },
+    onError: (error) => {
+      setErrorMessage(error.message);
+      console.log("Error is Doctor", error)
+    }
+  })
+
+  const onSubmit = async (data: DoctorFormData) => {
+    setErrorMessage("");
+    setResponseMessage("");
+
+    const formData = new FormData();
+
+    Object.keys(data).forEach((key) => {
+      if (key !== "document") {
+        const value = data[key as keyof DoctorFormData];
+
+        if (value !== undefined && value !== null) {
+          formData.append(key, String(value));
+        }
+      }
+    });
+
+    if (data.document && data.document.length > 0) {
+      formData.append("document", data.document[0]);
+    }
+
+    console.log("Submitting FormData...", data);
+    createAccount(formData)
+
+  };
+
+  const onError: SubmitErrorHandler<DoctorFormInput> = (formErrors) => {
+    console.error("Zod Validation Failed! Check these fields:", formErrors);
+  };
+
+  return (
+    <div className="rounded-3xl bg-white/80 p-6 shadow-sm backdrop-blur-lg">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-[#078b91]">
+          Doctor Registration
+        </h1>
+        <p className="mt-2 text-gray-500">
+          Create your professional doctor account
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-5">
+        {responseMessage && (
+          <div className="rounded-lg border border-green-200 bg-green-50 p-4">
+            <p className="text-center font-medium text-green-800">
+              {responseMessage}
+            </p>
+          </div>
+        )}
+
+        {errorMessage && (
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+            <p className="text-center font-medium text-red-800">
+              {errorMessage}
+            </p>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {doctorFields.map((field) => {
+            const isPasswordField =
+              field.name === "password" || field.name === "confirmPassword";
+
+            return (
+              <Input
+                key={field.name}
+                label={field.label}
+                type={field.type}
+                placeholder={field.placeholder || ""}
+                error={
+                  errors[field.name as keyof DoctorFormInput]?.message as string
+                }
+                showPassword={isPasswordField ? showPassword : undefined}
+                onTogglePassword={
+                  isPasswordField
+                    ? () => setShowPassword((prev) => !prev)
+                    : undefined
+                }
+                {...register(field.name)}
+              />
+            );
+          })}
+
+          <div className="flex flex-col gap-2 md:col-span-2">
+            <label className="text-sm font-medium text-gray-700">
+              Specialization
+            </label>
+
+            <select
+              className="w-full rounded-xl border border-gray-300 px-4 py-2.5 outline-none focus:border-blue-600"
+              {...register("specialization")}
+            >
+              <option value="">Select specialization</option>
+              {specializations.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+
+            {errors.specialization && (
+              <p className="text-sm text-red-500">
+                {errors.specialization.message}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="space-y-3 pt-2">
+          <Button type="submit" isSubmitting={isSubmitting}>
+            {isSubmitting ? "Creating Account..." : "Create Account"}
+          </Button>
+
+          <div className="flex items-center gap-3">
+            <div className="h-px flex-1 bg-gray-300" />
+            <span className="text-xs text-gray-500">OR</span>
+            <div className="h-px flex-1 bg-gray-300" />
+          </div>
+
+          <p className="text-center text-sm text-gray-600">
+            Already have an account?{" "}
+            <a
+              href="/login"
+              className="font-semibold text-blue-900 hover:underline"
+            >
+              Login
+            </a>
+          </p>
+        </div>
+      </form>
+    </div>
+  );
+}
+````
+
 ## File: Frontend/src/features/Auth/components/login-component.tsx
 ````typescript
 import { useEffect, useState } from "react";
@@ -20333,6 +28402,22 @@ const PawIcon = () => (
   </svg>
 );
 
+const getPostLoginPath = (role: string) => {
+  if (role === "Admin") {
+    return "/admin-dashboard";
+  }
+
+  if (role === "Doctor") {
+    return "/doctor-dashboard";
+  }
+
+  if (role === "PetOwner" || role === "Seller") {
+    return "/choose-dashboard";
+  }
+
+  return "/";
+};
+
 export default function LoginComponent() {
 
   const [showPassword, setShowPassword] = useState(false);
@@ -20364,17 +28449,9 @@ export default function LoginComponent() {
   })
 
   useEffect(() => {
-    console.log("Wokring")
+    console.log("Working")
     if (isAuthenticatedUser && user?.data) {
-      if (user.data.role === "Admin") {
-        navigate("/admin-dashboard", { replace: true });
-      }
-      else if (user.data.role === "Doctor") {
-        navigate("/doctor-dashboard", { replace: true });
-      }
-      else {
-        navigate("/", { replace: true });
-      }
+      navigate(getPostLoginPath(user.data.role), { replace: true });
     }
   }, [isAuthenticatedUser, user, navigate]);
 
@@ -20616,149 +28693,6 @@ export default function LoginComponent() {
 }
 ````
 
-## File: Backend/app/controllers/admin.controller.js
-````javascript
-const doctorServices = require('../services/admin.services');
-const sendResponse = require('../utils/SendResponse');
-const catchAsync = require('../utils/CatchAsync');
-const AppError = require('../utils/AppError');
-const requireFields = require('../utils/validateRequest');
-const authUtils = require('../utils/auth.utils');
-const cloudinaryUtils = require('../utils/cloudinary.utils');
-
-
-const allDoctorList = catchAsync(async (req, res) => {
-    const limit = parseInt(req.query.limit);
-    const page = parseInt(req.query.page);
-
-    console.log("Limit and Page is ", limit, page);
-
-
-    const { doctors, totalCount } = await doctorServices.allDoctors(limit, page);
-
-    if (!doctors || doctors.length === 0) {
-        return sendResponse(res, 200, 'No  Doctors Found', []);
-    }
-
-    return sendResponse(res, 200, 'Success', { doctors, totalCount });
-});
-
-
-
-const pendingDoctorList = catchAsync(async (req, res) => {
-    const limit = parseInt(req.query.limit);
-    const page = parseInt(req.query.page);
-    const { doctors, totalCount } = await doctorServices.sendPendingDoctors(limit, page);
-
-    if (!doctors || doctors.length === 0) {
-        return sendResponse(res, 200, 'No Pending Doctors Found', []);
-    }
-
-    return sendResponse(res, 200, 'Success', { doctors, totalCount });
-});
-
-
-
-const approvedDoctor = catchAsync(async (req, res) => {
-    const limit = parseInt(req.query.limit);
-    const page = parseInt(req.query.page);
-
-    const { doctors, totalCount } = await doctorServices.approvedDoctor(limit, page);
-    if (!doctors || doctors.length === 0) {
-        return sendResponse(res, 200, 'No Approved Doctors Found', []);
-    }
-    return sendResponse(
-        res,
-        200,
-        'Approved doctors Send',
-        { doctors, totalCount }
-    );
-});
-
-
-
-const rejectDoctor = catchAsync(async (req, res) => {
-    console.log("Req.body", req.body);
-    requireFields(['doctorId'], req.body);
-
-    const { doctorId } = req.body;
-
-    const certificate = await doctorServices.getDoctorWithCertificate(doctorId);
-    console.log("Certificate", certificate);
-    const deleteFromCloudinary = await cloudinaryUtils.deleteFromCloudinary(certificate.publicId);
-    console.log("Delete Status is ", deleteFromCloudinary);
-
-    const rejectedDoctor = await doctorServices.rejectDoctor(doctorId);
-    console.log("rejected Doctor is ", rejectedDoctor);
-    authUtils.sendStatusEmail(rejectedDoctor.user.email, "rejected")
-        .then((mesg) => {
-            console.log("Otp Mesg", mesg)
-        })
-        .catch((err) => {
-            console.log("Error is sending the OTP");
-        })
-    return sendResponse(
-        res,
-        200,
-        'Successfully rejected doctor',
-        {}
-    );
-});
-
-
-
-const approveupdateDoctor = catchAsync(async (req, res) => {
-    const { doctorId } = req.body;
-    console.log("Htting", doctorId);
-    if (!doctorId) {
-        return sendResponse(res, 400, "No Doctor Id");
-    }
-
-    const approvedDoctor = await doctorServices.approveupdateDoctor(doctorId);
-    authUtils.sendStatusEmail(approvedDoctor.user.email, "approved")
-        .then((mesg) => {
-            console.log("Otp Mesg", mesg)
-        })
-        .catch((err) => {
-            console.log("Error is sending the OTP");
-        })
-
-    return sendResponse(res, 200, "Doctor approved successfully", {
-        status: "approved",
-        doctor: approvedDoctor,
-    });
-});
-
-
-
-const fetchDoctorStats = catchAsync(async (req, res) => {
-    if (!req.user) {
-        throw new AppError("User is not valid", 400)
-    }
-
-    const stats = await doctorServices.giveDoctorState();
-    const processedStats = {
-        pending: stats[0],
-        approved: stats[1],
-        total: stats[2]
-    }
-
-    sendResponse(res, 200, "Doctor Stats", processedStats);
-
-});
-
-
-
-module.exports = {
-    pendingDoctorList,
-    approvedDoctor,
-    rejectDoctor,
-    approveupdateDoctor,
-    allDoctorList,
-    fetchDoctorStats
-};
-````
-
 ## File: Backend/app/controllers/auth.controller.js
 ````javascript
 const { createAuthTokens } = require('../services/authToken.services')
@@ -20785,9 +28719,11 @@ const verifyUser = catchAsync(async (req, res) => {
     }
     const user = {
         id: userData.id,
+        name: userData.fullName,
         email: userData.email,
         username: userData.username,
-        role: userData.userRole.role
+        role: userData.userRole.role,
+        profileImageUrl: userData.profileImageUrl
     }
     return sendResponse(res, 200, "Success", user);
 
@@ -21079,7 +29015,8 @@ const loginUserAccount = catchAsync(async (req, res) => {
         name: user.fullName,
         email: user.email,
         username: user.username,
-        role: user.userRole.role
+        role: user.userRole.role,
+        profileImageUrl: user.profileImageUrl
 
     }
 
@@ -21335,7 +29272,7 @@ const getApprovedDoctorsForUsers = catchAsync(async (req, res, next) => {
     limit,
     search,
   });
-
+  console.log("Result is ", result);
   sendResponse(res, 200, "Approved doctors fetched successfully", result);
 });
 
@@ -21365,262 +29302,765 @@ module.exports = {
 };
 ````
 
-## File: Backend/app/services/admin.services.js
+## File: Backend/app/routes/petOwner.routes.js
 ````javascript
-const { default: prisma } = require('../config/prisma');
-const { VerificationStatus, Prisma } = require('@prisma/client');
-const AppError = require('../utils/AppError');
+const express = require('express');
+const authMiddleware = require('../middleware/auth.middleware');
+const authenticateRole = require('../middleware/authorizeRole.middleware');
+const petOwnerController = require('../controllers/petOwner.controller');
+const { petOwnerLimiter } = require('../middleware/rateLimiter')
+const upload = require('../config/multer.config');
 
-const allDoctors = async (limit, page) => {
+const Router = express.Router();
 
-  const skip = (page - 1) * limit;
-  const [doctors, totalCount] = await prisma.$transaction([
-    prisma.doctor.findMany({
-      skip: skip,
-      take: limit,
-      select: {
-        id: true,
-        specialization: true,
-        education: true,
-        experience: true,
-        isVerified: true,
-        user: {
-          select: {
-            id: true,
-            fullName: true,
-            email: true,
-            phone: true,
-            doctorCertificate: {
-              select: {
-                publicUrl: true,
-                publicId: true
-              }
+Router
+    .route('/my-pets')
+    .get(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.getPetsData)
+
+Router
+    .route('/pet-profile')
+    .get(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.getPetOwnerById)
+    .patch(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), upload.single('profileImage'), petOwnerController.updatePetOwnerProfile);
+
+
+Router
+    .route("/submit/pet-data")
+    .post(
+        petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole("PetOwner"), upload.array('photos', 5), petOwnerController.registerPet);
+
+Router
+    .route('/submit/pet-issue')
+    .post(
+        petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), upload.array('image', 5), petOwnerController.registerPetIssue);
+Router
+    .route('/petOwner-data')
+    .get(petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.getPetOwnerById)
+
+Router
+    .route('/pets-data')
+    .get(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.getPetsData)
+
+Router
+    .route('/book-slot')
+    .post(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.lockDoctorSlot)
+module.exports = Router;
+````
+
+## File: Backend/app/services/doctor.services.js
+````javascript
+const  prisma  = require('../config/prisma')
+const { PaymentStatus } = require('@prisma/client')
+
+
+const addDoctorService = async (skills, userId) => {
+    console.log("Skills are ", skills, userId);
+    let isExisting = false;
+
+    const doSkillExist = await prisma.doctorSkill.findFirst({
+        where: {
+            userId: userId,
+            skill: {
+                equals: skills.skill,
+                mode: 'insensitive'
             }
-          }
         }
+    });
+    if (doSkillExist) {
+        isExisting = true;
+        return isExisting;
+    }
 
-      },
-      orderBy: {
-        id: 'asc'
-      }
-    }),
-    prisma.doctor.count()
-  ])
-  return { doctors, totalCount };
-}
-
-const sendPendingDoctors = async (limit, page) => {
-  const skip = (page - 1) * limit;
-  const [doctors, totalCount] = await prisma.$transaction([
-    prisma.doctor.findMany({
-      skip: skip,
-      take: limit,
-      where: {
-        isVerified: VerificationStatus.PENDING,
-      },
-      select: {
-        id: true,
-        specialization: true,
-        education: true,
-        experience: true,
-        isVerified: true,
-        user: {
-          select: {
-            id: true,
-            fullName: true,
-            email: true,
-            phone: true,
-            doctorCertificate: {
-              select: {
-                publicUrl: true
-              }
-            }
-          },
-
-        }
-      },
-    }),
-    prisma.doctor.count({
-      where: {
-        isVerified: VerificationStatus.PENDING
-      }
+    const newSkills = await prisma.doctorSkill.create({
+        data: {
+            skill: skills.skill,
+            price: skills.price,
+            userId: userId
+        },
     })
-  ])
-  return { doctors, totalCount };
+    return newSkills;
+}
 
-};
 
-const findDoctorById = async (doctorId) => {
-  return await prisma.doctor.findUnique({
-    where: {
-      id: doctorId,
-    },
-    select: {
-      id: true,
-      specialization: true,
-      education: true,
-      degreeLicenseUrl: true,
-      experience: true,
-      isVerified: true,
-      user: {
-        select: {
-          id: true,
-          fullName: true,
-          email: true,
-          phone: true
+const deleteDoctorService = async (serviceId) => {
+    const deletedSkill = await prisma.doctorSkill.delete({
+        where: {
+            id: serviceId
         }
-      }
-    },
-  });
-};
+    })
+    return deletedSkill;
+}
 
-const rejectDoctor = async (doctorId) => {
-  let doctor = await prisma.doctor.findUnique({
-    where: {
-      id: doctorId
-    },
-    select: {
-      userId: true,
-      user: {
-        select: {
-          email: true
+
+const getDoctorServices = async (userId) => {
+
+    const services = await prisma.doctorSkill?.findMany({
+        where: {
+            userId: userId
         }
-      }
+    })
+    if (!services) {
+        return false;
     }
-  });
+    return services;
+}
 
-  if (!doctor) {
-    throw new AppError("No Doctor with Id found", 400)
-    return;
-  }
-  const deletedDoctor = await prisma.user.delete({
-    where: {
-      id: doctor.userId
-    },
-    include: {
-      doctors: true
+
+const updateDoctorServices = async (serviceId, skill, price) => {
+    const updatedService = await prisma.doctorSkill.update({
+        where: {
+            id: serviceId
+        },
+        data: {
+            price: price,
+            skill: skill
+        }
+    })
+
+    return updatedService;
+}
+
+
+const getDoctorAppointments = async (userId) => {
+
+    const doctor = await prisma.doctor.findUnique({
+        where: {
+            userId,
+        },
+        select: {
+            id: true,
+        },
+    });
+
+    if (!doctor) {
+        throw new Error("Doctor not found");
     }
-  })
-  return doctor;
-};
 
-const approvedDoctor = async (limit, page) => {
-  const skip = (page - 1) * limit;
-  const [doctors, totalCount] = await prisma.$transaction([
-    prisma.doctor.findMany({
-      skip: skip,
-      take: limit,
-      where: {
-        isVerified: VerificationStatus.APPROVED,
-      },
-      select: {
-        id: true,
-        specialization: true,
-        education: true,
-        experience: true,
-        isVerified: true,
-        user: {
-          select: {
+    return prisma.appointment.findMany({
+        where: {
+            doctorId: doctor.id,
+            paymentStatus: PaymentStatus.SUCCEEDED
+        },
+        orderBy: {
+            checkupTime: "asc",
+        },
+        select: {
+            id: true,
+            fees: true,
+            checkupTime: true,
+            status: true,
+            petIssueReport: {
+                select: {
+                    id: true,
+                    issue: true,
+                    user: {
+                        select: {
+                            fullName: true,
+                            email: true,
+                            phone: true,
+                            profileImageUrl: true,
+                        },
+                    },
+                    pet: {
+                        select: {
+                            id: true,
+                            name: true,
+                            age: true,
+                            breed: true,
+                            category: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+}
+
+
+const getDoctorProfile = async (userId) => {
+    const doctorProfile = await prisma.user.findUnique({
+        where: {
+            id: userId,
+        },
+        select: {
             id: true,
             fullName: true,
+            username: true,
             email: true,
             phone: true,
-            doctorCertificate: {
-              select: {
-                publicUrl: true
-              }
-            }
-          }
-        }
-      },
-    }),
-    prisma.doctor.count({
-      where: {
-        isVerified: VerificationStatus.APPROVED
-      }
-    })
-  ])
-  return { doctors, totalCount };
+            profileImageUrl: true,
+            isActive: true,
+            doctors: {
+                select: {
+                    id: true,
+                    specialization: true,
+                    education: true,
+                    experience: true,
+                    fees: true,
+                    address: true,
+                    isAvailable: true,
+                    isVerified: true,
+                },
+            },
+        },
+    });
+
+    return doctorProfile;
 };
 
-const approveupdateDoctor = async (doctorId) => {
 
-  const isDoctor = await prisma.doctor.findUnique({
-    where: {
-      id: doctorId
-    }
-  });
+const updateDoctorProfile = async (userId, profileData) => {
+    const {
+        fullName,
+        username,
+        phone,
+        profileImageUrl,
+        specialization,
+        education,
+        experience,
+        fees,
+        address,
+        isAvailable,
+    } = profileData;
 
-  if (!isDoctor) {
-    throw new AppError("Doctor Not Available", 400);
-    return;
-  }
+    const updatedProfile = await prisma.user.update({
+        where: {
+            id: userId,
+        },
+        data: {
+            fullName,
+            username,
+            phone,
+            profileImageUrl,
 
-  return await prisma.doctor.update({
-    where: {
-      id: doctorId,
-    },
-    data: {
-      isVerified: VerificationStatus.APPROVED,
-    },
-    select: {
-      id: true,
-      user: {
+            doctors: {
+                update: {
+                    specialization,
+                    education,
+                    experience: Number(experience),
+                    fees: Number(fees),
+                    address,
+                    isAvailable,
+                },
+            },
+        },
         select: {
-          email: true
-        }
-      }
-    },
-  });
+            id: true,
+            fullName: true,
+            username: true,
+            email: true,
+            phone: true,
+            profileImageUrl: true,
+            isActive: true,
+            doctors: {
+                select: {
+                    id: true,
+                    specialization: true,
+                    education: true,
+                    experience: true,
+                    fees: true,
+                    address: true,
+                    isAvailable: true,
+                    isVerified: true,
+                },
+            },
+        },
+    });
+
+    return updatedProfile;
 };
-
-
-
-const giveDoctorState = async () => {
-  const stats = await prisma.$transaction([
-    prisma.doctor.count({ where: { isVerified: VerificationStatus.PENDING } }),
-    prisma.doctor.count({ where: { isVerified: VerificationStatus.APPROVED } }),
-    prisma.doctor.count()
-  ])
-  return stats;
-}
-const getDoctorWithCertificate = async (doctorId) => {
-  if (!doctorId) {
-    throw new AppError("Doctor Id not provided...", 400);
-  }
-  const doctor = await prisma.doctor.findUnique({
-    where: {
-      id: doctorId
-    }
-  })
-  if (!doctor) {
-    throw new AppError("Doctor Donot exist to delete...", 400)
-  }
-  const certificate = await prisma.doctorCertificate.findUnique({
-    where: {
-      userId: doctor.userId
-    }
-
-  })
-
-  return certificate;
-}
 
 module.exports = {
-  sendPendingDoctors,
-  approvedDoctor,
-  rejectDoctor,
-  approveupdateDoctor,
-  findDoctorById,
-  allDoctors,
-  giveDoctorState,
-  getDoctorWithCertificate
+    addDoctorService,
+    deleteDoctorService,
+    getDoctorServices,
+    updateDoctorServices,
+    getDoctorAppointments,
+    getDoctorProfile,
+    updateDoctorProfile,
 };
+````
+
+## File: Backend/package.json
+````json
+{
+  "name": "pets-veta-backend",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "bcrypt": "^6.0.0",
+    "cloudinary": "^2.10.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
+    "google-auth-library": "^10.6.2",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.1.1",
+    "node-cron": "^4.5.0",
+    "nodemailer": "^8.0.7",
+    "pg": "^8.20.0",
+    "rate-limit-redis": "^5.0.0",
+    "redis": "^6.0.0",
+    "streamifier": "^0.1.1",
+    "stripe": "^22.2.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14",
+    "prisma": "^6.19.3"
+  }
+}
+````
+
+## File: Frontend/src/features/Admin/components/AdminLogin.tsx
+````typescript
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ShieldCheck } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { loginAdminAccount, type ApiResponse } from '../apis/adminlogin.api'
+
+import {
+  adminLoginSchema,
+  type AdminLoginFormValues,
+} from "../schema/admin.login.schema";
+
+import Button from "../../../shared/components/Button/Button";
+import Input from "../../../shared/components/Input/Input";
+import { useAuth } from "@/features/Auth/hooks/authhook";
+
+const AdminLoginPage = () => {
+  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const { setUser, setIsAuthenticateUser } = useAuth();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<AdminLoginFormValues>({
+    resolver: zodResolver(adminLoginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+
+  const handleadminmlogin = async (data: { email: string; password: string; }) => {
+    try {
+      const response: ApiResponse = await loginAdminAccount(data);
+      if (response.success) {
+        setUser(response);
+        setIsAuthenticateUser(true);
+        navigate('/admin-dashboard')
+        // return;
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error("Login failed:", error.message);
+      } else {
+        console.error("An unexpected error occurred:", error);
+      }
+      return;
+    }
+
+
+  };
+
+  return (
+    <main className="min-h-screen bg-[#FFF8F4] px-4 py-8 text-[#20263D] sm:px-6 lg:px-8">
+      <section className="mx-auto flex min-h-[calc(100vh-64px)] max-w-7xl items-center justify-center">
+        <div className="grid w-full overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-2xl shadow-slate-200/70 lg:grid-cols-2">
+          <div className="relative hidden overflow-hidden bg-gradient-to-br from-[#20263D] via-[#26304d] to-[#078b91] p-10 text-white lg:block">
+            <div className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-[#F9C5A8]/20 blur-3xl" />
+            <div className="absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-[#D4E2E0]/25 blur-3xl" />
+
+            <div className="relative z-10 flex h-full flex-col justify-between">
+              <div>
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 backdrop-blur">
+                  <ShieldCheck size={34} />
+                </div>
+
+                <h1 className="mt-8 max-w-md text-5xl font-black leading-tight">
+                  PetsVeta Admin Panel
+                </h1>
+
+                <p className="mt-5 max-w-md text-sm leading-7 text-white/75">
+                  Manage doctors, sellers, appointments, products, approvals,
+                  and platform activity from one secure dashboard.
+                </p>
+              </div>
+
+              <div className="rounded-3xl bg-white/10 p-6 backdrop-blur">
+                <p className="text-sm font-semibold text-white/80">
+                  Admin Access
+                </p>
+
+                <h3 className="mt-2 text-2xl font-black">
+                  Review doctor signup requests
+                </h3>
+
+                <p className="mt-3 text-sm leading-6 text-white/70">
+                  Approve or reject doctors after checking their details,
+                  license, experience, and profile information.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="px-6 py-10 sm:px-10 md:px-14 lg:px-16">
+            <div className="mx-auto max-w-md">
+              <div className="mb-8 text-center lg:text-left">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#D4E2E0]/70 text-[#078b91] lg:mx-0">
+                  <ShieldCheck size={34} />
+                </div>
+
+                <h2 className="mt-6 text-3xl font-black text-[#20263D] md:text-4xl">
+                  Admin Login
+                </h2>
+
+                <p className="mt-3 text-sm leading-7 text-slate-500">
+                  Login to manage PetsVeta platform operations.
+                </p>
+              </div>
+
+              <form onSubmit={handleSubmit(handleadminmlogin)} className="space-y-5">
+                <Input
+                  label="Email Address"
+                  type="email"
+                  placeholder="admin@petsveta.com"
+                  error={errors.email?.message}
+                  {...register("email")}
+                />
+
+                <Input
+                  label="Password"
+                  type="password"
+                  placeholder="Enter password"
+                  showPassword={showPassword}
+                  onTogglePassword={() => setShowPassword((prev) => !prev)}
+                  error={errors.password?.message}
+                  {...register("password")}
+                />
+
+                <div className="flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
+                  <label className="flex items-center gap-2 text-slate-500">
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 rounded border-slate-300 accent-[#078b91]"
+                    />
+                    Remember me
+                  </label>
+
+
+                </div>
+
+                <Button
+                  type="submit"
+                  isSubmitting={isSubmitting}
+                  className="bg-[#20263D] font-black shadow-lg shadow-slate-300 hover:bg-[#111827] hover:text-white hover:border-transparent"
+                >
+                  {isSubmitting ? "Logging In" : " Login as Admin"}
+                </Button>
+              </form >
+
+              <div className="mt-8 rounded-2xl bg-[#D4E2E0]/35 p-4">
+                <p className="text-sm font-semibold leading-6 text-slate-600">
+                  This page is only for platform administrators. Doctors and
+                  sellers should use their own login portals.
+                </p>
+              </div>
+            </div >
+          </div >
+        </div >
+      </section >
+    </main >
+  );
+};
+
+export default AdminLoginPage;
+````
+
+## File: Frontend/src/features/Pet Owner/pet details/components/PetForm.tsx
+````typescript
+import { Calendar, List, PawPrint, Shield, User, ImagePlus } from "lucide-react";
+import { useForm, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useMemo, useState } from "react";
+
+import Input from "../../../../shared/components/Input/Input";
+import Button from "../../../../shared/components/Button/Button";
+import {
+  petSchema,
+  type PetFormInput,
+  type PetFormData,
+} from "../schemas/pet.schema";
+import { useAuth } from "@/features/Auth/hooks/authhook";
+import { submitPetData } from "../apis/pet.api";
+import type { PetFormProps } from "../types/petDetails.types";
+
+const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
+  const { user } = useAuth();
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    control,
+    formState: { errors, isSubmitting },
+  } = useForm<PetFormInput, unknown, PetFormData>({
+    resolver: zodResolver(petSchema),
+    defaultValues: {
+      name: "",
+      age: "",
+      breed: "",
+      category: undefined,
+    },
+  });
+
+  // Watch the photos field to trigger preview generation
+  const selectedPhotos = useWatch({
+    control,
+    name: "photos",
+  });
+
+  const previews = useMemo(() => {
+    if (!selectedPhotos || selectedPhotos.length === 0) {
+      return [];
+    }
+
+    return Array.from(selectedPhotos).map((file) =>
+      URL.createObjectURL(file as File)
+    );
+  }, [selectedPhotos]);
+
+  useEffect(() => {
+    return () => {
+      previews.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [previews]);
+
+  const onSubmit = async (data: PetFormData) => {
+    setSubmitError(null);
+    console.log("Pet Form Data:", data);
+    const petOwnerId = user?.data?.id;
+    if (!petOwnerId) {
+      setSubmitError("You must be logged in to register a pet.");
+      return;
+    }
+
+    try {
+      // NOTE: If your backend expects a FormData object for file uploads (like with Multer),
+      // you will need to map `data` into a new FormData() instance inside `submitPetData`.
+      const newPet = await submitPetData({
+        ...data,
+        age: Number(data.age),
+        petOwnerId,
+      });
+
+      if (newPet) {
+        reset();
+        if (onSubmitSuccess) {
+          onSubmitSuccess(newPet);
+        }
+      } else {
+        setSubmitError("Failed to save pet. Please check inputs.");
+      }
+    } catch (err: unknown) {
+      const message =
+        err &&
+          typeof err === "object" &&
+          "response" in err &&
+          typeof err.response === "object" &&
+          err.response &&
+          "data" in err.response &&
+          typeof err.response.data === "object" &&
+          err.response.data &&
+          "message" in err.response.data &&
+          typeof err.response.data.message === "string"
+          ? err.response.data.message
+          : "An error occurred while saving the pet.";
+
+      setSubmitError(message);
+    }
+  };
+
+  return (
+    <main className="min-h-screen bg-[#F7F3FF] px-4 py-8 text-[#1F1F2E]">
+      <section className="mx-auto max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl shadow-purple-200/60">
+        <div className="relative h-44 bg-gradient-to-br from-[#F4ECFF] to-[#E9DDFF] px-6 py-6">
+          <h1 className="text-2xl font-black tracking-tight text-[#4C249F] sm:text-3xl">
+            Register Pet
+          </h1>
+          <p className="mt-1 text-sm font-semibold text-[#8B64D7]">
+            Please enter your pet details
+          </p>
+
+          <span className="absolute bottom-6 right-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-[#6D3DD9] shadow-lg shadow-purple-100">
+            <PawPrint size={32} />
+          </span>
+        </div>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 px-5 py-6">
+          {submitError && (
+            <div className="bg-red-50 text-red-650 p-3 rounded-2xl text-xs font-semibold border border-red-100 mb-3">
+              {submitError}
+            </div>
+          )}
+
+          {/* Photo Upload Section mapped to your theme */}
+          <div>
+            <label className="mb-2 block text-sm font-black">
+              Pet Photos
+            </label>
+            <label className="flex flex-col items-center justify-center w-full h-32 rounded-xl border-2 border-dashed border-purple-200 bg-[#F6F0FF]/50 hover:bg-[#F4ECFF] transition-colors cursor-pointer focus-within:border-[#6D3DD9] focus-within:ring-4 focus-within:ring-purple-100">
+              <div className="flex flex-col items-center justify-center pt-5 pb-6 text-[#6D3DD9]">
+                <ImagePlus size={28} className="mb-2 opacity-80" />
+                <p className="text-xs font-semibold">
+                  Click to upload <span className="font-normal text-slate-500">or drag and drop</span>
+                </p>
+              </div>
+              <input
+                type="file"
+                multiple
+                className="hidden"
+                accept="image/*"
+                {...register("photos")}
+              />
+            </label>
+
+            {/* Previews Grid */}
+            {previews.length > 0 && (
+              <div className="mt-3 grid grid-cols-4 sm:grid-cols-5 gap-2">
+                {previews.map((src, i) => (
+                  <div key={src} className="relative aspect-square rounded-lg overflow-hidden border border-purple-100 shadow-sm">
+                    <img src={src} alt={`preview-${i}`} className="object-cover w-full h-full" />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {errors.photos && (
+              <p className="mt-1 text-xs font-semibold text-red-500">
+                {errors.photos.message as string}
+              </p>
+            )}
+          </div>
+
+          <Input
+            label="Pet Name"
+            type="text"
+            placeholder="Enter pet name"
+            error={errors.name?.message}
+            icon={<User size={18} />}
+            {...register("name")}
+          />
+
+          <Input
+            label="Age"
+            type="number"
+            placeholder="Enter age"
+            error={errors.age?.message}
+            icon={<Calendar size={18} />}
+            rightText="Years"
+            {...register("age")}
+          />
+
+          <Input
+            label="Breed"
+            type="text"
+            placeholder="Enter breed"
+            error={errors.breed?.message}
+            icon={<Shield size={18} />}
+            {...register("breed")}
+          />
+
+          <div>
+            <label className="mb-2 block text-sm font-black">
+              Category <span className="text-red-500">*</span>
+            </label>
+
+            <div className="relative flex h-14 items-center rounded-xl border border-slate-200 bg-white px-4 transition focus-within:border-[#6D3DD9] focus-within:ring-4 focus-within:ring-purple-100">
+              <List size={18} className="mr-3 text-[#6D3DD9]" />
+
+              <select
+                {...register("category")}
+                className="h-full w-full bg-transparent text-sm font-semibold text-slate-600 outline-none"
+              >
+                <option value="">Select category</option>
+                <option value="DOG">Dog</option>
+                <option value="CAT">Cat</option>
+                <option value="REPTILE">Reptile</option>
+                <option value="OTHER">Other</option>
+              </select>
+            </div>
+
+            {errors.category && (
+              <p className="mt-1 text-xs font-semibold text-red-500">
+                {errors.category.message}
+              </p>
+            )}
+          </div>
+
+          <div className="rounded-2xl border border-purple-100 bg-[#F6F0FF] p-4">
+            <h3 className="text-sm font-black text-[#4B2DB5]">
+              About Pet Categories
+            </h3>
+            <p className="mt-1 text-xs leading-5 text-slate-600">
+              Choose the correct category to help us provide better care for your
+              pet.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="border-[#6D3DD9]/35 text-[#6D3DD9]"
+              onClick={() => {
+                reset();
+                if (onCancel) onCancel();
+              }}
+            >
+              Cancel
+            </Button>
+
+            <Button
+              type="submit"
+              isSubmitting={isSubmitting}
+              className="bg-[#6D3DD9] hover:bg-[#5630B2] hover:text-white"
+            >
+              Save Pet
+            </Button>
+          </div>
+        </form>
+      </section>
+    </main>
+  );
+};
+
+export default PetForm;
 ````
 
 ## File: Backend/app/services/auth.services.js
 ````javascript
-const { default: prisma, userRole } = require('../config/prisma');
+const prisma  = require('../config/prisma');
 const { getGoogleProfileToken } = require('../utils/googleAuth');
 const { createAuthTokens } = require('../services/authToken.services')
 const jwt = require('jsonwebtoken');
@@ -21855,6 +30295,9 @@ const getUserById = async (id) => {
     const user = await prisma.user.findUnique({
         where: {
             id: id
+        },
+        include: {
+            userRole: true
         }
     })
     return user;
@@ -21935,181 +30378,198 @@ module.exports = {
 };
 ````
 
-## File: Backend/app/services/doctor.services.js
+## File: Backend/app/services/petOwner.services.js
 ````javascript
-const { default: prisma } = require('../config/prisma')
-const { PaymentStatus } = require('@prisma/client')
+const prisma = require('../config/prisma');
+const AppError = require('../utils/AppError');
+const {
+    ScheduleStatus,
+    AppointmentStatus,
+    PaymentStatus
+} = require('@prisma/client');
 
 
-const addDoctorService = async (skills, userId) => {
-    console.log("Skills are ", skills, userId);
-    let isExisting = false;
 
-    const doSkillExist = await prisma.doctorSkill.findFirst({
-        where: {
-            userId: userId,
-            skill: {
-                equals: skills.skill,
-                mode: 'insensitive'
+const saveUserPet = async (pet) => {
+    const newPet = await prisma.pet.create({
+        data: {
+            petOwnerId: pet.petOwnerId,
+            name: pet.name,
+            age: pet.age,
+            breed: pet.breed,
+            category: pet.category
+        }
+    });
+    return newPet;
+}
+
+const registerPetIssue = async (petIssue) => {
+    if (!petIssue) {
+        throw new AppError("Registration data not found", 400);
+    }
+
+    const { appointmentId, petId, issue, petOwnerId } = petIssue;
+
+    if (!appointmentId || !petId || !issue || !petOwnerId) {
+        throw new AppError("Appointment, pet, issue, or user id is missing", 400);
+    }
+
+    const result = await prisma.$transaction(async (tx) => {
+        const appointment = await tx.appointment.findFirst({
+            where: {
+                id: appointmentId,
+                petOwnerId
+            },
+            include: {
+                doctorSchedule: true
             }
+        });
+
+        if (!appointment) {
+            throw new AppError("Appointment not found", 404);
         }
-    });
-    if (doSkillExist) {
-        isExisting = true;
-        return isExisting;
-    }
 
-    const newSkills = await prisma.doctorSkill.create({
-        data: {
-            skill: skills.skill,
-            price: skills.price,
-            userId: userId
-        },
-    })
-    return newSkills;
-}
-
-
-const deleteDoctorService = async (serviceId) => {
-    const deletedSkill = await prisma.doctorSkill.delete({
-        where: {
-            id: serviceId
+        if (
+            appointment.status !== AppointmentStatus.PENDING_DETAILS &&
+            appointment.status !== AppointmentStatus.PENDING_REPORT &&
+            appointment.status !== AppointmentStatus.PENDING_PAYMENT
+        ) {
+            throw new AppError("This appointment is not available for report submission", 400);
         }
-    })
-    return deletedSkill;
-}
 
-
-const getDoctorServices = async (userId) => {
-
-    const services = await prisma.doctorSkill?.findMany({
-        where: {
-            userId: userId
+        if (appointment.expiresAt && appointment.expiresAt < new Date()) {
+            throw new AppError("This appointment hold has expired. Please select the slot again.", 400);
         }
-    })
-    if (!services) {
-        return false;
-    }
-    return services;
-}
 
-
-const updateDoctorServices = async (serviceId, skill, price) => {
-    const updatedService = await prisma.doctorSkill.update({
-        where: {
-            id: serviceId
-        },
-        data: {
-            price: price,
-            skill: skill
+        if (
+            appointment.doctorSchedule.status !== ScheduleStatus.HELD ||
+            appointment.doctorSchedule.lockedByAppointmentId !== appointment.id
+        ) {
+            throw new AppError("This slot is no longer held for your appointment", 400);
         }
-    })
 
-    return updatedService;
-}
+        const pet = await tx.pet.findFirst({
+            where: {
+                id: petId,
+                petOwnerId
+            }
+        });
 
+        if (!pet) {
+            throw new AppError("Invalid pet selected", 400);
+        }
 
-const getDoctorAppointments = async (userId) => {
+        let registerIssue;
 
-    const doctor = await prisma.doctor.findUnique({
-        where: {
-            userId,
-        },
-        select: {
-            id: true,
-        },
-    });
+        if (appointment.petIssueReportId) {
+            registerIssue = await tx.petIssueReport.findUnique({
+                where: {
+                    id: appointment.petIssueReportId
+                }
+            });
+        } else {
+            registerIssue = await tx.petIssueReport.create({
+                data: {
+                    petOwnerId,
+                    petId,
+                    issue
+                }
+            });
+        }
 
-    if (!doctor) {
-        throw new Error("Doctor not found");
-    }
+        if (!registerIssue) {
+            throw new AppError("Issue in creating pet report", 400);
+        }
+        const holdMinutes = Number(process.env.APPOINTMENT_HOLD_MINUTES || 15);
+        const newExpiresAt = new Date(Date.now() + holdMinutes * 60 * 1000);
 
-    return prisma.appointment.findMany({
-        where: {
-            doctorId: doctor.id,
-            paymentStatus: PaymentStatus.SUCCEEDED
-        },
-        orderBy: {
-            checkupTime: "asc",
-        },
-        select: {
-            id: true,
-            fees: true,
-            checkupTime: true,
-            status: true,
-            petIssueReport: {
-                select: {
-                    id: true,
-                    issue: true,
-                    user: {
-                        select: {
-                            fullName: true,
-                            email: true,
-                            phone: true,
-                            profileImageUrl: true,
-                        },
-                    },
-                    pet: {
-                        select: {
-                            id: true,
-                            name: true,
-                            age: true,
-                            breed: true,
-                            category: true,
-                        },
-                    },
-                },
+        const updatedAppointment = await tx.appointment.update({
+            where: {
+                id: appointment.id
             },
-        },
-    });
-}
-
-
-const getDoctorProfile = async (userId) => {
-    const doctorProfile = await prisma.user.findUnique({
-        where: {
-            id: userId,
-        },
-        select: {
-            id: true,
-            fullName: true,
-            username: true,
-            email: true,
-            phone: true,
-            profileImageUrl: true,
-            isActive: true,
-            doctors: {
-                select: {
-                    id: true,
-                    specialization: true,
-                    education: true,
-                    experience: true,
-                    fees: true,
-                    address: true,
-                    isAvailable: true,
-                    isVerified: true,
-                },
+            data: {
+                petId,
+                petIssueReportId: registerIssue.id,
+                status: AppointmentStatus.PENDING_PAYMENT,
+                expiresAt: newExpiresAt,
             },
-        },
+            select: {
+                id: true,
+                doctorId: true,
+                petOwnerId: true,
+                petId: true,
+                petIssueReportId: true,
+                scheduleId: true,
+                fees: true,
+                currency: true,
+                status: true,
+                paymentStatus: true,
+                expiresAt: true
+            }
+        });
+
+        return {
+            registerIssue,
+            appointment: updatedAppointment
+        };
     });
 
-    return doctorProfile;
+    return result;
 };
 
 
-const updateDoctorProfile = async (userId, profileData) => {
-    const {
-        fullName,
-        username,
-        phone,
-        profileImageUrl,
-        specialization,
-        education,
-        experience,
-        fees,
-        address,
-        isAvailable,
-    } = profileData;
+
+const getUserPets = async (userId) => {
+    if (!userId) {
+        return false;
+    }
+    const pets = await prisma.pet.findMany({
+        where: {
+            petOwnerId: userId
+        },
+        select: {
+            id: true,
+            name: true,
+            age: true,
+            breed: true,
+            category: true,
+            petPictures: {
+                select: {
+                    publicUrl: true
+                }
+            }
+        }
+
+    });
+
+    return pets;
+}
+
+const createPetPictures = async (pet) => {
+    const pictures = await prisma.petPicture.createMany({
+        data: pet
+    })
+}
+
+const updatePetOwnerProfile = async (userId, profileData) => {
+    if (!userId) {
+        return false;
+    }
+
+    const { fullName, username, phone, profileImageUrl } = profileData;
+
+    const existingUsername = await prisma.user.findFirst({
+        where: {
+            username,
+            NOT: {
+                id: userId,
+            },
+        },
+    });
+
+    if (existingUsername) {
+        throw new AppError("Username is already taken", 400);
+    }
 
     const updatedProfile = await prisma.user.update({
         where: {
@@ -22119,18 +30579,7 @@ const updateDoctorProfile = async (userId, profileData) => {
             fullName,
             username,
             phone,
-            profileImageUrl,
-
-            doctors: {
-                update: {
-                    specialization,
-                    education,
-                    experience: Number(experience),
-                    fees: Number(fees),
-                    address,
-                    isAvailable,
-                },
-            },
+            ...(profileImageUrl ? { profileImageUrl } : {}),
         },
         select: {
             id: true,
@@ -22139,461 +30588,151 @@ const updateDoctorProfile = async (userId, profileData) => {
             email: true,
             phone: true,
             profileImageUrl: true,
-            isActive: true,
-            doctors: {
-                select: {
-                    id: true,
-                    specialization: true,
-                    education: true,
-                    experience: true,
-                    fees: true,
-                    address: true,
-                    isAvailable: true,
-                    isVerified: true,
-                },
-            },
         },
     });
 
     return updatedProfile;
+}
+
+const updateAppointmentStripeId = async (appointmentId, sessionId) => {
+    if (!appointmentId || !sessionId) {
+        throw new AppError("Appointment or Session Id is Invalid", 400);
+    }
+}
+
+const lockUserSlot = async ({ scheduleId, doctorId, petOwnerId }) => {
+
+    if (!scheduleId || !doctorId || !petOwnerId) {
+        throw new AppError("Schedule, doctor, or user id is missing", 400);
+    }
+
+    const holdMinutes = Number(process.env.APPOINTMENT_HOLD_MINUTES || 15);
+
+    const result = await prisma.$transaction(async (tx) => {
+        const schedule = await tx.doctorSchedule.findFirst({
+            where: {
+                id: scheduleId,
+                doctorId
+            },
+            include: {
+                doctor: true
+            }
+        });
+
+        if (!schedule) {
+            throw new AppError("The selected doctor schedule slot could not be found.", 404);
+        }
+
+        if (schedule.status !== ScheduleStatus.AVAILABLE) {
+            throw new AppError("Schedule is not available", 400);
+        }
+
+        const validDoctor = schedule.doctor;
+
+        if (!validDoctor) {
+            throw new AppError("Doctor is not valid", 400);
+        }
+
+        const startOfDay = new Date(schedule.date);
+        startOfDay.setHours(0, 0, 0, 0);
+
+        const endOfDay = new Date(schedule.date);
+        endOfDay.setHours(23, 59, 59, 999);
+
+        const existingActiveAppointment = await tx.appointment.findFirst({
+            where: {
+                doctorId: schedule.doctorId,
+                petOwnerId,
+                status: {
+                    in: [
+                        AppointmentStatus.PENDING_DETAILS,
+                        AppointmentStatus.PENDING_REPORT,
+                        AppointmentStatus.PENDING_PAYMENT,
+                        AppointmentStatus.PAYMENT_PROCESSING,
+                        AppointmentStatus.CONFIRMED
+                    ]
+                },
+                checkupTime: {
+                    gte: startOfDay,
+                    lte: endOfDay
+                },
+                OR: [
+                    { expiresAt: null },
+                    { expiresAt: { gt: new Date() } }
+                ]
+            }
+        });
+
+        if (existingActiveAppointment) {
+            throw new AppError("You already have an active or pending appointment with this doctor today.", 400);
+        }
+
+        const lockedSchedule = await tx.doctorSchedule.updateMany({
+            where: {
+                id: scheduleId,
+                doctorId,
+                status: ScheduleStatus.AVAILABLE
+            },
+            data: {
+                status: ScheduleStatus.HELD,
+                lockedByUserId: petOwnerId,
+                lockedAt: new Date()
+            }
+        });
+
+        if (lockedSchedule.count === 0) {
+            throw new AppError("This slot was just locked by another user. Please try another slot.", 400);
+        }
+
+        const expiresAt = new Date(Date.now() + holdMinutes * 60 * 1000);
+
+        const appointment = await tx.appointment.create({
+            data: {
+                doctorId: schedule.doctorId,
+                petOwnerId,
+                scheduleId: schedule.id,
+                fees: validDoctor.fees,
+                currency: "pkr",
+                checkupTime: schedule.startTime,
+                expiresAt,
+                status: AppointmentStatus.PENDING_DETAILS,
+                paymentStatus: PaymentStatus.PENDING
+            }
+        });
+
+        await tx.doctorSchedule.update({
+            where: {
+                id: scheduleId
+            },
+            data: {
+                lockedByAppointmentId: appointment.id
+            }
+        });
+
+        return {
+            appointmentId: appointment.id,
+            scheduleId: schedule.id,
+            doctorId: schedule.doctorId,
+            status: appointment.status,
+            scheduleStatus: ScheduleStatus.HELD,
+            expiresAt: appointment.expiresAt,
+            fees: appointment.fees,
+            currency: appointment.currency
+        };
+    });
+
+    return result;
 };
 
 module.exports = {
-    addDoctorService,
-    deleteDoctorService,
-    getDoctorServices,
-    updateDoctorServices,
-    getDoctorAppointments,
-    getDoctorProfile,
-    updateDoctorProfile,
-};
-````
-
-## File: Frontend/src/features/Auth/components/doctor-form.tsx
-````typescript
-import { useForm, type SubmitErrorHandler } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { type ApiResponse } from "../api/doctor.api";
-
-
-import Input from "../../../shared/components/Input/Input";
-import Button from "../../../shared/components/Button/Button";
-import { useDoctorAccountHook } from "../hooks/useDoctorAccount";
-
-import {
-  doctorSchema,
-  type DoctorFormData,
-  type DoctorFormInput,
-} from "../schemas/doctor.schema";
-
-const doctorFields = [
-  { name: "fullName", label: "Full Name", type: "text", placeholder: "Enter Name" },
-  { name: "username", label: "User Name", type: "text", placeholder: "Enter UserName" },
-  { name: "email", label: "Email Address", type: "email", placeholder: "example@gmail.com" },
-  { name: "phone", label: "Phone Number", type: "tel", placeholder: "+923001234567" },
-  { name: "experience", label: "Years of Experience", type: "number", placeholder: "5" },
-  { name: "fees", label: "Fees", type: "number", placeholder: "Enter Checkup Fees" },
-  { name: "medicalLicenseNumber", label: "Medical License Number", type: "text", placeholder: "LIC-123456" },
-  { name: "education", label: "Education/Qualifications", type: "text", placeholder: "e.g., DVM, BVSc" },
-  { name: "address", label: "Clinic Address", type: "text", placeholder: "Clinic Address" },
-  { name: "document", label: "Upload Document", type: "file", placeholder: "" },
-  { name: "password", label: "Password", type: "password", placeholder: "******" },
-  { name: "confirmPassword", label: "Confirm Password", type: "password", placeholder: "******" },
-] as const;
-
-const specializations = ["General Veterinary", "Pet Surgeon", "Animal Dentist"];
-
-
-export default function DoctorForm() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [responseMessage, setResponseMessage] = useState<string>("");
-  const [errorMessage, setErrorMessage] = useState<string>("");
-
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isSubmitting },
-  } = useForm<DoctorFormInput, unknown, DoctorFormData>({
-    resolver: zodResolver(doctorSchema),
-    mode: "onChange",
-  });
-
-  const { mutate: createAccount } = useDoctorAccountHook({
-    onSuccess: (response: ApiResponse) => {
-      if (response.success) {
-        setResponseMessage(response.message || "Account Created Successfully")
-        reset();
-      }
-    },
-    onError: (error) => {
-      setErrorMessage(error.message);
-      console.log("Error is Doctor", error)
-    }
-  })
-
-  const onSubmit = async (data: DoctorFormData) => {
-    setErrorMessage("");
-    setResponseMessage("");
-
-    const formData = new FormData();
-
-    Object.keys(data).forEach((key) => {
-      if (key !== "document") {
-        const value = data[key as keyof DoctorFormData];
-
-        if (value !== undefined && value !== null) {
-          formData.append(key, String(value));
-        }
-      }
-    });
-
-    if (data.document && data.document.length > 0) {
-      formData.append("document", data.document[0]);
-    }
-
-    console.log("Submitting FormData...", data);
-    createAccount(formData)
-
-  };
-
-  const onError: SubmitErrorHandler<DoctorFormInput> = (formErrors) => {
-    console.error("Zod Validation Failed! Check these fields:", formErrors);
-  };
-
-  return (
-    <div className="rounded-3xl bg-white/80 p-6 shadow-sm backdrop-blur-lg">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-[#078b91]">
-          Doctor Registration
-        </h1>
-        <p className="mt-2 text-gray-500">
-          Create your professional doctor account
-        </p>
-      </div>
-
-      <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-5">
-        {responseMessage && (
-          <div className="rounded-lg border border-green-200 bg-green-50 p-4">
-            <p className="text-center font-medium text-green-800">
-              {responseMessage}
-            </p>
-          </div>
-        )}
-
-        {errorMessage && (
-          <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-            <p className="text-center font-medium text-red-800">
-              {errorMessage}
-            </p>
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {doctorFields.map((field) => {
-            const isPasswordField =
-              field.name === "password" || field.name === "confirmPassword";
-
-            return (
-              <Input
-                key={field.name}
-                label={field.label}
-                type={field.type}
-                placeholder={field.placeholder || ""}
-                error={
-                  errors[field.name as keyof DoctorFormInput]?.message as string
-                }
-                showPassword={isPasswordField ? showPassword : undefined}
-                onTogglePassword={
-                  isPasswordField
-                    ? () => setShowPassword((prev) => !prev)
-                    : undefined
-                }
-                {...register(field.name)}
-              />
-            );
-          })}
-
-          <div className="flex flex-col gap-2 md:col-span-2">
-            <label className="text-sm font-medium text-gray-700">
-              Specialization
-            </label>
-
-            <select
-              className="w-full rounded-xl border border-gray-300 px-4 py-2.5 outline-none focus:border-blue-600"
-              {...register("specialization")}
-            >
-              <option value="">Select specialization</option>
-              {specializations.map((item) => (
-                <option key={item} value={item}>
-                  {item}
-                </option>
-              ))}
-            </select>
-
-            {errors.specialization && (
-              <p className="text-sm text-red-500">
-                {errors.specialization.message}
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="space-y-3 pt-2">
-          <Button type="submit" isSubmitting={isSubmitting}>
-            {isSubmitting ? "Creating Account..." : "Create Account"}
-          </Button>
-
-          <div className="flex items-center gap-3">
-            <div className="h-px flex-1 bg-gray-300" />
-            <span className="text-xs text-gray-500">OR</span>
-            <div className="h-px flex-1 bg-gray-300" />
-          </div>
-
-          <p className="text-center text-sm text-gray-600">
-            Already have an account?{" "}
-            <a
-              href="/login"
-              className="font-semibold text-blue-900 hover:underline"
-            >
-              Login
-            </a>
-          </p>
-        </div>
-      </form>
-    </div>
-  );
+    saveUserPet,
+    registerPetIssue,
+    getUserPets,
+    createPetPictures,
+    lockUserSlot,
+    updatePetOwnerProfile,
+    updateAppointmentStripeId
 }
-````
-
-## File: Backend/app/app.js
-````javascript
-const path = require("path");
-
-require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
-require("./config/redis.config");
-
-const cors = require("cors");
-const express = require("express");
-const cookieParser = require("cookie-parser");
-
-const app = express();
-
-const authRouter = require("./routes/auth.routes");
-const adminRouter = require("./routes/admin.routes");
-const doctorRouter = require("./routes/doctor.routes");
-const userRoutes = require("./routes/userdoctor.route");
-const petOwnerRoutes = require("./routes/petOwner.routes");
-
-// Stripe payment imports
-const paymentRouter = require("./routes/payment.routes");
-const paymentController = require("./controllers/payment.controller");
-
-const globalErrorHandler = require("./middleware/globalErrorHandler");
-
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    credentials: true,
-  })
-);
-
-// TODO: STRIPE PAYMENT API
-
-app.post(
-  "/api/v1/payment/webhook",
-  express.raw({ type: "application/json" }),
-  paymentController.stripeWebhook
-);
-
-app.use(express.json());
-app.use(cookieParser());
-
-app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/admin", adminRouter);
-app.use("/api/v1/doctor", doctorRouter);
-app.use("/api/v1/user", userRoutes);
-app.use("/api/v1/petOwner", petOwnerRoutes);
-
-// Payment routes
-app.use("/api/v1/payment", paymentRouter);
-
-app.use(globalErrorHandler);
-
-module.exports = app;
-````
-
-## File: Frontend/src/features/Admin/components/AdminLogin.tsx
-````typescript
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ShieldCheck } from "lucide-react";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import { loginAdminAccount, type ApiResponse } from '../apis/adminlogin.api'
-
-import {
-  adminLoginSchema,
-  type AdminLoginFormValues,
-} from "../schema/admin.login.schema";
-
-import Button from "../../../shared/components/Button/Button";
-import Input from "../../../shared/components/Input/Input";
-import { useAuth } from "@/features/Auth/hooks/authhook";
-
-const AdminLoginPage = () => {
-  const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
-  const { setUser, setIsAuthenticateUser } = useAuth();
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<AdminLoginFormValues>({
-    resolver: zodResolver(adminLoginSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
-
-
-  const handleadminmlogin = async (data: { email: string; password: string; }) => {
-    try {
-      const response: ApiResponse = await loginAdminAccount(data);
-      if (response.success) {
-        setUser(response);
-        setIsAuthenticateUser(true);
-        navigate('/admin-dashboard')
-        // return;
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error("Login failed:", error.message);
-      } else {
-        console.error("An unexpected error occurred:", error);
-      }
-      return;
-    }
-
-
-  };
-
-  return (
-    <main className="min-h-screen bg-[#FFF8F4] px-4 py-8 text-[#20263D] sm:px-6 lg:px-8">
-      <section className="mx-auto flex min-h-[calc(100vh-64px)] max-w-7xl items-center justify-center">
-        <div className="grid w-full overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-2xl shadow-slate-200/70 lg:grid-cols-2">
-          <div className="relative hidden overflow-hidden bg-gradient-to-br from-[#20263D] via-[#26304d] to-[#078b91] p-10 text-white lg:block">
-            <div className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-[#F9C5A8]/20 blur-3xl" />
-            <div className="absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-[#D4E2E0]/25 blur-3xl" />
-
-            <div className="relative z-10 flex h-full flex-col justify-between">
-              <div>
-                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 backdrop-blur">
-                  <ShieldCheck size={34} />
-                </div>
-
-                <h1 className="mt-8 max-w-md text-5xl font-black leading-tight">
-                  PetsVeta Admin Panel
-                </h1>
-
-                <p className="mt-5 max-w-md text-sm leading-7 text-white/75">
-                  Manage doctors, sellers, appointments, products, approvals,
-                  and platform activity from one secure dashboard.
-                </p>
-              </div>
-
-              <div className="rounded-3xl bg-white/10 p-6 backdrop-blur">
-                <p className="text-sm font-semibold text-white/80">
-                  Admin Access
-                </p>
-
-                <h3 className="mt-2 text-2xl font-black">
-                  Review doctor signup requests
-                </h3>
-
-                <p className="mt-3 text-sm leading-6 text-white/70">
-                  Approve or reject doctors after checking their details,
-                  license, experience, and profile information.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="px-6 py-10 sm:px-10 md:px-14 lg:px-16">
-            <div className="mx-auto max-w-md">
-              <div className="mb-8 text-center lg:text-left">
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#D4E2E0]/70 text-[#078b91] lg:mx-0">
-                  <ShieldCheck size={34} />
-                </div>
-
-                <h2 className="mt-6 text-3xl font-black text-[#20263D] md:text-4xl">
-                  Admin Login
-                </h2>
-
-                <p className="mt-3 text-sm leading-7 text-slate-500">
-                  Login to manage PetsVeta platform operations.
-                </p>
-              </div>
-
-              <form onSubmit={handleSubmit(handleadminmlogin)} className="space-y-5">
-                <Input
-                  label="Email Address"
-                  type="email"
-                  placeholder="admin@petsveta.com"
-                  error={errors.email?.message}
-                  {...register("email")}
-                />
-
-                <Input
-                  label="Password"
-                  type="password"
-                  placeholder="Enter password"
-                  showPassword={showPassword}
-                  onTogglePassword={() => setShowPassword((prev) => !prev)}
-                  error={errors.password?.message}
-                  {...register("password")}
-                />
-
-                <div className="flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
-                  <label className="flex items-center gap-2 text-slate-500">
-                    <input
-                      type="checkbox"
-                      className="h-4 w-4 rounded border-slate-300 accent-[#078b91]"
-                    />
-                    Remember me
-                  </label>
-
-
-                </div>
-
-                <Button
-                  type="submit"
-                  isSubmitting={isSubmitting}
-                  className="bg-[#20263D] font-black shadow-lg shadow-slate-300 hover:bg-[#111827] hover:text-white hover:border-transparent"
-                >
-                  {isSubmitting ? "Logging In" : " Login as Admin"}
-                </Button>
-              </form >
-
-              <div className="mt-8 rounded-2xl bg-[#D4E2E0]/35 p-4">
-                <p className="text-sm font-semibold leading-6 text-slate-600">
-                  This page is only for platform administrators. Doctors and
-                  sellers should use their own login portals.
-                </p>
-              </div>
-            </div >
-          </div >
-        </div >
-      </section >
-    </main >
-  );
-};
-
-export default AdminLoginPage;
 ````
 
 ## File: Frontend/src/features/Auth/components/pets-owner.tsx
@@ -22612,6 +30751,10 @@ import {
 
 
 import { usePetOwnerHook } from "../hooks/usePetOwnerAccount";
+import type {
+  PetOwnerFormFieldProps,
+  PetOwnerPasswordFieldProps,
+} from "../types/auth.types";
 
 const PawIcon = () => (
   <svg
@@ -22844,15 +30987,6 @@ export default function PetOwnerForm() {
   );
 }
 
-type FormFieldProps = {
-  label: string;
-  placeholder: string;
-  type?: string;
-  error?: string;
-  icon: React.ReactNode;
-  inputProps: React.InputHTMLAttributes<HTMLInputElement>;
-};
-
 const FormField = ({
   label,
   placeholder,
@@ -22860,7 +30994,7 @@ const FormField = ({
   error,
   icon,
   inputProps,
-}: FormFieldProps) => {
+}: PetOwnerFormFieldProps) => {
   return (
     <div>
       <label className="mb-1.5 block text-[13px] font-bold text-[#17233f]">
@@ -22895,15 +31029,6 @@ const FormField = ({
   );
 };
 
-type PasswordFieldProps = {
-  label: string;
-  placeholder: string;
-  showPassword: boolean;
-  onTogglePassword: () => void;
-  error?: string;
-  inputProps: React.InputHTMLAttributes<HTMLInputElement>;
-};
-
 const PasswordField = ({
   label,
   placeholder,
@@ -22911,7 +31036,7 @@ const PasswordField = ({
   onTogglePassword,
   error,
   inputProps,
-}: PasswordFieldProps) => {
+}: PetOwnerPasswordFieldProps) => {
   return (
     <div>
       <label className="mb-1.5 block text-[13px] font-bold text-[#17233f]">
@@ -23000,13 +31125,265 @@ const PasswordField = ({
 };
 ````
 
+## File: Backend/app/app.js
+````javascript
+const path = require("path");
+
+require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
+require("./config/redis.config");
+
+const cors = require("cors");
+const express = require("express");
+const cookieParser = require("cookie-parser");
+
+const app = express();
+
+const authRouter = require("./routes/auth.routes");
+const adminRouter = require("./routes/admin.routes");
+const doctorRouter = require("./routes/doctor.routes");
+const userRoutes = require("./routes/userdoctor.route");
+const petOwnerRoutes = require("./routes/petOwner.routes");
+const paymentRouter = require('./routes/payment.routes');
+const sellerRouter = require("./routes/seller.routes");
+const marketplaceRouter = require("./routes/marketplace.routes");
+const marketplaceOrderRouter = require("./routes/marketplaceOrder.routes");
+
+const paymentController = require("./controllers/payment.controller");
+const globalErrorHandler = require("./middleware/globalErrorHandler");
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
+
+
+app.post(
+  "/api/v1/payment/webhook",
+  express.raw({ type: "application/json" }),
+  paymentController.stripeWebhook
+);
+
+
+app.use(express.json());
+app.use(cookieParser());
+
+app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/doctor", doctorRouter);
+app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/petOwner", petOwnerRoutes);
+app.use("/api/v1/payment", paymentRouter);
+app.use("/api/v1/seller", sellerRouter);
+app.use("/api/v1/marketplace", marketplaceRouter);
+app.use("/api/v1/orders", marketplaceOrderRouter);
+
+app.use(globalErrorHandler);
+
+module.exports = app;
+````
+
+## File: Backend/app/controllers/petOwner.controller.js
+````javascript
+const catchAsync = require('../utils/CatchAsync');
+const AppError = require('../utils/AppError');
+const requireFields = require('../utils/validateRequest');
+const petOwnerServices = require('../services/petOwner.services');
+const sendResponse = require('../utils/SendResponse');
+const authServices = require('../services/auth.services');
+const { stripe } = require('../config/stripe');
+const prisma = require('../config/prisma');
+const cloudinary = require('../utils/cloudinary.utils');
+const streamifier = require('streamifier');
+
+
+
+
+
+const registerPet = catchAsync(async (req, res) => {
+    const petOwnerId = req.user?.id;
+
+    if (!petOwnerId) {
+        return sendResponse(res, 401, 'Please login first', {});
+    }
+
+    requireFields(['name', 'age', 'breed', 'category'], req.body);
+
+    const { name, age, breed, category } = req.body;
+    const files = req.files || [];
+
+    if (!files.length) {
+        return sendResponse(res, 400, 'At least one pet picture is required', {});
+    }
+
+    const petOwner = await authServices.getUserById(petOwnerId);
+    console.log("Pet Owner is ", petOwner);
+    if (!petOwner || petOwner.userRole.role !== 'PetOwner') {
+        return sendResponse(res, 403, 'Only pet owner can register pet', {});
+    }
+
+    const pet = {
+        petOwnerId,
+        name,
+        age: parseFloat(age),
+        category,
+        breed,
+    };
+
+    const newPet = await petOwnerServices.saveUserPet(pet);
+
+    if (!newPet) {
+        return sendResponse(res, 400, 'Failed to create Pet', {});
+    }
+
+
+    const uploadPromises = files.map(file =>
+        cloudinary.uploadToCloudinary(file.buffer, "pets")
+    );
+    console.log("Cloudinary Promises are ", uploadPromises);
+    const uploadResults = await Promise.all(uploadPromises);
+    console.log("Upload Results is ", uploadResults);
+    const uploadedPictures = uploadResults.map(result => ({
+        petId: newPet.id,
+        publicUrl: result.secure_url,
+        publicId: result.public_id
+    }));
+    console.log("Uploaded Picture data is ", uploadedPictures);
+
+    await petOwnerServices.createPetPictures(uploadedPictures);
+
+    console.log("Error hitting ===>")
+
+    return sendResponse(res, 201, 'Successfully created Pet', uploadedPictures);
+});
+
+const registerPetIssue = catchAsync(async (req, res) => {
+    const petOwnerId = req.user?.id;
+
+    if (!petOwnerId) {
+        return sendResponse(res, 401, 'Please login first', {});
+    }
+
+    requireFields(['appointmentId', 'petId', 'issue'], req.body);
+
+    const { appointmentId, petId, issue } = req.body;
+
+    const petIssue = {
+        appointmentId,
+        petId,
+        issue,
+        petOwnerId
+    };
+
+    const createPetIssueReport = await petOwnerServices.registerPetIssue(petIssue);
+
+    return sendResponse(res, 201, 'Report created successfully. Please continue to payment.', {
+        petIssue: createPetIssueReport.registerIssue,
+        appointment: createPetIssueReport.appointment,
+        redirectToPayment: true
+    });
+});
+
+const getPetOwnerById = catchAsync(async (req, res) => {
+    const { id } = req.user;
+    const getPetOwner = await authServices.getUserById(id);
+
+    if (!getPetOwner) {
+        return sendResponse(res, 400, 'Invalid User', {});
+    }
+
+    const user = {
+        id: getPetOwner.id,
+        fullName: getPetOwner.fullName,
+        username: getPetOwner.username,
+        email: getPetOwner.email,
+        phone: getPetOwner.phone || '',
+        profileImageUrl: getPetOwner.profileImageUrl,
+    };
+
+    return sendResponse(res, 200, 'Successfully Send User', user);
+});
+
+const updatePetOwnerProfile = catchAsync(async (req, res) => {
+    const { id } = req.user;
+    const { fullName, username, phone } = req.body || {};
+
+    requireFields(['fullName', 'username'], req.body);
+
+    let profileImageUrl = req.body?.profileImageUrl;
+
+    if (req.file) {
+        const uploadedImage = await cloudinary.uploadToCloudinary(
+            req.file.buffer,
+            `pets-veta/profile-images/${id}`
+        );
+
+        profileImageUrl = uploadedImage.secure_url;
+    }
+
+    const updatedProfile = await petOwnerServices.updatePetOwnerProfile(id, {
+        fullName,
+        username,
+        phone: phone || '',
+        profileImageUrl,
+    });
+
+    return sendResponse(
+        res,
+        200,
+        'Profile updated successfully',
+        updatedProfile
+    );
+});
+
+const getPetsData = catchAsync(async (req, res) => {
+    const { id } = req.user;
+
+    const petsData = await petOwnerServices.getUserPets(id);
+
+    if (!petsData) {
+        return sendResponse(res, 400, 'Not Pets Data Found', petsData);
+    }
+    console.log("======>>> ", petsData)
+    return sendResponse(res, 200, 'Successfully Send Data', petsData);
+});
+
+const lockDoctorSlot = catchAsync(async (req, res) => {
+    const petOwnerId = req.user?.id;
+
+    if (!petOwnerId) {
+        return sendResponse(res, 401, "Please login first", {});
+    }
+
+    requireFields(["doctorId", "slotId"], req.body);
+
+    const { doctorId, slotId } = req.body;
+
+    const bookSlot = await petOwnerServices.lockUserSlot({
+        scheduleId: slotId,
+        doctorId,
+        petOwnerId
+    });
+
+    return sendResponse(res, 201, "Successfully locked slot", bookSlot);
+});
+module.exports = {
+    registerPetIssue,
+    getPetOwnerById,
+    updatePetOwnerProfile,
+    registerPet,
+    getPetsData,
+    lockDoctorSlot
+};
+````
+
 ## File: Frontend/src/features/Pet Owner/pet details/components/PetIssueReportForm.tsx
 ````typescript
 import {
   Calendar,
   ClipboardPlus,
   Info,
-  PawPrint,
   Pencil,
   Send,
   ShieldPlus,
@@ -23022,19 +31399,12 @@ import {
   type PetIssueReportFormData,
 } from "../schemas/petIssueReport.schema";
 import { useAuth } from "@/features/Auth/hooks/authhook";
-import { getPetsData, submitPetIssue, type PetResponse } from "../apis/pet.api";
+import { submitPetIssue } from "../apis/pet.api";
 import {
   getDoctorProfileData,
   type BookableSlot,
 } from "@/features/Appointment/apis/doctorProfile.api";
-
-interface PetIssueReportFormProps {
-  preselectedPetId?: string;
-  doctorId?: string;
-  preselectedCheckupTime?: string;
-  onSubmitSuccess?: (data: unknown) => void;
-  onCancel?: () => void;
-}
+import type { PetIssueReportFormProps } from "../types/petDetails.types";
 
 const PetIssueReportForm = ({
   preselectedPetId = "",
@@ -23044,10 +31414,7 @@ const PetIssueReportForm = ({
   onCancel,
 }: PetIssueReportFormProps) => {
   const { user } = useAuth();
-  const [pets, setPets] = useState<PetResponse[]>([]);
-  const [loadingPets, setLoadingPets] = useState(false);
   const [loadingSlots, setLoadingSlots] = useState(false);
-  const [loadPetsError, setLoadPetsError] = useState<string | null>(null);
   const [loadSlotsError, setLoadSlotsError] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [availableSlots, setAvailableSlots] = useState<BookableSlot[]>([]);
@@ -23063,27 +31430,12 @@ const PetIssueReportForm = ({
   } = useForm<PetIssueReportFormData>({
     resolver: zodResolver(petIssueReportSchema),
     defaultValues: {
-      petId: preselectedPetId,
+      petId: localStorage.getItem("petPatientId") || preselectedPetId,
       issue: "",
       appointmentType: "NORMAL_CHECKUP",
       checkupTime: preselectedCheckupTime,
     },
   });
-
-  const fetchPets = async () => {
-    setLoadingPets(true);
-    setLoadPetsError(null);
-    try {
-      const data = await getPetsData();
-      if (data) {
-        setPets(data);
-      }
-    } catch {
-      setLoadPetsError("Failed to load your pets. Please retry.");
-    } finally {
-      setLoadingPets(false);
-    }
-  };
 
   const fetchDoctorSlots = async () => {
     if (!doctorId) {
@@ -23105,16 +31457,13 @@ const PetIssueReportForm = ({
   };
 
   useEffect(() => {
-    fetchPets();
-  }, []);
-
-  useEffect(() => {
     fetchDoctorSlots();
   }, [doctorId]);
 
   useEffect(() => {
-    if (preselectedPetId) {
-      setValue("petId", preselectedPetId);
+    const savedPetId = localStorage.getItem("petPatientId") || preselectedPetId;
+    if (savedPetId) {
+      setValue("petId", savedPetId);
     }
   }, [preselectedPetId, setValue]);
 
@@ -23129,9 +31478,11 @@ const PetIssueReportForm = ({
   const selectedCheckupTime = watch("checkupTime");
 
   const onSubmit = async (data: PetIssueReportFormData) => {
+    console.log("Working....")
     setSubmitError(null);
     console.log("Pet issue report:", data);
     const petOwnerId = user?.data?.id;
+
     if (!petOwnerId) {
       setSubmitError("You must be logged in to report a pet issue.");
       return;
@@ -23142,6 +31493,11 @@ const PetIssueReportForm = ({
       return;
     }
 
+    if (!data.petId) {
+      setSubmitError("No pet identity found. Please go back and select a pet.");
+      return;
+    }
+
     try {
       const result = await submitPetIssue({
         ...data,
@@ -23149,13 +31505,14 @@ const PetIssueReportForm = ({
         doctorId,
       });
 
-      if (result) {
+      if (result.success && result?.data?.checkoutUrl) {
         reset();
         if (onSubmitSuccess) {
           onSubmitSuccess(result);
-          navigate(result.checkoutUrl);
+          window.location.href = result.data.checkoutUrl;
+        } else {
+          setSubmitError("Failed to initiate checkout session. Please try again");
         }
-
       } else {
         setSubmitError("Failed to submit issue report.");
       }
@@ -23179,8 +31536,7 @@ const PetIssueReportForm = ({
           <div className="relative z-10 mt-5">
             <h1 className="text-2xl font-black">Report Pet Issue</h1>
             <p className="mt-2 max-w-[250px] text-sm leading-5 text-slate-600">
-              Tell us about your pet&apos;s health issue so we can assist you
-              better
+              Tell us about your pet&apos;s health issue so we can assist you better
             </p>
           </div>
 
@@ -23196,110 +31552,16 @@ const PetIssueReportForm = ({
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 px-5 py-6">
-          {submitError && (
+          {(submitError || errors.petId) && (
             <div className="rounded-xl border border-red-100 bg-red-50 p-3 text-sm font-semibold text-red-600">
-              {submitError}
+              {submitError || errors.petId?.message || "A valid pet must be selected."}
             </div>
           )}
 
-          <div>
-            <label className="mb-2 block text-sm font-black">
-              Select Pet <span className="text-red-500">*</span>
-            </label>
+          {/* Hidden field containing the auto-selected pet Patient ID from localStorage */}
+          <input type="hidden" {...register("petId")} />
 
-            {loadPetsError && (
-              <div className="mb-2 flex items-center justify-between rounded-xl bg-red-55 text-red-600 p-2 text-xs font-semibold border border-red-100">
-                <span>{loadPetsError}</span>
-                <button
-                  type="button"
-                  onClick={fetchPets}
-                  className="rounded-lg bg-red-100 px-2 py-1 text-xs font-bold text-red-700 hover:bg-red-200 transition"
-                >
-                  Retry
-                </button>
-              </div>
-            )}
 
-            <div className="flex h-14 items-center rounded-xl border border-slate-200 bg-white px-4 transition focus-within:border-[#0B8F5A] focus-within:ring-4 focus-within:ring-emerald-100">
-              <span className="mr-3 flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-50 text-[#0B8F5A]">
-                <PawPrint size={18} />
-              </span>
-
-              <select
-                {...register("petId")}
-                className="h-full w-full bg-transparent text-sm font-semibold text-slate-500 outline-none"
-              >
-                <option value="">{loadingPets ? "Loading pets..." : "Choose your pet"}</option>
-                {pets.map((pet) => (
-                  <option key={pet.id} value={pet.id}>
-                    {pet.name} - {pet.category} ({pet.breed})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {errors.petId && (
-              <p className="mt-1 text-xs font-semibold text-red-500">
-                {errors.petId.message}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label className="mb-2 block text-sm font-black">
-              Appointment Slot <span className="text-red-500">*</span>
-            </label>
-
-            {loadSlotsError && (
-              <div className="mb-2 flex items-center justify-between rounded-xl border border-red-100 bg-red-50 p-2 text-xs font-semibold text-red-600">
-                <span>{loadSlotsError}</span>
-                <button
-                  type="button"
-                  onClick={fetchDoctorSlots}
-                  className="rounded-lg bg-red-100 px-2 py-1 text-xs font-bold text-red-700 transition hover:bg-red-200"
-                >
-                  Retry
-                </button>
-              </div>
-            )}
-
-            {loadingSlots ? (
-              <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm font-semibold text-slate-500">
-                Loading available slots...
-              </div>
-            ) : availableSlots.length > 0 ? (
-              <div className="grid grid-cols-2 gap-2">
-                {availableSlots.slice(0, 10).map((slot) => (
-                  <button
-                    key={`${slot.scheduleId}-${slot.startDateTime}`}
-                    type="button"
-                    onClick={() => setValue("checkupTime", slot.startDateTime)}
-                    className={`rounded-xl border p-3 text-left text-xs font-black transition ${selectedCheckupTime === slot.startDateTime
-                      ? "border-[#0B8F5A] bg-emerald-50 text-[#0B8F5A]"
-                      : "border-slate-200 bg-white text-slate-600 hover:border-[#0B8F5A]"
-                      }`}
-                  >
-                    <span className="block text-[11px] uppercase text-slate-400">
-                      {slot.day}
-                    </span>
-                    {slot.startTime} - {slot.endTime}
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <p className="rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-500">
-                No appointment slots available for this doctor.
-              </p>
-            )}
-
-            <input type="hidden" {...register("checkupTime")} />
-
-            {errors.checkupTime && (
-              <p className="mt-1 text-xs font-semibold text-red-500">
-                {errors.checkupTime.message}
-              </p>
-            )}
-          </div>
 
           <div>
             <label className="mb-2 block text-sm font-black">
@@ -23493,8 +31755,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ==============================================
-
 enum VerificationStatus {
   PENDING
   APPROVED
@@ -23518,40 +31778,80 @@ enum PetCategory {
   OTHER
 }
 
-enum AppointmentStatus {
-  PENDING
-  CONFIRMED
-  COMPLETED
-  CANCELLED
+enum ProductCategory {
+  PETS
+  FOOD
+  MEDICINE
+  ACCESSORIES
 }
 
-enum AppointmentPayment {
-  PENDING
+enum ProductStatus {
+  ACTIVE
+  DRAFT
+  SOLD_OUT
+  ARCHIVED
+}
+
+enum PetGender {
+  MALE
+  FEMALE
+  UNKNOWN
+}
+
+enum AppointmentStatus {
+  PENDING_DETAILS
+  PENDING_REPORT
+  PENDING_PAYMENT
+  PAYMENT_PROCESSING
+  CONFIRMED
+  PAYMENT_FAILED
+  EXPIRED
+  CANCELLED
   COMPLETED
+  REFUNDED
+  NO_SHOW
+}
+
+enum MarketplaceOrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  COMPLETED
+  CANCELLED
 }
 
 enum PaymentStatus {
   PENDING
-  PAID
+  REQUIRES_PAYMENT_METHOD
+  REQUIRES_ACTION
+  PROCESSING
+  SUCCEEDED
   FAILED
   CANCELLED
   REFUNDED
-  SUCCEEDED
+}
+
+enum ScheduleStatus {
+  AVAILABLE
+  HELD
+  BOOKED
+  CANCELLED
 }
 
 model User {
-  id                String             @id @default(uuid())
-  fullName          String
-  username          String
-  email             String             @unique
-  isEmailVerified   Boolean            @default(false)
-  password          String?
-  phone             String             @default("")
-  profileImageUrl   String             @default("Enter your Image")
-  isActive          Boolean            @default(true)
-  refreshToken      String?
-  otp               String?
-  createdAt         DateTime           @default(now())
+  id              String   @id @default(uuid())
+  fullName        String
+  username        String
+  email           String   @unique
+  isEmailVerified Boolean  @default(false)
+  password        String?
+  phone           String   @default("")
+  profileImageUrl String   @default("Enter your Image")
+  isActive        Boolean  @default(true)
+  refreshToken    String?
+  otp             String?
+  createdAt       DateTime @default(now())
+
   userRole          UserRole?
   doctors           Doctor?
   admin             Admin?
@@ -23560,20 +31860,28 @@ model User {
   petIssueReports   PetIssueReport[]
   doctorSkills      DoctorSkill[]
 
+  appointments Appointment[] @relation("PetOwnerAppointments")
+  payments     Payment[]
+
+  sellerProfile          SellerProfile?
+  savedListings          SavedListing[]
+  marketplaceBuyerOrders MarketplaceOrder[] @relation("MarketplaceBuyerOrders")
+
   @@index([fullName])
 }
 
 model Doctor {
-  id              String             @id @default(uuid())
-  userId          String             @unique
-  isAvailable     Boolean            @default(false)
-  education       String
-  specialization  String
-  address         String
-  experience      Int
-  fees            Int
-  isVerified      VerificationStatus @default(PENDING)
-  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String             @id @default(uuid())
+  userId         String             @unique
+  isAvailable    Boolean            @default(false)
+  education      String
+  specialization String
+  address        String
+  experience     Int
+  fees           Int
+  isVerified     VerificationStatus @default(PENDING)
+
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   doctorSchedules DoctorSchedule[]
   appointments    Appointment[]
 
@@ -23589,7 +31897,8 @@ model DoctorCertificate {
   userId    String @unique
   publicUrl String
   publicId  String
-  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model DoctorSkill {
@@ -23597,69 +31906,357 @@ model DoctorSkill {
   userId String
   skill  String
   price  String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Admin {
   id        String   @id @default(uuid())
   userId    String   @unique
   createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
+
+  user User @relation(fields: [userId], references: [id])
 }
 
 model UserRole {
   id     String @id @default(uuid())
   userId String @unique
   role   String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model DoctorSchedule {
-  id          String       @id @default(uuid())
-  doctorId    String
-  date        DateTime
-  startTime   DateTime
-  endTime     DateTime
-  isBooked    Boolean      @default(false)
-  doctor      Doctor       @relation(fields: [doctorId], references: [id])
-  appointment Appointment? 
-  @@unique([doctorId,startTime])
+  id        String         @id @default(uuid())
+  doctorId  String
+  date      DateTime
+  startTime DateTime
+  endTime   DateTime
+  status    ScheduleStatus @default(AVAILABLE)
+
+  lockedAt              DateTime?
+  lockedByUserId        String?
+  lockedByAppointmentId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  doctor       Doctor        @relation(fields: [doctorId], references: [id])
+  appointments Appointment[]
+
+  @@unique([doctorId, startTime])
+  @@index([doctorId])
+  @@index([status])
+  @@index([lockedByAppointmentId])
 }
 
 model Pet {
-  id              String           @id @default(uuid())
-  petOwnerId      String
-  name            String
-  age             Decimal          @db.Decimal(10, 2)
-  breed           String
-  category        PetCategory
+  id         String      @id @default(uuid())
+  petOwnerId String
+  name       String
+  age        Decimal     @db.Decimal(10, 2)
+  breed      String
+  category   PetCategory
+
   user            User             @relation(fields: [petOwnerId], references: [id])
   petIssueReports PetIssueReport[]
+  petPictures     PetPicture[]
+  appointments    Appointment[]
+
+  @@index([petOwnerId])
+}
+
+model PetPicture {
+  id        String @id @default(uuid())
+  publicUrl String
+  publicId  String
+  petId     String
+
+  pet Pet @relation(fields: [petId], references: [id])
 }
 
 model PetIssueReport {
-  id           String        @id @default(uuid())
-  petOwnerId   String
-  petId        String
-  issue        String
-  pet          Pet           @relation(fields: [petId], references: [id])
-  user         User          @relation(fields: [petOwnerId], references: [id])
+  id         String   @id @default(uuid())
+  petOwnerId String
+  petId      String
+  issue      String
+  createdAt  DateTime @default(now())
+
+  pet  Pet  @relation(fields: [petId], references: [id])
+  user User @relation(fields: [petOwnerId], references: [id])
+
   appointments Appointment[]
+
+  @@index([petOwnerId])
+  @@index([petId])
 }
 
 model Appointment {
-  id               String            @id @default(uuid())
+  id String @id @default(uuid())
+
   doctorId         String
-  petIssueReportId String
-  scheduleId       String            @unique 
-  fees             Int
-  paymentStatus    PaymentStatus     @default(PENDING)
-  stripeSessionId  String?
-  checkupTime      DateTime
-  status           AppointmentStatus @default(PENDING)
-  petIssueReport   PetIssueReport    @relation(fields: [petIssueReportId], references: [id])
-  doctor           Doctor            @relation(fields: [doctorId], references: [id])
-  doctorSchedule   DoctorSchedule    @relation(fields: [scheduleId], references: [id])
+  petOwnerId       String
+  petId            String?
+  petIssueReportId String?
+  scheduleId       String
+
+  fees     Int
+  currency String @default("pkr")
+
+  status        AppointmentStatus @default(PENDING_DETAILS)
+  paymentStatus PaymentStatus     @default(PENDING)
+
+  checkupTime DateTime
+  expiresAt   DateTime?
+
+  confirmedAt DateTime?
+  cancelledAt DateTime?
+  completedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  doctor         Doctor          @relation(fields: [doctorId], references: [id])
+  petOwner       User            @relation("PetOwnerAppointments", fields: [petOwnerId], references: [id])
+  pet            Pet?            @relation(fields: [petId], references: [id])
+  petIssueReport PetIssueReport? @relation(fields: [petIssueReportId], references: [id])
+  doctorSchedule DoctorSchedule  @relation(fields: [scheduleId], references: [id])
+
+  payment Payment?
+
+  @@index([doctorId])
+  @@index([petOwnerId])
+  @@index([petId])
+  @@index([petIssueReportId])
+  @@index([scheduleId])
+  @@index([status])
+  @@index([paymentStatus])
+  @@index([expiresAt])
+}
+
+model Payment {
+  id String @id @default(uuid())
+
+  appointmentId String @unique
+  userId        String
+
+  stripePaymentIntentId String? @unique
+  stripeClientSecret    String?
+  stripeChargeId        String?
+
+  amount   Int
+  currency String @default("pkr")
+
+  status PaymentStatus @default(PENDING)
+
+  paymentMethod String?
+  receiptUrl    String?
+  failureReason String?
+
+  metadata Json?
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  paidAt      DateTime?
+  cancelledAt DateTime?
+  refundedAt  DateTime?
+
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  events  PaymentEvent[]
+  refunds Refund[]
+
+  @@index([appointmentId])
+  @@index([userId])
+  @@index([stripePaymentIntentId])
+  @@index([status])
+}
+
+model PaymentEvent {
+  id String @id @default(uuid())
+
+  stripeEventId String? @unique
+  eventType     String
+
+  paymentId     String?
+  appointmentId String?
+
+  stripePaymentIntentId String?
+
+  payload         Json
+  processed       Boolean @default(false)
+  processingError String?
+
+  createdAt   DateTime  @default(now())
+  processedAt DateTime?
+
+  payment Payment? @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+
+  @@index([paymentId])
+  @@index([appointmentId])
+  @@index([stripePaymentIntentId])
+  @@index([eventType])
+  @@index([processed])
+}
+
+model Refund {
+  id String @id @default(uuid())
+
+  paymentId     String
+  appointmentId String
+
+  stripeRefundId String? @unique
+  amount         Int
+  currency       String  @default("pkr")
+  reason         String?
+  status         String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  @@index([paymentId])
+  @@index([appointmentId])
+  @@index([stripeRefundId])
+}
+
+model SellerProfile {
+  id     String @id @default(uuid())
+  userId String @unique
+
+  businessName     String?
+  businessAddress  String?
+  phoneNumber      String?
+  city             String?
+  storeDescription String?
+  storeLogo        String?
+  isActive         Boolean @default(true)
+  isVerified       Boolean @default(false)
+
+  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  products     MarketplaceProduct[]
+  sellerOrders MarketplaceOrder[]   @relation("MarketplaceSellerOrders")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([isActive])
+}
+
+model MarketplaceProduct {
+  id       String @id @default(uuid())
+  sellerId String
+
+  title       String
+  description String?
+  category    ProductCategory
+  status      ProductStatus   @default(ACTIVE)
+
+  price    Decimal @db.Decimal(10, 2)
+  stock    Int     @default(0)
+  location String?
+
+  breed      String?
+  age        String?
+  gender     PetGender?
+  vaccinated Boolean?
+
+  brand  String?
+  weight String?
+  size   String?
+  sku    String?
+
+  seller     SellerProfile             @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  images     MarketplaceProductImage[]
+  savedBy    SavedListing[]
+  orderItems MarketplaceOrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sellerId])
+  @@index([category])
+  @@index([status])
+  @@index([location])
+  @@index([category, status])
+}
+
+model MarketplaceProductImage {
+  id        String  @id @default(uuid())
+  publicUrl String
+  publicId  String?
+  productId String
+
+  product MarketplaceProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+}
+
+model SavedListing {
+  id        String @id @default(uuid())
+  userId    String
+  productId String
+
+  user    User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product MarketplaceProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+  @@index([userId])
+  @@index([productId])
+}
+
+model MarketplaceOrder {
+  id          String @id @default(uuid())
+  orderNumber String @unique
+
+  buyerId  String
+  sellerId String
+
+  status        MarketplaceOrderStatus @default(PENDING)
+  paymentStatus PaymentStatus          @default(PENDING)
+
+  totalAmount Decimal  @db.Decimal(10, 2)
+  deliveryFee Decimal? @db.Decimal(10, 2)
+  discount    Decimal? @db.Decimal(10, 2)
+
+  shippingAddress String?
+  phoneNumber     String?
+
+  buyer  User                   @relation("MarketplaceBuyerOrders", fields: [buyerId], references: [id], onDelete: Cascade)
+  seller SellerProfile          @relation("MarketplaceSellerOrders", fields: [sellerId], references: [id], onDelete: Cascade)
+  items  MarketplaceOrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([buyerId])
+  @@index([sellerId])
+  @@index([status])
+  @@index([paymentStatus])
+}
+
+model MarketplaceOrderItem {
+  id        String @id @default(uuid())
+  orderId   String
+  productId String
+
+  quantity Int
+  price    Decimal @db.Decimal(10, 2)
+
+  order   MarketplaceOrder   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product MarketplaceProduct @relation(fields: [productId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+  @@index([productId])
 }
 ````
 
@@ -23677,6 +32274,10 @@ const Navbar = () => {
   const { user } = useAuth();
 
   const isPetOwner = user?.data.role === "PetOwner";
+  const profileImageUrl = user?.data.profileImageUrl;
+  const hasProfileImage =
+    profileImageUrl &&
+    !profileImageUrl.toLowerCase().includes("enter your image");
 
   return (
     /* Changed 'sticky top-0' to 'relative' to make it completely static */
@@ -23709,22 +32310,25 @@ const Navbar = () => {
         <div className="hidden items-center gap-3 lg:flex">
           {isPetOwner ? (
             /* Authenticated PetOwner View */
-            <div className="flex items-center gap-3 rounded-full bg-gray-50 border border-gray-100 py-1.5 pl-2 pr-4 transition hover:bg-gray-100">
-              {user.data.image ? (
-                <img
-                  src="user"
-                  alt={user.data.username}
-                  className="h-8 w-8 rounded-full object-cover border border-[#178f95]/20"
-                />
-              ) : (
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#178f95]/10 text-[#178f95]">
-                  <User size={18} />
-                </div>
-              )}
-              <span className="text-sm font-semibold text-gray-700 select-none">
-                {user.data.username}
-              </span>
-            </div>
+            <>
+              <NavLink to={'/pet-owner/profile'}
+                className="flex cursor-pointer items-center gap-3 rounded-full bg-gray-50 border border-gray-100 py-1.5 pl-2 pr-4 transition hover:bg-gray-100">
+                {hasProfileImage ? (
+                  <img
+                    src={profileImageUrl}
+                    alt={user.data.username}
+                    className="h-8 w-8 rounded-full object-cover border border-[#178f95]/20"
+                  />
+                ) : (
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#178f95]/10 text-[#178f95]">
+                    <User size={18} />
+                  </div>
+                )}
+                <span className="text-sm font-semibold text-gray-700 select-none">
+                  {user.data.username}
+                </span>
+              </NavLink>
+            </>
           ) : (
             /* Guest / Unauthenticated View */
             <>
@@ -23753,19 +32357,35 @@ export default Navbar;
 ````typescript
 import AuthRouter from "../features/Auth/auth.route";
 import { createBrowserRouter } from "react-router-dom";
+import type { RouteObject } from "react-router-dom";
 import LandingPageRoutes from "../features/Landing Page/routes";
+import DashboardHomeMenu from "@/features/Landing Page/components/DashboardHomeMenu";
 import Notfound from "../shared/components/Notfound/Notfound";
 import { doctorDashboardRoutes } from "../features/Doctor/doctor.route";
 import { doctorRoutes } from "../features/Appointment/appointment.routes";
 import adminRoutes from "../features/Admin/admin.route";
 import { doctorAppointmentRoutes } from "../features/Doctorcart/doctorAppointment.route";
 import { petsRoutes } from "../features/Pet Owner/pet details/pets.route";
-import { marketplaceRoutes } from "@/features/Marketplace/marketplace.route";
 import { aiAssistantRoutes } from "@/features/AiAssistance/aiAssistant.route";
-// import { paymentRoutes } from "@/features/Payment/payment.routes";
 import { selectPetRoutes } from "@/features/Pet Owner/SelectPet/selectPet.route";
 import { petProfileRoutes } from "@/features/Pet Owner/pet profile/petProfile.route";
 import { petOwnerDashboardRoutes } from "@/features/PetOwnerDashboard/petOwnerDashboard.route";
+import { sellerRoutes } from "@/features/seller/seller.routes";
+import { marketplaceRoutes } from "@/features/marketplace1/marketplace.routes";
+import { cartRoutes } from "@/features/cart/cart.routes";
+import { paymentRoutes } from "@/features/Payment/payment.routes";
+
+const withDashboardMenu = (routes: RouteObject[]): RouteObject[] =>
+  routes.map((route) => ({
+    ...route,
+    element: (
+      <>
+        {route.element}
+        <DashboardHomeMenu />
+      </>
+    ),
+  }));
+
 const Router = createBrowserRouter([
   ...LandingPageRoutes,
   ...AuthRouter,
@@ -23773,12 +32393,22 @@ const Router = createBrowserRouter([
   ...doctorRoutes,
   ...doctorDashboardRoutes,
   ...adminRoutes,
-  ...petsRoutes,
-  ...marketplaceRoutes,
+  ...withDashboardMenu(petsRoutes),
+  // ...marketplaceRoutes,
+  ...paymentRoutes,
   ...aiAssistantRoutes,
-    ...selectPetRoutes,
-    ...petProfileRoutes,
-    ...petOwnerDashboardRoutes,
+  ...selectPetRoutes,
+  ...petProfileRoutes,
+  ...petOwnerDashboardRoutes,
+  ...sellerRoutes,
+  ...marketplaceRoutes,
+  ...cartRoutes,
+  ...withDashboardMenu(selectPetRoutes),
+  ...withDashboardMenu(petProfileRoutes),
+  ...withDashboardMenu(petOwnerDashboardRoutes),
+  ...withDashboardMenu(sellerRoutes),
+  ...withDashboardMenu(marketplaceRoutes),
+  ...withDashboardMenu(cartRoutes),
   {
     path: "*",
     element: <Notfound />,

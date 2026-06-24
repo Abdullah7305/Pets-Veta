@@ -73,7 +73,7 @@ const createAppointmentPaymentIntent = async ({ appointmentId, petOwnerId }) => 
   const stripeAmount = appointment.fees * 100;
   const currency = appointment.currency || "pkr";
 
-  
+
   if (
     appointment.payment &&
     appointment.payment.stripePaymentIntentId &&
@@ -260,7 +260,148 @@ const getAppointmentPaymentStatus = async ({ appointmentId, petOwnerId }) => {
   return appointment;
 };
 
+
+// 💡 Added: Creates a Stripe PaymentIntent specifically for Marketplace Orders
+const createOrderPaymentIntent = async ({ orderId, buyerId }) => {
+  if (!orderId || !buyerId) {
+    throw new AppError("Order ID or user ID is missing", 400);
+  }
+
+  const order = await prisma.marketplaceOrder.findFirst({
+    where: {
+      id: orderId,
+      buyerId,
+    },
+    include: {
+      seller: true,
+    },
+  });
+
+  if (!order) {
+    throw new AppError("Order not found", 404);
+  }
+
+  if (order.status !== "PENDING") {
+    throw new AppError(
+      `Order is not ready for payment. Current status is ${order.status}`,
+      400
+    );
+  }
+
+  if (order.paymentStatus === PaymentStatus.SUCCEEDED) {
+    throw new AppError("Payment is already completed for this order", 400);
+  }
+
+  // If a Stripe session already exists and is still in a pending state, reuse it
+  if (
+    order.stripePaymentIntentId &&
+    order.stripeClientSecret &&
+    [
+      PaymentStatus.PENDING,
+      PaymentStatus.REQUIRES_PAYMENT_METHOD,
+      PaymentStatus.REQUIRES_ACTION,
+      PaymentStatus.PROCESSING,
+    ].includes(order.paymentStatus)
+  ) {
+    return {
+      orderId: order.id,
+      clientSecret: order.stripeClientSecret,
+      amount: Math.round(Number(order.totalAmount) * 100),
+      currency: "pkr",
+      reused: true,
+    };
+  }
+
+  // Convert decimal total to Stripe cents (int)
+  const stripeAmount = Math.round(Number(order.totalAmount) * 100);
+  const currency = "pkr";
+
+  const metadata = {
+    orderId: order.id,
+    buyerId: order.buyerId,
+    sellerId: order.sellerId,
+    orderNumber: order.orderNumber,
+  };
+
+  const paymentIntent = await stripe.paymentIntents.create(
+    {
+      amount: stripeAmount,
+      currency,
+      automatic_payment_methods: {
+        enabled: true,
+      },
+      description: `Marketplace Purchase: Order #${order.orderNumber} from ${order.seller?.businessName || "Verified Seller"
+        }`,
+      metadata,
+    },
+    {
+      idempotencyKey: `order-payment-intent-${order.id}`,
+    }
+  );
+
+  // Save the Stripe session identifiers to the order record
+  await prisma.marketplaceOrder.update({
+    where: {
+      id: order.id,
+    },
+    data: {
+      stripePaymentIntentId: paymentIntent.id,
+      stripeClientSecret: paymentIntent.client_secret,
+      paymentStatus: PaymentStatus.REQUIRES_PAYMENT_METHOD,
+    },
+  });
+
+  return {
+    orderId: order.id,
+    clientSecret: paymentIntent.client_secret,
+    amount: stripeAmount,
+    currency,
+    reused: false,
+  };
+};
+
+// 💡 Added: Fetches the dynamic transaction status of a marketplace order
+const getOrderPaymentStatus = async ({ orderId, buyerId }) => {
+  if (!orderId || !buyerId) {
+    throw new AppError("Order ID or user ID is missing", 400);
+  }
+
+  const order = await prisma.marketplaceOrder.findFirst({
+    where: {
+      id: orderId,
+      buyerId,
+    },
+    include: {
+      seller: {
+        include: {
+          user: {
+            select: {
+              fullName: true,
+            },
+          },
+        },
+      },
+      items: {
+        include: {
+          product: {
+            include: {
+              images: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!order) {
+    throw new AppError("Order not found", 404);
+  }
+
+  return order;
+};
 module.exports = {
   createAppointmentPaymentIntent,
   getAppointmentPaymentStatus,
+  createOrderPaymentIntent, 
+  getOrderPaymentStatus,    
 };

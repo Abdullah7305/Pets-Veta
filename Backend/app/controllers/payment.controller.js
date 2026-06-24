@@ -85,6 +85,7 @@ const stripeWebhook = async (req, res) => {
 
     const paymentIntent = event.data.object;
     const appointmentIdFromMetadata = paymentIntent.metadata?.appointmentId;
+    const orderIdFromMetadata = paymentIntent.metadata?.orderId; // 💡 Added: extract order identity from Stripe metadata
 
     const paymentEvent =
       existingEvent ||
@@ -99,6 +100,13 @@ const stripeWebhook = async (req, res) => {
         },
       }));
 
+    // 💡 Added: If it's a marketplace order payment event, delegate to handleOrderWebhook immediately
+    if (orderIdFromMetadata) {
+      await handleOrderWebhook(event.type, paymentIntent, paymentEvent.id);
+      return res.status(200).json({ received: true });
+    }
+
+    // Standard appointments flow remains completely untouched
     switch (event.type) {
       case "payment_intent.processing": {
         await handlePaymentIntentProcessing(paymentIntent, paymentEvent.id);
@@ -414,8 +422,155 @@ const handlePaymentIntentCanceled = async (paymentIntent, paymentEventId) => {
   ]);
 };
 
+
+const createOrderPaymentIntent = catchAsync(async (req, res) => {
+  const buyerId = req.user?.id;
+
+  if (!buyerId) {
+    return sendResponse(res, 401, "Please login first", {});
+  }
+
+  const orderId = req.params.orderId || req.body.orderId;
+
+  if (!orderId) {
+    return sendResponse(res, 400, "Order ID is required", {});
+  }
+
+  const result = await stripeService.createOrderPaymentIntent({
+    orderId,
+    buyerId,
+  });
+
+  return sendResponse(res, 200, "Order payment intent created successfully", result);
+});
+
+
+const getOrderPaymentStatus = catchAsync(async (req, res) => {
+  const buyerId = req.user?.id;
+
+  if (!buyerId) {
+    return sendResponse(res, 401, "Please login first", {});
+  }
+
+  const { orderId } = req.params;
+
+  if (!orderId) {
+    return sendResponse(res, 400, "Order ID is required", {});
+  }
+
+  const result = await stripeService.getOrderPaymentStatus({
+    orderId,
+    buyerId,
+  });
+
+  return sendResponse(res, 200, "Order payment status fetched successfully", result);
+});
+
+// 💡 Added: Dedicated e-commerce webhook handler with built-in real-time stock recovery
+const handleOrderWebhook = async (eventType, paymentIntent, paymentEventId) => {
+  const orderId = paymentIntent.metadata?.orderId;
+
+  if (!orderId) {
+    throw new Error("Order ID is missing from PaymentIntent metadata");
+  }
+
+  await prisma.$transaction(async (tx) => {
+    const order = await tx.marketplaceOrder.findUnique({
+      where: { id: orderId },
+      include: { items: true },
+    });
+
+    if (!order) {
+      throw new Error(`Order not found for PaymentIntent metadata ID: ${orderId}`);
+    }
+
+    // Skip processing if order has already been paid/confirmed
+    if (order.paymentStatus === "SUCCEEDED" && eventType === "payment_intent.succeeded") {
+      await tx.paymentEvent.update({
+        where: { id: paymentEventId },
+        data: {
+          stripePaymentIntentId: paymentIntent.id,
+          processed: true,
+          processedAt: new Date(),
+        },
+      });
+      return;
+    }
+
+    switch (eventType) {
+      case "payment_intent.processing": {
+        await tx.marketplaceOrder.update({
+          where: { id: orderId },
+          data: {
+            paymentStatus: "PROCESSING",
+          },
+        });
+        break;
+      }
+
+      case "payment_intent.succeeded": {
+        await tx.marketplaceOrder.update({
+          where: { id: orderId },
+          data: {
+            paymentStatus: "SUCCEEDED",
+            status: "CONFIRMED", // Transition fulfillment status
+          },
+        });
+        break;
+      }
+
+      case "payment_intent.payment_failed": {
+        await tx.marketplaceOrder.update({
+          where: { id: orderId },
+          data: {
+            paymentStatus: "FAILED",
+          },
+        });
+        break;
+      }
+
+      case "payment_intent.canceled": {
+        await tx.marketplaceOrder.update({
+          where: { id: orderId },
+          data: {
+            paymentStatus: "CANCELLED",
+            status: "CANCELLED",
+          },
+        });
+
+        // 🐾 Inventory Protection: Restore product stock if checkout was aborted
+        for (const item of order.items) {
+          await tx.marketplaceProduct.update({
+            where: { id: item.productId },
+            data: {
+              stock: {
+                increment: item.quantity,
+              },
+              status: "ACTIVE", // Revive listing state
+            },
+          });
+        }
+        break;
+      }
+    }
+
+    // Log the transaction event to the database audit log
+    await tx.paymentEvent.update({
+      where: { id: paymentEventId },
+      data: {
+        stripePaymentIntentId: paymentIntent.id,
+        processed: true,
+        processedAt: new Date(),
+      },
+    });
+  });
+};
+
 module.exports = {
   createPaymentIntent,
   getPaymentStatus,
   stripeWebhook,
+  createOrderPaymentIntent,
+  getOrderPaymentStatus,
+  handleOrderWebhook
 };

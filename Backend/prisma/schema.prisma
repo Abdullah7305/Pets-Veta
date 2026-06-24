@@ -481,6 +481,10 @@ model MarketplaceOrder {
   shippingAddress String?
   phoneNumber     String?
 
+
+  stripePaymentIntentId String? @unique
+  stripeClientSecret    String?
+
   buyer  User                   @relation("MarketplaceBuyerOrders", fields: [buyerId], references: [id], onDelete: Cascade)
   seller SellerProfile          @relation("MarketplaceSellerOrders", fields: [sellerId], references: [id], onDelete: Cascade)
   items  MarketplaceOrderItem[]

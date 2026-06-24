@@ -126,7 +126,7 @@ const updatePetOwnerProfile = catchAsync(async (req, res) => {
     let profileImageUrl = req.body?.profileImageUrl;
 
     if (req.file) {
-        const uploadedImage = await uploadToCloudinary(
+        const uploadedImage = await cloudinary.uploadToCloudinary(
             req.file.buffer,
             `pets-veta/profile-images/${id}`
         );
@@ -180,11 +180,73 @@ const lockDoctorSlot = catchAsync(async (req, res) => {
 
     return sendResponse(res, 201, "Successfully locked slot", bookSlot);
 });
+
+const getPetOwnerAppointments = catchAsync(async (req, res) => {
+    const petOwnerId = req.user?.id;
+
+    if (!petOwnerId) {
+        return sendResponse(res, 401, 'Please login first', {});
+    }
+
+    const appointments = await petOwnerServices.getPetOwnerAppointments(petOwnerId);
+
+    return sendResponse(
+        res,
+        200,
+        'Successfully retrieved pet owner appointments',
+        appointments
+    );
+});
+const getPetById = catchAsync(async (req, res) => {
+    const petOwnerId = req.user?.id;
+    const { petId } = req.params;
+
+    if (!petOwnerId) {
+        return sendResponse(res, 401, 'Please login first', {});
+    }
+
+    const pet = await petOwnerServices.getPetById(petId, petOwnerId);
+    if (!pet) {
+        throw new AppError("Pet profile not found", 404);
+    }
+
+    return sendResponse(res, 200, 'Successfully fetched pet profile', pet);
+});
+
+const updatePet = catchAsync(async (req, res) => {
+    const petOwnerId = req.user?.id;
+    const { petId } = req.params;
+
+    if (!petOwnerId) {
+        return sendResponse(res, 401, 'Please login first', {});
+    }
+
+    requireFields(['name', 'age', 'breed', 'category'], req.body);
+
+    const updated = await petOwnerServices.updatePet(petId, petOwnerId, req.body);
+    return sendResponse(res, 200, 'Pet profile updated successfully', updated);
+});
+
+const deletePet = catchAsync(async (req, res) => {
+    const petOwnerId = req.user?.id;
+    const { petId } = req.params;
+
+    if (!petOwnerId) {
+        return sendResponse(res, 401, 'Please login first', {});
+    }
+
+    await petOwnerServices.deletePet(petId, petOwnerId);
+    return sendResponse(res, 200, 'Pet profile deleted successfully', {});
+});
 module.exports = {
     registerPetIssue,
     getPetOwnerById,
     updatePetOwnerProfile,
     registerPet,
     getPetsData,
-    lockDoctorSlot
+    lockDoctorSlot,
+    getPetOwnerAppointments,
+    getPetById,    
+    updatePet,    
+    deletePet     
 };

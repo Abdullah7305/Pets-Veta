@@ -37,4 +37,30 @@ Router
 Router
     .route('/book-slot')
     .post(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.lockDoctorSlot)
+Router
+    .route('/appointments')
+    .get(
+        authMiddleware.protect,
+        authenticateRole.authenticateUserRole('PetOwner'),
+        petOwnerController.getPetOwnerAppointments
+    );
+
+Router
+    .route('/pet/:petId')
+    .get(
+        authMiddleware.protect,
+        authenticateRole.authenticateUserRole('PetOwner'),
+        petOwnerController.getPetById
+    )
+    .patch(
+        authMiddleware.protect,
+        authenticateRole.authenticateUserRole('PetOwner'),
+        petOwnerController.updatePet
+    )
+    .delete(
+        authMiddleware.protect,
+        authenticateRole.authenticateUserRole('PetOwner'),
+        petOwnerController.deletePet
+    );
+
 module.exports = Router;
