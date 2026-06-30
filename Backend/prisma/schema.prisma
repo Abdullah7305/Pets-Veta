@@ -90,6 +90,18 @@ enum ScheduleStatus {
   CANCELLED
 }
 
+enum ConversationType {
+  DIRECT
+  GROUP
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  FILE
+  SYSTEM
+}
+
 model User {
   id              String   @id @default(uuid())
   fullName        String
@@ -118,6 +130,11 @@ model User {
   sellerProfile          SellerProfile?
   savedListings          SavedListing[]
   marketplaceBuyerOrders MarketplaceOrder[] @relation("MarketplaceBuyerOrders")
+
+  createdConversations     Conversation[]            @relation("ConversationCreatedBy")
+  conversationParticipants ConversationParticipant[]
+  sentMessages             Message[]                 @relation("UserSentMessages")
+  messageReadReceipts      MessageReadReceipt[]
 
   @@index([fullName])
 }
@@ -481,6 +498,9 @@ model MarketplaceOrder {
   shippingAddress String?
   phoneNumber     String?
 
+  stripePaymentIntentId String? @unique
+  stripeClientSecret    String?
+
   buyer  User                   @relation("MarketplaceBuyerOrders", fields: [buyerId], references: [id], onDelete: Cascade)
   seller SellerProfile          @relation("MarketplaceSellerOrders", fields: [sellerId], references: [id], onDelete: Cascade)
   items  MarketplaceOrderItem[]
@@ -509,4 +529,121 @@ model MarketplaceOrderItem {
 
   @@index([orderId])
   @@index([productId])
+}
+
+model Conversation {
+  id String @id @default(uuid())
+
+  type      ConversationType @default(DIRECT)
+  title     String?
+  directKey String?          @unique
+
+  contextType String?
+  contextId   String?
+
+  createdById   String?
+  lastMessageId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdBy User? @relation("ConversationCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  participants ConversationParticipant[]
+  messages     Message[]                 @relation("ConversationMessages")
+
+  lastMessage Message? @relation("ConversationLastMessage", fields: [lastMessageId], references: [id], onDelete: SetNull)
+
+  @@index([type])
+  @@index([createdById])
+  @@index([lastMessageId])
+  @@index([contextType, contextId])
+}
+
+model ConversationParticipant {
+  id String @id @default(uuid())
+
+  conversationId String
+  userId         String
+
+  isMuted    Boolean   @default(false)
+  joinedAt   DateTime  @default(now())
+  leftAt     DateTime?
+  lastReadAt DateTime?
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+  @@index([conversationId])
+  @@index([userId])
+}
+
+model Message {
+  id String @id @default(uuid())
+
+  conversationId String
+  senderId       String?
+
+  type MessageType @default(TEXT)
+  body String?
+
+  replyToId String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  editedAt  DateTime?
+  deletedAt DateTime?
+
+  conversation Conversation @relation("ConversationMessages", fields: [conversationId], references: [id], onDelete: Cascade)
+
+  sender User? @relation("UserSentMessages", fields: [senderId], references: [id], onDelete: SetNull)
+
+  replyTo Message?  @relation("MessageReplies", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies Message[] @relation("MessageReplies")
+
+  attachments  MessageAttachment[]
+  readReceipts MessageReadReceipt[]
+
+  lastMessageFor Conversation[] @relation("ConversationLastMessage")
+
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([replyToId])
+  @@index([createdAt])
+}
+
+model MessageAttachment {
+  id String @id @default(uuid())
+
+  messageId String
+
+  publicUrl String
+  publicId  String?
+
+  fileName String?
+  mimeType String?
+  size     Int?
+
+  createdAt DateTime @default(now())
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([messageId])
+}
+
+model MessageReadReceipt {
+  id String @id @default(uuid())
+
+  messageId String
+  userId    String
+
+  readAt DateTime @default(now())
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId])
+  @@index([messageId])
+  @@index([userId])
 }

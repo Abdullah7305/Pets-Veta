@@ -10,6 +10,89 @@ export type Pet = {
   breed: string;
   category: PetCategory;
 };
+export type DBAppointmentStatus =
+  | "PENDING_DETAILS"
+  | "PENDING_REPORT"
+  | "PENDING_PAYMENT"
+  | "PAYMENT_PROCESSING"
+  | "CONFIRMED"
+  | "PAYMENT_FAILED"
+  | "EXPIRED"
+  | "CANCELLED"
+  | "COMPLETED"
+  | "REFUNDED"
+  | "NO_SHOW";
+
+export type DBPaymentStatus =
+  | "PENDING"
+  | "REQUIRES_PAYMENT_METHOD"
+  | "REQUIRES_ACTION"
+  | "PROCESSING"
+  | "SUCCEEDED"
+  | "FAILED"
+  | "CANCELLED"
+  | "REFUNDED";
+
+export interface PetOwnerAppointment {
+  id: string;
+  doctorId: string;
+  petOwnerId: string;
+  petId: string | null;
+  petIssueReportId: string | null;
+  scheduleId: string;
+  fees: number;
+  currency: string;
+  status: DBAppointmentStatus;
+  paymentStatus: DBPaymentStatus;
+  checkupTime: string;
+  expiresAt: string | null;
+  confirmedAt: string | null;
+  cancelledAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  doctor: {
+    id: string;
+    specialization: string;
+    user: {
+      fullName: string;
+      profileImageUrl: string;
+      email: string;
+      phone: string;
+    };
+  };
+  pet: {
+    id: string;
+    name: string;
+    category: string;
+    breed: string;
+    age: number;
+  } | null;
+  doctorSchedule: {
+    id: string;
+    date: string;
+    startTime: string;
+    endTime: string;
+    status: string;
+  };
+  petIssueReport: {
+    id: string;
+    issue: string;
+    createdAt: string;
+  } | null;
+  payment: {
+    id: string;
+    status: DBPaymentStatus;
+    amount: number;
+    currency: string;
+  } | null;
+}
+
+export interface PetOwnerAppointmentsResponse {
+  success: boolean;
+  message: string;
+  data: PetOwnerAppointment[];
+}
 
 export type AppointmentStatus =
   | "PENDING"

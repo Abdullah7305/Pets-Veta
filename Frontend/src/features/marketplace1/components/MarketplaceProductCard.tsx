@@ -6,10 +6,12 @@ import {
   FaMapMarkerAlt,
   FaStar,
   FaStore,
+  FaEdit, // 💡 Added
 } from "react-icons/fa";
 import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
 import { addToCart } from "@/features/cart/utils/cartStorage";
+import { useAuth } from "@/features/Auth/hooks/authhook"; // 💡 Added
 import {
   getProductImage,
   getProductPrice,
@@ -25,12 +27,19 @@ const MarketplaceProductCard = ({
   onDetails,
 }: MarketplaceProductCardProps) => {
   const navigate = useNavigate();
+  const { user } = useAuth(); // 💡 Added: Resolve authenticated user session
   const [cartError, setCartError] = useState("");
 
-  const handleBuyNow = () => {
-    const image = getProductImage(product);
-    const price = getProductPrice(product);
+  const image = getProductImage(product);
+  const price = getProductPrice(product);
+  const seller = getSellerName(product);
 
+  const isPet = product.category === "PETS";
+
+  // 💡 Added: Check if the logged-in user owns this listed product
+  const isOwnListing = user?.data?.id === product.seller?.user?.id;
+
+  const handleAddToCart = () => {
     const result = addToCart({
       productId: product.id,
       title: product.title,
@@ -48,13 +57,25 @@ const MarketplaceProductCard = ({
     navigate("/cart");
   };
 
-  const image = getProductImage(product);
-  const price = getProductPrice(product);
-  const seller = getSellerName(product);
+  const handleDirectBuy = () => {
+    localStorage.removeItem("pets-veta-direct-buy");
+
+    const directBuyItem = {
+      productId: product.id,
+      title: product.title,
+      price,
+      image,
+      quantity: 1,
+      sellerId: product.sellerId,
+    };
+
+    localStorage.setItem("pets-veta-direct-buy", JSON.stringify(directBuyItem));
+    navigate("/checkout");
+  };
 
   return (
     <Card className="overflow-hidden p-0">
-      <div className="relative h-48 bg-gray-50">
+      <div className="relative h-44 bg-gray-50">
         <button
           type="button"
           onClick={() => navigate(`/marketplace/product/${product.id}`)}
@@ -72,13 +93,16 @@ const MarketplaceProductCard = ({
           {toDisplayCategory(product.category)}
         </span>
 
-        <button
-          type="button"
-          onClick={onSave}
-          className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#07182c] shadow-sm"
-        >
-          {saved ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
-        </button>
+        {/* Hide save button if it's the seller's own listing */}
+        {!isOwnListing && (
+          <button
+            type="button"
+            onClick={onSave}
+            className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#07182c] shadow-sm"
+          >
+            {saved ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
+          </button>
+        )}
       </div>
 
       <div className="p-4">
@@ -86,7 +110,7 @@ const MarketplaceProductCard = ({
 
         <p className="mt-2 flex items-center gap-2 text-sm text-gray-500">
           <FaStore className="text-[#178f95]" />
-          {seller}
+          {seller} {isOwnListing && <span className="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-sm ml-1">Your Listing</span>}
         </p>
 
         <div className="mt-3 flex items-center justify-between">
@@ -112,13 +136,33 @@ const MarketplaceProductCard = ({
             Details
           </Button>
 
-          <Button
-            size="sm"
-            onClick={handleBuyNow}
-            className="bg-[#F9C5A8] text-[#c94d00] hover:bg-[#f7b58f]"
-          >
-            Add to Cart
-          </Button>
+          {/* 💡 Updated: If it's their own listing, show a manage shortcut. Otherwise, show transactional buttons */}
+          {isOwnListing ? (
+            <Button
+              size="sm"
+              onClick={() => navigate(`/seller/edit-product/${product.id}`)}
+              className="bg-gray-100 border border-slate-200 text-slate-700 hover:bg-slate-200 flex items-center justify-center gap-1"
+            >
+              <FaEdit size={12} />
+              Edit
+            </Button>
+          ) : isPet ? (
+            <Button
+              size="sm"
+              onClick={handleDirectBuy}
+              className="bg-[#178f95] text-white hover:bg-[#12757a]"
+            >
+              Buy Now
+            </Button>
+          ) : (
+            <Button
+              size="sm"
+              onClick={handleAddToCart}
+              className="bg-[#F9C5A8] text-[#c94d00] hover:bg-[#f7b58f]"
+            >
+              Add to Cart
+            </Button>
+          )}
         </div>
 
         {cartError && (

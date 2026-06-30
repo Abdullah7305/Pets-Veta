@@ -24,7 +24,8 @@ export const petSchema = z.object({
     message: "Please select a category",
   }),
 
-  photos: z.custom<FileList>().optional(),
+  // 💡 Added: Informs TypeScript that photos exist in the schema
+  photos: z.any().optional(),
 });
 
 export type PetFormInput = z.input<typeof petSchema>;

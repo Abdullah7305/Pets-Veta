@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "@/features/Auth/hooks/authhook";
 import {
   FaArrowLeft,
   FaHeart,
@@ -24,6 +25,7 @@ import {
   type MarketplaceProduct,
 } from "../api/marketplace.api";
 
+
 const MarketplaceProductDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -32,6 +34,7 @@ const MarketplaceProductDetailPage = () => {
   const [error, setError] = useState("");
   const [saveMessage, setSaveMessage] = useState("");
   const [cartError, setCartError] = useState("");
+  const { user } = useAuth();
 
   const handleBack = () => {
     if (window.history.length > 1) {
@@ -76,6 +79,7 @@ const MarketplaceProductDetailPage = () => {
     };
   }, [id]);
 
+
   const handleBuyNow = () => {
     if (!product) return;
 
@@ -94,6 +98,24 @@ const MarketplaceProductDetailPage = () => {
     }
 
     navigate("/cart");
+  };
+
+  // 💡 Added: Direct adoption/purchase bypass logic
+  const handleDirectBuy = () => {
+    if (!product) return;
+    localStorage.removeItem("pets-veta-direct-buy"); // Clear old sessions
+
+    const directBuyItem = {
+      productId: product.id,
+      title: product.title,
+      price: getProductPrice(product),
+      image: getProductImage(product),
+      quantity: 1,
+      sellerId: product.sellerId,
+    };
+
+    localStorage.setItem("pets-veta-direct-buy", JSON.stringify(directBuyItem));
+    navigate("/checkout"); // Forward straight to direct payment form
   };
 
   const handleSave = async () => {
@@ -139,15 +161,66 @@ const MarketplaceProductDetailPage = () => {
   const price = getProductPrice(product);
   const seller = getSellerName(product);
   const displayCategory = toDisplayCategory(product.category);
+  const isPet = product.category === "PETS";
+  const isOwnListing = user?.data?.id === product?.seller?.user?.id;
 
   return (
-    <main className="mt-20 min-h-screen bg-[#f7fbfb] px-5 py-8 lg:px-12">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <BackToMarketplaceButton onClick={handleBack} />
-
-        <p className="text-sm text-gray-500">
-          Marketplace / {displayCategory} / {product.title}
+    <main className="min-h-screen bg-[#f7fbfb] px-5 py-8 lg:px-12">
+      <p className="mb-5 text-sm text-gray-500">
+        Marketplace / {displayCategory} / {product.title}
+      </p>
+      <div className="mt-6 space-y-3 text-sm text-gray-600">
+        <p className="flex items-center gap-2">
+          <FaStore className="text-[#178f95]" />
+          Seller: {seller} {isOwnListing && <span className="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-sm ml-1 font-bold">Your Store Listing</span>}
         </p>
+
+        <p className="flex items-center gap-2">
+          <FaMapMarkerAlt className="text-[#178f95]" />
+          Location: {product.location || product.seller?.city || "Pakistan"}
+        </p>
+
+        <p className="flex items-center gap-2">
+          <FaShieldAlt className="text-[#178f95]" />
+          Verified seller product
+        </p>
+      </div>
+
+      <p className="mt-5 text-sm font-medium text-green-600">
+        In Stock{" "}
+        <span className="text-gray-500">{product.stock} available</span>
+      </p>
+
+      <div className="mt-7 grid grid-cols-2 gap-3">
+        {/* 💡 Updated: If own listing, let them manage it directly. Otherwise, show cart/buy actions */}
+        {isOwnListing ? (
+          <Button
+            className="gap-2 !bg-gray-100 !border-slate-200 !text-slate-700 hover:!bg-slate-200"
+            onClick={() => navigate(`/seller/edit-product/${product.id}`)}
+          >
+            Edit Listing
+          </Button>
+        ) : isPet ? (
+          <Button className="gap-2 !bg-[#178f95] !border-[#178f95] !text-white hover:!bg-[#12757a]" onClick={handleDirectBuy}>
+            Buy Now
+          </Button>
+        ) : (
+          <Button className="gap-2" onClick={handleBuyNow}>
+            <FaShoppingCart />
+            Add to Cart
+          </Button>
+        )}
+
+        {!isOwnListing ? (
+          <Button variant="outline" className="gap-2" onClick={handleSave}>
+            <FaHeart />
+            Save Listing
+          </Button>
+        ) : (
+          <Button variant="outline" className="gap-2" onClick={() => navigate("/seller/listings")}>
+            View All Listings
+          </Button>
+        )}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_430px]">
@@ -209,10 +282,17 @@ const MarketplaceProductDetailPage = () => {
           </p>
 
           <div className="mt-7 grid grid-cols-2 gap-3">
-            <Button className="gap-2" onClick={handleBuyNow}>
-              <FaShoppingCart />
-              Add to Cart
-            </Button>
+            {/* 💡 Updated: Shows "Buy Now" for live pets, and "Add to Cart" for consumables */}
+            {isPet ? (
+              <Button className="gap-2 !bg-[#178f95] !border-[#178f95] !text-white hover:!bg-[#12757a]" onClick={handleDirectBuy}>
+                Buy Now
+              </Button>
+            ) : (
+              <Button className="gap-2" onClick={handleBuyNow}>
+                <FaShoppingCart />
+                Add to Cart
+              </Button>
+            )}
 
             <Button variant="outline" className="gap-2" onClick={handleSave}>
               <FaHeart />
@@ -240,16 +320,5 @@ const MarketplaceProductDetailPage = () => {
     </main>
   );
 };
-
-const BackToMarketplaceButton = ({ onClick }: { onClick: () => void }) => (
-  <button
-    type="button"
-    onClick={onClick}
-    className="inline-flex w-fit items-center gap-2 rounded-full border border-[#d8eeee] bg-white px-4 py-2 text-sm font-semibold text-[#078b91] shadow-sm transition hover:border-[#078b91] hover:bg-[#f2fbfa]"
-  >
-    <FaArrowLeft />
-    Back to Marketplace
-  </button>
-);
 
 export default MarketplaceProductDetailPage;

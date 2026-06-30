@@ -5,7 +5,6 @@ export const createAppointmentPaymentIntent = async (appointmentId: string) => {
         const response = await api.post(
             `/payment/appointments/${appointmentId}/create-payment-intent`
         );
-
         return response.data;
     } catch (error) {
         handleAxiosError(error);
@@ -17,7 +16,30 @@ export const getAppointmentPaymentStatus = async (appointmentId: string) => {
         const response = await api.get(
             `/payment/appointments/${appointmentId}/status`
         );
+        return response.data;
+    } catch (error) {
+        handleAxiosError(error);
+    }
+};
 
+// 💡 Added: Creates a Stripe session payload for product orders
+export const createOrderPaymentIntentApi = async (orderId: string) => {
+    try {
+        const response = await api.post(
+            `/payment/orders/${orderId}/create-payment-intent`
+        );
+        return response.data;
+    } catch (error) {
+        handleAxiosError(error);
+    }
+};
+
+// 💡 Added: Polls the transaction status of an order
+export const getOrderPaymentStatusApi = async (orderId: string) => {
+    try {
+        const response = await api.get(
+            `/payment/orders/${orderId}/status`
+        );
         return response.data;
     } catch (error) {
         handleAxiosError(error);

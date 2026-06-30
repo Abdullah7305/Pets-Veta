@@ -342,6 +342,158 @@ const lockUserSlot = async ({ scheduleId, doctorId, petOwnerId }) => {
     return result;
 };
 
+const getPetOwnerAppointments = async (petOwnerId) => {
+    if (!petOwnerId) {
+        throw new AppError("Pet Owner identity is required", 400);
+    }
+
+    const appointments = await prisma.appointment.findMany({
+        where: {
+            petOwnerId: petOwnerId,
+        },
+        orderBy: {
+            checkupTime: "desc",
+        },
+        include: {
+            doctor: {
+                include: {
+                    user: {
+                        select: {
+                            fullName: true,
+                            profileImageUrl: true,
+                            email: true,
+                            phone: true,
+                        },
+                    },
+                },
+            },
+            pet: {
+                select: {
+                    id: true,
+                    name: true,
+                    category: true,
+                    breed: true,
+                    age: true,
+                },
+            },
+            doctorSchedule: {
+                select: {
+                    id: true,
+                    date: true,
+                    startTime: true,
+                    endTime: true,
+                    status: true,
+                },
+            },
+            petIssueReport: {
+                select: {
+                    id: true,
+                    issue: true,
+                    createdAt: true,
+                },
+            },
+            payment: {
+                select: {
+                    id: true,
+                    status: true,
+                    amount: true,
+                    currency: true,
+                },
+            },
+        },
+    });
+
+    return appointments;
+};
+const getPetById = async (petId, petOwnerId) => {
+    if (!petId || !petOwnerId) {
+        throw new AppError("Identity validation parameter missing.", 400);
+    }
+    return await prisma.pet.findFirst({
+        where: {
+            id: petId,
+            petOwnerId
+        },
+        include: {
+            petPictures: {
+                select: {
+                    publicUrl: true
+                }
+            }
+        }
+    });
+};
+
+const updatePet = async (petId, petOwnerId, petData) => {
+    if (!petId || !petOwnerId) {
+        throw new AppError("Identity validation parameter missing.", 400);
+    }
+
+    // 1. Verify that this pet exists and belongs to the logged-in user
+    const existingPet = await prisma.pet.findFirst({
+        where: {
+            id: petId,
+            petOwnerId
+        }
+    });
+
+    if (!existingPet) {
+        throw new AppError("You do not have permission to modify this pet, or it does not exist.", 403);
+    }
+
+    // 2. Perform the update strictly on the unique primary key 'id'
+    return await prisma.pet.update({
+        where: {
+            id: petId
+        },
+        data: {
+            name: petData.name,
+            age: parseFloat(petData.age),
+            breed: petData.breed,
+            category: petData.category
+        }
+    });
+};
+
+const deletePet = async (petId, petOwnerId) => {
+    if (!petId || !petOwnerId) {
+        throw new AppError("Identity validation parameter missing.", 400);
+    }
+
+    // 1. Verify that this pet exists and belongs to the logged-in user
+    const existingPet = await prisma.pet.findFirst({
+        where: {
+            id: petId,
+            petOwnerId
+        }
+    });
+
+    if (!existingPet) {
+        throw new AppError("You do not have permission to delete this pet, or it does not exist.", 403);
+    }
+
+    return await prisma.$transaction(async (tx) => {
+        // 2. Clear out pictures & linked issue reports
+        await tx.petPicture.deleteMany({
+            where: {
+                petId
+            }
+        });
+
+        await tx.petIssueReport.deleteMany({
+            where: {
+                petId
+            }
+        });
+
+   
+        return await tx.pet.delete({
+            where: {
+                id: petId
+            }
+        });
+    });
+};
 module.exports = {
     saveUserPet,
     registerPetIssue,
@@ -349,5 +501,10 @@ module.exports = {
     createPetPictures,
     lockUserSlot,
     updatePetOwnerProfile,
-    updateAppointmentStripeId
+    updateAppointmentStripeId,
+    getPetOwnerAppointments,
+    getPetOwnerAppointments,
+    getPetById,
+    updatePet,
+    deletePet
 }

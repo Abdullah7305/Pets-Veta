@@ -28,7 +28,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
                     setIsAuthenticateUser(false);
                     setUser(undefined);
                 }
-           
+
 
             } catch (error) {
                 console.log("Error in Auth Provider:", error);

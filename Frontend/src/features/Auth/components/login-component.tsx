@@ -76,7 +76,7 @@ export default function LoginComponent() {
   })
 
   useEffect(() => {
-    console.log("Wokring")
+    console.log("Working")
     if (isAuthenticatedUser && user?.data) {
       navigate(getPostLoginPath(user.data.role));
     }

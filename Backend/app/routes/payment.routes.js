@@ -16,4 +16,17 @@ Router.get(
     paymentController.getPaymentStatus
 );
 
+
+Router.post(
+    "/orders/:orderId/create-payment-intent",
+    protect,
+    paymentController.createOrderPaymentIntent
+);
+
+Router.get(
+    "/orders/:orderId/status",
+    protect,
+    paymentController.getOrderPaymentStatus
+);
+
 module.exports = Router;

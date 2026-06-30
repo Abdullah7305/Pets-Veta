@@ -18,6 +18,7 @@ import { sellerRoutes } from "@/features/seller/seller.routes";
 import { marketplaceRoutes } from "@/features/marketplace1/marketplace.routes";
 import { cartRoutes } from "@/features/cart/cart.routes";
 import { paymentRoutes } from "@/features/Payment/payment.routes";
+import { messageRoutes } from "@/features/messages/messages.routes";
 
 const withDashboardMenu = (routes: RouteObject[]): RouteObject[] =>
   routes.map((route) => ({
@@ -47,12 +48,14 @@ const Router = createBrowserRouter([
   ...sellerRoutes,
   ...marketplaceRoutes,
   ...cartRoutes,
+  ...messageRoutes,
   ...withDashboardMenu(selectPetRoutes),
   ...withDashboardMenu(petProfileRoutes),
   ...withDashboardMenu(petOwnerDashboardRoutes),
   ...withDashboardMenu(sellerRoutes),
   ...withDashboardMenu(marketplaceRoutes),
   ...withDashboardMenu(cartRoutes),
+
   {
     path: "*",
     element: <Notfound />,

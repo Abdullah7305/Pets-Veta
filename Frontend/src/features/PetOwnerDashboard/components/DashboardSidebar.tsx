@@ -25,11 +25,11 @@ const sidebarItems: DashboardSidebarItem[] = [
     path: "/pet-owner/appointments",
     icon: <CalendarDays size={20} />,
   },
-  {
-    label: "Reports",
-    path: "/pet-owner/reports",
-    icon: <FileText size={20} />,
-  },
+  // {
+  //   label: "Reports",
+  //   path: "/pet-owner/reports",
+  //   icon: <FileText size={20} />,
+  // },
   {
     label: "Find Doctor",
     path: "/doctors",
@@ -50,16 +50,11 @@ const sidebarItems: DashboardSidebarItem[] = [
     path: "/pet-owner/profile",
     icon: <UserRound size={20} />,
   },
-  {
-    label: "Switch to Seller",
-    path: "/seller/dashboard",
-    icon: <Store size={20} />,
-  },
-  {
-    label: "Settings",
-    path: "/pet-owner/settings",
-    icon: <Settings size={20} />,
-  },
+  // {
+  //   label: "Settings",
+  //   path: "/pet-owner/settings",
+  //   icon: <Settings size={20} />,
+  // },
 ];
 
 const DashboardSidebar = () => {
@@ -114,7 +109,7 @@ const DashboardSidebar = () => {
       </nav>
 
       {/* Small sidebar info */}
-      <div className="mx-4 mb-5 rounded-2xl bg-[#F1FAF8] p-5">
+      {/* <div className="mx-4 mb-5 rounded-2xl bg-[#F1FAF8] p-5">
         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-[#078b91]">
           <PawPrint size={24} />
         </div>
@@ -126,7 +121,7 @@ const DashboardSidebar = () => {
         <p className="mt-2 text-sm font-medium leading-6 text-slate-500">
           Book appointments and track your pet&apos;s health easily.
         </p>
-      </div>
+      </div> */}
 
       {/* Logout */}
       <button

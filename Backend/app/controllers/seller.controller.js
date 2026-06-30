@@ -34,9 +34,22 @@ exports.createOrUpdateSellerProfile = async (req, res) => {
       });
     }
 
+    // 1. Clone body parameters to build our payload
+    const payload = { ...req.body };
+
+    // 2. If a brand logo file is attached, upload it to Cloudinary
+    if (req.file) {
+      const uploadedImage = await uploadToCloudinary(
+        req.file.buffer,
+        "pets-veta/seller-logos"
+      );
+      payload.storeLogo = uploadedImage.secure_url;
+    }
+
+    // 3. Save profile metrics in the database
     const profile = await sellerService.createOrUpdateSellerProfile(
       userId,
-      req.body
+      payload
     );
 
     return res.status(200).json({

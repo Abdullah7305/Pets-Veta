@@ -5,6 +5,8 @@ import SellerProductsPage from "../seller/pages/SellerProductsPage";
 import SellerProductFormPage from "../seller/pages/SellerProductFormPage";
 import SellerOrdersStockPage from "../seller/pages/SellerOrdersStockPage";
 import SellerSavedListingsPage from "../seller/pages/SellerSavedListingsPage";
+import SellerProfilePage from "../seller/pages/SellerSavedListingsPage"; // <--- Add this import
+
 export const sellerRoutes = [
   {
     path: "/seller/dashboard",
@@ -14,8 +16,7 @@ export const sellerRoutes = [
     path: "/seller/listings",
     element: <SellerProductsPage />,
   },
-
-   {
+  {
     path: "/seller/add-product",
     element: <SellerProductFormPage />,
   },
@@ -23,8 +24,7 @@ export const sellerRoutes = [
     path: "/seller/edit-product/:id",
     element: <SellerProductFormPage />,
   },
-
-   {
+  {
     path: "/seller/orders",
     element: <SellerOrdersStockPage />,
   },
@@ -35,5 +35,10 @@ export const sellerRoutes = [
   {
     path: "/seller/saved-listings",
     element: <SellerSavedListingsPage />,
+  },
+  // Add this route entry:
+  {
+    path: "/seller/profile",
+    element: <SellerProfilePage />,
   },
 ];

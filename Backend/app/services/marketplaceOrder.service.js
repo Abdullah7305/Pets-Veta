@@ -23,12 +23,20 @@ exports.createMarketplaceOrder = async (buyerId, payload) => {
         status: "ACTIVE",
       },
       include: {
-        seller: true,
+        seller: true, // 💡 Already includes SellerProfile (which contains userId)
       },
     });
 
     if (products.length !== items.length) {
       throw new Error("Some products are not available");
+    }
+
+    const isOwnerPurchasing = products.some(
+      (product) => product.seller.userId === buyerId
+    );
+
+    if (isOwnerPurchasing) {
+      throw new Error("You cannot purchase your own listed products or pets.");
     }
 
     const sellerIds = [...new Set(products.map((product) => product.sellerId))];

@@ -1,5 +1,6 @@
 import { api } from "@/features/api interface/axios.interface";
 import type { MarketplaceProduct } from "@/features/marketplace1/api/marketplace.api";
+import type { SellerProfile } from "../types/seller.types";
 
 export type SellerProductPayload = {
   title: string;
@@ -37,6 +38,13 @@ export const fetchSellerProducts = async () => {
   );
 
   return response.data.data;
+};
+
+export const fetchMySellerProfileApi = async () => {
+  const response = await api.get<{ success: boolean; data: SellerProfile }>(
+    "seller/profile"
+  );
+  return response.data;
 };
 
 export const createSellerProduct = async (payload: SellerProductPayload | FormData) => {
@@ -83,4 +91,18 @@ export const fetchSellerOrders = async () => {
   );
 
   return response.data.data;
+};
+
+
+export const createOrUpdateSellerProfileApi = async (payload: FormData) => {
+  const response = await api.post<{ success: boolean; data: SellerProfile }>(
+    "seller/profile",
+    payload,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+  return response.data;
 };
