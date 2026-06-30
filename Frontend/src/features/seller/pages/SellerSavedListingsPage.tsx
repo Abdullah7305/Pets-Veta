@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FaCheckCircle,
@@ -23,7 +23,7 @@ import {
   createOrUpdateSellerProfileApi,
   deleteSellerProduct,
 } from "../api/seller.api";
-import type { SellerProfile } from "../types/seller.types";
+import type { SellerApiError, SellerProfile } from "../types/seller.types";
 import type { SellerProfileFormData } from "../schemas/sellerProfile.schema";
 
 const SellerProfilePage = () => {
@@ -36,7 +36,7 @@ const SellerProfilePage = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
-  const loadSellerProfile = async () => {
+  const loadSellerProfile = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
@@ -44,9 +44,10 @@ const SellerProfilePage = () => {
       if (response.success) {
         setProfile(response.data);
       }
-    } catch (err: any) {
+    } catch (err) {
+      const apiError = err as SellerApiError;
       console.error("Seller profile query failed:", err);
-      if (err?.response?.status === 401) {
+      if (apiError.response?.status === 401) {
         navigate("/login", { state: { redirectTo: "/seller/profile" } });
         return;
       }
@@ -54,11 +55,42 @@ const SellerProfilePage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate]);
 
   useEffect(() => {
-    loadSellerProfile();
-  }, []);
+    let ignore = false;
+
+    const loadInitialSellerProfile = async () => {
+      try {
+        const response = await fetchMySellerProfileApi();
+        if (ignore) return;
+
+        if (response.success) {
+          setProfile(response.data);
+        }
+      } catch (err) {
+        if (ignore) return;
+
+        const apiError = err as SellerApiError;
+        console.error("Seller profile query failed:", err);
+        if (apiError.response?.status === 401) {
+          navigate("/login", { state: { redirectTo: "/seller/profile" } });
+          return;
+        }
+        setError("Unable to load store profile details. Please try again.");
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadInitialSellerProfile();
+
+    return () => {
+      ignore = true;
+    };
+  }, [navigate]);
 
   const handleProfileUpdate = async (data: SellerProfileFormData) => {
     try {
@@ -83,10 +115,11 @@ const SellerProfilePage = () => {
         // Refresh local dashboard bindings
         await loadSellerProfile();
       }
-    } catch (err: any) {
+    } catch (err) {
+      const apiError = err as SellerApiError;
       console.error("Store update failed:", err);
       setProfileError(
-        err?.response?.data?.message || "Failed to update your store identity."
+        apiError.response?.data?.message || "Failed to update your store identity."
       );
     } finally {
       setIsSaving(false);

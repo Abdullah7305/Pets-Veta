@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
+import PageBackButton from "@/shared/components/BackButton/PageBackButton";
 import {
   clearCart,
   getCartItems,
@@ -40,6 +41,10 @@ const CartPage = () => {
 
   return (
     <main className="min-h-screen bg-[#f7fbfb] px-6 py-8 lg:px-12">
+      <div className="mb-5">
+        <PageBackButton fallbackPath="/marketplace1" />
+      </div>
+
       <h1 className="text-3xl font-bold text-[#07182c]">Shopping Cart</h1>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_360px]">

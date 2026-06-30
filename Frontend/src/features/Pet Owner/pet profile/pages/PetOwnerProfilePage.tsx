@@ -4,6 +4,7 @@ import axios from "axios";
 import PetForm from "../../pet details/components/PetForm";
 import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
+import PageBackButton from "@/shared/components/BackButton/PageBackButton";
 import { useAuth } from "@/features/Auth/hooks/authhook";
 
 import EditPetOwnerProfileModal from "../components/EditPetOwnerProfileModal";
@@ -189,9 +190,11 @@ const PetOwnerProfilePage = () => {
   return (
     <>
       <main className="min-h-screen bg-[#F8FAFA] px-4 py-6 text-[#20263D] sm:px-6 lg:px-10">
-        <section className="mx-auto max-w-7xl">
+        <section className="mx-auto max-w-7xl space-y-5">
+          <PageBackButton fallbackPath="/" />
+
           {error && (
-            <div className="mb-5 rounded-2xl border border-red-100 bg-red-50 px-5 py-3 text-sm font-semibold text-red-600">
+            <div className="rounded-2xl border border-red-100 bg-red-50 px-5 py-3 text-sm font-semibold text-red-600">
               {error}
             </div>
           )}
@@ -222,6 +225,7 @@ const PetOwnerProfilePage = () => {
       {openPetForm && (
         <div
           className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 overscroll-contain text-center"
+          data-lenis-prevent
           role="dialog"
           aria-modal="true"
         >

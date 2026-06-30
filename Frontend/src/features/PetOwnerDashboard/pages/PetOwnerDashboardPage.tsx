@@ -10,6 +10,7 @@ import { dashboardData } from "../data/dashboard.data";
 import { getMyPetsApi } from "@/features/Pet Owner/pet profile/api/pets.api";
 import { useAuth } from "@/features/Auth/hooks/authhook";
 import type { Pet } from "../types/petOwnerDashboard.types";
+import type { Pet as ProfilePet } from "@/features/Pet Owner/pet profile/types/petProfile.types";
 
 const PetOwnerDashboardPage = () => {
   const { user } = useAuth();
@@ -28,7 +29,7 @@ const PetOwnerDashboardPage = () => {
 
         if (response.success && Array.isArray(response.data)) {
           // Map to correct dashboard type compatibility
-          const mappedPets: Pet[] = response.data.map((pet: any) => ({
+          const mappedPets: Pet[] = response.data.map((pet: ProfilePet) => ({
             id: pet.id,
             petOwnerId: pet.petOwnerId || "",
             name: pet.name,

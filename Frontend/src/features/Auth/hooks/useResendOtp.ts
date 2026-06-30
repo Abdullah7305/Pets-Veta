@@ -6,11 +6,13 @@ export const useResendOtp = (options: UseMutationOptions<ApiResponse, Error>) =>
     return useMutation({
         mutationFn: resendUserOtp,
         ...options,
-        onSuccess: (data) => {
+        onSuccess: (data, variables, context) => {
             console.log("Resend OTP Success ", data)
+            options.onSuccess?.(data, variables, context)
         },
-        onError: (error) => {
+        onError: (error, variables, context) => {
             console.log("Resend OTP error ", error.message)
+            options.onError?.(error, variables, context)
         }
     })
 }

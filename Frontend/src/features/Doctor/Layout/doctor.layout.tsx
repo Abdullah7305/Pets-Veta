@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Menu } from "lucide-react";
 import { Outlet } from "react-router-dom";
+import PageBackButton from "@/shared/components/BackButton/PageBackButton";
 import { DoctorSidebar } from "../components/DoctorSideBar"; // Adjust path to your Sidebar
 
 export const DoctorLayout = () => {
@@ -25,6 +26,9 @@ export const DoctorLayout = () => {
                 </header>
 
                 <div className="mx-auto w-full max-w-7xl p-4 sm:p-5 md:p-6 lg:p-8">
+                    <div className="mb-5">
+                        <PageBackButton fallbackPath="/" />
+                    </div>
 
                     <Outlet />
                 </div>

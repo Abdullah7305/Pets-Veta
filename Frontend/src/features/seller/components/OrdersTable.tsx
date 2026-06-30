@@ -15,7 +15,7 @@ const statusClass: Record<string, string> = {
 const OrdersTable = ({ orders }: OrdersTableProps) => {
   return (
     <Card className="p-0 overflow-hidden">
-      <div className="max-h-[310px] overflow-y-auto">
+      <div className="max-h-[310px] overflow-y-auto" data-lenis-prevent>
         <table className="w-full text-left text-sm">
           <thead className="sticky top-0 z-10 bg-white text-xs text-gray-500">
             <tr className="border-b border-gray-100">

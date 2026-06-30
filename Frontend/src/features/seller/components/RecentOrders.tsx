@@ -21,7 +21,7 @@ const RecentOrders = ({ orders, onViewAll }: RecentOrdersProps) => {
         </Button>
       </div>
 
-      <div className="max-h-[320px] overflow-y-auto pr-2">
+      <div className="max-h-[320px] overflow-y-auto pr-2" data-lenis-prevent>
         <table className="w-full text-left text-sm">
           <thead className="sticky top-0 bg-white text-xs text-gray-500">
             <tr>

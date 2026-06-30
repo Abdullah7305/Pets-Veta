@@ -20,6 +20,8 @@ const sellerRouter = require("./routes/seller.routes");
 const marketplaceRouter = require("./routes/marketplace.routes");
 const marketplaceOrderRouter = require("./routes/marketplaceOrder.routes");
 
+const messageRouter = require("./routes/message.routes");
+
 const paymentController = require("./controllers/payment.controller");
 const globalErrorHandler = require("./middleware/globalErrorHandler");
 
@@ -51,6 +53,8 @@ app.use("/api/v1/payment", paymentRouter)
 app.use("/api/v1/seller", sellerRouter);
 app.use("/api/v1/marketplace", marketplaceRouter);
 app.use("/api/v1/orders", marketplaceOrderRouter);
+
+app.use("/api/v1/messages", messageRouter);
 
 app.use(globalErrorHandler);
 

@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Button from "@/shared/components/Button/Button";
 import Input from "@/shared/components/Input/Input";
 import Card from "@/shared/components/Card/Card";
+import PageBackButton from "@/shared/components/BackButton/PageBackButton";
 import SellerHeader from "../components/SellerHeader";
 import SellerSidebar from "../components/SellerSidebar";
 import ProductImageUpload from "../components/ProductImageUpload";
@@ -173,6 +174,10 @@ const SellerProductFormPage = () => {
         <SellerHeader />
 
         <section className="p-6">
+          <div className="mb-5">
+            <PageBackButton fallbackPath="/seller/listings" />
+          </div>
+
           <div className="mb-5">
             <h1 className="text-2xl font-semibold text-gray-900">
               {isEditMode ? "Edit Product Listing" : "Add Product Listing"}

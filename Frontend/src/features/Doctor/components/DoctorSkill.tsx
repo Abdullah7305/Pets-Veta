@@ -142,7 +142,10 @@ const SkillForm = () => {
 
                         {/* ALWAYS OPENS DOWNWARD: Driven by top-full layout anchor */}
                         {isOpen && (
-                            <ul className="absolute z-50 left-0 right-0 top-full mt-1 max-h-48 overflow-y-auto bg-white border border-slate-200 rounded-lg shadow-lg text-sm text-slate-700">
+                            <ul
+                                className="absolute z-50 left-0 right-0 top-full mt-1 max-h-48 overflow-y-auto bg-white border border-slate-200 rounded-lg shadow-lg text-sm text-slate-700"
+                                data-lenis-prevent
+                            >
                                 {VETERINARY_SKILLS.map((item, index) => (
                                     <li
                                         key={index}

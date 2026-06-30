@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Stethoscope, UserRound } from "lucide-react";
+import PageBackButton from "@/shared/components/BackButton/PageBackButton";
 
 const ContinueAsPage = () => {
   const navigate = useNavigate();
@@ -7,6 +8,10 @@ const ContinueAsPage = () => {
   return (
     <section className="min-h-screen bg-gradient-to-br from-[#f4fbff] via-white to-[#e8fbfa] flex items-center justify-center px-6 py-12">
       <div className="w-full max-w-5xl">
+        <div className="mb-6">
+          <PageBackButton fallbackPath="/" />
+        </div>
+
         <div className="text-center mb-10">
           <button
             type="button"

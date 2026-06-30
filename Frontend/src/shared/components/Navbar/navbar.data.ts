@@ -1,7 +1,12 @@
 interface NavData {
     id: number;
     title: string;
-    path: string;
+    path?: string;
+    children?: {
+        id: number;
+        title: string;
+        path: string;
+    }[];
 }
 
 const NAVLINK: NavData[] = [
@@ -39,6 +44,22 @@ const NAVLINK: NavData[] = [
         id: 7,
         title: "Contact",
         path: "/contact"
+    },
+    {
+        id: 8,
+        title: "Dashboards",
+        children: [
+            {
+                id: 1,
+                title: "Pet Owner",
+                path: "/pet-owner/dashboard"
+            },
+            {
+                id: 2,
+                title: "Seller",
+                path: "/seller/dashboard"
+            }
+        ]
     }
 ];
 

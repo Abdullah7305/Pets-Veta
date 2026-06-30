@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import PetForm from "../components/PetForm";
 import { createPetApi } from "../api/pets.api";
+import PageBackButton from "@/shared/components/BackButton/PageBackButton";
 
 import type { PetFormData } from "../schemas/pet.schema";
 
@@ -33,6 +34,10 @@ const AddPetPage = () => {
 
   return (
     <main className="min-h-screen bg-[#F8FAFA] px-4 py-8 sm:px-6">
+      <div className="mx-auto mb-5 max-w-3xl">
+        <PageBackButton fallbackPath="/pet-owner/profile" />
+      </div>
+
       {apiError && (
         <div className="mx-auto mb-5 max-w-3xl rounded-2xl border border-red-100 bg-red-50 px-5 py-3 text-sm font-semibold text-red-600">
           {apiError}
