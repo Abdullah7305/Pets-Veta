@@ -41,3 +41,13 @@ export const getDoctorAppointments = async () => {
     throw error;
   }
 };
+
+export const completeAppointmentApi = async (appointmentId: string): Promise<ApiResponse<any>> => {
+  try {
+    const response = await api.patch(`doctor/appointments/${appointmentId}/complete`);
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error);
+    throw error;
+  }
+};

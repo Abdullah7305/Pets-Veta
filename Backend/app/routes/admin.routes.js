@@ -30,4 +30,7 @@ Router
     .route('/reject/doctor')
     .post(authMiddleware.protect, authenticateRole.authenticateUserRole('Admin'), adminController.rejectDoctor)
 
+Router
+    .route('/all/orders')
+    .get(authMiddleware.protect, authenticateRole.authenticateUserRole('Admin'), adminController.allOrderList);
 module.exports = Router;

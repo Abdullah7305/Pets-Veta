@@ -32,7 +32,7 @@ export const doctorDashboardRoutes = [
         element: <DoctorAvailabilityPage />,
       },
       {
-        path: "pateints",
+        path: "appointments",
         element: <PatientsPage />
       }
     ],

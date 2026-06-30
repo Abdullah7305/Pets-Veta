@@ -1,6 +1,7 @@
 import AdminLoginPage from "./pages/AdminLoginPage";
 import AdminLayout from "./layout/AdminLayout";
 import AdminDoctorPage from "./pages/AdminDoctorPage";
+import AdminOrdersPage from "./pages/AdminOrdersPage";
 import { AdminProtectedRoutes } from "@/ProtectedRoutes/AdminProtectedRoutes";
 
 
@@ -23,6 +24,10 @@ const adminRoutes = [
       {
         index: true,
         element: <AdminDoctorPage />
+      },
+      {
+        path: "orders",
+        element: <AdminOrdersPage />
       }
     ]
   }

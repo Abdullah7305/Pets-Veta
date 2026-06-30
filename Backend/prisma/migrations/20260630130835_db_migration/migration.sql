@@ -306,6 +306,8 @@ CREATE TABLE "MarketplaceOrder" (
     "discount" DECIMAL(10,2),
     "shippingAddress" TEXT,
     "phoneNumber" TEXT,
+    "stripePaymentIntentId" TEXT,
+    "stripeClientSecret" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -488,6 +490,9 @@ CREATE UNIQUE INDEX "SavedListing_userId_productId_key" ON "SavedListing"("userI
 
 -- CreateIndex
 CREATE UNIQUE INDEX "MarketplaceOrder_orderNumber_key" ON "MarketplaceOrder"("orderNumber");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "MarketplaceOrder_stripePaymentIntentId_key" ON "MarketplaceOrder"("stripePaymentIntentId");
 
 -- CreateIndex
 CREATE INDEX "MarketplaceOrder_buyerId_idx" ON "MarketplaceOrder"("buyerId");

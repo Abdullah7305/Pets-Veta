@@ -1,13 +1,29 @@
 import { CalendarDays, DollarSignIcon, Home, LogOut, Users, X } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import Logo from "@/shared/components/Logo/Logo";
 import type { DoctorSidebarProps } from "../doctor.types";
+import { useAuth } from "@/features/Auth/hooks/authhook";
+import { logoutUserApi } from "@/features/Auth/api/loginuser.api";
 
 export const DoctorSidebar = ({ sidebarOpen, setSidebarOpen }: DoctorSidebarProps) => {
+    const navigate = useNavigate();
+    const { setUser, setIsAuthenticateUser } = useAuth();
+
+    const handleLogout = async () => {
+        try {
+            await logoutUserApi();
+        } catch (error) {
+            console.error("Doctor logout failed:", error);
+        } finally {
+           
+            setUser(undefined);
+            setIsAuthenticateUser(false);
+            navigate("/login");
+        }
+    };
     const sidebarLinks = [
         { id: 1, label: "Dashboard", icon: Home, address: "doctor-dashboard" },
         { id: 2, label: "Appointments", icon: CalendarDays, address: "appointments" },
-        { id: 3, label: "Patients", icon: Users, address: "pateints" },
         { id: 4, label: "Availability", icon: CalendarDays, address: "doctor-availability" },
         { id: 5, label: "Pricing", icon: DollarSignIcon, address: "doctor-pricing" },
         { id: 6, label: "Profile", icon: Users, address: "doctor-profile" },
@@ -66,6 +82,7 @@ export const DoctorSidebar = ({ sidebarOpen, setSidebarOpen }: DoctorSidebarProp
                     <div className="pt-8">
                         <button
                             type="button"
+                            onClick={handleLogout}
                             className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold text-red-500 transition hover:bg-red-50"
                         >
                             <LogOut size={19} />

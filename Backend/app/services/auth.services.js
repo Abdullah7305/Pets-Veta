@@ -1,4 +1,5 @@
-const prisma  = require('../config/prisma');
+const prisma = require('../config/prisma');
+const { VerificationStatus } = require('@prisma/client')
 const { getGoogleProfileToken } = require('../utils/googleAuth');
 const { createAuthTokens } = require('../services/authToken.services')
 const jwt = require('jsonwebtoken');
@@ -11,7 +12,7 @@ const createDoctor = async (doctorData) => {
         data: {
             fullName: doctorData.fullName,
             email: doctorData.email,
-            password: doctorData.hashedPassword,
+            password: doctorData.password,
             username: doctorData.username,
             phone: doctorData.phone,
             doctors: {
@@ -169,7 +170,8 @@ const loginUser = async (userData) => {
 
     if (user?.userRole.role.toLowerCase() === 'doctor') {
         console.log("Hitting condition...");
-        if (user.doctors.isVerified === 'PENDING') {
+        if (user.doctors.isVerified === VerificationStatus.PENDING) {
+            console.log("I Was Running ....")
             throw new AppError("Unverified User is not allowed yet...", 403);
             return;
         }
@@ -220,9 +222,23 @@ const verifyEmail = async (email) => {
             email: email
         },
         include: {
-            userRole: true
+            userRole: true,
+            doctors: {
+                select: {
+                    isVerified: true
+                }
+            }
+
+
         }
     })
+    if (validUser.userRole === 'DOCTOR') {
+        if (validUser.doctors.isVerified === VerificationStatus.PENDING) {
+            throw new AppError("Doctor is Not Allowed Yet", 400);
+            return;
+        }
+    }
+
     return validUser;
 }
 

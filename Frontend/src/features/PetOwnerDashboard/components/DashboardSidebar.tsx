@@ -13,6 +13,8 @@ import {
 
 import { NavLink, useNavigate } from "react-router-dom";
 import type { DashboardSidebarItem } from "../types/petOwnerDashboard.types";
+import { useAuth } from "@/features/Auth/hooks/authhook"; 
+import { logoutUserApi } from "@/features/Auth/api/loginuser.api"; 
 
 const sidebarItems: DashboardSidebarItem[] = [
   {
@@ -25,11 +27,6 @@ const sidebarItems: DashboardSidebarItem[] = [
     path: "/pet-owner/appointments",
     icon: <CalendarDays size={20} />,
   },
-  // {
-  //   label: "Reports",
-  //   path: "/pet-owner/reports",
-  //   icon: <FileText size={20} />,
-  // },
   {
     label: "Find Doctor",
     path: "/doctors",
@@ -50,19 +47,23 @@ const sidebarItems: DashboardSidebarItem[] = [
     path: "/pet-owner/profile",
     icon: <UserRound size={20} />,
   },
-  // {
-  //   label: "Settings",
-  //   path: "/pet-owner/settings",
-  //   icon: <Settings size={20} />,
-  // },
 ];
 
 const DashboardSidebar = () => {
   const navigate = useNavigate();
+  const { setUser, setIsAuthenticateUser } = useAuth(); 
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await logoutUserApi(); 
+    } catch (error) {
+      console.error("User logout failed:", error);
+    } finally {
+      
+      setUser(undefined);
+      setIsAuthenticateUser(false);
+      navigate("/login");
+    }
   };
 
   return (
@@ -95,10 +96,9 @@ const DashboardSidebar = () => {
             key={item.path}
             to={item.path}
             className={({ isActive }) =>
-              `flex items-center gap-4 rounded-xl px-4 py-3.5 text-sm font-bold transition ${
-                isActive
-                  ? "bg-[#EAF7F5] text-[#078b91]"
-                  : "text-[#20263D] hover:bg-slate-50"
+              `flex items-center gap-4 rounded-xl px-4 py-3.5 text-sm font-bold transition ${isActive
+                ? "bg-[#EAF7F5] text-[#078b91]"
+                : "text-[#20263D] hover:bg-slate-50"
               }`
             }
           >
@@ -108,26 +108,11 @@ const DashboardSidebar = () => {
         ))}
       </nav>
 
-      {/* Small sidebar info */}
-      {/* <div className="mx-4 mb-5 rounded-2xl bg-[#F1FAF8] p-5">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-[#078b91]">
-          <PawPrint size={24} />
-        </div>
-
-        <h3 className="mt-4 text-lg font-black text-[#101b3d]">
-          We care for your pets
-        </h3>
-
-        <p className="mt-2 text-sm font-medium leading-6 text-slate-500">
-          Book appointments and track your pet&apos;s health easily.
-        </p>
-      </div> */}
-
       {/* Logout */}
       <button
         type="button"
-        onClick={handleLogout}
-        className="mx-5 mb-6 flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-red-500 transition hover:bg-red-50"
+        onClick={handleLogout} 
+        className="mx-5 mb-6 flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-red-500 transition hover:bg-red-50 cursor-pointer"
       >
         <LogOut size={20} />
         Logout

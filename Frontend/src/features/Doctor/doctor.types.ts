@@ -88,6 +88,7 @@ export type DoctorSidebarProps = {
 
 export type PatientCardProps = {
     appointment: DoctorAppointment;
+     onMarkAsDone?: (appointmentId: string) => void; 
 };
 
 export type DoctorServiceData = {
@@ -120,3 +121,5 @@ export interface BackendScheduleItem {
 export interface ScheduleTableProps {
     schedules: BackendScheduleItem[];
 }
+
+

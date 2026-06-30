@@ -34,7 +34,7 @@ export const createOrderPaymentIntentApi = async (orderId: string) => {
     }
 };
 
-// 💡 Added: Polls the transaction status of an order
+
 export const getOrderPaymentStatusApi = async (orderId: string) => {
     try {
         const response = await api.get(

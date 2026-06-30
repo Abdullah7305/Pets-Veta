@@ -51,5 +51,13 @@ Router
     .route("/schedule/doctor/:doctorId")
     .get(doctorScheduleController.getDoctorSchedulesByDoctorId);
 
+Router
+    .route("/appointments/:appointmentId/complete")
+    .patch(
+        authMiddlware.protect,
+        authenticateRole.authenticateUserRole("Doctor"),
+        doctorController.completeAppointment
+    );
+
 
 module.exports = Router;

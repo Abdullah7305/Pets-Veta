@@ -15,7 +15,7 @@ const FindDoctor = () => {
 
   const doctors = data?.data?.data ?? [];
   const totalPages = data?.data?.meta?.totalPages ?? 1;
-
+  console.log("Doctors ========>>>", doctors)
   const handleBookAppointment = (doctorId: string, checkupTime?: string) => {
     console.log("Book appointment doctor id:", doctorId, "checkup time:", checkupTime);
   };
@@ -44,12 +44,15 @@ const FindDoctor = () => {
             onBookAppointment={handleBookAppointment}
           />
 
-          <Pagination
-            page={page}
-            totalPages={totalPages}
-            onPrevious={() => setPage((prev) => prev - 1)}
-            onNext={() => setPage((prev) => prev + 1)}
-          />
+          {
+            doctors.length>0 &&
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              onPrevious={() => setPage((prev) => prev - 1)}
+              onNext={() => setPage((prev) => prev + 1)}
+            />
+          }
         </section>
       </section>
     </main>

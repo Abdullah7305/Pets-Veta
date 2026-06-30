@@ -39,11 +39,13 @@ Backend/.gitignore
 Backend/app/app-code.md
 Backend/app/app.js
 Backend/app/config/cloudinary.config.js
+Backend/app/config/gemini.config.js
 Backend/app/config/multer.config.js
 Backend/app/config/prisma.js
 Backend/app/config/redis.config.js
 Backend/app/config/stripe.js
 Backend/app/controllers/admin.controller.js
+Backend/app/controllers/ai.controller.js
 Backend/app/controllers/auth.controller.js
 Backend/app/controllers/doctor.controller.js
 Backend/app/controllers/doctorSchedule.controller.js
@@ -61,6 +63,7 @@ Backend/app/middleware/globalErrorHandler.js
 Backend/app/middleware/rateLimiter.js
 Backend/app/middleware/zod.middleware.js
 Backend/app/routes/admin.routes.js
+Backend/app/routes/ai.routes.js
 Backend/app/routes/auth.routes.js
 Backend/app/routes/doctor.routes.js
 Backend/app/routes/marketplace.routes.js
@@ -74,6 +77,7 @@ Backend/app/scripts/runCleanupOnce.js
 Backend/app/scripts/runScheduleCleanupOnce.js
 Backend/app/server.js
 Backend/app/services/admin.services.js
+Backend/app/services/ai.services.js
 Backend/app/services/appointmentCleanup.service.js
 Backend/app/services/auth.services.js
 Backend/app/services/authCookies.services.js
@@ -82,7 +86,6 @@ Backend/app/services/doctor.services.js
 Backend/app/services/doctorSchedule.service.js
 Backend/app/services/marketplace.service.js
 Backend/app/services/marketplaceOrder.service.js
-Backend/app/services/payment.service.js
 Backend/app/services/petOwner.services.js
 Backend/app/services/scheduleCleanup.service.js
 Backend/app/services/seller.service.js
@@ -100,6 +103,7 @@ Backend/app/utils/validateRequest.js
 Backend/package.json
 Backend/prisma/dbClear.js
 Backend/prisma/migrations/20260619151141_y/migration.sql
+Backend/prisma/migrations/20260623174919_add_stripe_to_marketplace_order/migration.sql
 Backend/prisma/migrations/migration_lock.toml
 Backend/prisma/schema.prisma
 Backend/prisma/seed.js
@@ -120,6 +124,7 @@ Frontend/src/assets/icons/doctor.png
 Frontend/src/assets/icons/Gemini_Generated_Image_34da4a34da4a34da-removebg-preview.png
 Frontend/src/assets/icons/user-profile-1.jpg
 Frontend/src/assets/icons/user-profile-2.jpg
+Frontend/src/assets/lotties/404-cat.json
 Frontend/src/assets/shared/images/bannerImage.png
 Frontend/src/assets/shared/images/dashboard-choice/pet-owner-choice.png
 Frontend/src/assets/shared/images/dashboard-choice/seller-choice.png
@@ -176,6 +181,7 @@ Frontend/src/features/Admin/pages/DoctorRequestsPage.tsx
 Frontend/src/features/Admin/schema/admin.login.schema.ts
 Frontend/src/features/Admin/types/admin.types.ts
 Frontend/src/features/AiAssistance/aiAssistant.route.tsx
+Frontend/src/features/AiAssistance/api/aiAssistant.api.ts
 Frontend/src/features/AiAssistance/components/AiChatBox.tsx
 Frontend/src/features/AiAssistance/components/AiCTA.tsx
 Frontend/src/features/AiAssistance/components/AiFeatures.tsx
@@ -323,8 +329,11 @@ Frontend/src/features/marketplace1/pages/MarketplaceProductDetailPage.tsx
 Frontend/src/features/marketplace1/types/marketplace.types.ts
 Frontend/src/features/Payment/api/payment.api.ts
 Frontend/src/features/Payment/components/AppointmentPayment.tsx
+Frontend/src/features/Payment/components/OrderPaymentForm.tsx
 Frontend/src/features/Payment/components/PaymentSummaryCard.tsx
 Frontend/src/features/Payment/page/AppointmentPaymentPage.tsx
+Frontend/src/features/Payment/page/OrderPaymentPage.tsx
+Frontend/src/features/Payment/page/OrderPaymentSuccessPage.tsx
 Frontend/src/features/Payment/page/PaymentCancelPage.tsx
 Frontend/src/features/Payment/page/PaymentSuccessPage.tsx
 Frontend/src/features/Payment/payment.routes.tsx
@@ -371,10 +380,12 @@ Frontend/src/features/PetOwnerDashboard/components/PetPreviewCard.tsx
 Frontend/src/features/PetOwnerDashboard/components/QuickActions.tsx
 Frontend/src/features/PetOwnerDashboard/components/UpcomingAppointments.tsx
 Frontend/src/features/PetOwnerDashboard/data/dashboard.data.ts
+Frontend/src/features/PetOwnerDashboard/pages/PetOwnerAppointmentsPage.tsx
 Frontend/src/features/PetOwnerDashboard/pages/PetOwnerDashboardPage.tsx
 Frontend/src/features/PetOwnerDashboard/petOwnerDashboard.route.tsx
 Frontend/src/features/PetOwnerDashboard/types/petOwnerDashboard.types.ts
 Frontend/src/features/seller/api/seller.api.ts
+Frontend/src/features/seller/components/EditSellerProfileModal.tsx
 Frontend/src/features/seller/components/OrdersTable.tsx
 Frontend/src/features/seller/components/ProductCard.tsx
 Frontend/src/features/seller/components/ProductImageUpload.tsx
@@ -394,6 +405,7 @@ Frontend/src/features/seller/pages/SellerProductFormPage.tsx
 Frontend/src/features/seller/pages/SellerProductsPage.tsx
 Frontend/src/features/seller/pages/SellerSavedListingsPage.tsx
 Frontend/src/features/seller/schemas/sellerProduct.schema.ts
+Frontend/src/features/seller/schemas/sellerProfile.schema.ts
 Frontend/src/features/seller/seller.routes.tsx
 Frontend/src/features/seller/types/seller.types.ts
 Frontend/src/features/Services/components/Banner.tsx
@@ -417,6 +429,7 @@ Frontend/src/ProtectedRoutes/DoctorProtectedRoutes.tsx
 Frontend/src/ProtectedRoutes/PetOwnerProtectedRoutes.tsx
 Frontend/src/ProtectedRoutes/ProtectedRoutes.tsx
 Frontend/src/routes/routes.tsx
+Frontend/src/shared/components/BackButton/FloatingBackButton.tsx
 Frontend/src/shared/components/Button/Button.tsx
 Frontend/src/shared/components/Button/index.ts
 Frontend/src/shared/components/Card/Card.tsx
@@ -427,6 +440,7 @@ Frontend/src/shared/components/Logo/Logo.tsx
 Frontend/src/shared/components/Navbar/navbar.data.ts
 Frontend/src/shared/components/Navbar/Navbar.tsx
 Frontend/src/shared/components/Notfound/Notfound.tsx
+Frontend/src/shared/components/Notfound/NotFoundAnimation.tsx
 Frontend/src/shared/components/NotificationBell/NotificationBell.tsx
 Frontend/src/shared/components/SearchBar/SearchBar.tsx
 Frontend/src/shared/components/UserProfile/UserProfile.tsx
@@ -443,46 +457,6 @@ Frontend/vite.config.ts
 ```
 
 # Files
-
-## File: Frontend/src/features/Appointment/apis/bookSlot.ts
-````typescript
-import { api, handleAxiosError } from "@/features/api interface/axios.interface";
-
-export type BookableSlot = {
-    scheduleId: string;
-    date: string;
-    day: string;
-    startTime: string;
-    endTime: string;
-    startDateTime: string;
-    endDateTime: string;
-}
-export type Data = {
-    id: string;
-    name: string;
-    image: string;
-    specialization: string;
-    specialty?: string;
-    education: string;
-    experience: number;
-    fees: number;
-    status: string;
-    availableDays: string[];
-    availableSlots: BookableSlot[];
-    todaySlots: BookableSlot[];
-    nextAvailable: BookableSlot | null;
-}
-
-
-export const bookDoctorSlot = async (schedule) => {
-    try {
-        const response = await api.post("http://localhost:8000/api/v1/petOwner/book-slot", schedule);
-        return response.data
-    } catch (error) {
-        handleAxiosError(error)
-    }
-}
-````
 
 ## File: Frontend/src/features/Appointment/apis/type.ts
 ````typescript
@@ -3060,6 +3034,41 @@ module.exports = requireFields;
 // module.exports = cloudinary;
 ````
 
+## File: Backend/app/config/gemini.config.js
+````javascript
+const GEMINI_CONFIG = {
+  model: 'gemini-2.5-flash',
+  config: {
+    // Raising temperature to 0.6 introduces lexical variety and prevents repetitive phrases.
+    temperature: 0.6,
+    systemInstruction: `
+      You are the official AI assistant for "Pets Veta", an all-in-one platform specializing in pet selling, pet food marketplaces, and veterinary appointments.
+      
+      Strict Rules & Instructions:
+      
+      1. NO CANNED OR REPETITIVE DISCLAIMERS: Do not repeat the same generic safety template for every health question. Every response concerning a pet's symptoms must be custom-tailored, natural, and dynamic.
+      
+      2. Handling Pet Health & Symptom Queries:
+         If a user describes symptoms (e.g., itching, vomiting, lethargy), follow this structure to generate a helpful, dynamic response:
+         - EMPATHY: Acknowledge the pet's issue with genuine compassion (e.g., "I'm so sorry to hear your cat is feeling lethargic").
+         - EDUCATIONAL CONTEXT: Offer 2-3 general, non-diagnostic possibilities to educate the owner (e.g., "Mild lethargy can sometimes stem from minor stomach upset, vaccine reactions, or changes in weather"). Always clarify that these are general ideas, not a definitive diagnosis.
+         - AT-HOME SUPPORT: Offer safe, basic comfort tips (e.g., keeping them hydrated, keeping them in a quiet space).
+         - DYNAMIC ACTIONABLE CALL-TO-ACTION: Encourage them to use Pets Veta to book an appointment with a verified vet. Vary your phrasing each time.
+      
+      3. Topic Scope (ON-TOPIC):
+         ONLY answer questions directly related to pets (dogs, cats, birds, rabbits, etc.), pet health, nutrition and food formulas, general pet care advice, or booking consultations.
+      
+      4. Off-Topic Refusals (OFF-TOPIC):
+         If a user asks an off-topic question (e.g., general programming, human cooking, math, unrelated history, or politics), politely and briefly decline. 
+         
+         Example Refusal: "I'm sorry, as the Pets Veta assistant, I can only help you with pet care, pet listings, nutrition, and veterinary bookings. Please let me know if you have a pet-related question!"
+    `
+  }
+};
+
+module.exports = GEMINI_CONFIG;
+````
+
 ## File: Backend/app/config/multer.config.js
 ````javascript
 const multer = require('multer');
@@ -3100,6 +3109,27 @@ const upload = multer(
 
 
 module.exports = upload;
+````
+
+## File: Backend/app/controllers/ai.controller.js
+````javascript
+const catchAsync = require('../utils/CatchAsync');
+const requireFields = require('../utils/validateRequest');
+const sendResponse = require('../utils/SendResponse');
+const aiServices = require('../services/ai.services');
+
+const handlePetAssistantQuery = catchAsync(async (req, res) => {
+    requireFields(['prompt'], req.body);
+    const { prompt } = req.body;
+
+    const aiResponse = await aiServices.generatePetAssistantResponse(prompt.trim());
+
+    return sendResponse(res, 200, 'AI response generated successfully', {
+        response: aiResponse
+    });
+});
+
+module.exports = { handlePetAssistantQuery };
 ````
 
 ## File: Backend/app/controllers/marketplace.controller.js
@@ -3258,206 +3288,6 @@ exports.getMyMarketplaceOrders = async (req, res) => {
 };
 ````
 
-## File: Backend/app/controllers/seller.controller.js
-````javascript
-const sellerService = require("../services/seller.service");
-const { uploadToCloudinary } = require("../utils/cloudinary.utils");
-
-const getUserId = (req) => {
-  return req.user?.id || req.user?.userId;
-};
-
-const uploadProductImages = async (files = []) => {
-  const uploadedImages = [];
-
-  for (const file of files) {
-    const uploadedImage = await uploadToCloudinary(
-      file.buffer,
-      "pets-veta/marketplace-products"
-    );
-
-    uploadedImages.push({
-      publicUrl: uploadedImage.secure_url,
-      publicId: uploadedImage.public_id,
-    });
-  }
-
-  return uploadedImages;
-};
-
-exports.createOrUpdateSellerProfile = async (req, res) => {
-  try {
-    const userId = getUserId(req);
-
-    if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized user",
-      });
-    }
-
-    const profile = await sellerService.createOrUpdateSellerProfile(
-      userId,
-      req.body
-    );
-
-    return res.status(200).json({
-      success: true,
-      message: "Seller profile saved successfully",
-      data: profile,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
-exports.getMySellerProfile = async (req, res) => {
-  try {
-    const userId = getUserId(req);
-
-    const profile = await sellerService.getMySellerProfile(userId);
-
-    return res.status(200).json({
-      success: true,
-      data: profile,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
-exports.createProduct = async (req, res) => {
-  try {
-    const userId = getUserId(req);
-    const uploadedImages = await uploadProductImages(req.files);
-    const payload = req.body || {};
-
-    const product = await sellerService.createProduct(userId, {
-      ...payload,
-      images: uploadedImages,
-    });
-
-    return res.status(201).json({
-      success: true,
-      message: "Product created successfully",
-      data: product,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
-exports.getMyProducts = async (req, res) => {
-  try {
-    const userId = getUserId(req);
-
-    const products = await sellerService.getMyProducts(userId);
-
-    return res.status(200).json({
-      success: true,
-      data: products,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
-exports.updateProduct = async (req, res) => {
-  try {
-    const userId = getUserId(req);
-    const { id } = req.params;
-    const uploadedImages = await uploadProductImages(req.files);
-    const payload = req.body || {};
-
-    const product = await sellerService.updateProduct(userId, id, {
-      ...payload,
-      images: uploadedImages,
-    });
-
-    return res.status(200).json({
-      success: true,
-      message: "Product updated successfully",
-      data: product,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
-exports.deleteProduct = async (req, res) => {
-  try {
-    const userId = getUserId(req);
-    const { id } = req.params;
-
-    await sellerService.deleteProduct(userId, id);
-
-    return res.status(200).json({
-      success: true,
-      message: "Product deleted successfully",
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
-exports.updateProductStock = async (req, res) => {
-  try {
-    const userId = getUserId(req);
-    const { id } = req.params;
-    const { stock } = req.body;
-
-    const product = await sellerService.updateProductStock(userId, id, stock);
-
-    return res.status(200).json({
-      success: true,
-      message: "Stock updated successfully",
-      data: product,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
-exports.getSellerOrders = async (req, res) => {
-  try {
-    const userId = getUserId(req);
-
-    const orders = await sellerService.getSellerOrders(userId);
-
-    return res.status(200).json({
-      success: true,
-      data: orders,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-````
-
 ## File: Backend/app/jobs/appointmentCleanup.job.js
 ````javascript
 const cron = require('node-cron');
@@ -3579,6 +3409,22 @@ const validateRequest = (schema) => {
 module.exports = { validateRequest };
 ````
 
+## File: Backend/app/routes/ai.routes.js
+````javascript
+const express = require('express');
+const authMiddleware = require('../middleware/auth.middleware');
+const aiController = require('../controllers/ai.controller');
+const { petOwnerLimiter } = require('../middleware/rateLimiter');
+
+const Router = express.Router();
+
+Router
+    .route('/assistant-chat')
+    .post(petOwnerLimiter, authMiddleware.protect, aiController.handlePetAssistantQuery);
+
+module.exports = Router;
+````
+
 ## File: Backend/app/routes/marketplace.routes.js
 ````javascript
 const express = require("express");
@@ -3623,42 +3469,6 @@ router.post("/", protect, createMarketplaceOrder);
 
 // Buyer Orders
 router.get("/my-orders", protect, getMyMarketplaceOrders);
-
-module.exports = router;
-````
-
-## File: Backend/app/routes/seller.routes.js
-````javascript
-const express = require("express");
-const router = express.Router();
-
-const {
-  createOrUpdateSellerProfile,
-  getMySellerProfile,
-  createProduct,
-  getMyProducts,
-  updateProduct,
-  deleteProduct,
-  updateProductStock,
-  getSellerOrders,
-} = require("../controllers/seller.controller");
-
-const { protect } = require("../middleware/auth.middleware");
-const upload = require("../config/multer.config");
-
-// Seller Profile
-router.post("/profile", protect, createOrUpdateSellerProfile);
-router.get("/profile", protect, getMySellerProfile);
-
-// Seller Products
-router.post("/product", protect, upload.array("images", 5), createProduct);
-router.get("/products", protect, getMyProducts);
-router.patch("/product/:id", protect, upload.array("images", 5), updateProduct);
-router.delete("/product/:id", protect, deleteProduct);
-router.patch("/product/:id/stock", protect, updateProductStock);
-
-// Seller Orders
-router.get("/orders", protect, getSellerOrders);
 
 module.exports = router;
 ````
@@ -3834,6 +3644,35 @@ cleanupPastUnbookedSchedules()
         console.error("Schedule cleanup failed:", error);
         process.exit(1);
     });
+````
+
+## File: Backend/app/services/ai.services.js
+````javascript
+const { GoogleGenAI } = require('@google/genai');
+const AppError = require('../utils/AppError');
+const GEMINI_CONFIG = require('../config/gemini.config');
+
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+const generatePetAssistantResponse = async (prompt) => {
+    try {
+        const response = await ai.models.generateContent({
+            model: GEMINI_CONFIG.model,
+            contents: prompt,
+            config: GEMINI_CONFIG.config,
+        });
+
+        return response.text;
+    } catch (error) {
+        console.error("Error in aiService:", error);
+        if (error.status === 429) {
+            throw new AppError("The AI assistant is currently busy. Please try again in a moment.", 429);
+        }
+        throw new AppError("Failed to communicate with the AI assistant service.", 500);
+    }
+};
+
+module.exports = { generatePetAssistantResponse };
 ````
 
 ## File: Backend/app/services/appointmentCleanup.service.js
@@ -4498,162 +4337,6 @@ exports.getSavedListings = async (userId) => {
                   profileImageUrl: true,
                 },
               },
-            },
-          },
-        },
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-};
-````
-
-## File: Backend/app/services/marketplaceOrder.service.js
-````javascript
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
-
-const generateOrderNumber = () => {
-  return `PV-${Date.now()}`;
-};
-
-exports.createMarketplaceOrder = async (buyerId, payload) => {
-  const { items, shippingAddress, phoneNumber } = payload;
-
-  if (!items || !Array.isArray(items) || items.length === 0) {
-    throw new Error("Order items are required");
-  }
-
-  return prisma.$transaction(async (tx) => {
-    const productIds = items.map((item) => item.productId);
-
-    const products = await tx.marketplaceProduct.findMany({
-      where: {
-        id: {
-          in: productIds,
-        },
-        status: "ACTIVE",
-      },
-      include: {
-        seller: true,
-      },
-    });
-
-    if (products.length !== items.length) {
-      throw new Error("Some products are not available");
-    }
-
-    const sellerIds = [...new Set(products.map((product) => product.sellerId))];
-
-    if (sellerIds.length > 1) {
-      throw new Error("One order can contain products from one seller only");
-    }
-
-    let totalAmount = 0;
-
-    const orderItemsData = items.map((item) => {
-      const product = products.find((p) => p.id === item.productId);
-
-      if (!product) {
-        throw new Error("Product not found");
-      }
-
-      const quantity = Number(item.quantity) || 1;
-
-      if (product.stock < quantity) {
-        throw new Error(`${product.title} has only ${product.stock} stock`);
-      }
-
-      totalAmount += Number(product.price) * quantity;
-
-      return {
-        productId: product.id,
-        quantity,
-        price: product.price,
-      };
-    });
-
-    const order = await tx.marketplaceOrder.create({
-      data: {
-        orderNumber: generateOrderNumber(),
-        buyerId,
-        sellerId: sellerIds[0],
-        totalAmount,
-        shippingAddress,
-        phoneNumber,
-        items: {
-          create: orderItemsData,
-        },
-      },
-      include: {
-        buyer: {
-          select: {
-            id: true,
-            fullName: true,
-            email: true,
-            phone: true,
-          },
-        },
-        seller: true,
-        items: {
-          include: {
-            product: {
-              include: {
-                images: true,
-              },
-            },
-          },
-        },
-      },
-    });
-
-    for (const item of items) {
-      const quantity = Number(item.quantity) || 1;
-
-      const product = products.find((p) => p.id === item.productId);
-
-      const newStock = product.stock - quantity;
-
-      await tx.marketplaceProduct.update({
-        where: {
-          id: item.productId,
-        },
-        data: {
-          stock: newStock,
-          status: newStock <= 0 ? "SOLD_OUT" : "ACTIVE",
-        },
-      });
-    }
-
-    return order;
-  });
-};
-
-exports.getMyMarketplaceOrders = async (buyerId) => {
-  return prisma.marketplaceOrder.findMany({
-    where: {
-      buyerId,
-    },
-    include: {
-      seller: {
-        include: {
-          user: {
-            select: {
-              id: true,
-              fullName: true,
-              email: true,
-              phone: true,
-            },
-          },
-        },
-      },
-      items: {
-        include: {
-          product: {
-            include: {
-              images: true,
             },
           },
         },
@@ -5878,6 +5561,22 @@ ALTER TABLE "MarketplaceOrderItem" ADD CONSTRAINT "MarketplaceOrderItem_orderId_
 ALTER TABLE "MarketplaceOrderItem" ADD CONSTRAINT "MarketplaceOrderItem_productId_fkey" FOREIGN KEY ("productId") REFERENCES "MarketplaceProduct"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 ````
 
+## File: Backend/prisma/migrations/20260623174919_add_stripe_to_marketplace_order/migration.sql
+````sql
+/*
+  Warnings:
+
+  - A unique constraint covering the columns `[stripePaymentIntentId]` on the table `MarketplaceOrder` will be added. If there are existing duplicate values, this will fail.
+
+*/
+-- AlterTable
+ALTER TABLE "MarketplaceOrder" ADD COLUMN     "stripeClientSecret" TEXT,
+ADD COLUMN     "stripePaymentIntentId" TEXT;
+
+-- CreateIndex
+CREATE UNIQUE INDEX "MarketplaceOrder_stripePaymentIntentId_key" ON "MarketplaceOrder"("stripePaymentIntentId");
+````
+
 ## File: Backend/prisma/migrations/migration_lock.toml
 ````toml
 # Please do not edit this file manually
@@ -6036,6 +5735,11 @@ export default defineConfig([
   },
 ])
 ```
+````
+
+## File: Frontend/src/assets/lotties/404-cat.json
+````json
+{"v":"5.7.8","fr":30,"ip":0,"op":180,"w":950,"h":847,"nm":"7938322","ddd":0,"assets":[],"layers":[{"ddd":0,"ind":1,"ty":4,"nm":"face","parent":2,"sr":1,"ks":{"o":{"a":0,"k":100,"ix":11},"r":{"a":0,"k":0,"ix":10},"p":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[-34.363,-142.843,0],"to":[0,0.917,0],"ti":[0,-0.917,0]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":18.75,"s":[-34.363,-137.343,0],"to":[0,0,0],"ti":[0,0.917,0]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":56.25,"s":[-34.363,-137.343,0],"to":[0,-0.917,0],"ti":[0,0.917,0]},{"i":{"x":0.667,"y":0.667},"o":{"x":0.235,"y":0.235},"t":75,"s":[-34.363,-142.843,0],"to":[0,0,0],"ti":[0,0,0]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[-34.363,-142.843,0],"to":[0,0.917,0],"ti":[0,-0.917,0]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":108.75,"s":[-34.363,-137.343,0],"to":[0,0,0],"ti":[0,0.917,0]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":146.25,"s":[-34.363,-137.343,0],"to":[0,-0.917,0],"ti":[0,0.917,0]},{"t":165,"s":[-34.363,-142.843,0]}],"ix":2,"l":2},"a":{"a":0,"k":[-34.363,-137.343,0],"ix":1,"l":2},"s":{"a":0,"k":[100,100,100],"ix":6,"l":2}},"ao":0,"shapes":[{"ty":"gr","it":[{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,0],[0,0]],"o":[[0,0],[0,0]],"v":[[10.711,-82.912],[20.446,-80.35]],"c":false},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":1,"ml":10,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":2,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,0],[0,0]],"o":[[0,0],[0,0]],"v":[[9.173,-88.036],[16.347,-88.036]],"c":false},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":1,"ml":10,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 2","np":2,"cix":2,"bm":0,"ix":2,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,0],[0,0]],"o":[[0,0],[0,0]],"v":[[7.124,-93.16],[17.884,-95.722]],"c":false},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":1,"ml":10,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 3","np":2,"cix":2,"bm":0,"ix":3,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,0],[0,0]],"o":[[0,0],[0,0]],"v":[[-70.762,-74.201],[-78.448,-70.102]],"c":false},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":1,"ml":10,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 4","np":2,"cix":2,"bm":0,"ix":4,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,0],[0,0]],"o":[[0,0],[0,0]],"v":[[-72.812,-79.838],[-83.572,-77.788]],"c":false},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":1,"ml":10,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 5","np":2,"cix":2,"bm":0,"ix":5,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,0],[0,0]],"o":[[0,0],[0,0]],"v":[[-83.572,-87.524],[-71.274,-84.45]],"c":false},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":1,"ml":10,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 6","np":2,"cix":2,"bm":0,"ix":6,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,0],[-11.785,-12.298]],"o":[[0,0],[0,0]],"v":[[-22.596,-133.64],[2,-129.029]],"c":false},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":3.34,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 7","np":2,"cix":2,"bm":0,"ix":7,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,0],[-16.91,-3.074]],"o":[[0,0],[0,0]],"v":[[-73.836,-121.855],[-53.34,-131.591]],"c":false},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":3.34,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 8","np":2,"cix":2,"bm":0,"ix":8,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,0],[-10.248,5.636],[0,0]],"o":[[0,0],[10.248,-5.636],[0,0]],"v":[[-29.236,-73.517],[-9.273,-69.077],[-5.174,-83.425]],"c":false},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 9","np":2,"cix":2,"bm":0,"ix":9,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,0],[13.323,19.984]],"o":[[0,0],[0,0]],"v":[[-26.429,-74.073],[-54.365,-74.201]],"c":false},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 10","np":2,"cix":2,"bm":0,"ix":10,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[0.782,-4.172],[-2.364,-0.443],[-0.782,4.172],[2.364,0.443]],"o":[[-0.782,4.172],[2.364,0.443],[0.782,-4.172],[-2.364,-0.443]],"v":[[-18.166,-108.822],[-15.301,-100.466],[-9.604,-107.218],[-12.469,-115.575]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":9.5,"s":[{"i":[[0.103,-0.258],[-2.364,-0.443],[-0.146,0.2],[2.364,0.443]],"o":[[0.166,0.43],[2.364,0.443],[-0.084,-0.3],[-2.364,-0.443]],"v":[[-18.166,-108.822],[-13.676,-108.216],[-9.604,-107.218],[-14.094,-108.45]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":19,"s":[{"i":[[0.782,-4.172],[-2.364,-0.443],[-0.782,4.172],[2.364,0.443]],"o":[[-0.782,4.172],[2.364,0.443],[0.782,-4.172],[-2.364,-0.443]],"v":[[-18.166,-108.822],[-15.301,-100.466],[-9.604,-107.218],[-12.469,-115.575]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[{"i":[[0.782,-4.172],[-2.364,-0.443],[-0.782,4.172],[2.364,0.443]],"o":[[-0.782,4.172],[2.364,0.443],[0.782,-4.172],[-2.364,-0.443]],"v":[[-18.166,-108.822],[-15.301,-100.466],[-9.604,-107.218],[-12.469,-115.575]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":99.5,"s":[{"i":[[0.103,-0.258],[-2.364,-0.443],[-0.146,0.2],[2.364,0.443]],"o":[[0.166,0.43],[2.364,0.443],[-0.084,-0.3],[-2.364,-0.443]],"v":[[-18.166,-108.822],[-13.676,-108.216],[-9.604,-107.218],[-14.094,-108.45]],"c":true}]},{"t":109,"s":[{"i":[[0.782,-4.172],[-2.364,-0.443],[-0.782,4.172],[2.364,0.443]],"o":[[-0.782,4.172],[2.364,0.443],[0.782,-4.172],[-2.364,-0.443]],"v":[[-18.166,-108.822],[-15.301,-100.466],[-9.604,-107.218],[-12.469,-115.575]],"c":true}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"fl","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 11","np":2,"cix":2,"bm":0,"ix":11,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[-1.512,-3.967],[2.248,-0.857],[1.512,3.966],[-2.248,0.857]],"o":[[1.512,3.966],[-2.248,0.857],[-1.512,-3.966],[2.248,-0.857]],"v":[[-47.989,-105.985],[-49.322,-97.251],[-56.129,-102.882],[-54.797,-111.615]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":9.5,"s":[{"i":[[-0.136,-0.158],[2.248,-0.857],[0.113,0.308],[-2.248,0.857]],"o":[[-0.073,0.029],[-2.248,0.857],[0.066,-0.073],[2.248,-0.857]],"v":[[-47.989,-105.985],[-51.759,-104.376],[-56.129,-102.882],[-51.922,-104.49]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":19,"s":[{"i":[[-1.512,-3.967],[2.248,-0.857],[1.512,3.966],[-2.248,0.857]],"o":[[1.512,3.966],[-2.248,0.857],[-1.512,-3.966],[2.248,-0.857]],"v":[[-47.989,-105.985],[-49.322,-97.251],[-56.129,-102.882],[-54.797,-111.615]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[{"i":[[-1.512,-3.967],[2.248,-0.857],[1.512,3.966],[-2.248,0.857]],"o":[[1.512,3.966],[-2.248,0.857],[-1.512,-3.966],[2.248,-0.857]],"v":[[-47.989,-105.985],[-49.322,-97.251],[-56.129,-102.882],[-54.797,-111.615]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":99.5,"s":[{"i":[[-0.136,-0.158],[2.248,-0.857],[0.113,0.308],[-2.248,0.857]],"o":[[-0.073,0.029],[-2.248,0.857],[0.066,-0.073],[2.248,-0.857]],"v":[[-47.989,-105.985],[-51.759,-104.376],[-56.129,-102.882],[-51.922,-104.49]],"c":true}]},{"t":109,"s":[{"i":[[-1.512,-3.967],[2.248,-0.857],[1.512,3.966],[-2.248,0.857]],"o":[[1.512,3.966],[-2.248,0.857],[-1.512,-3.966],[2.248,-0.857]],"v":[[-47.989,-105.985],[-49.322,-97.251],[-56.129,-102.882],[-54.797,-111.615]],"c":true}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"fl","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 12","np":2,"cix":2,"bm":0,"ix":12,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[1.064,0.259],[6.9,-4.086],[-0.865,-0.81],[0,0],[-0.499,1.097],[0,0]],"o":[[-3.487,-0.847],[-1.02,0.604],[0,0],[0.879,0.824],[0,0],[0.454,-0.997]],"v":[[-21.995,-88.803],[-39.857,-86.613],[-40.187,-83.782],[-29.236,-73.517],[-26.429,-74.073],[-20.833,-86.368]],"c":true},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.7686,0.9137,0.7686,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 13","np":3,"cix":2,"bm":0,"ix":13,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[-6.974,-2.44],[-2.043,17.835],[7.555,0.087]],"o":[[6.457,2.26],[-5.558,-0.915],[-0.198,14.654]],"v":[[-13.372,-173.247],[-1.265,-207.734],[-20.952,-209.4]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":18.75,"s":[{"i":[[-6.974,-2.44],[-2.043,17.835],[7.555,0.087]],"o":[[6.457,2.26],[-5.558,-0.915],[-0.198,14.654]],"v":[[-13.372,-168.997],[-1.265,-207.734],[-20.952,-209.4]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":56.25,"s":[{"i":[[-6.974,-2.44],[-2.043,17.835],[7.555,0.087]],"o":[[6.457,2.26],[-5.558,-0.915],[-0.198,14.654]],"v":[[-13.372,-168.997],[-1.265,-207.734],[-20.952,-209.4]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.167,"y":0},"t":75,"s":[{"i":[[-6.974,-2.44],[-2.043,17.835],[7.555,0.087]],"o":[[6.457,2.26],[-5.558,-0.915],[-0.198,14.654]],"v":[[-13.372,-173.247],[-1.265,-207.734],[-20.952,-209.4]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[{"i":[[-6.974,-2.44],[-2.043,17.835],[7.555,0.087]],"o":[[6.457,2.26],[-5.558,-0.915],[-0.198,14.654]],"v":[[-13.372,-173.247],[-1.265,-207.734],[-20.952,-209.4]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":108.75,"s":[{"i":[[-6.974,-2.44],[-2.043,17.835],[7.555,0.087]],"o":[[6.457,2.26],[-5.558,-0.915],[-0.198,14.654]],"v":[[-13.372,-168.997],[-1.265,-207.734],[-20.952,-209.4]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":146.25,"s":[{"i":[[-6.974,-2.44],[-2.043,17.835],[7.555,0.087]],"o":[[6.457,2.26],[-5.558,-0.915],[-0.198,14.654]],"v":[[-13.372,-168.997],[-1.265,-207.734],[-20.952,-209.4]],"c":true}]},{"t":165,"s":[{"i":[[-6.974,-2.44],[-2.043,17.835],[7.555,0.087]],"o":[[6.457,2.26],[-5.558,-0.915],[-0.198,14.654]],"v":[[-13.372,-173.247],[-1.265,-207.734],[-20.952,-209.4]],"c":true}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":1,"lj":1,"ml":10,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.7686,0.9137,0.7686,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":3,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[-6.72,3.953],[1.002,15.112],[5.204,-1.991]],"o":[[6.305,-3.709],[-7.654,1.941],[2.302,14.15]],"v":[[-74.349,-160.436],[-69.989,-202.863],[-89.173,-196.875]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":18.75,"s":[{"i":[[-6.72,3.953],[1.002,15.112],[5.204,-1.991]],"o":[[6.305,-3.709],[-7.654,1.941],[2.302,14.15]],"v":[[-74.349,-156.186],[-69.989,-202.863],[-89.173,-196.875]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":56.25,"s":[{"i":[[-6.72,3.953],[1.002,15.112],[5.204,-1.991]],"o":[[6.305,-3.709],[-7.654,1.941],[2.302,14.15]],"v":[[-74.349,-156.186],[-69.989,-202.863],[-89.173,-196.875]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.167,"y":0},"t":75,"s":[{"i":[[-6.72,3.953],[1.002,15.112],[5.204,-1.991]],"o":[[6.305,-3.709],[-7.654,1.941],[2.302,14.15]],"v":[[-74.349,-160.436],[-69.989,-202.863],[-89.173,-196.875]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[{"i":[[-6.72,3.953],[1.002,15.112],[5.204,-1.991]],"o":[[6.305,-3.709],[-7.654,1.941],[2.302,14.15]],"v":[[-74.349,-160.436],[-69.989,-202.863],[-89.173,-196.875]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":108.75,"s":[{"i":[[-6.72,3.953],[1.002,15.112],[5.204,-1.991]],"o":[[6.305,-3.709],[-7.654,1.941],[2.302,14.15]],"v":[[-74.349,-156.186],[-69.989,-202.863],[-89.173,-196.875]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":146.25,"s":[{"i":[[-6.72,3.953],[1.002,15.112],[5.204,-1.991]],"o":[[6.305,-3.709],[-7.654,1.941],[2.302,14.15]],"v":[[-74.349,-156.186],[-69.989,-202.863],[-89.173,-196.875]],"c":true}]},{"t":165,"s":[{"i":[[-6.72,3.953],[1.002,15.112],[5.204,-1.991]],"o":[[6.305,-3.709],[-7.654,1.941],[2.302,14.15]],"v":[[-74.349,-160.436],[-69.989,-202.863],[-89.173,-196.875]],"c":true}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":1,"lj":1,"ml":10,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.7686,0.9137,0.7686,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 2","np":3,"cix":2,"bm":0,"ix":2,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[7.897,-1.361],[2.487,-0.502],[-6.054,0],[-1.98,21.275]],"o":[[-2.708,0.467],[4.099,20.793],[6.27,0],[-6.657,0.275]],"v":[[-50.72,-206.919],[-58.501,-205.463],[-41.555,-154.288],[-28.893,-209.275]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":18.75,"s":[{"i":[[7.897,-1.361],[2.487,-0.502],[-6.054,0],[-1.98,21.275]],"o":[[-2.708,0.467],[4.099,20.793],[6.27,0],[-6.657,0.275]],"v":[[-50.72,-206.919],[-58.501,-205.463],[-41.555,-150.038],[-28.893,-209.275]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":56.25,"s":[{"i":[[7.897,-1.361],[2.487,-0.502],[-6.054,0],[-1.98,21.275]],"o":[[-2.708,0.467],[4.099,20.793],[6.27,0],[-6.657,0.275]],"v":[[-50.72,-206.919],[-58.501,-205.463],[-41.555,-150.038],[-28.893,-209.275]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.167,"y":0},"t":75,"s":[{"i":[[7.897,-1.361],[2.487,-0.502],[-6.054,0],[-1.98,21.275]],"o":[[-2.708,0.467],[4.099,20.793],[6.27,0],[-6.657,0.275]],"v":[[-50.72,-206.919],[-58.501,-205.463],[-41.555,-154.288],[-28.893,-209.275]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[{"i":[[7.897,-1.361],[2.487,-0.502],[-6.054,0],[-1.98,21.275]],"o":[[-2.708,0.467],[4.099,20.793],[6.27,0],[-6.657,0.275]],"v":[[-50.72,-206.919],[-58.501,-205.463],[-41.555,-154.288],[-28.893,-209.275]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":108.75,"s":[{"i":[[7.897,-1.361],[2.487,-0.502],[-6.054,0],[-1.98,21.275]],"o":[[-2.708,0.467],[4.099,20.793],[6.27,0],[-6.657,0.275]],"v":[[-50.72,-206.919],[-58.501,-205.463],[-41.555,-150.038],[-28.893,-209.275]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":146.25,"s":[{"i":[[7.897,-1.361],[2.487,-0.502],[-6.054,0],[-1.98,21.275]],"o":[[-2.708,0.467],[4.099,20.793],[6.27,0],[-6.657,0.275]],"v":[[-50.72,-206.919],[-58.501,-205.463],[-41.555,-150.038],[-28.893,-209.275]],"c":true}]},{"t":165,"s":[{"i":[[7.897,-1.361],[2.487,-0.502],[-6.054,0],[-1.98,21.275]],"o":[[-2.708,0.467],[4.099,20.793],[6.27,0],[-6.657,0.275]],"v":[[-50.72,-206.919],[-58.501,-205.463],[-41.555,-154.288],[-28.893,-209.275]],"c":true}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":1,"lj":1,"ml":10,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.7686,0.9137,0.7686,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 3","np":3,"cix":2,"bm":0,"ix":3,"mn":"ADBE Vector Group","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 14","np":3,"cix":2,"bm":0,"ix":14,"mn":"ADBE Vector Group","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":14,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false}],"ip":0,"op":180,"st":0,"bm":0},{"ddd":0,"ind":2,"ty":4,"nm":"head","parent":6,"sr":1,"ks":{"o":{"a":0,"k":100,"ix":11},"r":{"a":0,"k":0,"ix":10},"p":{"a":0,"k":[-21.742,-71.318,0],"ix":2,"l":2},"a":{"a":0,"k":[-21.742,-71.318,0],"ix":1,"l":2},"s":{"a":0,"k":[100,100,100],"ix":6,"l":2}},"ao":0,"shapes":[{"ty":"gr","it":[{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[12.137,-0.682],[-34.21,-10.643],[8.711,21.009]],"o":[[-2.544,8.578],[0,0],[-8.127,-19.6]],"v":[[-167.599,-185.749],[-127.607,-122.898],[-110.217,-146.451]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":18.75,"s":[{"i":[[12.137,-0.682],[-34.21,-10.643],[8.711,21.009]],"o":[[-2.544,8.578],[0,0],[-8.127,-19.6]],"v":[[-171.599,-170.249],[-127.607,-122.898],[-110.217,-146.451]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":56.25,"s":[{"i":[[12.137,-0.682],[-34.21,-10.643],[8.711,21.009]],"o":[[-2.544,8.578],[0,0],[-8.127,-19.6]],"v":[[-171.599,-170.249],[-127.607,-122.898],[-110.217,-146.451]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.167,"y":0},"t":75,"s":[{"i":[[12.137,-0.682],[-34.21,-10.643],[8.711,21.009]],"o":[[-2.544,8.578],[0,0],[-8.127,-19.6]],"v":[[-167.599,-185.749],[-127.607,-122.898],[-110.217,-146.451]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[{"i":[[12.137,-0.682],[-34.21,-10.643],[8.711,21.009]],"o":[[-2.544,8.578],[0,0],[-8.127,-19.6]],"v":[[-167.599,-185.749],[-127.607,-122.898],[-110.217,-146.451]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":108.75,"s":[{"i":[[12.137,-0.682],[-34.21,-10.643],[8.711,21.009]],"o":[[-2.544,8.578],[0,0],[-8.127,-19.6]],"v":[[-171.599,-170.249],[-127.607,-122.898],[-110.217,-146.451]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":146.25,"s":[{"i":[[12.137,-0.682],[-34.21,-10.643],[8.711,21.009]],"o":[[-2.544,8.578],[0,0],[-8.127,-19.6]],"v":[[-171.599,-170.249],[-127.607,-122.898],[-110.217,-146.451]],"c":true}]},{"t":165,"s":[{"i":[[12.137,-0.682],[-34.21,-10.643],[8.711,21.009]],"o":[[-2.544,8.578],[0,0],[-8.127,-19.6]],"v":[[-167.599,-185.749],[-127.607,-122.898],[-110.217,-146.451]],"c":true}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":1,"lj":1,"ml":10,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.7686,0.9137,0.7686,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":3,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[20.496,-13.835],[-9.223,-7.686],[-6.21,1.223],[0.003,0.003],[0,11.097]],"o":[[-20.496,13.835],[5.632,4.693],[-0.003,-0.003],[0,0],[0,0]],"v":[[32.331,-190.918],[32.231,-151.062],[53.129,-148.251],[53.118,-148.263],[76.446,-213.456]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":18.75,"s":[{"i":[[20.496,-13.835],[-9.223,-7.686],[-6.21,1.223],[0.003,0.003],[0,11.097]],"o":[[-20.496,13.835],[5.632,4.693],[-0.003,-0.003],[0,0],[0,0]],"v":[[36.331,-186.418],[32.231,-151.062],[53.129,-148.251],[53.118,-148.263],[82.446,-202.956]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":56.25,"s":[{"i":[[20.496,-13.835],[-9.223,-7.686],[-6.21,1.223],[0.003,0.003],[0,11.097]],"o":[[-20.496,13.835],[5.632,4.693],[-0.003,-0.003],[0,0],[0,0]],"v":[[36.331,-186.418],[32.231,-151.062],[53.129,-148.251],[53.118,-148.263],[82.446,-202.956]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.167,"y":0},"t":75,"s":[{"i":[[20.496,-13.835],[-9.223,-7.686],[-6.21,1.223],[0.003,0.003],[0,11.097]],"o":[[-20.496,13.835],[5.632,4.693],[-0.003,-0.003],[0,0],[0,0]],"v":[[32.331,-190.918],[32.231,-151.062],[53.129,-148.251],[53.118,-148.263],[76.446,-213.456]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[{"i":[[20.496,-13.835],[-9.223,-7.686],[-6.21,1.223],[0.003,0.003],[0,11.097]],"o":[[-20.496,13.835],[5.632,4.693],[-0.003,-0.003],[0,0],[0,0]],"v":[[32.331,-190.918],[32.231,-151.062],[53.129,-148.251],[53.118,-148.263],[76.446,-213.456]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":108.75,"s":[{"i":[[20.496,-13.835],[-9.223,-7.686],[-6.21,1.223],[0.003,0.003],[0,11.097]],"o":[[-20.496,13.835],[5.632,4.693],[-0.003,-0.003],[0,0],[0,0]],"v":[[36.331,-186.418],[32.231,-151.062],[53.129,-148.251],[53.118,-148.263],[82.446,-202.956]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":146.25,"s":[{"i":[[20.496,-13.835],[-9.223,-7.686],[-6.21,1.223],[0.003,0.003],[0,11.097]],"o":[[-20.496,13.835],[5.632,4.693],[-0.003,-0.003],[0,0],[0,0]],"v":[[36.331,-186.418],[32.231,-151.062],[53.129,-148.251],[53.118,-148.263],[82.446,-202.956]],"c":true}]},{"t":165,"s":[{"i":[[20.496,-13.835],[-9.223,-7.686],[-6.21,1.223],[0.003,0.003],[0,11.097]],"o":[[-20.496,13.835],[5.632,4.693],[-0.003,-0.003],[0,0],[0,0]],"v":[[32.331,-190.918],[32.231,-151.062],[53.129,-148.251],[53.118,-148.263],[76.446,-213.456]],"c":true}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":1,"lj":1,"ml":10,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.7686,0.9137,0.7686,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 2","np":3,"cix":2,"bm":0,"ix":2,"mn":"ADBE Vector Group","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 2","np":2,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[-35.669,-11.097],[-2.378,-8.719],[-11.097,-9.512],[-42.011,-3.171],[-8.719,12.683],[-14.871,2.507],[4.756,4.756],[0,11.097],[34.084,-10.304],[56.486,-8.463],[0,0],[3.963,-7.134]],"o":[[0,0],[2.378,8.719],[11.097,9.512],[42.011,3.171],[8.719,-12.682],[15.504,-2.614],[0,0],[0,-11.097],[0,0],[-59.53,8.919],[0,0],[-3.963,7.134]],"v":[[-127.607,-122.898],[-133.07,-98.777],[-106.998,-82.472],[-42.104,-49.18],[32.509,-84.85],[56.496,-116.886],[53.118,-148.263],[76.446,-213.456],[21.369,-201.121],[-49.22,-212.419],[-114.169,-181.768],[-167.203,-186.75]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":18.75,"s":[{"i":[[-35.669,-11.097],[-2.378,-8.719],[-11.097,-9.512],[-42.011,-3.171],[-8.719,12.683],[-15.06,0.793],[4.756,4.756],[0,11.097],[34.084,-10.304],[45.974,-7.927],[0,0],[3.963,-7.134]],"o":[[0,0],[2.378,8.719],[11.097,9.512],[42.011,3.171],[8.719,-12.682],[15.061,-0.793],[0,0],[0,-11.097],[0,0],[-45.974,7.926],[0,0],[-3.963,7.134]],"v":[[-127.607,-122.898],[-131.57,-92.777],[-106.998,-82.472],[-43.604,-52.68],[32.509,-84.85],[55.496,-113.386],[53.118,-148.263],[82.446,-202.956],[20.619,-201.371],[-50.72,-206.919],[-110.169,-185.518],[-171.203,-171.25]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":56.25,"s":[{"i":[[-35.669,-11.097],[-2.378,-8.719],[-11.097,-9.512],[-42.011,-3.171],[-8.719,12.683],[-15.06,0.793],[4.756,4.756],[0,11.097],[34.084,-10.304],[45.974,-7.927],[0,0],[3.963,-7.134]],"o":[[0,0],[2.378,8.719],[11.097,9.512],[42.011,3.171],[8.719,-12.682],[15.061,-0.793],[0,0],[0,-11.097],[0,0],[-45.974,7.926],[0,0],[-3.963,7.134]],"v":[[-127.607,-122.898],[-131.57,-92.777],[-106.998,-82.472],[-43.604,-52.68],[32.509,-84.85],[55.496,-113.386],[53.118,-148.263],[82.446,-202.956],[20.619,-201.371],[-50.72,-206.919],[-110.169,-185.518],[-171.203,-171.25]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.167,"y":0},"t":75,"s":[{"i":[[-35.669,-11.097],[-2.378,-8.719],[-11.097,-9.512],[-42.011,-3.171],[-8.719,12.683],[-14.871,2.507],[4.756,4.756],[0,11.097],[34.084,-10.304],[56.486,-8.463],[0,0],[3.963,-7.134]],"o":[[0,0],[2.378,8.719],[11.097,9.512],[42.011,3.171],[8.719,-12.682],[15.504,-2.614],[0,0],[0,-11.097],[0,0],[-59.53,8.919],[0,0],[-3.963,7.134]],"v":[[-127.607,-122.898],[-133.07,-98.777],[-106.998,-82.472],[-42.104,-49.18],[32.509,-84.85],[56.496,-116.886],[53.118,-148.263],[76.446,-213.456],[21.369,-201.121],[-49.22,-212.419],[-114.169,-181.768],[-167.203,-186.75]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[{"i":[[-35.669,-11.097],[-2.378,-8.719],[-11.097,-9.512],[-42.011,-3.171],[-8.719,12.683],[-14.871,2.507],[4.756,4.756],[0,11.097],[34.084,-10.304],[56.486,-8.463],[0,0],[3.963,-7.134]],"o":[[0,0],[2.378,8.719],[11.097,9.512],[42.011,3.171],[8.719,-12.682],[15.504,-2.614],[0,0],[0,-11.097],[0,0],[-59.53,8.919],[0,0],[-3.963,7.134]],"v":[[-127.607,-122.898],[-133.07,-98.777],[-106.998,-82.472],[-42.104,-49.18],[32.509,-84.85],[56.496,-116.886],[53.118,-148.263],[76.446,-213.456],[21.369,-201.121],[-49.22,-212.419],[-114.169,-181.768],[-167.203,-186.75]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":108.75,"s":[{"i":[[-35.669,-11.097],[-2.378,-8.719],[-11.097,-9.512],[-42.011,-3.171],[-8.719,12.683],[-15.06,0.793],[4.756,4.756],[0,11.097],[34.084,-10.304],[45.974,-7.927],[0,0],[3.963,-7.134]],"o":[[0,0],[2.378,8.719],[11.097,9.512],[42.011,3.171],[8.719,-12.682],[15.061,-0.793],[0,0],[0,-11.097],[0,0],[-45.974,7.926],[0,0],[-3.963,7.134]],"v":[[-127.607,-122.898],[-131.57,-92.777],[-106.998,-82.472],[-43.604,-52.68],[32.509,-84.85],[55.496,-113.386],[53.118,-148.263],[82.446,-202.956],[20.619,-201.371],[-50.72,-206.919],[-110.169,-185.518],[-171.203,-171.25]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":146.25,"s":[{"i":[[-35.669,-11.097],[-2.378,-8.719],[-11.097,-9.512],[-42.011,-3.171],[-8.719,12.683],[-15.06,0.793],[4.756,4.756],[0,11.097],[34.084,-10.304],[45.974,-7.927],[0,0],[3.963,-7.134]],"o":[[0,0],[2.378,8.719],[11.097,9.512],[42.011,3.171],[8.719,-12.682],[15.061,-0.793],[0,0],[0,-11.097],[0,0],[-45.974,7.926],[0,0],[-3.963,7.134]],"v":[[-127.607,-122.898],[-131.57,-92.777],[-106.998,-82.472],[-43.604,-52.68],[32.509,-84.85],[55.496,-113.386],[53.118,-148.263],[82.446,-202.956],[20.619,-201.371],[-50.72,-206.919],[-110.169,-185.518],[-171.203,-171.25]],"c":true}]},{"t":165,"s":[{"i":[[-35.669,-11.097],[-2.378,-8.719],[-11.097,-9.512],[-42.011,-3.171],[-8.719,12.683],[-14.871,2.507],[4.756,4.756],[0,11.097],[34.084,-10.304],[56.486,-8.463],[0,0],[3.963,-7.134]],"o":[[0,0],[2.378,8.719],[11.097,9.512],[42.011,3.171],[8.719,-12.682],[15.504,-2.614],[0,0],[0,-11.097],[0,0],[-59.53,8.919],[0,0],[-3.963,7.134]],"v":[[-127.607,-122.898],[-133.07,-98.777],[-106.998,-82.472],[-42.104,-49.18],[32.509,-84.85],[56.496,-116.886],[53.118,-148.263],[76.446,-213.456],[21.369,-201.121],[-49.22,-212.419],[-114.169,-181.768],[-167.203,-186.75]],"c":true}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":1,"lj":1,"ml":10,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.9333,0.9725,0.9373,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 3","np":3,"cix":2,"bm":0,"ix":2,"mn":"ADBE Vector Group","hd":false}],"ip":0,"op":180,"st":0,"bm":0},{"ddd":0,"ind":3,"ty":4,"nm":"r hand","parent":6,"sr":1,"ks":{"o":{"a":0,"k":100,"ix":11},"r":{"a":1,"k":[{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.333],"y":[0]},"t":0,"s":[0]},{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.333],"y":[0]},"t":18.75,"s":[-3]},{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.297],"y":[0]},"t":37.5,"s":[0]},{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.333],"y":[0]},"t":56.25,"s":[-3]},{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.215],"y":[0]},"t":75,"s":[0]},{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.333],"y":[0]},"t":90,"s":[0]},{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.333],"y":[0]},"t":108.75,"s":[-3]},{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.297],"y":[0]},"t":127.5,"s":[0]},{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.333],"y":[0]},"t":146.25,"s":[-3]},{"t":165,"s":[0]}],"ix":10},"p":{"a":0,"k":[-124.649,-97.585,0],"ix":2,"l":2},"a":{"a":0,"k":[-124.649,-97.585,0],"ix":1,"l":2},"s":{"a":0,"k":[100,100,100],"ix":6,"l":2}},"ao":0,"shapes":[{"ty":"gr","it":[{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[6.586,3.625],[3.79,-7.314],[-4.411,-2.561],[5.124,13.323]],"o":[[-1.793,2.704],[3.786,0.994],[15.885,9.223],[-3.19,-8.295]],"v":[[-126.841,-94.905],[-135.933,-79.346],[-123.54,-74.201],[-109.705,-77.276]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":18.75,"s":[{"i":[[6.586,3.625],[3.79,-7.314],[-4.411,-2.561],[5.124,13.323]],"o":[[-1.793,2.704],[3.786,0.994],[15.885,9.223],[-3.19,-8.295]],"v":[[-128.824,-90.503],[-136.471,-73.867],[-125.523,-69.799],[-110.9,-73.583]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":37.5,"s":[{"i":[[6.586,3.625],[3.79,-7.314],[-4.411,-2.561],[5.124,13.323]],"o":[[-1.793,2.704],[3.786,0.994],[15.885,9.223],[-3.19,-8.295]],"v":[[-126.841,-94.905],[-135.933,-79.346],[-123.54,-74.201],[-109.705,-77.276]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":56.25,"s":[{"i":[[6.586,3.625],[3.79,-7.314],[-4.411,-2.561],[5.124,13.323]],"o":[[-1.793,2.704],[3.786,0.994],[15.885,9.223],[-3.19,-8.295]],"v":[[-128.824,-90.503],[-136.471,-73.867],[-125.523,-69.799],[-110.9,-73.583]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.167,"y":0},"t":75,"s":[{"i":[[6.586,3.625],[3.79,-7.314],[-4.411,-2.561],[5.124,13.323]],"o":[[-1.793,2.704],[3.786,0.994],[15.885,9.223],[-3.19,-8.295]],"v":[[-126.841,-94.905],[-135.933,-79.346],[-123.54,-74.201],[-109.705,-77.276]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[{"i":[[6.586,3.625],[3.79,-7.314],[-4.411,-2.561],[5.124,13.323]],"o":[[-1.793,2.704],[3.786,0.994],[15.885,9.223],[-3.19,-8.295]],"v":[[-126.841,-94.905],[-135.933,-79.346],[-123.54,-74.201],[-109.705,-77.276]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":108.75,"s":[{"i":[[6.586,3.625],[3.79,-7.314],[-4.411,-2.561],[5.124,13.323]],"o":[[-1.793,2.704],[3.786,0.994],[15.885,9.223],[-3.19,-8.295]],"v":[[-128.824,-90.503],[-136.471,-73.867],[-125.523,-69.799],[-110.9,-73.583]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":127.5,"s":[{"i":[[6.586,3.625],[3.79,-7.314],[-4.411,-2.561],[5.124,13.323]],"o":[[-1.793,2.704],[3.786,0.994],[15.885,9.223],[-3.19,-8.295]],"v":[[-126.841,-94.905],[-135.933,-79.346],[-123.54,-74.201],[-109.705,-77.276]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":146.25,"s":[{"i":[[6.586,3.625],[3.79,-7.314],[-4.411,-2.561],[5.124,13.323]],"o":[[-1.793,2.704],[3.786,0.994],[15.885,9.223],[-3.19,-8.295]],"v":[[-128.824,-90.503],[-136.471,-73.867],[-125.523,-69.799],[-110.9,-73.583]],"c":true}]},{"t":165,"s":[{"i":[[6.586,3.625],[3.79,-7.314],[-4.411,-2.561],[5.124,13.323]],"o":[[-1.793,2.704],[3.786,0.994],[15.885,9.223],[-3.19,-8.295]],"v":[[-126.841,-94.905],[-135.933,-79.346],[-123.54,-74.201],[-109.705,-77.276]],"c":true}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.7686,0.9137,0.7686,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":3,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[0,6.149],[14.317,4.564],[1.234,-5.309],[-5.25,-2.8]],"o":[[0,-5.404],[-1.854,4.888],[3.861,0.736],[7.686,4.099]],"v":[[-118.928,-41.92],[-143.536,-62.429],[-148.28,-47.059],[-132.251,-41.92]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":18.75,"s":[{"i":[[1.034,6.061],[14.881,2.091],[0.324,-5.441],[-5.646,-1.877]],"o":[[-0.909,-5.327],[-1.005,5.131],[3.93,0.076],[8.266,2.748]],"v":[[-115.414,-37.711],[-143.122,-53.788],[-145.213,-37.839],[-128.547,-35.469]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":37.5,"s":[{"i":[[0,6.149],[14.317,4.564],[1.234,-5.309],[-5.25,-2.8]],"o":[[0,-5.404],[-1.854,4.888],[3.861,0.736],[7.686,4.099]],"v":[[-118.928,-41.92],[-143.536,-62.429],[-148.28,-47.059],[-132.251,-41.92]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":56.25,"s":[{"i":[[1.034,6.061],[14.881,2.091],[0.324,-5.441],[-5.646,-1.877]],"o":[[-0.909,-5.327],[-1.005,5.131],[3.93,0.076],[8.266,2.748]],"v":[[-115.414,-37.711],[-143.122,-53.788],[-145.213,-37.839],[-128.547,-35.469]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.167,"y":0},"t":75,"s":[{"i":[[0,6.149],[14.317,4.564],[1.234,-5.309],[-5.25,-2.8]],"o":[[0,-5.404],[-1.854,4.888],[3.861,0.736],[7.686,4.099]],"v":[[-118.928,-41.92],[-143.536,-62.429],[-148.28,-47.059],[-132.251,-41.92]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[{"i":[[0,6.149],[14.317,4.564],[1.234,-5.309],[-5.25,-2.8]],"o":[[0,-5.404],[-1.854,4.888],[3.861,0.736],[7.686,4.099]],"v":[[-118.928,-41.92],[-143.536,-62.429],[-148.28,-47.059],[-132.251,-41.92]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":108.75,"s":[{"i":[[1.034,6.061],[14.881,2.091],[0.324,-5.441],[-5.646,-1.877]],"o":[[-0.909,-5.327],[-1.005,5.131],[3.93,0.076],[8.266,2.748]],"v":[[-115.414,-37.711],[-143.122,-53.788],[-145.213,-37.839],[-128.547,-35.469]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":127.5,"s":[{"i":[[0,6.149],[14.317,4.564],[1.234,-5.309],[-5.25,-2.8]],"o":[[0,-5.404],[-1.854,4.888],[3.861,0.736],[7.686,4.099]],"v":[[-118.928,-41.92],[-143.536,-62.429],[-148.28,-47.059],[-132.251,-41.92]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":146.25,"s":[{"i":[[1.034,6.061],[14.881,2.091],[0.324,-5.441],[-5.646,-1.877]],"o":[[-0.909,-5.327],[-1.005,5.131],[3.93,0.076],[8.266,2.748]],"v":[[-115.414,-37.711],[-143.122,-53.788],[-145.213,-37.839],[-128.547,-35.469]],"c":true}]},{"t":165,"s":[{"i":[[0,6.149],[14.317,4.564],[1.234,-5.309],[-5.25,-2.8]],"o":[[0,-5.404],[-1.854,4.888],[3.861,0.736],[7.686,4.099]],"v":[[-118.928,-41.92],[-143.536,-62.429],[-148.28,-47.059],[-132.251,-41.92]],"c":true}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.7686,0.9137,0.7686,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 2","np":3,"cix":2,"bm":0,"ix":2,"mn":"ADBE Vector Group","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":2,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[0,0],[0.513,14.86]],"o":[[0,0],[0,0]],"v":[[-126.614,26.23],[-132.251,2.66]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":18.75,"s":[{"i":[[0,0],[4.686,14.111]],"o":[[0,0],[0,0]],"v":[[-104.333,30.245],[-116.393,9.224]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":37.5,"s":[{"i":[[0,0],[0.513,14.86]],"o":[[0,0],[0,0]],"v":[[-126.614,26.23],[-132.251,2.66]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":56.25,"s":[{"i":[[0,0],[4.686,14.111]],"o":[[0,0],[0,0]],"v":[[-104.333,30.245],[-116.393,9.224]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.167,"y":0},"t":75,"s":[{"i":[[0,0],[0.513,14.86]],"o":[[0,0],[0,0]],"v":[[-126.614,26.23],[-132.251,2.66]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[{"i":[[0,0],[0.513,14.86]],"o":[[0,0],[0,0]],"v":[[-126.614,26.23],[-132.251,2.66]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":108.75,"s":[{"i":[[0,0],[4.686,14.111]],"o":[[0,0],[0,0]],"v":[[-104.333,30.245],[-116.393,9.224]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":127.5,"s":[{"i":[[0,0],[0.513,14.86]],"o":[[0,0],[0,0]],"v":[[-126.614,26.23],[-132.251,2.66]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":146.25,"s":[{"i":[[0,0],[4.686,14.111]],"o":[[0,0],[0,0]],"v":[[-104.333,30.245],[-116.393,9.224]],"c":false}]},{"t":165,"s":[{"i":[[0,0],[0.513,14.86]],"o":[[0,0],[0,0]],"v":[[-126.614,26.23],[-132.251,2.66]],"c":false}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 2","np":2,"cix":2,"bm":0,"ix":2,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[0,0],[0,12.81]],"o":[[0,0],[0,0]],"v":[[-140.449,23.156],[-144.036,2.147]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":18.75,"s":[{"i":[[0,0],[3.616,12.289]],"o":[[0,0],[0,0]],"v":[[-118.473,31.201],[-127.844,12.059]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":37.5,"s":[{"i":[[0,0],[0,12.81]],"o":[[0,0],[0,0]],"v":[[-140.449,23.156],[-144.036,2.147]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":56.25,"s":[{"i":[[0,0],[3.616,12.289]],"o":[[0,0],[0,0]],"v":[[-118.473,31.201],[-127.844,12.059]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.167,"y":0},"t":75,"s":[{"i":[[0,0],[0,12.81]],"o":[[0,0],[0,0]],"v":[[-140.449,23.156],[-144.036,2.147]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[{"i":[[0,0],[0,12.81]],"o":[[0,0],[0,0]],"v":[[-140.449,23.156],[-144.036,2.147]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":108.75,"s":[{"i":[[0,0],[3.616,12.289]],"o":[[0,0],[0,0]],"v":[[-118.473,31.201],[-127.844,12.059]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":127.5,"s":[{"i":[[0,0],[0,12.81]],"o":[[0,0],[0,0]],"v":[[-140.449,23.156],[-144.036,2.147]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":146.25,"s":[{"i":[[0,0],[3.616,12.289]],"o":[[0,0],[0,0]],"v":[[-118.473,31.201],[-127.844,12.059]],"c":false}]},{"t":165,"s":[{"i":[[0,0],[0,12.81]],"o":[[0,0],[0,0]],"v":[[-140.449,23.156],[-144.036,2.147]],"c":false}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 3","np":2,"cix":2,"bm":0,"ix":3,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[20.496,-1.537],[3.074,-30.744],[-9.223,-7.686],[-5.124,7.174],[0,0],[-13.323,16.909],[0,0]],"o":[[0,0],[-3.074,30.744],[9.223,7.686],[5.124,-7.174],[0,0],[13.322,-16.909],[0,0]],"v":[[-125.589,-96.747],[-150.185,-35.771],[-140.449,23.156],[-116.879,20.594],[-119.953,-11.688],[-97.919,-52.68],[-82.035,-72.152]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":18.75,"s":[{"i":[[20.496,-1.537],[-5.729,-30.362],[-11.018,-4.77],[-2.891,8.328],[0,0],[-10.288,18.91],[0,0]],"o":[[0,0],[5.729,30.362],[11.018,4.77],[2.891,-8.328],[0,0],[10.288,-18.91],[0,0]],"v":[[-125.589,-96.747],[-144.446,-22.582],[-118.473,31.201],[-96.584,22.09],[-108.645,-8.011],[-96.515,-51.852],[-82.035,-72.152]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":37.5,"s":[{"i":[[20.496,-1.537],[3.074,-30.744],[-9.223,-7.686],[-5.124,7.174],[0,0],[-13.323,16.909],[0,0]],"o":[[0,0],[-3.074,30.744],[9.223,7.686],[5.124,-7.174],[0,0],[13.322,-16.909],[0,0]],"v":[[-125.589,-96.747],[-150.185,-35.771],[-140.449,23.156],[-116.879,20.594],[-119.953,-11.688],[-97.919,-52.68],[-82.035,-72.152]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":56.25,"s":[{"i":[[20.496,-1.537],[-5.729,-30.362],[-11.018,-4.77],[-2.891,8.328],[0,0],[-10.288,18.91],[0,0]],"o":[[0,0],[5.729,30.362],[11.018,4.77],[2.891,-8.328],[0,0],[10.288,-18.91],[0,0]],"v":[[-125.589,-96.747],[-144.446,-22.582],[-118.473,31.201],[-96.584,22.09],[-108.645,-8.011],[-96.515,-51.852],[-82.035,-72.152]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.167,"y":0},"t":75,"s":[{"i":[[20.496,-1.537],[3.074,-30.744],[-9.223,-7.686],[-5.124,7.174],[0,0],[-13.323,16.909],[0,0]],"o":[[0,0],[-3.074,30.744],[9.223,7.686],[5.124,-7.174],[0,0],[13.322,-16.909],[0,0]],"v":[[-125.589,-96.747],[-150.185,-35.771],[-140.449,23.156],[-116.879,20.594],[-119.953,-11.688],[-97.919,-52.68],[-82.035,-72.152]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[{"i":[[20.496,-1.537],[3.074,-30.744],[-9.223,-7.686],[-5.124,7.174],[0,0],[-13.323,16.909],[0,0]],"o":[[0,0],[-3.074,30.744],[9.223,7.686],[5.124,-7.174],[0,0],[13.322,-16.909],[0,0]],"v":[[-125.589,-96.747],[-150.185,-35.771],[-140.449,23.156],[-116.879,20.594],[-119.953,-11.688],[-97.919,-52.68],[-82.035,-72.152]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":108.75,"s":[{"i":[[20.496,-1.537],[-5.729,-30.362],[-11.018,-4.77],[-2.891,8.328],[0,0],[-10.288,18.91],[0,0]],"o":[[0,0],[5.729,30.362],[11.018,4.77],[2.891,-8.328],[0,0],[10.288,-18.91],[0,0]],"v":[[-125.589,-96.747],[-144.446,-22.582],[-118.473,31.201],[-96.584,22.09],[-108.645,-8.011],[-96.515,-51.852],[-82.035,-72.152]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":127.5,"s":[{"i":[[20.496,-1.537],[3.074,-30.744],[-9.223,-7.686],[-5.124,7.174],[0,0],[-13.323,16.909],[0,0]],"o":[[0,0],[-3.074,30.744],[9.223,7.686],[5.124,-7.174],[0,0],[13.322,-16.909],[0,0]],"v":[[-125.589,-96.747],[-150.185,-35.771],[-140.449,23.156],[-116.879,20.594],[-119.953,-11.688],[-97.919,-52.68],[-82.035,-72.152]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":146.25,"s":[{"i":[[20.496,-1.537],[-5.729,-30.362],[-11.018,-4.77],[-2.891,8.328],[0,0],[-10.288,18.91],[0,0]],"o":[[0,0],[5.729,30.362],[11.018,4.77],[2.891,-8.328],[0,0],[10.288,-18.91],[0,0]],"v":[[-125.589,-96.747],[-144.446,-22.582],[-118.473,31.201],[-96.584,22.09],[-108.645,-8.011],[-96.515,-51.852],[-82.035,-72.152]],"c":true}]},{"t":165,"s":[{"i":[[20.496,-1.537],[3.074,-30.744],[-9.223,-7.686],[-5.124,7.174],[0,0],[-13.323,16.909],[0,0]],"o":[[0,0],[-3.074,30.744],[9.223,7.686],[5.124,-7.174],[0,0],[13.322,-16.909],[0,0]],"v":[[-125.589,-96.747],[-150.185,-35.771],[-140.449,23.156],[-116.879,20.594],[-119.953,-11.688],[-97.919,-52.68],[-82.035,-72.152]],"c":true}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.9333,0.9725,0.9373,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 4","np":3,"cix":2,"bm":0,"ix":4,"mn":"ADBE Vector Group","hd":false}],"ip":0,"op":180,"st":0,"bm":0},{"ddd":0,"ind":4,"ty":4,"nm":"l hand","parent":6,"sr":1,"ks":{"o":{"a":0,"k":100,"ix":11},"r":{"a":1,"k":[{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.333],"y":[0]},"t":0,"s":[0]},{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.333],"y":[0]},"t":18.75,"s":[-8]},{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.297],"y":[0]},"t":37.5,"s":[0]},{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.333],"y":[0]},"t":56.25,"s":[-8]},{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.215],"y":[0]},"t":75,"s":[0]},{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.333],"y":[0]},"t":90,"s":[0]},{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.333],"y":[0]},"t":108.75,"s":[-8]},{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.297],"y":[0]},"t":127.5,"s":[0]},{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.333],"y":[0]},"t":146.25,"s":[-8]},{"t":165,"s":[0]}],"ix":10},"p":{"a":0,"k":[41.549,-111.432,0],"ix":2,"l":2},"a":{"a":0,"k":[41.549,-111.432,0],"ix":1,"l":2},"s":{"a":0,"k":[100,100,100],"ix":6,"l":2}},"ao":0,"shapes":[{"ty":"gr","it":[{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[-6.199,4.254],[-4.489,-6.907],[4.138,-2.982],[-3.793,13.761]],"o":[[2.05,2.515],[-3.67,1.36],[-14.903,10.737],[2.361,-8.567]],"v":[[44.375,-109.962],[54.949,-95.369],[43.12,-89.034],[29.05,-90.736]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":18.75,"s":[{"i":[[-6.199,4.254],[-4.489,-6.907],[4.138,-2.982],[-3.793,13.761]],"o":[[2.05,2.515],[-3.67,1.36],[-14.903,10.737],[2.361,-8.567]],"v":[[40.986,-115.487],[49.97,-100.361],[39.731,-94.559],[25.661,-96.262]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":37.5,"s":[{"i":[[-6.199,4.254],[-4.489,-6.907],[4.138,-2.982],[-3.793,13.761]],"o":[[2.05,2.515],[-3.67,1.36],[-14.903,10.737],[2.361,-8.567]],"v":[[44.375,-109.962],[54.949,-95.369],[43.12,-89.034],[29.05,-90.736]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":56.25,"s":[{"i":[[-6.199,4.254],[-4.489,-6.907],[4.138,-2.982],[-3.793,13.761]],"o":[[2.05,2.515],[-3.67,1.36],[-14.903,10.737],[2.361,-8.567]],"v":[[40.986,-115.487],[49.97,-100.361],[39.731,-94.559],[25.661,-96.262]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.167,"y":0},"t":75,"s":[{"i":[[-6.199,4.254],[-4.489,-6.907],[4.138,-2.982],[-3.793,13.761]],"o":[[2.05,2.515],[-3.67,1.36],[-14.903,10.737],[2.361,-8.567]],"v":[[44.375,-109.962],[54.949,-95.369],[43.12,-89.034],[29.05,-90.736]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[{"i":[[-6.199,4.254],[-4.489,-6.907],[4.138,-2.982],[-3.793,13.761]],"o":[[2.05,2.515],[-3.67,1.36],[-14.903,10.737],[2.361,-8.567]],"v":[[44.375,-109.962],[54.949,-95.369],[43.12,-89.034],[29.05,-90.736]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":108.75,"s":[{"i":[[-6.199,4.254],[-4.489,-6.907],[4.138,-2.982],[-3.793,13.761]],"o":[[2.05,2.515],[-3.67,1.36],[-14.903,10.737],[2.361,-8.567]],"v":[[40.986,-115.487],[49.97,-100.361],[39.731,-94.559],[25.661,-96.262]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":127.5,"s":[{"i":[[-6.199,4.254],[-4.489,-6.907],[4.138,-2.982],[-3.793,13.761]],"o":[[2.05,2.515],[-3.67,1.36],[-14.903,10.737],[2.361,-8.567]],"v":[[44.375,-109.962],[54.949,-95.369],[43.12,-89.034],[29.05,-90.736]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":146.25,"s":[{"i":[[-6.199,4.254],[-4.489,-6.907],[4.138,-2.982],[-3.793,13.761]],"o":[[2.05,2.515],[-3.67,1.36],[-14.903,10.737],[2.361,-8.567]],"v":[[40.986,-115.487],[49.97,-100.361],[39.731,-94.559],[25.661,-96.262]],"c":true}]},{"t":165,"s":[{"i":[[-6.199,4.254],[-4.489,-6.907],[4.138,-2.982],[-3.793,13.761]],"o":[[2.05,2.515],[-3.67,1.36],[-14.903,10.737],[2.361,-8.567]],"v":[[44.375,-109.962],[54.949,-95.369],[43.12,-89.034],[29.05,-90.736]],"c":true}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.7686,0.9137,0.7686,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":3,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[0.603,6.119],[-13.8,5.947],[-1.749,-5.162],[4.95,-3.301]],"o":[[-0.53,-5.377],[2.325,4.683],[-3.771,1.111],[-7.247,4.833]],"v":[[41.697,-56.455],[64.175,-79.28],[70.403,-64.449],[54.955,-57.762]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":18.75,"s":[{"i":[[1.762,5.891],[-11.582,9.575],[-2.704,-4.733],[4.228,-4.187]],"o":[[-1.548,-5.177],[3.543,3.844],[-3.489,1.811],[-6.189,6.13]],"v":[[39.507,-61.236],[56.892,-88.028],[67.61,-72.345],[52.271,-65.053]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":37.5,"s":[{"i":[[0.603,6.119],[-13.8,5.947],[-1.749,-5.162],[4.95,-3.301]],"o":[[-0.53,-5.377],[2.325,4.683],[-3.771,1.111],[-7.247,4.833]],"v":[[41.697,-56.455],[64.175,-79.28],[70.403,-64.449],[54.955,-57.762]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":56.25,"s":[{"i":[[1.762,5.891],[-11.582,9.575],[-2.704,-4.733],[4.228,-4.187]],"o":[[-1.548,-5.177],[3.543,3.844],[-3.489,1.811],[-6.189,6.13]],"v":[[39.507,-61.236],[56.892,-88.028],[67.61,-72.345],[52.271,-65.053]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.167,"y":0},"t":75,"s":[{"i":[[0.603,6.119],[-13.8,5.947],[-1.749,-5.162],[4.95,-3.301]],"o":[[-0.53,-5.377],[2.325,4.683],[-3.771,1.111],[-7.247,4.833]],"v":[[41.697,-56.455],[64.175,-79.28],[70.403,-64.449],[54.955,-57.762]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[{"i":[[0.603,6.119],[-13.8,5.947],[-1.749,-5.162],[4.95,-3.301]],"o":[[-0.53,-5.377],[2.325,4.683],[-3.771,1.111],[-7.247,4.833]],"v":[[41.697,-56.455],[64.175,-79.28],[70.403,-64.449],[54.955,-57.762]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":108.75,"s":[{"i":[[1.762,5.891],[-11.582,9.575],[-2.704,-4.733],[4.228,-4.187]],"o":[[-1.548,-5.177],[3.543,3.844],[-3.489,1.811],[-6.189,6.13]],"v":[[39.507,-61.236],[56.892,-88.028],[67.61,-72.345],[52.271,-65.053]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":127.5,"s":[{"i":[[0.603,6.119],[-13.8,5.947],[-1.749,-5.162],[4.95,-3.301]],"o":[[-0.53,-5.377],[2.325,4.683],[-3.771,1.111],[-7.247,4.833]],"v":[[41.697,-56.455],[64.175,-79.28],[70.403,-64.449],[54.955,-57.762]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":146.25,"s":[{"i":[[1.762,5.891],[-11.582,9.575],[-2.704,-4.733],[4.228,-4.187]],"o":[[-1.548,-5.177],[3.543,3.844],[-3.489,1.811],[-6.189,6.13]],"v":[[39.507,-61.236],[56.892,-88.028],[67.61,-72.345],[52.271,-65.053]],"c":true}]},{"t":165,"s":[{"i":[[0.603,6.119],[-13.8,5.947],[-1.749,-5.162],[4.95,-3.301]],"o":[[-0.53,-5.377],[2.325,4.683],[-3.771,1.111],[-7.247,4.833]],"v":[[41.697,-56.455],[64.175,-79.28],[70.403,-64.449],[54.955,-57.762]],"c":true}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.7686,0.9137,0.7686,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 2","np":3,"cix":2,"bm":0,"ix":2,"mn":"ADBE Vector Group","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":2,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[0,0],[0.948,14.838]],"o":[[0,0],[0,0]],"v":[[56.03,10.612],[59.328,-13.398]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":18.75,"s":[{"i":[[0,0],[5.067,13.979]],"o":[[0,0],[0,0]],"v":[[66.93,-3.008],[63.369,-26.981]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":37.5,"s":[{"i":[[0,0],[0.948,14.838]],"o":[[0,0],[0,0]],"v":[[56.03,10.612],[59.328,-13.398]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":56.25,"s":[{"i":[[0,0],[5.067,13.979]],"o":[[0,0],[0,0]],"v":[[66.93,-3.008],[63.369,-26.981]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.167,"y":0},"t":75,"s":[{"i":[[0,0],[0.948,14.838]],"o":[[0,0],[0,0]],"v":[[56.03,10.612],[59.328,-13.398]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[{"i":[[0,0],[0.948,14.838]],"o":[[0,0],[0,0]],"v":[[56.03,10.612],[59.328,-13.398]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":108.75,"s":[{"i":[[0,0],[5.067,13.979]],"o":[[0,0],[0,0]],"v":[[66.93,-3.008],[63.369,-26.981]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":127.5,"s":[{"i":[[0,0],[0.948,14.838]],"o":[[0,0],[0,0]],"v":[[56.03,10.612],[59.328,-13.398]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":146.25,"s":[{"i":[[0,0],[5.067,13.979]],"o":[[0,0],[0,0]],"v":[[66.93,-3.008],[63.369,-26.981]],"c":false}]},{"t":165,"s":[{"i":[[0,0],[0.948,14.838]],"o":[[0,0],[0,0]],"v":[[56.03,10.612],[59.328,-13.398]],"c":false}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 2","np":2,"cix":2,"bm":0,"ix":2,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[0,0],[1.256,12.748]],"o":[[0,0],[0,0]],"v":[[69.497,6.195],[71.006,-15.064]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":18.75,"s":[{"i":[[0,0],[4.778,11.886]],"o":[[0,0],[0,0]],"v":[[78.62,-11.021],[74.113,-31.852]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":37.5,"s":[{"i":[[0,0],[1.256,12.748]],"o":[[0,0],[0,0]],"v":[[69.497,6.195],[71.006,-15.064]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":56.25,"s":[{"i":[[0,0],[4.778,11.886]],"o":[[0,0],[0,0]],"v":[[78.62,-11.021],[74.113,-31.852]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.167,"y":0},"t":75,"s":[{"i":[[0,0],[1.256,12.748]],"o":[[0,0],[0,0]],"v":[[69.497,6.195],[71.006,-15.064]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[{"i":[[0,0],[1.256,12.748]],"o":[[0,0],[0,0]],"v":[[69.497,6.195],[71.006,-15.064]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":108.75,"s":[{"i":[[0,0],[4.778,11.886]],"o":[[0,0],[0,0]],"v":[[78.62,-11.021],[74.113,-31.852]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":127.5,"s":[{"i":[[0,0],[1.256,12.748]],"o":[[0,0],[0,0]],"v":[[69.497,6.195],[71.006,-15.064]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":146.25,"s":[{"i":[[0,0],[4.778,11.886]],"o":[[0,0],[0,0]],"v":[[78.62,-11.021],[74.113,-31.852]],"c":false}]},{"t":165,"s":[{"i":[[0,0],[1.256,12.748]],"o":[[0,0],[0,0]],"v":[[69.497,6.195],[71.006,-15.064]],"c":false}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 3","np":2,"cix":2,"bm":0,"ix":3,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[-20.548,0.48],[-6.075,-30.295],[8.425,-8.554],[5.803,6.637],[0,0],[14.917,15.521],[0,0]],"o":[[0,0],[6.075,30.295],[-8.425,8.554],[-5.803,-6.636],[0,0],[-14.917,-15.521],[0,0]],"v":[[42.948,-111.672],[73.406,-53.402],[69.497,6.195],[45.789,5.958],[45.682,-26.47],[19.734,-65.103],[2.016,-82.923]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":18.75,"s":[{"i":[[-20.548,0.48],[-14.319,-27.38],[5.691,-10.572],[7.43,4.745],[0,0],[14.417,15.986],[0,0]],"o":[[0,0],[14.319,27.38],[-5.691,10.572],[-7.43,-4.745],[0,0],[-11.515,-12.768],[0,0]],"v":[[42.948,-111.672],[70.211,-65.66],[78.62,-11.021],[55.795,-4.607],[46.608,-35.706],[17.75,-63.302],[2.016,-82.923]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":37.5,"s":[{"i":[[-20.548,0.48],[-6.075,-30.295],[8.425,-8.554],[5.803,6.637],[0,0],[14.917,15.521],[0,0]],"o":[[0,0],[6.075,30.295],[-8.425,8.554],[-5.803,-6.636],[0,0],[-14.917,-15.521],[0,0]],"v":[[42.948,-111.672],[73.406,-53.402],[69.497,6.195],[45.789,5.958],[45.682,-26.47],[19.734,-65.103],[2.016,-82.923]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":56.25,"s":[{"i":[[-20.548,0.48],[-14.319,-27.38],[5.691,-10.572],[7.43,4.745],[0,0],[14.417,15.986],[0,0]],"o":[[0,0],[14.319,27.38],[-5.691,10.572],[-7.43,-4.745],[0,0],[-11.515,-12.768],[0,0]],"v":[[42.948,-111.672],[70.211,-65.66],[78.62,-11.021],[55.795,-4.607],[46.608,-35.706],[17.75,-63.302],[2.016,-82.923]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.167,"y":0},"t":75,"s":[{"i":[[-20.548,0.48],[-6.075,-30.295],[8.425,-8.554],[5.803,6.637],[0,0],[14.917,15.521],[0,0]],"o":[[0,0],[6.075,30.295],[-8.425,8.554],[-5.803,-6.636],[0,0],[-14.917,-15.521],[0,0]],"v":[[42.948,-111.672],[73.406,-53.402],[69.497,6.195],[45.789,5.958],[45.682,-26.47],[19.734,-65.103],[2.016,-82.923]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[{"i":[[-20.548,0.48],[-6.075,-30.295],[8.425,-8.554],[5.803,6.637],[0,0],[14.917,15.521],[0,0]],"o":[[0,0],[6.075,30.295],[-8.425,8.554],[-5.803,-6.636],[0,0],[-14.917,-15.521],[0,0]],"v":[[42.948,-111.672],[73.406,-53.402],[69.497,6.195],[45.789,5.958],[45.682,-26.47],[19.734,-65.103],[2.016,-82.923]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":108.75,"s":[{"i":[[-20.548,0.48],[-14.319,-27.38],[5.691,-10.572],[7.43,4.745],[0,0],[14.417,15.986],[0,0]],"o":[[0,0],[14.319,27.38],[-5.691,10.572],[-7.43,-4.745],[0,0],[-11.515,-12.768],[0,0]],"v":[[42.948,-111.672],[70.211,-65.66],[78.62,-11.021],[55.795,-4.607],[46.608,-35.706],[17.75,-63.302],[2.016,-82.923]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":127.5,"s":[{"i":[[-20.548,0.48],[-6.075,-30.295],[8.425,-8.554],[5.803,6.637],[0,0],[14.917,15.521],[0,0]],"o":[[0,0],[6.075,30.295],[-8.425,8.554],[-5.803,-6.636],[0,0],[-14.917,-15.521],[0,0]],"v":[[42.948,-111.672],[73.406,-53.402],[69.497,6.195],[45.789,5.958],[45.682,-26.47],[19.734,-65.103],[2.016,-82.923]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":146.25,"s":[{"i":[[-20.548,0.48],[-14.319,-27.38],[5.691,-10.572],[7.43,4.745],[0,0],[14.417,15.986],[0,0]],"o":[[0,0],[14.319,27.38],[-5.691,10.572],[-7.43,-4.745],[0,0],[-11.515,-12.768],[0,0]],"v":[[42.948,-111.672],[70.211,-65.66],[78.62,-11.021],[55.795,-4.607],[46.608,-35.706],[17.75,-63.302],[2.016,-82.923]],"c":true}]},{"t":165,"s":[{"i":[[-20.548,0.48],[-6.075,-30.295],[8.425,-8.554],[5.803,6.637],[0,0],[14.917,15.521],[0,0]],"o":[[0,0],[6.075,30.295],[-8.425,8.554],[-5.803,-6.636],[0,0],[-14.917,-15.521],[0,0]],"v":[[42.948,-111.672],[73.406,-53.402],[69.497,6.195],[45.789,5.958],[45.682,-26.47],[19.734,-65.103],[2.016,-82.923]],"c":true}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.9333,0.9725,0.9373,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 4","np":3,"cix":2,"bm":0,"ix":4,"mn":"ADBE Vector Group","hd":false}],"ip":0,"op":180,"st":0,"bm":0},{"ddd":0,"ind":5,"ty":4,"nm":"Layer 7","sr":1,"ks":{"o":{"a":0,"k":100,"ix":11},"r":{"a":0,"k":0,"ix":10},"p":{"a":0,"k":[480,422,0],"ix":2,"l":2},"a":{"a":0,"k":[0,0,0],"ix":1,"l":2},"s":{"a":0,"k":[100,100,100],"ix":6,"l":2}},"ao":0,"shapes":[{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,0],[0,0],[0,0]],"o":[[0,0],[0,0],[0,0]],"v":[[260.101,-108.195],[260.101,-277.871],[154.495,-108.195]],"c":true},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ind":1,"ty":"sh","ix":2,"ks":{"a":0,"k":{"i":[[4.418,3.536],[0,6.186],[0,0],[0,0],[4.198,4.567],[0,6.187],[-2.798,4.273],[0,0],[-15.024,0],[-5.892,-5.154],[0,-10.163],[0,0],[0,0],[-2.798,-3.165],[0,-4.418],[2.798,-3.165],[5.154,0],[0,0],[0,0],[4.27,-3.534],[5.596,0]],"o":[[-4.418,-3.534],[0,0],[0,0],[-6.779,0],[-4.198,-4.564],[0,-4.86],[0,0],[8.981,-13.992],[8.836,0],[5.89,5.157],[0,0],[0,0],[5.154,0],[2.798,3.169],[0,4.419],[-2.798,3.17],[0,0],[0,0],[0,6.186],[-4.275,3.536],[-5.601,0]],"v":[[266.729,-12.532],[260.101,-27.112],[260.101,-75.939],[134.171,-75.939],[117.711,-82.788],[111.415,-98.916],[115.611,-112.613],[236.241,-302.173],[272.254,-323.162],[294.345,-315.429],[303.183,-292.452],[303.183,-108.195],[335.218,-108.195],[347.147,-103.445],[351.346,-92.067],[347.147,-80.689],[335.218,-75.939],[302.961,-75.939],[302.961,-27.112],[296.556,-12.532],[281.754,-7.23]],"c":true},"ix":2},"nm":"Path 2","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"fl","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":3,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[-6.554,2.873],[-4.495,4.64],[-3.314,6.924],[-1.916,7.07],[-1.104,8.914],[-0.37,7.439],[0,8.692],[0.365,7.733],[1.178,8.913],[1.911,7.07],[3.314,6.776],[4.492,4.567],[6.48,2.728],[8.101,0],[6.48,-2.724],[4.418,-4.491],[3.386,-6.774],[1.84,-7.07],[1.176,-8.983],[0.365,-7.732],[0,-9.131],[-0.37,-7.511],[-1.106,-8.91],[-1.916,-7.069],[-3.314,-6.922],[-4.418,-4.563],[-6.556,-2.872],[-8.102,0]],"o":[[6.554,-2.872],[4.492,-4.64],[3.314,-6.922],[1.911,-7.069],[1.104,-8.91],[0.365,-7.436],[0,-9.131],[-0.37,-7.732],[-1.18,-8.91],[-1.916,-7.07],[-3.314,-6.774],[-4.494,-4.564],[-6.482,-2.724],[-8.102,0],[-6.482,2.728],[-4.42,4.496],[-3.39,6.776],[-1.842,7.07],[-1.18,8.985],[-0.37,7.733],[0,8.692],[0.365,7.512],[1.104,8.913],[1.914,7.07],[3.314,6.924],[4.418,4.567],[6.552,2.873],[8.101,0]],"v":[[-13.082,-42.689],[3.489,-53.956],[15.198,-71.299],[23.043,-92.288],[27.57,-116.259],[29.781,-140.782],[30.333,-164.974],[29.781,-190.271],[27.461,-215.236],[22.82,-239.207],[14.979,-259.974],[3.269,-276.986],[-13.192,-287.923],[-35.065,-292.01],[-56.937,-287.923],[-73.285,-277.098],[-84.995,-260.195],[-92.839,-239.428],[-97.367,-215.346],[-99.687,-190.271],[-100.239,-164.974],[-99.687,-140.672],[-97.477,-116.038],[-92.949,-92.067],[-85.105,-71.078],[-73.507,-53.846],[-57.047,-42.689],[-35.065,-38.379]],"c":true},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ind":1,"ty":"sh","ix":2,"ks":{"a":0,"k":{"i":[[13.108,5.966],[8.174,9.942],[5.226,14.288],[2.061,15.023],[0,17.823],[-74.089,0],[0,-108.55],[1.988,-15.024],[5.226,-14.285],[8.176,-9.943],[13.108,-6.038],[16.937,0]],"o":[[-13.11,-5.964],[-8.175,-9.942],[-5.23,-14.285],[-2.064,-15.024],[0,-108.55],[73.937,0],[0,17.675],[-1.99,15.023],[-5.23,14.288],[-8.174,9.942],[-13.11,6.038],[-16.938,0]],"v":[[-80.135,-11.538],[-112.059,-35.398],[-132.164,-71.741],[-143.1,-115.706],[-146.193,-164.974],[-35.065,-327.801],[75.845,-164.974],[72.863,-115.927],[62.037,-71.962],[41.931,-35.618],[10.007,-11.648],[-35.065,-2.59]],"c":true},"ix":2},"nm":"Path 2","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"fl","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 2","np":3,"cix":2,"bm":0,"ix":2,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,0],[0,0],[0,0]],"o":[[0,0],[0,0],[0,0]],"v":[[-261.52,-108.195],[-261.52,-277.871],[-367.125,-108.195]],"c":true},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ind":1,"ty":"sh","ix":2,"ks":{"a":0,"k":{"i":[[4.418,3.536],[0,6.186],[0,0],[0,0],[4.197,4.567],[0,6.187],[-2.8,4.273],[0,0],[-15.023,0],[-5.892,-5.154],[0,-10.163],[0,0],[0,0],[-2.8,-3.165],[0,-4.418],[2.796,-3.165],[5.155,0],[0,0],[0,0],[4.27,-3.534],[5.596,0]],"o":[[-4.419,-3.534],[0,0],[0,0],[-6.776,0],[-4.198,-4.564],[0,-4.86],[0,0],[8.983,-13.992],[8.837,0],[5.89,5.157],[0,0],[0,0],[5.155,0],[2.796,3.169],[0,4.419],[-2.8,3.17],[0,0],[0,0],[0,6.186],[-4.274,3.536],[-5.599,0]],"v":[[-254.892,-12.532],[-261.52,-27.112],[-261.52,-75.939],[-387.451,-75.939],[-403.91,-82.788],[-410.207,-98.916],[-406.009,-112.613],[-285.381,-302.173],[-249.368,-323.162],[-227.276,-315.429],[-218.438,-292.452],[-218.438,-108.195],[-186.403,-108.195],[-174.472,-103.445],[-170.275,-92.067],[-174.472,-80.689],[-186.403,-75.939],[-218.658,-75.939],[-218.658,-27.112],[-225.066,-12.532],[-239.869,-7.23]],"c":true},"ix":2},"nm":"Path 2","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"fl","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 3","np":3,"cix":2,"bm":0,"ix":3,"mn":"ADBE Vector Group","hd":false}],"ip":0,"op":180,"st":0,"bm":0},{"ddd":0,"ind":6,"ty":4,"nm":"body","sr":1,"ks":{"o":{"a":0,"k":100,"ix":11},"r":{"a":0,"k":0,"ix":10},"p":{"a":0,"k":[474.984,439.325,0],"ix":2,"l":2},"a":{"a":0,"k":[-5.016,17.325,0],"ix":1,"l":2},"s":{"a":0,"k":[100,100,100],"ix":6,"l":2}},"ao":0,"shapes":[{"ty":"gr","it":[{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[0,0],[-8.711,5.636]],"o":[[0,0],[0,0]],"v":[[-52.828,129.224],[-38.993,111.29]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":18.75,"s":[{"i":[[0,0],[-8.711,5.636]],"o":[[0,0],[0,0]],"v":[[-88.828,111.224],[-74.993,93.29]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":37.5,"s":[{"i":[[0,0],[-8.711,5.636]],"o":[[0,0],[0,0]],"v":[[-52.828,129.224],[-38.993,111.29]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":56.25,"s":[{"i":[[0,0],[-8.711,5.636]],"o":[[0,0],[0,0]],"v":[[-88.828,111.224],[-74.993,93.29]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.167,"y":0},"t":75,"s":[{"i":[[0,0],[-8.711,5.636]],"o":[[0,0],[0,0]],"v":[[-52.828,129.224],[-38.993,111.29]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[{"i":[[0,0],[-8.711,5.636]],"o":[[0,0],[0,0]],"v":[[-52.828,129.224],[-38.993,111.29]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":108.75,"s":[{"i":[[0,0],[-8.711,5.636]],"o":[[0,0],[0,0]],"v":[[-88.828,111.224],[-74.993,93.29]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":127.5,"s":[{"i":[[0,0],[-8.711,5.636]],"o":[[0,0],[0,0]],"v":[[-52.828,129.224],[-38.993,111.29]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":146.25,"s":[{"i":[[0,0],[-8.711,5.636]],"o":[[0,0],[0,0]],"v":[[-88.828,111.224],[-74.993,93.29]],"c":false}]},{"t":165,"s":[{"i":[[0,0],[-8.711,5.636]],"o":[[0,0],[0,0]],"v":[[-52.828,129.224],[-38.993,111.29]],"c":false}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":2,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[0,0],[-12.81,6.149]],"o":[[0,0],[0,0]],"v":[[-65.638,121.538],[-50.778,106.678]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":18.75,"s":[{"i":[[0,0],[-12.81,6.149]],"o":[[0,0],[0,0]],"v":[[-101.638,103.538],[-86.778,88.678]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":37.5,"s":[{"i":[[0,0],[-12.81,6.149]],"o":[[0,0],[0,0]],"v":[[-65.638,121.538],[-50.778,106.678]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":56.25,"s":[{"i":[[0,0],[-12.81,6.149]],"o":[[0,0],[0,0]],"v":[[-101.638,103.538],[-86.778,88.678]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.167,"y":0},"t":75,"s":[{"i":[[0,0],[-12.81,6.149]],"o":[[0,0],[0,0]],"v":[[-65.638,121.538],[-50.778,106.678]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[{"i":[[0,0],[-12.81,6.149]],"o":[[0,0],[0,0]],"v":[[-65.638,121.538],[-50.778,106.678]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":108.75,"s":[{"i":[[0,0],[-12.81,6.149]],"o":[[0,0],[0,0]],"v":[[-101.638,103.538],[-86.778,88.678]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":127.5,"s":[{"i":[[0,0],[-12.81,6.149]],"o":[[0,0],[0,0]],"v":[[-65.638,121.538],[-50.778,106.678]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":146.25,"s":[{"i":[[0,0],[-12.81,6.149]],"o":[[0,0],[0,0]],"v":[[-101.638,103.538],[-86.778,88.678]],"c":false}]},{"t":165,"s":[{"i":[[0,0],[-12.81,6.149]],"o":[[0,0],[0,0]],"v":[[-65.638,121.538],[-50.778,106.678]],"c":false}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 2","np":2,"cix":2,"bm":0,"ix":2,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[0,0],[-12.81,3.587]],"o":[[0,0],[0,0]],"v":[[-43.092,95.405],[-21.059,96.942]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":18.75,"s":[{"i":[[0,0],[-12.81,3.587]],"o":[[0,0],[0,0]],"v":[[-86.092,73.905],[-57.059,78.942]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":37.5,"s":[{"i":[[0,0],[-12.81,3.587]],"o":[[0,0],[0,0]],"v":[[-43.092,95.405],[-21.059,96.942]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":56.25,"s":[{"i":[[0,0],[-12.81,3.587]],"o":[[0,0],[0,0]],"v":[[-86.092,73.905],[-57.059,78.942]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.167,"y":0},"t":75,"s":[{"i":[[0,0],[-12.81,3.587]],"o":[[0,0],[0,0]],"v":[[-43.092,95.405],[-21.059,96.942]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[{"i":[[0,0],[-12.81,3.587]],"o":[[0,0],[0,0]],"v":[[-43.092,95.405],[-21.059,96.942]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":108.75,"s":[{"i":[[0,0],[-12.81,3.587]],"o":[[0,0],[0,0]],"v":[[-86.092,73.905],[-57.059,78.942]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":127.5,"s":[{"i":[[0,0],[-12.81,3.587]],"o":[[0,0],[0,0]],"v":[[-43.092,95.405],[-21.059,96.942]],"c":false}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":146.25,"s":[{"i":[[0,0],[-12.81,3.587]],"o":[[0,0],[0,0]],"v":[[-86.092,73.905],[-57.059,78.942]],"c":false}]},{"t":165,"s":[{"i":[[0,0],[-12.81,3.587]],"o":[[0,0],[0,0]],"v":[[-43.092,95.405],[-21.059,96.942]],"c":false}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 3","np":2,"cix":2,"bm":0,"ix":3,"mn":"ADBE Vector Group","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":3,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[3.702,-6.684],[5.446,3.017],[-3.702,6.684],[-5.446,-3.017]],"o":[[-3.702,6.684],[-5.446,-3.017],[3.702,-6.684],[5.446,3.017]],"v":[[102.557,41.941],[85.992,48.581],[82.834,31.016],[99.399,24.376]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":18.75,"s":[{"i":[[6.261,-4.379],[3.569,5.102],[-6.261,4.379],[-3.568,-5.102]],"o":[[-6.261,4.379],[-3.569,-5.102],[6.261,-4.379],[3.568,5.102]],"v":[[79.921,79.959],[63.873,80.901],[69.749,64.234],[85.548,64.042]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":37.5,"s":[{"i":[[3.702,-6.684],[5.446,3.017],[-3.702,6.684],[-5.446,-3.017]],"o":[[-3.702,6.684],[-5.446,-3.017],[3.702,-6.684],[5.446,3.017]],"v":[[102.557,41.941],[85.992,48.581],[82.834,31.016],[99.399,24.376]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":56.25,"s":[{"i":[[6.261,-4.379],[3.569,5.102],[-6.261,4.379],[-3.568,-5.102]],"o":[[-6.261,4.379],[-3.569,-5.102],[6.261,-4.379],[3.568,5.102]],"v":[[79.921,79.959],[63.873,80.901],[69.749,64.234],[85.548,64.042]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.167,"y":0},"t":75,"s":[{"i":[[3.702,-6.684],[5.446,3.017],[-3.702,6.684],[-5.446,-3.017]],"o":[[-3.702,6.684],[-5.446,-3.017],[3.702,-6.684],[5.446,3.017]],"v":[[102.557,41.941],[85.992,48.581],[82.834,31.016],[99.399,24.376]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[{"i":[[3.702,-6.684],[5.446,3.017],[-3.702,6.684],[-5.446,-3.017]],"o":[[-3.702,6.684],[-5.446,-3.017],[3.702,-6.684],[5.446,3.017]],"v":[[102.557,41.941],[85.992,48.581],[82.834,31.016],[99.399,24.376]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":108.75,"s":[{"i":[[6.261,-4.379],[3.569,5.102],[-6.261,4.379],[-3.568,-5.102]],"o":[[-6.261,4.379],[-3.569,-5.102],[6.261,-4.379],[3.568,5.102]],"v":[[79.921,79.959],[63.873,80.901],[69.749,64.234],[85.548,64.042]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":127.5,"s":[{"i":[[3.702,-6.684],[5.446,3.017],[-3.702,6.684],[-5.446,-3.017]],"o":[[-3.702,6.684],[-5.446,-3.017],[3.702,-6.684],[5.446,3.017]],"v":[[102.557,41.941],[85.992,48.581],[82.834,31.016],[99.399,24.376]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":146.25,"s":[{"i":[[6.261,-4.379],[3.569,5.102],[-6.261,4.379],[-3.568,-5.102]],"o":[[-6.261,4.379],[-3.569,-5.102],[6.261,-4.379],[3.568,5.102]],"v":[[79.921,79.959],[63.873,80.901],[69.749,64.234],[85.548,64.042]],"c":true}]},{"t":165,"s":[{"i":[[3.702,-6.684],[5.446,3.017],[-3.702,6.684],[-5.446,-3.017]],"o":[[-3.702,6.684],[-5.446,-3.017],[3.702,-6.684],[5.446,3.017]],"v":[[102.557,41.941],[85.992,48.581],[82.834,31.016],[99.399,24.376]],"c":true}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.9333,0.9725,0.9373,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":3,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[0.92,-2.727],[2.152,0.726],[-0.92,2.727],[-2.152,-0.726]],"o":[[-0.92,2.726],[-2.152,-0.726],[0.92,-2.726],[2.152,0.726]],"v":[[116.082,28.222],[110.52,31.844],[108.289,25.593],[113.851,21.971]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":18.75,"s":[{"i":[[2.023,-2.046],[1.615,1.597],[-2.024,2.045],[-1.615,-1.597]],"o":[[-2.023,2.046],[-1.615,-1.597],[2.024,-2.045],[1.615,1.597]],"v":[[98.847,74.824],[92.259,75.636],[93,69.039],[99.587,68.227]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":37.5,"s":[{"i":[[0.92,-2.727],[2.152,0.726],[-0.92,2.727],[-2.152,-0.726]],"o":[[-0.92,2.726],[-2.152,-0.726],[0.92,-2.726],[2.152,0.726]],"v":[[116.082,28.222],[110.52,31.844],[108.289,25.593],[113.851,21.971]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":56.25,"s":[{"i":[[2.023,-2.046],[1.615,1.597],[-2.024,2.045],[-1.615,-1.597]],"o":[[-2.023,2.046],[-1.615,-1.597],[2.024,-2.045],[1.615,1.597]],"v":[[98.847,74.824],[92.259,75.636],[93,69.039],[99.587,68.227]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.167,"y":0},"t":75,"s":[{"i":[[0.92,-2.727],[2.152,0.726],[-0.92,2.727],[-2.152,-0.726]],"o":[[-0.92,2.726],[-2.152,-0.726],[0.92,-2.726],[2.152,0.726]],"v":[[116.082,28.222],[110.52,31.844],[108.289,25.593],[113.851,21.971]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[{"i":[[0.92,-2.727],[2.152,0.726],[-0.92,2.727],[-2.152,-0.726]],"o":[[-0.92,2.726],[-2.152,-0.726],[0.92,-2.726],[2.152,0.726]],"v":[[116.082,28.222],[110.52,31.844],[108.289,25.593],[113.851,21.971]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":108.75,"s":[{"i":[[2.023,-2.046],[1.615,1.597],[-2.024,2.045],[-1.615,-1.597]],"o":[[-2.023,2.046],[-1.615,-1.597],[2.024,-2.045],[1.615,1.597]],"v":[[98.847,74.824],[92.259,75.636],[93,69.039],[99.587,68.227]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":127.5,"s":[{"i":[[0.92,-2.727],[2.152,0.726],[-0.92,2.727],[-2.152,-0.726]],"o":[[-0.92,2.726],[-2.152,-0.726],[0.92,-2.726],[2.152,0.726]],"v":[[116.082,28.222],[110.52,31.844],[108.289,25.593],[113.851,21.971]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":146.25,"s":[{"i":[[2.023,-2.046],[1.615,1.597],[-2.024,2.045],[-1.615,-1.597]],"o":[[-2.023,2.046],[-1.615,-1.597],[2.024,-2.045],[1.615,1.597]],"v":[[98.847,74.824],[92.259,75.636],[93,69.039],[99.587,68.227]],"c":true}]},{"t":165,"s":[{"i":[[0.92,-2.727],[2.152,0.726],[-0.92,2.727],[-2.152,-0.726]],"o":[[-0.92,2.726],[-2.152,-0.726],[0.92,-2.726],[2.152,0.726]],"v":[[116.082,28.222],[110.52,31.844],[108.289,25.593],[113.851,21.971]],"c":true}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.9333,0.9725,0.9373,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":3,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[1.266,-3.754],[2.963,0.999],[-1.266,3.754],[-2.963,-0.999]],"o":[[-1.266,3.754],[-2.963,-0.999],[1.266,-3.754],[2.963,0.999]],"v":[[113.823,18.238],[106.165,23.226],[103.092,14.619],[110.751,9.631]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":18.75,"s":[{"i":[[2.786,-2.817],[2.223,2.199],[-2.786,2.817],[-2.223,-2.199]],"o":[[-2.786,2.817],[-2.223,-2.199],[2.786,-2.817],[2.223,2.199]],"v":[[101.076,64.862],[92.131,65.98],[93.9,57.523],[102.221,55.78]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":37.5,"s":[{"i":[[1.266,-3.754],[2.963,0.999],[-1.266,3.754],[-2.963,-0.999]],"o":[[-1.266,3.754],[-2.963,-0.999],[1.266,-3.754],[2.963,0.999]],"v":[[113.823,18.238],[106.165,23.226],[103.092,14.619],[110.751,9.631]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":56.25,"s":[{"i":[[2.786,-2.817],[2.223,2.199],[-2.786,2.817],[-2.223,-2.199]],"o":[[-2.786,2.817],[-2.223,-2.199],[2.786,-2.817],[2.223,2.199]],"v":[[101.076,64.862],[92.131,65.98],[93.9,57.523],[102.221,55.78]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.167,"y":0},"t":75,"s":[{"i":[[1.266,-3.754],[2.963,0.999],[-1.266,3.754],[-2.963,-0.999]],"o":[[-1.266,3.754],[-2.963,-0.999],[1.266,-3.754],[2.963,0.999]],"v":[[113.823,18.238],[106.165,23.226],[103.092,14.619],[110.751,9.631]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[{"i":[[1.266,-3.754],[2.963,0.999],[-1.266,3.754],[-2.963,-0.999]],"o":[[-1.266,3.754],[-2.963,-0.999],[1.266,-3.754],[2.963,0.999]],"v":[[113.823,18.238],[106.165,23.226],[103.092,14.619],[110.751,9.631]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":108.75,"s":[{"i":[[2.786,-2.817],[2.223,2.199],[-2.786,2.817],[-2.223,-2.199]],"o":[[-2.786,2.817],[-2.223,-2.199],[2.786,-2.817],[2.223,2.199]],"v":[[101.076,64.862],[92.131,65.98],[93.9,57.523],[102.221,55.78]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":127.5,"s":[{"i":[[1.266,-3.754],[2.963,0.999],[-1.266,3.754],[-2.963,-0.999]],"o":[[-1.266,3.754],[-2.963,-0.999],[1.266,-3.754],[2.963,0.999]],"v":[[113.823,18.238],[106.165,23.226],[103.092,14.619],[110.751,9.631]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":146.25,"s":[{"i":[[2.786,-2.817],[2.223,2.199],[-2.786,2.817],[-2.223,-2.199]],"o":[[-2.786,2.817],[-2.223,-2.199],[2.786,-2.817],[2.223,2.199]],"v":[[101.076,64.862],[92.131,65.98],[93.9,57.523],[102.221,55.78]],"c":true}]},{"t":165,"s":[{"i":[[1.266,-3.754],[2.963,0.999],[-1.266,3.754],[-2.963,-0.999]],"o":[[-1.266,3.754],[-2.963,-0.999],[1.266,-3.754],[2.963,0.999]],"v":[[113.823,18.238],[106.165,23.226],[103.092,14.619],[110.751,9.631]],"c":true}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.9333,0.9725,0.9373,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 2","np":3,"cix":2,"bm":0,"ix":2,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[1.266,-3.754],[2.963,0.999],[-1.266,3.754],[-2.963,-0.999]],"o":[[-1.266,3.754],[-2.963,-0.999],[1.266,-3.754],[2.963,0.999]],"v":[[103.223,11.569],[95.564,16.557],[92.492,7.95],[100.15,2.962]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":18.75,"s":[{"i":[[2.786,-2.817],[2.223,2.199],[-2.786,2.817],[-2.223,-2.199]],"o":[[-2.786,2.817],[-2.223,-2.199],[2.786,-2.817],[2.223,2.199]],"v":[[94.981,54.965],[86.411,55.709],[87.68,47.877],[96.251,45.508]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":37.5,"s":[{"i":[[1.266,-3.754],[2.963,0.999],[-1.266,3.754],[-2.963,-0.999]],"o":[[-1.266,3.754],[-2.963,-0.999],[1.266,-3.754],[2.963,0.999]],"v":[[103.223,11.569],[95.564,16.557],[92.492,7.95],[100.15,2.962]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":56.25,"s":[{"i":[[2.786,-2.817],[2.223,2.199],[-2.786,2.817],[-2.223,-2.199]],"o":[[-2.786,2.817],[-2.223,-2.199],[2.786,-2.817],[2.223,2.199]],"v":[[94.981,54.965],[86.411,55.709],[87.68,47.877],[96.251,45.508]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.167,"y":0},"t":75,"s":[{"i":[[1.266,-3.754],[2.963,0.999],[-1.266,3.754],[-2.963,-0.999]],"o":[[-1.266,3.754],[-2.963,-0.999],[1.266,-3.754],[2.963,0.999]],"v":[[103.223,11.569],[95.564,16.557],[92.492,7.95],[100.15,2.962]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[{"i":[[1.266,-3.754],[2.963,0.999],[-1.266,3.754],[-2.963,-0.999]],"o":[[-1.266,3.754],[-2.963,-0.999],[1.266,-3.754],[2.963,0.999]],"v":[[103.223,11.569],[95.564,16.557],[92.492,7.95],[100.15,2.962]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":108.75,"s":[{"i":[[2.786,-2.817],[2.223,2.199],[-2.786,2.817],[-2.223,-2.199]],"o":[[-2.786,2.817],[-2.223,-2.199],[2.786,-2.817],[2.223,2.199]],"v":[[94.981,54.965],[86.411,55.709],[87.68,47.877],[96.251,45.508]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":127.5,"s":[{"i":[[1.266,-3.754],[2.963,0.999],[-1.266,3.754],[-2.963,-0.999]],"o":[[-1.266,3.754],[-2.963,-0.999],[1.266,-3.754],[2.963,0.999]],"v":[[103.223,11.569],[95.564,16.557],[92.492,7.95],[100.15,2.962]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":146.25,"s":[{"i":[[2.786,-2.817],[2.223,2.199],[-2.786,2.817],[-2.223,-2.199]],"o":[[-2.786,2.817],[-2.223,-2.199],[2.786,-2.817],[2.223,2.199]],"v":[[94.981,54.965],[86.411,55.709],[87.68,47.877],[96.251,45.508]],"c":true}]},{"t":165,"s":[{"i":[[1.266,-3.754],[2.963,0.999],[-1.266,3.754],[-2.963,-0.999]],"o":[[-1.266,3.754],[-2.963,-0.999],[1.266,-3.754],[2.963,0.999]],"v":[[103.223,11.569],[95.564,16.557],[92.492,7.95],[100.15,2.962]],"c":true}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.9333,0.9725,0.9373,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 3","np":3,"cix":2,"bm":0,"ix":3,"mn":"ADBE Vector Group","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 2","np":3,"cix":2,"bm":0,"ix":2,"mn":"ADBE Vector Group","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 2","np":2,"cix":2,"bm":0,"ix":2,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[26.133,-56.365],[-10.761,-45.092],[0,0],[-6.661,-15.885],[-8.199,5.124],[-1.537,10.248],[0,0],[-22.546,18.446],[-14.348,3.074],[2.05,23.059],[8.198,-3.587],[0,0],[11.785,19.984],[0,0],[18.447,12.298]],"o":[[0,0],[10.76,45.092],[0,0],[6.661,15.885],[8.198,-5.124],[1.537,-10.248],[0,0],[0,0],[14.347,-3.074],[-2.05,-23.058],[-8.199,3.587],[0,0],[-11.785,-19.984],[0,0],[-18.447,-12.298]],"v":[[-84.084,-67.54],[-93.308,35.454],[-43.092,95.405],[-65.638,121.538],[-25.67,122.05],[-5.686,91.306],[-4.662,75.421],[51.19,53.388],[85.522,66.198],[118.316,14.445],[94.745,-5.027],[83.472,2.147],[83.472,-32.184],[50.678,-53.705],[26.083,-98.797]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":18.75,"s":[{"i":[[26.133,-56.365],[-2.692,-44.454],[0,0],[-6.661,-15.885],[-8.199,5.124],[-1.537,10.248],[0,0],[-28.356,6.673],[-14.24,-3.538],[-8.284,21.616],[8.941,0.378],[0,0],[11.785,19.984],[0,0],[18.447,12.298]],"o":[[0,0],[1.188,19.608],[0,0],[6.661,15.885],[8.198,-5.124],[1.537,-10.248],[0,0],[0,0],[14.24,3.538],[8.284,-21.616],[-8.941,-0.378],[0,0],[-11.785,-19.984],[0,0],[-18.446,-12.298]],"v":[[-84.084,-67.54],[-106.808,18.454],[-86.092,73.905],[-101.638,103.538],[-61.67,104.05],[-41.686,73.306],[-40.662,57.421],[31.496,56.938],[54.715,95.522],[106.904,63.426],[94.277,35.583],[80.999,37.078],[77.472,-29.184],[50.678,-53.705],[26.083,-98.797]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":37.5,"s":[{"i":[[26.133,-56.365],[-10.761,-45.092],[0,0],[-6.661,-15.885],[-8.199,5.124],[-1.537,10.248],[0,0],[-22.546,18.446],[-14.348,3.074],[2.05,23.059],[8.198,-3.587],[0,0],[11.785,19.984],[0,0],[18.447,12.298]],"o":[[0,0],[10.76,45.092],[0,0],[6.661,15.885],[8.198,-5.124],[1.537,-10.248],[0,0],[0,0],[14.347,-3.074],[-2.05,-23.058],[-8.199,3.587],[0,0],[-11.785,-19.984],[0,0],[-18.447,-12.298]],"v":[[-84.084,-67.54],[-93.308,35.454],[-43.092,95.405],[-65.638,121.538],[-25.67,122.05],[-5.686,91.306],[-4.662,75.421],[51.19,53.388],[85.522,66.198],[118.316,14.445],[94.745,-5.027],[83.472,2.147],[83.472,-32.184],[50.678,-53.705],[26.083,-98.797]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":56.25,"s":[{"i":[[26.133,-56.365],[-2.692,-44.454],[0,0],[-6.661,-15.885],[-8.199,5.124],[-1.537,10.248],[0,0],[-28.356,6.673],[-14.24,-3.538],[-8.284,21.616],[8.941,0.378],[0,0],[11.785,19.984],[0,0],[18.447,12.298]],"o":[[0,0],[1.188,19.608],[0,0],[6.661,15.885],[8.198,-5.124],[1.537,-10.248],[0,0],[0,0],[14.24,3.538],[8.284,-21.616],[-8.941,-0.378],[0,0],[-11.785,-19.984],[0,0],[-18.446,-12.298]],"v":[[-84.084,-67.54],[-106.808,18.454],[-86.092,73.905],[-101.638,103.538],[-61.67,104.05],[-41.686,73.306],[-40.662,57.421],[31.496,56.938],[54.715,95.522],[106.904,63.426],[94.277,35.583],[80.999,37.078],[77.472,-29.184],[50.678,-53.705],[26.083,-98.797]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.167,"y":0},"t":75,"s":[{"i":[[26.133,-56.365],[-10.761,-45.092],[0,0],[-6.661,-15.885],[-8.199,5.124],[-1.537,10.248],[0,0],[-22.546,18.446],[-14.348,3.074],[2.05,23.059],[8.198,-3.587],[0,0],[11.785,19.984],[0,0],[18.447,12.298]],"o":[[0,0],[10.76,45.092],[0,0],[6.661,15.885],[8.198,-5.124],[1.537,-10.248],[0,0],[0,0],[14.347,-3.074],[-2.05,-23.058],[-8.199,3.587],[0,0],[-11.785,-19.984],[0,0],[-18.447,-12.298]],"v":[[-84.084,-67.54],[-93.308,35.454],[-43.092,95.405],[-65.638,121.538],[-25.67,122.05],[-5.686,91.306],[-4.662,75.421],[51.19,53.388],[85.522,66.198],[118.316,14.445],[94.745,-5.027],[83.472,2.147],[83.472,-32.184],[50.678,-53.705],[26.083,-98.797]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[{"i":[[26.133,-56.365],[-10.761,-45.092],[0,0],[-6.661,-15.885],[-8.199,5.124],[-1.537,10.248],[0,0],[-22.546,18.446],[-14.348,3.074],[2.05,23.059],[8.198,-3.587],[0,0],[11.785,19.984],[0,0],[18.447,12.298]],"o":[[0,0],[10.76,45.092],[0,0],[6.661,15.885],[8.198,-5.124],[1.537,-10.248],[0,0],[0,0],[14.347,-3.074],[-2.05,-23.058],[-8.199,3.587],[0,0],[-11.785,-19.984],[0,0],[-18.447,-12.298]],"v":[[-84.084,-67.54],[-93.308,35.454],[-43.092,95.405],[-65.638,121.538],[-25.67,122.05],[-5.686,91.306],[-4.662,75.421],[51.19,53.388],[85.522,66.198],[118.316,14.445],[94.745,-5.027],[83.472,2.147],[83.472,-32.184],[50.678,-53.705],[26.083,-98.797]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":108.75,"s":[{"i":[[26.133,-56.365],[-2.692,-44.454],[0,0],[-6.661,-15.885],[-8.199,5.124],[-1.537,10.248],[0,0],[-28.356,6.673],[-14.24,-3.538],[-8.284,21.616],[8.941,0.378],[0,0],[11.785,19.984],[0,0],[18.447,12.298]],"o":[[0,0],[1.188,19.608],[0,0],[6.661,15.885],[8.198,-5.124],[1.537,-10.248],[0,0],[0,0],[14.24,3.538],[8.284,-21.616],[-8.941,-0.378],[0,0],[-11.785,-19.984],[0,0],[-18.446,-12.298]],"v":[[-84.084,-67.54],[-106.808,18.454],[-86.092,73.905],[-101.638,103.538],[-61.67,104.05],[-41.686,73.306],[-40.662,57.421],[31.496,56.938],[54.715,95.522],[106.904,63.426],[94.277,35.583],[80.999,37.078],[77.472,-29.184],[50.678,-53.705],[26.083,-98.797]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":127.5,"s":[{"i":[[26.133,-56.365],[-10.761,-45.092],[0,0],[-6.661,-15.885],[-8.199,5.124],[-1.537,10.248],[0,0],[-22.546,18.446],[-14.348,3.074],[2.05,23.059],[8.198,-3.587],[0,0],[11.785,19.984],[0,0],[18.447,12.298]],"o":[[0,0],[10.76,45.092],[0,0],[6.661,15.885],[8.198,-5.124],[1.537,-10.248],[0,0],[0,0],[14.347,-3.074],[-2.05,-23.058],[-8.199,3.587],[0,0],[-11.785,-19.984],[0,0],[-18.447,-12.298]],"v":[[-84.084,-67.54],[-93.308,35.454],[-43.092,95.405],[-65.638,121.538],[-25.67,122.05],[-5.686,91.306],[-4.662,75.421],[51.19,53.388],[85.522,66.198],[118.316,14.445],[94.745,-5.027],[83.472,2.147],[83.472,-32.184],[50.678,-53.705],[26.083,-98.797]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":146.25,"s":[{"i":[[26.133,-56.365],[-2.692,-44.454],[0,0],[-6.661,-15.885],[-8.199,5.124],[-1.537,10.248],[0,0],[-28.356,6.673],[-14.24,-3.538],[-8.284,21.616],[8.941,0.378],[0,0],[11.785,19.984],[0,0],[18.447,12.298]],"o":[[0,0],[1.188,19.608],[0,0],[6.661,15.885],[8.198,-5.124],[1.537,-10.248],[0,0],[0,0],[14.24,3.538],[8.284,-21.616],[-8.941,-0.378],[0,0],[-11.785,-19.984],[0,0],[-18.446,-12.298]],"v":[[-84.084,-67.54],[-106.808,18.454],[-86.092,73.905],[-101.638,103.538],[-61.67,104.05],[-41.686,73.306],[-40.662,57.421],[31.496,56.938],[54.715,95.522],[106.904,63.426],[94.277,35.583],[80.999,37.078],[77.472,-29.184],[50.678,-53.705],[26.083,-98.797]],"c":true}]},{"t":165,"s":[{"i":[[26.133,-56.365],[-10.761,-45.092],[0,0],[-6.661,-15.885],[-8.199,5.124],[-1.537,10.248],[0,0],[-22.546,18.446],[-14.348,3.074],[2.05,23.059],[8.198,-3.587],[0,0],[11.785,19.984],[0,0],[18.447,12.298]],"o":[[0,0],[10.76,45.092],[0,0],[6.661,15.885],[8.198,-5.124],[1.537,-10.248],[0,0],[0,0],[14.347,-3.074],[-2.05,-23.058],[-8.199,3.587],[0,0],[-11.785,-19.984],[0,0],[-18.447,-12.298]],"v":[[-84.084,-67.54],[-93.308,35.454],[-43.092,95.405],[-65.638,121.538],[-25.67,122.05],[-5.686,91.306],[-4.662,75.421],[51.19,53.388],[85.522,66.198],[118.316,14.445],[94.745,-5.027],[83.472,2.147],[83.472,-32.184],[50.678,-53.705],[26.083,-98.797]],"c":true}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.9333,0.9725,0.9373,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 3","np":3,"cix":2,"bm":0,"ix":3,"mn":"ADBE Vector Group","hd":false}],"ip":0,"op":180,"st":0,"bm":0},{"ddd":0,"ind":7,"ty":4,"nm":"tail","parent":6,"sr":1,"ks":{"o":{"a":0,"k":100,"ix":11},"r":{"a":0,"k":0,"ix":10},"p":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[18.119,45.383,0],"to":[-5.833,-2.667,0],"ti":[0,0,0]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":19,"s":[-16.881,29.383,0],"to":[0,0,0],"ti":[0,0,0]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":38,"s":[18.119,45.383,0],"to":[0,0,0],"ti":[0,0,0]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":56,"s":[-16.881,29.383,0],"to":[0,0,0],"ti":[-5.833,-2.667,0]},{"i":{"x":0.667,"y":0.667},"o":{"x":0.326,"y":0.326},"t":75,"s":[18.119,45.383,0],"to":[0,0,0],"ti":[0,0,0]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":90,"s":[18.119,45.383,0],"to":[-5.833,-2.667,0],"ti":[0,0,0]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":109,"s":[-16.881,29.383,0],"to":[0,0,0],"ti":[0,0,0]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":128,"s":[18.119,45.383,0],"to":[0,0,0],"ti":[0,0,0]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":146,"s":[-16.881,29.383,0],"to":[0,0,0],"ti":[-5.833,-2.667,0]},{"t":165,"s":[18.119,45.383,0]}],"ix":2,"l":2},"a":{"a":0,"k":[15.119,52.383,0],"ix":1,"l":2},"s":{"a":0,"k":[100,100,100],"ix":6,"l":2}},"ao":0,"shapes":[{"ty":"gr","it":[{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[-6.922,0.181],[-0.028,5.154],[0,-3.542]],"o":[[0.458,-5.868],[-7.08,3.908],[0,3.426]],"v":[[26.786,91.775],[27.484,75.147],[11.997,87.983]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":22.375,"s":[{"i":[[-6.922,0.181],[-0.028,5.154],[0,-3.542]],"o":[[0.458,-5.868],[-7.08,3.908],[0,3.426]],"v":[[26.786,91.775],[27.484,75.147],[11.997,87.983]],"c":true}]},{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":44.75,"s":[{"i":[[-6.922,0.181],[-0.028,5.154],[0,-3.542]],"o":[[0.458,-5.868],[-7.08,3.908],[0,3.426]],"v":[[26.786,91.775],[27.484,75.147],[11.997,87.983]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":67.125,"s":[{"i":[[-6.922,0.181],[-0.028,5.154],[0,-3.542]],"o":[[0.458,-5.868],[-7.08,3.908],[0,3.426]],"v":[[26.786,91.775],[27.484,75.147],[11.997,87.983]],"c":true}]},{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":89.5,"s":[{"i":[[-6.922,0.181],[-0.028,5.154],[0,-3.542]],"o":[[0.458,-5.868],[-7.08,3.908],[0,3.426]],"v":[[26.786,91.775],[27.484,75.147],[11.997,87.983]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":111.875,"s":[{"i":[[-6.922,0.181],[-0.028,5.154],[0,-3.542]],"o":[[0.458,-5.868],[-7.08,3.908],[0,3.426]],"v":[[26.786,91.775],[27.484,75.147],[11.997,87.983]],"c":true}]},{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":134.25,"s":[{"i":[[-6.922,0.181],[-0.028,5.154],[0,-3.542]],"o":[[0.458,-5.868],[-7.08,3.908],[0,3.426]],"v":[[26.786,91.775],[27.484,75.147],[11.997,87.983]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":156.625,"s":[{"i":[[-6.922,0.181],[-0.028,5.154],[0,-3.542]],"o":[[0.458,-5.868],[-7.08,3.908],[0,3.426]],"v":[[26.786,91.775],[27.484,75.147],[11.997,87.983]],"c":true}]},{"t":179,"s":[{"i":[[-6.922,0.181],[-0.028,5.154],[0,-3.542]],"o":[[0.458,-5.868],[-7.08,3.908],[0,3.426]],"v":[[26.786,91.775],[27.484,75.147],[11.997,87.983]],"c":true}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.7686,0.9137,0.7686,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":3,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[0.805,-1.61],[-6.797,-4.712],[-1.322,6.633]],"o":[[-0.816,1.632],[2.162,-6.361],[-8.246,1.638]],"v":[[2.21,122.237],[18.26,135.927],[23.451,116.32]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":22.375,"s":[{"i":[[0.805,-1.61],[-6.797,-4.712],[-1.322,6.633]],"o":[[-0.816,1.632],[2.162,-6.361],[-8.246,1.638]],"v":[[2.21,122.237],[18.26,135.927],[23.451,116.32]],"c":true}]},{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":44.75,"s":[{"i":[[0.805,-1.61],[-6.797,-4.712],[-1.322,6.633]],"o":[[-0.816,1.632],[2.162,-6.361],[-8.246,1.638]],"v":[[2.21,122.237],[18.26,135.927],[23.451,116.32]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":67.125,"s":[{"i":[[0.805,-1.61],[-6.797,-4.712],[-1.322,6.633]],"o":[[-0.816,1.632],[2.162,-6.361],[-8.246,1.638]],"v":[[2.21,122.237],[18.26,135.927],[23.451,116.32]],"c":true}]},{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":89.5,"s":[{"i":[[0.805,-1.61],[-6.797,-4.712],[-1.322,6.633]],"o":[[-0.816,1.632],[2.162,-6.361],[-8.246,1.638]],"v":[[2.21,122.237],[18.26,135.927],[23.451,116.32]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":111.875,"s":[{"i":[[0.805,-1.61],[-6.797,-4.712],[-1.322,6.633]],"o":[[-0.816,1.632],[2.162,-6.361],[-8.246,1.638]],"v":[[2.21,122.237],[18.26,135.927],[23.451,116.32]],"c":true}]},{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":134.25,"s":[{"i":[[0.805,-1.61],[-6.797,-4.712],[-1.322,6.633]],"o":[[-0.816,1.632],[2.162,-6.361],[-8.246,1.638]],"v":[[2.21,122.237],[18.26,135.927],[23.451,116.32]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":156.625,"s":[{"i":[[0.805,-1.61],[-6.797,-4.712],[-1.322,6.633]],"o":[[-0.816,1.632],[2.162,-6.361],[-8.246,1.638]],"v":[[2.21,122.237],[18.26,135.927],[23.451,116.32]],"c":true}]},{"t":179,"s":[{"i":[[0.805,-1.61],[-6.797,-4.712],[-1.322,6.633]],"o":[[-0.816,1.632],[2.162,-6.361],[-8.246,1.638]],"v":[[2.21,122.237],[18.26,135.927],[23.451,116.32]],"c":true}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.7686,0.9137,0.7686,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 2","np":3,"cix":2,"bm":0,"ix":2,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[-4.032,4.619],[-1.626,2.421],[4.328,-0.393],[-3.595,-7.794]],"o":[[1.875,-2.147],[-7.774,-2.659],[-5.132,0.466],[4.697,-3.341]],"v":[[1.78,166.232],[7.012,159.352],[-16.752,153.432],[-11.325,178.163]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":22.375,"s":[{"i":[[-4.032,4.619],[-1.626,2.421],[4.328,-0.393],[-3.595,-7.794]],"o":[[1.875,-2.147],[-7.774,-2.659],[-5.132,0.466],[4.697,-3.341]],"v":[[1.78,166.232],[7.012,159.352],[-16.752,153.432],[-11.325,178.163]],"c":true}]},{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":44.75,"s":[{"i":[[-4.032,4.619],[-1.626,2.421],[4.328,-0.393],[-3.595,-7.794]],"o":[[1.875,-2.147],[-7.774,-2.659],[-5.132,0.466],[4.697,-3.341]],"v":[[1.78,166.232],[7.012,159.352],[-16.752,153.432],[-11.325,178.163]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":67.125,"s":[{"i":[[-4.032,4.619],[-1.626,2.421],[4.328,-0.393],[-3.595,-7.794]],"o":[[1.875,-2.147],[-7.774,-2.659],[-5.132,0.466],[4.697,-3.341]],"v":[[1.78,166.232],[7.012,159.352],[-16.752,153.432],[-11.325,178.163]],"c":true}]},{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":89.5,"s":[{"i":[[-4.032,4.619],[-1.626,2.421],[4.328,-0.393],[-3.595,-7.794]],"o":[[1.875,-2.147],[-7.774,-2.659],[-5.132,0.466],[4.697,-3.341]],"v":[[1.78,166.232],[7.012,159.352],[-16.752,153.432],[-11.325,178.163]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":111.875,"s":[{"i":[[-4.032,4.619],[-1.626,2.421],[4.328,-0.393],[-3.595,-7.794]],"o":[[1.875,-2.147],[-7.774,-2.659],[-5.132,0.466],[4.697,-3.341]],"v":[[1.78,166.232],[7.012,159.352],[-16.752,153.432],[-11.325,178.163]],"c":true}]},{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":134.25,"s":[{"i":[[-4.032,4.619],[-1.626,2.421],[4.328,-0.393],[-3.595,-7.794]],"o":[[1.875,-2.147],[-7.774,-2.659],[-5.132,0.466],[4.697,-3.341]],"v":[[1.78,166.232],[7.012,159.352],[-16.752,153.432],[-11.325,178.163]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":156.625,"s":[{"i":[[-4.032,4.619],[-1.626,2.421],[4.328,-0.393],[-3.595,-7.794]],"o":[[1.875,-2.147],[-7.774,-2.659],[-5.132,0.466],[4.697,-3.341]],"v":[[1.78,166.232],[7.012,159.352],[-16.752,153.432],[-11.325,178.163]],"c":true}]},{"t":179,"s":[{"i":[[-4.032,4.619],[-1.626,2.421],[4.328,-0.393],[-3.595,-7.794]],"o":[[1.875,-2.147],[-7.774,-2.659],[-5.132,0.466],[4.697,-3.341]],"v":[[1.78,166.232],[7.012,159.352],[-16.752,153.432],[-11.325,178.163]],"c":true}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.7686,0.9137,0.7686,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 3","np":3,"cix":2,"bm":0,"ix":3,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[2.86,10.453],[0,0],[7.197,-1.859],[-1.87,-7.194],[0,0],[-7.183,-11.289],[0,0]],"o":[[0,0],[-1.87,-7.192],[-7.193,1.868],[0,0],[3.249,11.876],[0,0],[-6.6,-9.517]],"v":[[-110.525,107.549],[-110.77,106.618],[-127.179,96.979],[-136.819,113.389],[-136.486,114.643],[-120.837,150.218],[-96.313,138.54]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":22.375,"s":[{"i":[[6.689,8.059],[0,0],[5.437,-4.641],[-4.519,-5.587],[0,0],[-10.75,-7.002],[0,0]],"o":[[0,0],[-4.518,-5.585],[-5.438,4.642],[0,0],[7.6,9.156],[0,0],[-9.531,-5.676]],"v":[[-133.835,138.694],[-134.422,137.971],[-152.448,136.263],[-154.111,154.785],[-153.318,155.757],[-125.457,180.724],[-109.065,160.203]],"c":true}]},{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":44.75,"s":[{"i":[[9.871,4.473],[0,0],[3.155,-6.73],[-6.731,-3.154],[0,0],[-13.275,-1.68],[0,0]],"o":[[0,0],[-6.729,-3.153],[-3.155,6.729],[0,0],[11.214,5.082],[0,0],[-11.538,-0.997]],"v":[[-141.772,180.097],[-142.646,179.691],[-160.541,186.165],[-154.066,204.062],[-152.888,204.607],[-115.517,215.276],[-108.847,188.946]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":67.125,"s":[{"i":[[6.689,8.059],[0,0],[5.437,-4.641],[-4.519,-5.587],[0,0],[-10.75,-7.002],[0,0]],"o":[[0,0],[-4.518,-5.585],[-5.438,4.642],[0,0],[7.6,9.156],[0,0],[-9.531,-5.676]],"v":[[-133.835,138.694],[-134.422,137.971],[-152.448,136.263],[-154.111,154.785],[-153.318,155.757],[-125.457,180.724],[-109.065,160.203]],"c":true}]},{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":89.5,"s":[{"i":[[2.86,10.453],[0,0],[7.197,-1.859],[-1.87,-7.194],[0,0],[-7.183,-11.289],[0,0]],"o":[[0,0],[-1.87,-7.192],[-7.193,1.868],[0,0],[3.249,11.876],[0,0],[-6.6,-9.517]],"v":[[-110.525,107.549],[-110.77,106.618],[-127.179,96.979],[-136.819,113.389],[-136.486,114.643],[-120.837,150.218],[-96.313,138.54]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":111.875,"s":[{"i":[[6.689,8.059],[0,0],[5.437,-4.641],[-4.519,-5.587],[0,0],[-10.75,-7.002],[0,0]],"o":[[0,0],[-4.518,-5.585],[-5.438,4.642],[0,0],[7.6,9.156],[0,0],[-9.531,-5.676]],"v":[[-133.835,138.694],[-134.422,137.971],[-152.448,136.263],[-154.111,154.785],[-153.318,155.757],[-125.457,180.724],[-109.065,160.203]],"c":true}]},{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":134.25,"s":[{"i":[[9.871,4.473],[0,0],[3.155,-6.73],[-6.731,-3.154],[0,0],[-13.275,-1.68],[0,0]],"o":[[0,0],[-6.729,-3.153],[-3.155,6.729],[0,0],[11.214,5.082],[0,0],[-11.538,-0.997]],"v":[[-141.772,180.097],[-142.646,179.691],[-160.541,186.165],[-154.066,204.062],[-152.888,204.607],[-115.517,215.276],[-108.847,188.946]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":156.625,"s":[{"i":[[6.689,8.059],[0,0],[5.437,-4.641],[-4.519,-5.587],[0,0],[-10.75,-7.002],[0,0]],"o":[[0,0],[-4.518,-5.585],[-5.438,4.642],[0,0],[7.6,9.156],[0,0],[-9.531,-5.676]],"v":[[-133.835,138.694],[-134.422,137.971],[-152.448,136.263],[-154.111,154.785],[-153.318,155.757],[-125.457,180.724],[-109.065,160.203]],"c":true}]},{"t":179,"s":[{"i":[[2.86,10.453],[0,0],[7.197,-1.859],[-1.87,-7.194],[0,0],[-7.183,-11.289],[0,0]],"o":[[0,0],[-1.87,-7.192],[-7.193,1.868],[0,0],[3.249,11.876],[0,0],[-6.6,-9.517]],"v":[[-110.525,107.549],[-110.77,106.618],[-127.179,96.979],[-136.819,113.389],[-136.486,114.643],[-120.837,150.218],[-96.313,138.54]],"c":true}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.7686,0.9137,0.7686,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 4","np":3,"cix":2,"bm":0,"ix":4,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[-2.938,0],[-1.502,0.084],[-4.172,0.957],[2.259,0.753],[2.749,-7.656]],"o":[[1.465,0],[4.496,-0.253],[-5.68,-7.417],[-2.569,-0.856],[2.788,0.322]],"v":[[-53.311,191.088],[-48.859,190.961],[-35.863,189.125],[-51.617,171.171],[-61.898,190.594]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":22.375,"s":[{"i":[[-2.871,0.811],[-1.444,0.499],[-3.82,2.112],[2.409,0.132],[0.629,-8.444]],"o":[[1.431,-0.404],[4.325,-1.495],[-7.542,-5.879],[-2.74,-0.151],[2.811,-0.446]],"v":[[-50.686,195.441],[-46.369,194.085],[-34.164,188.655],[-54.38,174.978],[-59.209,197.315]],"c":true}]},{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":44.75,"s":[{"i":[[-2.525,1.502],[-1.247,0.84],[-3.097,2.955],[2.326,-0.508],[-1.551,-7.985]],"o":[[1.259,-0.749],[3.735,-2.516],[-8.673,-3.472],[-2.646,0.577],[2.561,-1.148]],"v":[[-40.75,201.665],[-36.988,199.28],[-26.757,191.059],[-49.475,183.68],[-48.383,205.63]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":67.125,"s":[{"i":[[-2.871,0.811],[-1.444,0.499],[-3.82,2.112],[2.409,0.132],[0.629,-8.444]],"o":[[1.431,-0.404],[4.325,-1.495],[-7.542,-5.879],[-2.74,-0.151],[2.811,-0.446]],"v":[[-50.686,195.441],[-46.369,194.085],[-34.164,188.655],[-54.38,174.978],[-59.209,197.315]],"c":true}]},{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":89.5,"s":[{"i":[[-2.938,0],[-1.502,0.084],[-4.172,0.957],[2.259,0.753],[2.749,-7.656]],"o":[[1.465,0],[4.496,-0.253],[-5.68,-7.417],[-2.569,-0.856],[2.788,0.322]],"v":[[-53.311,191.088],[-48.859,190.961],[-35.863,189.125],[-51.617,171.171],[-61.898,190.594]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":111.875,"s":[{"i":[[-2.871,0.811],[-1.444,0.499],[-3.82,2.112],[2.409,0.132],[0.629,-8.444]],"o":[[1.431,-0.404],[4.325,-1.495],[-7.542,-5.879],[-2.74,-0.151],[2.811,-0.446]],"v":[[-50.686,195.441],[-46.369,194.085],[-34.164,188.655],[-54.38,174.978],[-59.209,197.315]],"c":true}]},{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":134.25,"s":[{"i":[[-2.525,1.502],[-1.247,0.84],[-3.097,2.955],[2.326,-0.508],[-1.551,-7.985]],"o":[[1.259,-0.749],[3.735,-2.516],[-8.673,-3.472],[-2.646,0.577],[2.561,-1.148]],"v":[[-40.75,201.665],[-36.988,199.28],[-26.757,191.059],[-49.475,183.68],[-48.383,205.63]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":156.625,"s":[{"i":[[-2.871,0.811],[-1.444,0.499],[-3.82,2.112],[2.409,0.132],[0.629,-8.444]],"o":[[1.431,-0.404],[4.325,-1.495],[-7.542,-5.879],[-2.74,-0.151],[2.811,-0.446]],"v":[[-50.686,195.441],[-46.369,194.085],[-34.164,188.655],[-54.38,174.978],[-59.209,197.315]],"c":true}]},{"t":179,"s":[{"i":[[-2.938,0],[-1.502,0.084],[-4.172,0.957],[2.259,0.753],[2.749,-7.656]],"o":[[1.465,0],[4.496,-0.253],[-5.68,-7.417],[-2.569,-0.856],[2.788,0.322]],"v":[[-53.311,191.088],[-48.859,190.961],[-35.863,189.125],[-51.617,171.171],[-61.898,190.594]],"c":true}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.7686,0.9137,0.7686,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 5","np":3,"cix":2,"bm":0,"ix":5,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[-1.044,4.874],[10.107,-7.345],[-4.277,-2.416]],"o":[[1.081,-5.043],[3.742,3.142],[3.609,-5.856]],"v":[[-79.754,163.219],[-100.849,173.416],[-88.817,181.788]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":22.375,"s":[{"i":[[0.686,5.005],[6.875,-10.517],[-4.784,-0.81]],"o":[[-0.709,-5.178],[4.534,1.688],[1.358,-6.834]],"v":[[-83.721,176.335],[-99.777,193.741],[-85.821,197.176]],"c":true}]},{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":44.75,"s":[{"i":[[2.349,4.397],[2.977,-12.134],[-4.826,0.917]],"o":[[-2.43,-4.549],[4.887,-0.016],[-1.025,-6.802]],"v":[[-77.175,194.147],[-86.635,216.187],[-72.107,214.179]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":67.125,"s":[{"i":[[0.686,5.005],[6.875,-10.517],[-4.784,-0.81]],"o":[[-0.709,-5.178],[4.534,1.688],[1.358,-6.834]],"v":[[-83.721,176.335],[-99.777,193.741],[-85.821,197.176]],"c":true}]},{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":89.5,"s":[{"i":[[-1.044,4.874],[10.107,-7.345],[-4.277,-2.416]],"o":[[1.081,-5.043],[3.742,3.142],[3.609,-5.856]],"v":[[-79.754,163.219],[-100.849,173.416],[-88.817,181.788]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":111.875,"s":[{"i":[[0.686,5.005],[6.875,-10.517],[-4.784,-0.81]],"o":[[-0.709,-5.178],[4.534,1.688],[1.358,-6.834]],"v":[[-83.721,176.335],[-99.777,193.741],[-85.821,197.176]],"c":true}]},{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":134.25,"s":[{"i":[[2.349,4.397],[2.977,-12.134],[-4.826,0.917]],"o":[[-2.43,-4.549],[4.887,-0.016],[-1.025,-6.802]],"v":[[-77.175,194.147],[-86.635,216.187],[-72.107,214.179]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":156.625,"s":[{"i":[[0.686,5.005],[6.875,-10.517],[-4.784,-0.81]],"o":[[-0.709,-5.178],[4.534,1.688],[1.358,-6.834]],"v":[[-83.721,176.335],[-99.777,193.741],[-85.821,197.176]],"c":true}]},{"t":179,"s":[{"i":[[-1.044,4.874],[10.107,-7.345],[-4.277,-2.416]],"o":[[1.081,-5.043],[3.742,3.142],[3.609,-5.856]],"v":[[-79.754,163.219],[-100.849,173.416],[-88.817,181.788]],"c":true}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.7686,0.9137,0.7686,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 6","np":3,"cix":2,"bm":0,"ix":6,"mn":"ADBE Vector Group","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":6,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":1,"k":[{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":0,"s":[{"i":[[1.465,0],[9.785,35.771],[0,0],[-7.193,1.868],[-1.87,-7.192],[0,0],[-32.465,1.797],[-8.501,9.739],[1.778,22.397],[-5.926,0.47],[-0.47,-5.926],[24.534,-28.106],[20.275,-1.142]],"o":[[-45.849,0.002],[0,0],[-1.87,-7.194],[7.197,-1.859],[0,0],[7.448,27.224],[12.948,-0.729],[17.815,-20.41],[-0.472,-5.927],[5.969,-0.47],[1.98,24.926],[-13.328,15.268],[-1.502,0.084]],"v":[[-53.311,191.088],[-136.486,114.643],[-136.819,113.389],[-127.179,96.979],[-110.77,106.618],[-110.525,107.549],[-50.372,164.091],[-18.496,148.534],[5.505,61.295],[15.384,49.711],[26.967,59.59],[1.78,166.232],[-48.859,190.961]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":22.375,"s":[{"i":[[1.431,-0.404],[22.892,27.578],[0,0],[-5.445,4.636],[-4.518,-5.585],[0,0],[-31.225,10.792],[-8.501,9.739],[1.778,22.397],[-5.926,0.47],[-0.47,-5.926],[24.534,-28.106],[19.51,-6.73]],"o":[[-44.799,12.656],[0,0],[-4.519,-5.587],[5.444,-4.635],[0,0],[17.422,20.988],[12.456,-4.305],[17.815,-20.41],[-0.472,-5.927],[5.969,-0.47],[1.98,24.926],[-13.328,15.268],[-1.445,0.498]],"v":[[-50.686,195.441],[-153.318,155.757],[-154.111,154.785],[-152.448,136.263],[-134.422,137.971],[-133.835,138.694],[-55.065,167.527],[-18.496,148.534],[5.505,61.295],[15.384,49.711],[26.967,59.59],[1.78,166.232],[-46.369,194.085]],"c":true}]},{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":44.75,"s":[{"i":[[1.259,-0.749],[33.778,15.308],[0,0],[-3.164,6.725],[-6.729,-3.153],[0,0],[-26.968,18.164],[-8.501,9.739],[1.778,22.397],[-5.926,0.47],[-0.47,-5.926],[24.534,-28.106],[16.849,-11.334]],"o":[[-39.405,23.438],[0,0],[-6.731,-3.154],[3.164,-6.726],[0,0],[25.708,11.65],[10.756,-7.245],[17.815,-20.41],[-0.472,-5.927],[5.969,-0.47],[1.98,24.926],[-13.328,15.268],[-1.248,0.839]],"v":[[-40.75,201.665],[-152.888,204.607],[-154.066,204.062],[-160.541,186.165],[-142.646,179.691],[-141.772,180.097],[-52.024,176.959],[-18.496,148.534],[5.505,61.295],[15.384,49.711],[26.967,59.59],[1.78,166.232],[-36.988,199.28]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":67.125,"s":[{"i":[[1.431,-0.404],[22.892,27.578],[0,0],[-5.445,4.636],[-4.518,-5.585],[0,0],[-31.225,10.792],[-8.501,9.739],[1.778,22.397],[-5.926,0.47],[-0.47,-5.926],[24.534,-28.106],[19.51,-6.73]],"o":[[-44.799,12.656],[0,0],[-4.519,-5.587],[5.444,-4.635],[0,0],[17.422,20.988],[12.456,-4.305],[17.815,-20.41],[-0.472,-5.927],[5.969,-0.47],[1.98,24.926],[-13.328,15.268],[-1.445,0.498]],"v":[[-50.686,195.441],[-153.318,155.757],[-154.111,154.785],[-152.448,136.263],[-134.422,137.971],[-133.835,138.694],[-55.065,167.527],[-18.496,148.534],[5.505,61.295],[15.384,49.711],[26.967,59.59],[1.78,166.232],[-46.369,194.085]],"c":true}]},{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":89.5,"s":[{"i":[[1.465,0],[9.785,35.771],[0,0],[-7.193,1.868],[-1.87,-7.192],[0,0],[-32.465,1.797],[-8.501,9.739],[1.778,22.397],[-5.926,0.47],[-0.47,-5.926],[24.534,-28.106],[20.275,-1.142]],"o":[[-45.849,0.002],[0,0],[-1.87,-7.194],[7.197,-1.859],[0,0],[7.448,27.224],[12.948,-0.729],[17.815,-20.41],[-0.472,-5.927],[5.969,-0.47],[1.98,24.926],[-13.328,15.268],[-1.502,0.084]],"v":[[-53.311,191.088],[-136.486,114.643],[-136.819,113.389],[-127.179,96.979],[-110.77,106.618],[-110.525,107.549],[-50.372,164.091],[-18.496,148.534],[5.505,61.295],[15.384,49.711],[26.967,59.59],[1.78,166.232],[-48.859,190.961]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":111.875,"s":[{"i":[[1.431,-0.404],[22.892,27.578],[0,0],[-5.445,4.636],[-4.518,-5.585],[0,0],[-31.225,10.792],[-8.501,9.739],[1.778,22.397],[-5.926,0.47],[-0.47,-5.926],[24.534,-28.106],[19.51,-6.73]],"o":[[-44.799,12.656],[0,0],[-4.519,-5.587],[5.444,-4.635],[0,0],[17.422,20.988],[12.456,-4.305],[17.815,-20.41],[-0.472,-5.927],[5.969,-0.47],[1.98,24.926],[-13.328,15.268],[-1.445,0.498]],"v":[[-50.686,195.441],[-153.318,155.757],[-154.111,154.785],[-152.448,136.263],[-134.422,137.971],[-133.835,138.694],[-55.065,167.527],[-18.496,148.534],[5.505,61.295],[15.384,49.711],[26.967,59.59],[1.78,166.232],[-46.369,194.085]],"c":true}]},{"i":{"x":0.667,"y":0.779},"o":{"x":0.333,"y":0},"t":134.25,"s":[{"i":[[1.259,-0.749],[33.778,15.308],[0,0],[-3.164,6.725],[-6.729,-3.153],[0,0],[-26.968,18.164],[-8.501,9.739],[1.778,22.397],[-5.926,0.47],[-0.47,-5.926],[24.534,-28.106],[16.849,-11.334]],"o":[[-39.405,23.438],[0,0],[-6.731,-3.154],[3.164,-6.726],[0,0],[25.708,11.65],[10.756,-7.245],[17.815,-20.41],[-0.472,-5.927],[5.969,-0.47],[1.98,24.926],[-13.328,15.268],[-1.248,0.839]],"v":[[-40.75,201.665],[-152.888,204.607],[-154.066,204.062],[-160.541,186.165],[-142.646,179.691],[-141.772,180.097],[-52.024,176.959],[-18.496,148.534],[5.505,61.295],[15.384,49.711],[26.967,59.59],[1.78,166.232],[-36.988,199.28]],"c":true}]},{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0.221},"t":156.625,"s":[{"i":[[1.431,-0.404],[22.892,27.578],[0,0],[-5.445,4.636],[-4.518,-5.585],[0,0],[-31.225,10.792],[-8.501,9.739],[1.778,22.397],[-5.926,0.47],[-0.47,-5.926],[24.534,-28.106],[19.51,-6.73]],"o":[[-44.799,12.656],[0,0],[-4.519,-5.587],[5.444,-4.635],[0,0],[17.422,20.988],[12.456,-4.305],[17.815,-20.41],[-0.472,-5.927],[5.969,-0.47],[1.98,24.926],[-13.328,15.268],[-1.445,0.498]],"v":[[-50.686,195.441],[-153.318,155.757],[-154.111,154.785],[-152.448,136.263],[-134.422,137.971],[-133.835,138.694],[-55.065,167.527],[-18.496,148.534],[5.505,61.295],[15.384,49.711],[26.967,59.59],[1.78,166.232],[-46.369,194.085]],"c":true}]},{"t":179,"s":[{"i":[[1.465,0],[9.785,35.771],[0,0],[-7.193,1.868],[-1.87,-7.192],[0,0],[-32.465,1.797],[-8.501,9.739],[1.778,22.397],[-5.926,0.47],[-0.47,-5.926],[24.534,-28.106],[20.275,-1.142]],"o":[[-45.849,0.002],[0,0],[-1.87,-7.194],[7.197,-1.859],[0,0],[7.448,27.224],[12.948,-0.729],[17.815,-20.41],[-0.472,-5.927],[5.969,-0.47],[1.98,24.926],[-13.328,15.268],[-1.502,0.084]],"v":[[-53.311,191.088],[-136.486,114.643],[-136.819,113.389],[-127.179,96.979],[-110.77,106.618],[-110.525,107.549],[-50.372,164.091],[-18.496,148.534],[5.505,61.295],[15.384,49.711],[26.967,59.59],[1.78,166.232],[-48.859,190.961]],"c":true}]}],"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.9333,0.9725,0.9373,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 2","np":3,"cix":2,"bm":0,"ix":2,"mn":"ADBE Vector Group","hd":false}],"ip":0,"op":180,"st":0,"bm":0},{"ddd":0,"ind":8,"ty":4,"nm":"Layer 5","sr":1,"ks":{"o":{"a":0,"k":100,"ix":11},"r":{"a":0,"k":0,"ix":10},"p":{"a":0,"k":[451.386,707.037,0],"ix":2,"l":2},"a":{"a":0,"k":[-28.614,285.037,0],"ix":1,"l":2},"s":{"a":0,"k":[100,100,100],"ix":6,"l":2}},"ao":0,"shapes":[{"ty":"gr","it":[{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[-53.093,5.431],[-3.474,3.499],[1.301,0.019],[-0.279,-0.278],[0.28,0.274],[17.316,6.163],[0,-0.014],[0,0.014],[4.499,4.206],[0,-1.702],[-1.593,-6.034]],"o":[[4.237,-3.539],[-1.328,-0.003],[0.28,0.274],[-0.279,-0.278],[-30.337,-0.438],[0,0.014],[0,-0.014],[-25.307,-8.766],[-0.113,1.673],[0,6.534],[13.913,9.358]],"v":[[106.358,312.57],[117.879,301.999],[113.975,301.944],[114.815,302.762],[113.975,301.944],[43.25,290.669],[43.248,290.709],[43.25,290.669],[4.334,268.249],[4.143,273.306],[6.593,292.206]],"c":true},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":2,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[-17.585,3.248],[-7.003,5.85],[13.913,9.358],[-6.303,-7.893]],"o":[[9.361,-5.698],[-53.093,5.431],[2.653,10.053],[16.526,5.8]],"v":[[81.885,329.97],[106.358,312.57],[6.593,292.206],[20.274,319.358]],"c":true},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 2","np":2,"cix":2,"bm":0,"ix":2,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[16.526,5.8],[-14.145,-4.465],[-7.789,4.741]],"o":[[9.044,11.326],[9.637,-4.428],[-17.585,3.248]],"v":[[20.274,319.358],[55.757,343.761],[81.885,329.97]],"c":true},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 3","np":2,"cix":2,"bm":0,"ix":3,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[-1.631,38.076],[14.918,-8.109]],"o":[[-31.143,43.624],[38.011,-1.882]],"v":[[151.813,276.519],[81.731,347.088]],"c":true},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 4","np":2,"cix":2,"bm":0,"ix":4,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[-31.143,43.624],[0,1.078],[1.919,6.577],[1.844,-4.186],[-0.023,-0.029],[0.023,0.029],[1.904,-3.387],[-0.111,-0.119],[0.111,0.118],[-0.239,0],[4.237,-3.539],[-0.057,0.006],[0.057,-0.006],[9.361,-5.698],[-0.174,0.035],[0.176,-0.033],[9.637,-4.428],[-7.759,0],[-1.23,0.061]],"o":[[0.046,-1.066],[0,-7.197],[-0.903,3.048],[0.023,0.029],[-0.023,-0.029],[-1.301,2.953],[0.111,0.118],[-0.111,-0.119],[-4.897,8.709],[-0.239,0],[0.057,-0.006],[-0.057,0.006],[-7.003,5.85],[0.176,-0.033],[-0.174,0.035],[-7.789,4.741],[7.026,2.218],[1.245,0],[14.918,-8.109]],"v":[[151.813,276.519],[151.894,273.306],[148.927,252.584],[144.879,263.506],[144.948,263.589],[144.879,263.506],[141.749,269.805],[140.094,273.038],[138.017,276.626],[118.581,302.009],[106.358,312.57],[106.528,312.555],[106.358,312.57],[81.885,329.97],[82.421,329.882],[81.885,329.97],[55.757,343.761],[78.018,347.182],[81.731,347.088]],"c":true},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 5","np":2,"cix":2,"bm":0,"ix":5,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[-21.202,-26.575],[-0.903,3.048],[7.178,8.066],[0,0],[0,0],[5.774,3.683],[0,0],[0,0],[6.97,1.976],[0,0]],"o":[[1.844,-4.186],[-3.105,-10.643],[0,0],[0,0],[-4.533,-5.094],[0,0],[0,0],[-5.967,-3.806],[0,0],[13.366,2.104]],"v":[[144.879,263.506],[148.927,252.584],[133.216,224.226],[127.621,243.249],[133.216,224.226],[117.681,210.994],[111.39,234.49],[117.681,210.994],[98.196,202.243],[89.397,226.881]],"c":true},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 6","np":2,"cix":2,"bm":0,"ix":6,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[-9.401,13.703],[1.938,-28.642],[-9.095,-4.903]],"o":[[-25.359,10.457],[4.499,4.206],[1.212,-36.518]],"v":[[49.88,204.992],[4.334,268.249],[24.45,282.407]],"c":true},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 7","np":2,"cix":2,"bm":0,"ix":7,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[-7.219,-2.569],[-8.689,13.141],[6.217,-2.564],[1.212,-36.518]],"o":[[1.118,-46.577],[-6.934,0.78],[-9.401,13.703],[5.336,2.877]],"v":[[43.25,290.669],[69.673,199.912],[49.88,204.992],[24.45,282.407]],"c":true},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 8","np":2,"cix":2,"bm":0,"ix":8,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[-29.38,-28.626],[0,0]],"o":[[-29.38,-28.626],[0,0]],"v":[[130.635,286.942],[68.862,256.809]],"c":true},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ind":1,"ty":"sh","ix":2,"ks":{"a":0,"k":{"i":[[-30.337,-0.438],[0,0],[-21.658,-21.19],[-1.328,-0.003],[-4.897,8.709],[0,0],[-34.537,-36.534],[-1.301,2.953],[13.366,2.104],[0,0],[0,0],[-8.94,-1.407],[0,0],[4.365,0.438],[0,-58.333],[-5.687,9.197],[2.519,0],[2.741,-0.308],[1.118,-46.577]],"o":[[-21.658,-21.19],[0,0],[1.301,0.019],[10.224,-10.299],[-34.537,-36.534],[0,0],[1.904,-3.387],[-14.283,-20.133],[0,0],[-8.94,-1.407],[0,0],[0,0],[-4.107,-1.164],[-5.687,9.197],[0,-58.333],[-2.454,-0.246],[-2.823,0],[-8.689,13.141],[17.316,6.163]],"v":[[113.975,301.944],[67.355,274.136],[113.975,301.944],[117.879,301.999],[140.094,273.038],[71.875,240.236],[140.094,273.038],[144.879,263.506],[92.49,227.609],[89.397,226.881],[74.888,226.676],[89.397,226.881],[98.196,202.243],[85.48,199.804],[65.095,296.736],[85.48,199.804],[78.018,199.43],[69.673,199.912],[43.25,290.669]],"c":true},"ix":2},"nm":"Path 2","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 9","np":3,"cix":2,"bm":0,"ix":9,"mn":"ADBE Vector Group","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":9,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,40.719],[40.719,0],[0,-40.719],[-40.719,0]],"o":[[0,-40.719],[-40.719,0],[0,40.719],[40.719,0]],"v":[[151.414,273.041],[77.685,199.312],[3.957,273.041],[77.685,346.77]],"c":true},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.9333,0.9725,0.9373,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 2","np":3,"cix":2,"bm":0,"ix":2,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[10.618,0],[0.95,7.596],[-2.379,2.495],[-139.91,-10.774],[-20.696,-1.539],[-11.703,14.197],[1.333,4.886],[28.367,-1.661],[0.079,1.348],[-1.35,0.079],[-7.643,-28.02],[3.453,-4.189],[146.885,10.912],[19.518,1.503],[15.943,-16.728],[-0.226,-1.811],[-94.85,3.787],[-0.532,0.057],[-0.147,-1.345],[1.344,-0.146],[53.144,-2.119]],"o":[[-65.117,0],[-0.411,-3.29],[17.549,-18.4],[19.512,1.503],[141.366,10.503],[2.399,-2.913],[-5.591,-20.5],[-1.343,0.067],[-0.079,-1.347],[10.848,-0.636],[1.763,6.463],[-13.206,16.021],[-20.701,-1.539],[-133.353,-10.272],[-1.351,1.417],[0.605,4.846],[52.977,-2.112],[1.332,-0.148],[0.147,1.343],[-0.533,0.057],[-13.772,0.549]],"v":[[-222.422,370.762],[-298.102,353.752],[-295.138,345.036],[-36.594,345.191],[23.8,349.786],[233.778,344.725],[235.343,333.294],[126.523,314.297],[123.938,311.998],[126.236,309.413],[240.064,332.009],[237.553,347.839],[23.437,354.665],[-36.97,350.07],[-291.597,348.414],[-293.246,353.145],[-186.15,365.073],[-79.408,357.133],[-76.71,359.3],[-78.877,361.998],[-185.934,369.961]],"c":true},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":1,"lj":1,"ml":10,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.9333,0.9725,0.9373,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":3,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 3","np":1,"cix":2,"bm":0,"ix":3,"mn":"ADBE Vector Group","hd":false}],"ip":0,"op":180,"st":0,"bm":0},{"ddd":0,"ind":9,"ty":4,"nm":"Layer 6","sr":1,"ks":{"o":{"a":0,"k":100,"ix":11},"r":{"a":0,"k":0,"ix":10},"p":{"a":0,"k":[580.949,753.653,0],"ix":2,"l":2},"a":{"a":0,"k":[100.949,331.653,0],"ix":1,"l":2},"s":{"a":0,"k":[100,100,100],"ix":6,"l":2}},"ao":0,"shapes":[{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,-9.506],[34.566,0],[0,9.506],[-34.566,0]],"o":[[0,9.506],[-34.566,0],[0,-9.506],[34.566,0]],"v":[[163.536,331.653],[100.949,348.864],[38.362,331.653],[100.949,314.441]],"c":true},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"fl","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":2,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false}],"ip":0,"op":180,"st":0,"bm":0},{"ddd":0,"ind":10,"ty":4,"nm":"Layer 4","sr":1,"ks":{"o":{"a":0,"k":100,"ix":11},"r":{"a":0,"k":0,"ix":10},"p":{"a":0,"k":[750.071,679.974,0],"ix":2,"l":2},"a":{"a":0,"k":[270.071,257.974,0],"ix":1,"l":2},"s":{"a":0,"k":[100,100,100],"ix":6,"l":2}},"ao":0,"shapes":[{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[8.28,0],[0,0],[1.543,8.135],[0,0],[0,0],[0,0]],"o":[[0,0],[-8.28,0],[0,0],[0,0],[0,0],[-1.542,8.135]],"v":[[282.347,287.976],[257.794,287.976],[240.863,273.953],[232.144,227.971],[307.999,227.971],[299.279,273.953]],"c":true},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"fl","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":3,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false}],"ip":0,"op":180,"st":0,"bm":0},{"ddd":0,"ind":11,"ty":4,"nm":"Layer 3","sr":1,"ks":{"o":{"a":0,"k":100,"ix":11},"r":{"a":1,"k":[{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.333],"y":[0]},"t":0,"s":[2]},{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.333],"y":[0]},"t":44.75,"s":[-2]},{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.333],"y":[0]},"t":89.5,"s":[2]},{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.333],"y":[0]},"t":134.25,"s":[-2]},{"t":179,"s":[2]}],"ix":10},"p":{"a":0,"k":[753.829,659.293,0],"ix":2,"l":2},"a":{"a":0,"k":[273.829,237.293,0],"ix":1,"l":2},"s":{"a":0,"k":[100,100,100],"ix":6,"l":2}},"ao":0,"shapes":[{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,0],[0,0]],"o":[[0,0],[0,0]],"v":[[321.89,105.86],[357.814,89.847]],"c":false},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":2,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,0],[0,0]],"o":[[0,0],[0,0]],"v":[[303.47,138.53],[288.752,105.697]],"c":false},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 2","np":2,"cix":2,"bm":0,"ix":2,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,0],[0,0]],"o":[[0,0],[0,0]],"v":[[285.356,199.667],[314.792,182.685]],"c":false},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 3","np":2,"cix":2,"bm":0,"ix":3,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,0],[0,0],[0,0]],"o":[[0,0],[0,0],[0,0]],"v":[[274.034,239.293],[303.47,138.53],[335.171,76.261]],"c":false},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 4","np":2,"cix":2,"bm":0,"ix":4,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[-13.374,-5.059],[-11.128,11.268],[-2.412,10.471],[-1.081,19.841],[27.431,-24.001],[5.072,-12.838]],"o":[[0,0],[7.734,-7.831],[4.495,-19.514],[0,0],[-10.103,8.84],[-4.075,10.314]],"v":[[328.132,85.755],[356.315,76.201],[370.043,46.642],[375.074,-11.623],[347.254,20.875],[322.517,53.502]],"c":true},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"fl","c":{"a":0,"k":[0.7686,0.9137,0.7686,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 5","np":2,"cix":2,"bm":0,"ix":5,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[-7.249,-12.326],[-15.734,1.803],[-8.444,6.647],[-13.279,14.781],[36.418,-1.505],[12,-6.823]],"o":[[0,0],[10.935,-1.254],[15.735,-12.386],[0,0],[-13.413,0.555],[-9.641,5.482]],"v":[[342.275,97.645],[370.223,107.868],[399.447,93.443],[439.89,51.2],[397.844,59.082],[358.118,68.996]],"c":true},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"fl","c":{"a":0,"k":[0.7686,0.9137,0.7686,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 6","np":2,"cix":2,"bm":0,"ix":6,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[14.187,-1.779],[8.174,13.564],[-0.112,10.745],[-3.604,19.54],[-21.034,-29.767],[-1.919,-13.67]],"o":[[0,0],[-5.681,-9.427],[0.209,-20.024],[0,0],[7.747,10.964],[1.541,10.983]],"v":[[293.402,128.142],[268.247,112.243],[261.838,80.288],[270.618,22.469],[290.036,60.588],[306.428,98.108]],"c":true},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"fl","c":{"a":0,"k":[0.7686,0.9137,0.7686,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 7","np":2,"cix":2,"bm":0,"ix":7,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[5.197,13.321],[-11.152,11.244],[-10.446,2.52],[-19.829,1.285],[23.717,-27.677],[12.786,-5.204]],"o":[[0,0],[7.751,-7.814],[19.466,-4.696],[0,0],[-8.736,10.194],[-10.272,4.181]],"v":[[296.505,188.87],[305.768,160.589],[335.184,146.558],[393.394,140.927],[361.184,169.08],[328.814,194.152]],"c":true},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"fl","c":{"a":0,"k":[0.7686,0.9137,0.7686,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 8","np":2,"cix":2,"bm":0,"ix":8,"mn":"ADBE Vector Group","hd":false}],"ip":0,"op":180,"st":0,"bm":0},{"ddd":0,"ind":12,"ty":4,"nm":"Layer 2","sr":1,"ks":{"o":{"a":0,"k":100,"ix":11},"r":{"a":1,"k":[{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.333],"y":[0]},"t":0,"s":[-2]},{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.333],"y":[0]},"t":44.75,"s":[2]},{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.333],"y":[0]},"t":89.5,"s":[-2]},{"i":{"x":[0.667],"y":[1]},"o":{"x":[0.333],"y":[0]},"t":134.25,"s":[2]},{"t":179,"s":[-2]}],"ix":10},"p":{"a":0,"k":[745.715,670.461,0],"ix":2,"l":2},"a":{"a":0,"k":[265.715,248.461,0],"ix":1,"l":2},"s":{"a":0,"k":[100,100,100],"ix":6,"l":2}},"ao":0,"shapes":[{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,0],[0,0]],"o":[[0,0],[0,0]],"v":[[226.949,155.01],[198.178,139.662]],"c":false},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":2,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,0],[0,0]],"o":[[0,0],[0,0]],"v":[[243.465,192.874],[255.919,143.059]],"c":false},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 2","np":2,"cix":2,"bm":0,"ix":2,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,0],[0,0],[0,0]],"o":[[0,0],[0,0],[0,0]],"v":[[267.24,251.747],[237.804,179.288],[203.84,95.508]],"c":false},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":2,"lj":2,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 3","np":2,"cix":2,"bm":0,"ix":3,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[13.087,5.761],[0.046,15.837],[-5.615,9.161],[-13.13,14.914],[-2.758,-36.344],[5.375,-12.714]],"o":[[0,0],[-0.032,-11.006],[10.464,-17.073],[0,0],[1.016,13.387],[-4.319,10.215]],"v":[[249.157,162.545],[235.741,135.982],[246.655,105.273],[283.888,60.175],[280.969,102.854],[275.761,143.466]],"c":true},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"fl","c":{"a":0,"k":[0.7686,0.9137,0.7686,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 4","np":2,"cix":2,"bm":0,"ix":4,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[-3.621,13.833],[12.378,9.878],[10.667,1.295],[19.844,-1.017],[-26.759,-24.748],[-13.301,-3.691]],"o":[[0,0],[-8.603,-6.866],[-19.879,-2.413],[0,0],[9.856,9.115],[10.687,2.965]],"v":[[215.283,98.896],[202.811,71.877],[171.97,61.341],[113.499,62.481],[148.749,86.719],[183.801,107.88]],"c":true},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"fl","c":{"a":0,"k":[0.7686,0.9137,0.7686,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 5","np":2,"cix":2,"bm":0,"ix":5,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0.529,14.289],[14.704,5.881],[10.586,-1.842],[18.705,-6.705],[-32.767,-15.963],[-13.8,0.309]],"o":[[0,0],[-10.219,-4.088],[-19.729,3.432],[0,0],[12.069,5.88],[11.088,-0.248]],"v":[[213.506,147.029],[193.761,124.764],[161.192,123.587],[105.543,141.568],[146.291,154.59],[185.962,164.723]],"c":true},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"fl","c":{"a":0,"k":[0.7686,0.9137,0.7686,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 6","np":2,"cix":2,"bm":0,"ix":6,"mn":"ADBE Vector Group","hd":false}],"ip":0,"op":180,"st":0,"bm":0},{"ddd":0,"ind":13,"ty":4,"nm":"Layer 1","sr":1,"ks":{"o":{"a":0,"k":100,"ix":11},"r":{"a":0,"k":0,"ix":10},"p":{"a":0,"k":[451.918,422.765,0],"ix":2,"l":2},"a":{"a":0,"k":[-28.082,0.765,0],"ix":1,"l":2},"s":{"a":0,"k":[100,100,100],"ix":6,"l":2}},"ao":0,"shapes":[{"ty":"gr","it":[{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,0],[0,0]],"o":[[0,0],[0,0]],"v":[[377.782,269.852],[-357.976,269.852]],"c":false},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":1,"lj":1,"ml":10,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":2,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,0],[0,0]],"o":[[0,0],[0,0]],"v":[[-387.891,269.852],[-406.787,269.852]],"c":false},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"st","c":{"a":0,"k":[0.3059,0.2157,0,1],"ix":3},"o":{"a":0,"k":100,"ix":4},"w":{"a":0,"k":1.113,"ix":5},"lc":1,"lj":1,"ml":10,"bm":0,"nm":"Stroke 1","mn":"ADBE Vector Graphic - Stroke","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 2","np":2,"cix":2,"bm":0,"ix":2,"mn":"ADBE Vector Group","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":2,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,0],[-124.925,-99.746],[-140.139,-9.475],[-16.223,119.922],[58.099,136.508],[122.932,83.959],[100.827,-143.834]],"o":[[0,0],[124.925,99.745],[140.138,9.475],[16.222,-119.921],[-58.099,-136.509],[-122.932,-83.959],[-100.826,143.835]],"v":[[-444.741,28.201],[-314.989,277.597],[123.182,393.961],[387.182,204.182],[238.222,-87.451],[62.36,-352.791],[-353.705,-241.362]],"c":true},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"fl","c":{"a":0,"k":[0.9333,0.9725,0.9373,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":70,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","np":2,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false},{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,0],[-124.925,-99.746],[-140.139,-9.475],[-16.223,119.922],[58.099,136.508],[122.932,83.959],[100.827,-143.834]],"o":[[0,0],[124.925,99.745],[140.138,9.475],[16.222,-119.921],[-58.099,-136.509],[-122.932,-83.959],[-100.826,143.835]],"v":[[-444.741,28.201],[-314.989,277.597],[123.182,393.961],[387.182,204.182],[238.222,-87.451],[62.36,-352.791],[-353.705,-241.362]],"c":true},"ix":2},"nm":"Path 1","mn":"ADBE Vector Shape - Group","hd":false},{"ty":"fl","c":{"a":0,"k":[0.7686,0.9137,0.7686,1],"ix":4},"o":{"a":0,"k":100,"ix":5},"r":1,"bm":0,"nm":"Fill 1","mn":"ADBE Vector Graphic - Fill","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 2","np":2,"cix":2,"bm":0,"ix":2,"mn":"ADBE Vector Group","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 2","np":2,"cix":2,"bm":0,"ix":2,"mn":"ADBE Vector Group","hd":false}],"ip":0,"op":180,"st":0,"bm":0}],"markers":[]}
 ````
 
 ## File: Frontend/src/features/About/about.route.tsx
@@ -6597,108 +6301,6 @@ const AiFeatures = () => {
 export default AiFeatures;
 ````
 
-## File: Frontend/src/features/AiAssistance/components/AiHero.tsx
-````typescript
-import {
-    FaBrain,
-    FaPaw,
-    FaRobot,
-    FaShieldAlt,
-} from "react-icons/fa";
-
-const AiHero = () => {
-    return (
-        <section className="bg-gradient-to-br from-[#f5fbff] via-white to-[#d9f7f6] px-5 py-16 lg:px-16">
-            <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-2">
-                <div>
-                    <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-[#009f9d] shadow-sm">
-                        <FaRobot />
-                        AI Pet Assistant
-                    </div>
-
-                    <h1 className="max-w-3xl text-4xl font-extrabold leading-tight text-[#07182c] md:text-5xl">
-                        Smart AI assistance for your pet’s health and care.
-                    </h1>
-
-                    <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600">
-                        Describe symptoms, ask pet-care questions and get instant AI-powered
-                        guidance for better pet wellness and faster decision making.
-                    </p>
-
-                    <div className="mt-7 flex flex-wrap gap-3">
-                        <span className="flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-[#07182c] shadow-sm">
-                            <FaBrain className="text-[#009f9d]" />
-                            Smart Suggestions
-                        </span>
-
-                        <span className="flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-[#07182c] shadow-sm">
-                            <FaShieldAlt className="text-[#009f9d]" />
-                            Safe Guidance
-                        </span>
-
-                        <span className="flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-[#07182c] shadow-sm">
-                            <FaPaw className="text-[#009f9d]" />
-                            Pet Focused
-                        </span>
-                    </div>
-                </div>
-
-                <div className="rounded-[40px] bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.10)]">
-                    <div className="rounded-[32px] bg-gradient-to-br from-[#bdf0ee] to-[#fff3ec] p-6">
-                        <div className="rounded-3xl bg-white p-5 shadow-sm">
-                            <div className="flex items-start gap-3">
-                                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eefafa] text-xl text-[#009f9d]">
-                                    <FaRobot />
-                                </div>
-
-                                <div>
-                                    <h3 className="text-lg font-extrabold text-[#07182c]">
-                                        AI Assistant
-                                    </h3>
-
-                                    <p className="mt-1 text-sm leading-6 text-slate-600">
-                                        Tell me your pet symptoms.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="mt-4 rounded-3xl bg-[#07182c] p-5 text-white shadow-sm">
-                            <p className="text-sm leading-7">
-                                My cat is not eating and feels weak.
-                            </p>
-                        </div>
-
-                        <div className="mt-4 rounded-3xl bg-white p-5 shadow-sm">
-                            <p className="text-sm leading-7 text-slate-600">
-                                Your pet may have digestion or infection-related issues. We
-                                recommend consulting a verified veterinary physician.
-                            </p>
-                        </div>
-
-                        <div className="mt-4 flex flex-wrap gap-3">
-                            <span className="rounded-full bg-white px-4 py-2 text-xs font-bold text-[#009f9d] shadow-sm">
-                                Pet Symptoms
-                            </span>
-
-                            <span className="rounded-full bg-white px-4 py-2 text-xs font-bold text-[#009f9d] shadow-sm">
-                                AI Suggestions
-                            </span>
-
-                            <span className="rounded-full bg-white px-4 py-2 text-xs font-bold text-[#009f9d] shadow-sm">
-                                Smart Guidance
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    );
-};
-
-export default AiHero;
-````
-
 ## File: Frontend/src/features/AiAssistance/components/AiHowItWorks.tsx
 ````typescript
 import { FaCommentMedical, FaRobot, FaUserMd } from "react-icons/fa";
@@ -6797,6 +6399,51 @@ export type AiMessage = {
   sender: "user" | "ai";
   text: string;
 };
+````
+
+## File: Frontend/src/features/Appointment/apis/bookSlot.ts
+````typescript
+import { api, handleAxiosError } from "@/features/api interface/axios.interface";
+
+export type BookableSlot = {
+    scheduleId: string;
+    date: string;
+    day: string;
+    startTime: string;
+    endTime: string;
+    startDateTime: string;
+    endDateTime: string;
+}
+export type Data = {
+    id: string;
+    name: string;
+    image: string;
+    specialization: string;
+    specialty?: string;
+    education: string;
+    experience: number;
+    fees: number;
+    status: string;
+    availableDays: string[];
+    availableSlots: BookableSlot[];
+    todaySlots: BookableSlot[];
+    nextAvailable: BookableSlot | null;
+}
+
+
+type BookDoctorSlotPayload = {
+    slotId: string;
+    doctorId: string;
+};
+
+export const bookDoctorSlot = async (schedule: BookDoctorSlotPayload) => {
+    try {
+        const response = await api.post("http://localhost:8000/api/v1/petOwner/book-slot", schedule);
+        return response.data
+    } catch (error) {
+        handleAxiosError(error)
+    }
+}
 ````
 
 ## File: Frontend/src/features/Appointment/types/appointment.types.ts
@@ -8460,41 +8107,6 @@ const FindDoctorPage = () => {
 export default FindDoctorPage;
 ````
 
-## File: Frontend/src/features/Doctorcart/schemas/doctorProfile.schema.ts
-````typescript
-import { z } from "zod";
-
-export const doctorProfileSchema = z.object({
-  fullName: z.string().min(2, "Full name is required"),
-  username: z.string().min(2, "Username is required"),
-  phone: z.string().min(10, "Phone number is required"),
-
-  profileImageUrl: z.string().optional(),
-
-  specialization: z.string().min(2, "Specialization is required"),
-  education: z.string().min(2, "Education is required"),
-  address: z.string().min(5, "Clinic address is required"),
-
-  experience: z.coerce
-    .number({
-      message: "Experience is required",
-    })
-    .min(0, "Experience cannot be negative")
-    .max(60, "Experience is too high"),
-
-  fees: z.coerce
-    .number({
-      message: "Fees is required",
-    })
-    .min(0, "Fees cannot be negative"),
-
-  isAvailable: z.boolean(),
-});
-
-export type DoctorProfileFormInput = z.input<typeof doctorProfileSchema>;
-export type DoctorProfileFormData = z.output<typeof doctorProfileSchema>;
-````
-
 ## File: Frontend/src/features/Doctorcart/types/doctorcart.types.ts
 ````typescript
 import type { ChangeEvent } from "react";
@@ -9207,6 +8819,399 @@ const AppointmentPaymentForm = ({ appointmentId }: AppointmentPaymentFormProps) 
 export default AppointmentPaymentForm;
 ````
 
+## File: Frontend/src/features/Payment/components/OrderPaymentForm.tsx
+````typescript
+import { useState } from "react";
+import {
+    PaymentElement,
+    useElements,
+    useStripe,
+} from "@stripe/react-stripe-js";
+
+type OrderPaymentFormProps = {
+    orderId: string;
+};
+
+const OrderPaymentForm = ({ orderId }: OrderPaymentFormProps) => {
+    const stripe = useStripe();
+    const elements = useElements();
+
+    const [isPaying, setIsPaying] = useState(false);
+    const [error, setError] = useState("");
+
+    const handlePayNow = async (event: React.FormEvent) => {
+        event.preventDefault();
+
+        if (!stripe || !elements) {
+            setError("Stripe element loader uninitialized.");
+            return;
+        }
+
+        try {
+            setIsPaying(true);
+            setError("");
+
+            const result = await stripe.confirmPayment({
+                elements,
+                confirmParams: {
+                    return_url: `${window.location.origin}/order-payment-success?orderId=${orderId}`,
+                },
+            });
+
+            if (result.error) {
+                setError(result.error.message || "Payment session failed.");
+                setIsPaying(false);
+            }
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Payment request failed.");
+            setIsPaying(false);
+        }
+    };
+
+    return (
+        <form onSubmit={handlePayNow} className="mt-6 space-y-5 text-left">
+            <PaymentElement />
+
+            {error && (
+                <div className="rounded-xl border border-red-100 bg-red-50 p-3 text-sm font-semibold text-red-600">
+                    {error}
+                </div>
+            )}
+
+            <button
+                type="submit"
+                disabled={!stripe || !elements || isPaying}
+                className="w-full rounded-xl bg-[#178f95] px-4 py-3 text-sm font-bold text-white hover:bg-[#12757a] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+                {isPaying ? "Processing payment..." : "Confirm & Pay"}
+            </button>
+        </form>
+    );
+};
+
+export default OrderPaymentForm;
+````
+
+## File: Frontend/src/features/Payment/page/OrderPaymentPage.tsx
+````typescript
+import { useMemo, useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+
+import { createOrderPaymentIntentApi } from "../api/payment.api";
+import OrderPaymentForm from "../components/OrderPaymentForm";
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+
+const OrderPaymentPage = () => {
+    const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
+
+    const orderId = searchParams.get("orderId");
+
+    const [clientSecret, setClientSecret] = useState<string | null>(null);
+    const [amount, setAmount] = useState<number | null>(null);
+    const [currency, setCurrency] = useState<string>("pkr");
+    const [isCreatingIntent, setIsCreatingIntent] = useState(false);
+    const [error, setError] = useState("");
+
+    const appearance = useMemo(
+        () => ({
+            theme: "stripe" as const,
+            variables: {
+                colorPrimary: "#178f95",
+                borderRadius: "12px",
+            },
+        }),
+        []
+    );
+
+    const handleContinuePayment = async () => {
+        if (!orderId) {
+            setError("Order ID is missing.");
+            return;
+        }
+
+        try {
+            setIsCreatingIntent(true);
+            setError("");
+
+            const result = await createOrderPaymentIntentApi(orderId);
+
+            if (!result?.success || !result?.data?.clientSecret) {
+                setError("Failed to start payment. Please try again.");
+                return;
+            }
+
+            setClientSecret(result.data.clientSecret);
+            setAmount(result.data.amount);
+            setCurrency(result.data.currency);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Payment initialization failed.");
+        } finally {
+            setIsCreatingIntent(false);
+        }
+    };
+
+    const formattedAmount =
+        amount !== null ? `${(amount / 100).toFixed(2)} ${currency.toUpperCase()}` : null;
+
+    return (
+        <main className="flex min-h-screen items-center justify-center bg-[#f0f9fa] px-4 py-10 text-[#20263D]">
+            <section className="w-full max-w-md rounded-3xl bg-white p-8 text-center shadow-xl border border-slate-100">
+                <h1 className="text-2xl font-extrabold text-slate-800">
+                    Secure Store Checkout
+                </h1>
+
+                <p className="mt-3 text-sm leading-6 text-slate-500">
+                    Your order has been initiated. Complete the secure payment details below to confirm your purchase.
+                </p>
+
+                <div className="mt-6 rounded-2xl border border-slate-100 bg-slate-50 p-4 text-left">
+                    <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+                        Order Reference
+                    </p>
+                    <p className="mt-2 break-all text-sm font-bold text-slate-700">
+                        {orderId || "Missing Order ID"}
+                    </p>
+
+                    {formattedAmount && (
+                        <div className="mt-4 border-t border-slate-200 pt-4">
+                            <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+                                Total Cost
+                            </p>
+                            <p className="mt-1 text-lg font-extrabold text-[#178f95]">
+                                PKR {formattedAmount}
+                            </p>
+                        </div>
+                    )}
+                </div>
+
+                {error && (
+                    <p className="mt-4 rounded-xl bg-red-50 p-3 text-sm font-semibold text-red-600">
+                        {error}
+                    </p>
+                )}
+
+                {!clientSecret && (
+                    <div className="mt-6 grid grid-cols-2 gap-3">
+                        <button
+                            type="button"
+                            onClick={() => navigate("/cart")}
+                            className="rounded-xl border border-slate-200 px-4 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50"
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            type="button"
+                            disabled={!orderId || isCreatingIntent}
+                            onClick={handleContinuePayment}
+                            className="rounded-xl bg-[#178f95] px-4 py-3 text-sm font-bold text-white hover:bg-[#12757a] disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            {isCreatingIntent ? "Connecting..." : "Pay Now"}
+                        </button>
+                    </div>
+                )}
+
+                {clientSecret && orderId && (
+                    <Elements
+                        stripe={stripePromise}
+                        options={{
+                            clientSecret,
+                            appearance,
+                        }}
+                    >
+                        <OrderPaymentForm orderId={orderId} />
+                    </Elements>
+                )}
+            </section>
+        </main>
+    );
+};
+
+export default OrderPaymentPage;
+````
+
+## File: Frontend/src/features/Payment/page/OrderPaymentSuccessPage.tsx
+````typescript
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { Loader2, AlertCircle, CheckCircle2, ShoppingBag, ArrowRight } from "lucide-react";
+import { getOrderPaymentStatusApi } from "../api/payment.api";
+
+type OrderStatusResponse = {
+    id: string;
+    orderNumber: string;
+    status: string;
+    paymentStatus: string;
+    totalAmount: string;
+    createdAt: string;
+    seller?: {
+        businessName?: string;
+    };
+    items: Array<{
+        id: string;
+        quantity: number;
+        price: string;
+        product: {
+            title: string;
+        };
+    }>;
+};
+
+const OrderPaymentSuccessPage = () => {
+    const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
+    const orderId = searchParams.get("orderId");
+
+    const [order, setOrder] = useState<OrderStatusResponse | null>(null);
+    const [isChecking, setIsChecking] = useState(true);
+    const [error, setError] = useState("");
+    const [attempts, setAttempts] = useState(0);
+
+    const isConfirmed =
+        order?.status === "CONFIRMED" && order?.paymentStatus === "SUCCEEDED";
+
+    const isFailed =
+        ["FAILED", "CANCELLED"].includes(order?.paymentStatus || "") ||
+        order?.status === "CANCELLED";
+
+    useEffect(() => {
+        if (!orderId) {
+            setError("Order ID is missing.");
+            setIsChecking(false);
+            return;
+        }
+
+        let intervalId: number | undefined;
+        let currentAttempts = 0;
+
+        const fetchStatus = async () => {
+            try {
+                currentAttempts += 1;
+                setAttempts(currentAttempts);
+
+                const result = await getOrderPaymentStatusApi(orderId);
+
+                if (!result?.success) {
+                    setError(result?.message || "Could not fetch order transaction status.");
+                    return;
+                }
+
+                const data = result.data as OrderStatusResponse;
+                setOrder(data);
+
+                const confirmed =
+                    data.status === "CONFIRMED" && data.paymentStatus === "SUCCEEDED";
+
+                const failed =
+                    ["FAILED", "CANCELLED"].includes(data.paymentStatus) ||
+                    data.status === "CANCELLED";
+
+                if (confirmed || failed || currentAttempts >= 15) {
+                    setIsChecking(false);
+                    if (intervalId) window.clearInterval(intervalId);
+                }
+            } catch (err: any) {
+                setError(err?.message || "Something went wrong.");
+                setIsChecking(false);
+                if (intervalId) window.clearInterval(intervalId);
+            }
+        };
+
+        fetchStatus();
+        intervalId = window.setInterval(fetchStatus, 2000);
+
+        return () => {
+            if (intervalId) window.clearInterval(intervalId);
+        };
+    }, [orderId]);
+
+    return (
+        <main className="flex min-h-screen items-center justify-center bg-[#eefaf8] px-4 py-10">
+            <section className="w-full max-w-md rounded-3xl bg-white p-8 text-center shadow-xl border border-slate-100">
+                <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50 text-[#178f95]">
+                    {isConfirmed ? (
+                        <CheckCircle2 className="h-12 w-12 text-emerald-600" />
+                    ) : isFailed ? (
+                        <AlertCircle className="h-12 w-12 text-red-500" />
+                    ) : (
+                        <Loader2 className="h-12 w-12 animate-spin" />
+                    )}
+                </div>
+
+                <h1 className="mt-6 text-2xl font-extrabold text-slate-800">
+                    {isConfirmed
+                        ? "Order Confirmed!"
+                        : isFailed
+                            ? "Payment Issue"
+                            : "Confirming Order..."}
+                </h1>
+
+                <p className="mt-3 text-sm leading-6 text-slate-500">
+                    {isConfirmed
+                        ? "Your checkout payment was successful, and the seller has been notified."
+                        : isFailed
+                            ? "The payment session was abandoned or failed. Please contact billing support."
+                            : "Validating transaction session balances with Stripe gateways..."}
+                </p>
+
+                {error && (
+                    <div className="mt-4 rounded-xl bg-red-50 p-3 text-xs font-semibold text-red-600 border border-red-100">
+                        {error}
+                    </div>
+                )}
+
+                {order && (
+                    <div className="mt-6 rounded-2xl border border-slate-100 bg-slate-50 p-5 text-left text-xs font-semibold text-slate-500 space-y-3.5">
+                        <div className="flex justify-between border-b border-slate-200/60 pb-3">
+                            <span>Order Number</span>
+                            <span className="font-extrabold text-slate-800">{order.orderNumber}</span>
+                        </div>
+
+                        <div className="flex justify-between">
+                            <span>Merchant Store</span>
+                            <span className="font-bold text-slate-800">{order.seller?.businessName || "Pets Veta Merchant"}</span>
+                        </div>
+
+                        <div className="border-t border-slate-200/60 pt-3">
+                            <span className="block text-slate-400 font-bold mb-2">Purchased Items</span>
+                            <div className="space-y-2">
+                                {order.items.map((item) => (
+                                    <div key={item.id} className="flex justify-between text-slate-600 font-medium">
+                                        <span>{item.product.title} (x{item.quantity})</span>
+                                        <span className="font-semibold text-slate-800">PKR {Number(item.price).toLocaleString()}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="flex justify-between border-t border-slate-200/60 pt-3 text-sm font-black text-slate-800">
+                            <span>Total Amount</span>
+                            <span className="text-[#178f95]">PKR {Number(order.totalAmount).toLocaleString()}</span>
+                        </div>
+                    </div>
+                )}
+
+                <div className="mt-6 flex flex-col gap-3">
+                    <button
+                        onClick={() => navigate("/marketplace1")}
+                        className="w-full rounded-xl bg-[#178f95] py-3 text-sm font-bold text-white hover:bg-[#12757a] transition flex items-center justify-center gap-2"
+                    >
+                        <ShoppingBag size={16} />
+                        Back to Marketplace
+                    </button>
+                </div>
+            </section>
+        </main>
+    );
+};
+
+export default OrderPaymentSuccessPage;
+````
+
 ## File: Frontend/src/features/Pet Owner/pet details/pages/PetFormPage.tsx
 ````typescript
 import PetForm from "../components/PetForm";
@@ -9636,39 +9641,6 @@ const EditPetPage = () => {
 export default EditPetPage;
 ````
 
-## File: Frontend/src/features/Pet Owner/pet profile/schemas/pet.schema.ts
-````typescript
-import { z } from "zod";
-
-export const petSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(2, "Pet name must contain at least 2 characters")
-    .max(50, "Pet name is too long"),
-
-  age: z.coerce
-    .number({
-      message: "Age is required",
-    })
-    .min(0, "Age cannot be negative")
-    .max(100, "Enter a valid pet age"),
-
-  breed: z
-    .string()
-    .trim()
-    .min(2, "Breed must contain at least 2 characters")
-    .max(50, "Breed is too long"),
-
-  category: z.enum(["DOG", "CAT", "REPTILE", "OTHER"], {
-    message: "Please select a category",
-  }),
-});
-
-export type PetFormInput = z.input<typeof petSchema>;
-export type PetFormData = z.output<typeof petSchema>;
-````
-
 ## File: Frontend/src/features/Pet Owner/pet profile/schemas/petOwnerProfile.schema.ts
 ````typescript
 import { z } from "zod";
@@ -10026,141 +9998,561 @@ const DashboardBanner = () => {
 export default DashboardBanner;
 ````
 
-## File: Frontend/src/features/seller/api/seller.api.ts
+## File: Frontend/src/features/PetOwnerDashboard/pages/PetOwnerAppointmentsPage.tsx
 ````typescript
-import { api } from "@/features/api interface/axios.interface";
-import type { MarketplaceProduct } from "@/features/marketplace1/api/marketplace.api";
+import { useEffect, useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+    CalendarDays,
+    Clock,
+    MapPin,
+    FileText,
+    User,
+    Activity,
+    CreditCard,
+    Loader2,
+    AlertCircle,
+    Inbox,
+    ArrowLeft,
+} from "lucide-react";
 
-export type SellerProductPayload = {
-  title: string;
-  description?: string;
-  category: string;
-  status?: string;
-  price: number;
-  stock: number;
-  location?: string;
-  images?: Array<{
-    publicUrl: string;
-    publicId?: string;
-  }>;
+import DashboardSidebar from "../components/DashboardSidebar";
+import DashboardHeader from "../components/DashboardHeader";
+import Card from "@/shared/components/Card/Card";
+import Button from "@/shared/components/Button/Button";
+
+import { getPetOwnerAppointmentsApi } from "../api/petOwnerDashboard.api";
+import type { PetOwnerAppointment } from "../types/petOwnerDashboard.types";
+import { dashboardData } from "../data/dashboard.data";
+
+type TabType = "ALL" | "UPCOMING" | "COMPLETED" | "CANCELLED";
+
+const PetOwnerAppointmentsPage = () => {
+    const navigate = useNavigate();
+    const [appointments, setAppointments] = useState<PetOwnerAppointment[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [activeTab, setActiveTab] = useState<TabType>("ALL");
+
+    useEffect(() => {
+        let ignore = false;
+
+        const loadAppointments = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const response = await getPetOwnerAppointmentsApi();
+
+                if (ignore) return;
+
+                if (response.success) {
+                    setAppointments(response.data);
+                } else {
+                    setError(response.message || "Failed to load appointments.");
+                }
+            } catch (err: any) {
+                if (ignore) return;
+                console.error("Fetch appointments error:", err);
+                setError("Unable to connect to the server. Please try again.");
+            } finally {
+                if (!ignore) {
+                    setLoading(false);
+                }
+            }
+        };
+
+        loadAppointments();
+
+        return () => {
+            ignore = true;
+        };
+    }, []);
+
+    const filteredAppointments = useMemo(() => {
+        return appointments.filter((app) => {
+            if (activeTab === "ALL") return true;
+            if (activeTab === "UPCOMING") {
+                return [
+                    "PENDING_DETAILS",
+                    "PENDING_REPORT",
+                    "PENDING_PAYMENT",
+                    "PAYMENT_PROCESSING",
+                    "CONFIRMED",
+                ].includes(app.status);
+            }
+            if (activeTab === "COMPLETED") {
+                return app.status === "COMPLETED";
+            }
+            if (activeTab === "CANCELLED") {
+                return [
+                    "CANCELLED",
+                    "EXPIRED",
+                    "PAYMENT_FAILED",
+                    "REFUNDED",
+                    "NO_SHOW",
+                ].includes(app.status);
+            }
+            return true;
+        });
+    }, [appointments, activeTab]);
+
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+        });
+    };
+
+    const formatTime = (timeString: string) => {
+        return new Date(timeString).toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+        });
+    };
+
+    const getStatusBadgeClass = (status: string) => {
+        switch (status) {
+            case "CONFIRMED":
+                return "bg-emerald-50 text-emerald-700 border border-emerald-100";
+            case "PENDING_PAYMENT":
+            case "PENDING_DETAILS":
+            case "PENDING_REPORT":
+                return "bg-amber-50 text-orange-600 border border-amber-100";
+            case "COMPLETED":
+                return "bg-blue-50 text-blue-700 border border-blue-100";
+            case "CANCELLED":
+            case "EXPIRED":
+            case "PAYMENT_FAILED":
+                return "bg-red-50 text-red-700 border border-red-100";
+            default:
+                return "bg-slate-50 text-slate-700 border border-slate-100";
+        }
+    };
+
+    const getStatusLabel = (status: string) => {
+        return status.replace(/_/g, " ");
+    };
+
+    return (
+        <main className="min-h-screen bg-[#F8FAFA] text-[#20263D]">
+            <DashboardSidebar />
+
+            <section className="min-h-screen px-4 py-6 sm:px-6 lg:ml-[260px] lg:px-8">
+                <div className="mx-auto max-w-[1500px]">
+                    {/* Header */}
+                    <div className="flex items-center gap-4 mb-6">
+                        <button
+                            onClick={() => navigate(-1)}
+                            className="flex h-10 w-10 items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-500 hover:bg-slate-50 transition"
+                            title="Go back"
+                        >
+                            <ArrowLeft size={18} />
+                        </button>
+                        <DashboardHeader user={dashboardData.user} />
+                    </div>
+
+                    <div className="mb-8">
+                        <h1 className="text-3xl font-black tracking-tight text-[#101b3d]">
+                            My Appointments
+                        </h1>
+                        <p className="mt-2 text-sm text-slate-500">
+                            Track and review all your veterinary consultation schedule blocks.
+                        </p>
+                    </div>
+
+                    {/* Filtering Tabs */}
+                    <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-4 mb-6">
+                        {(["ALL", "UPCOMING", "COMPLETED", "CANCELLED"] as TabType[]).map(
+                            (tab) => (
+                                <button
+                                    key={tab}
+                                    onClick={() => setActiveTab(tab)}
+                                    className={`rounded-xl px-5 py-2.5 text-sm font-black transition ${activeTab === tab
+                                        ? "bg-[#078b91] text-white shadow-md shadow-[#078b91]/10"
+                                        : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
+                                        }`}
+                                >
+                                    {tab.charAt(0) + tab.slice(1).toLowerCase()}
+                                </button>
+                            )
+                        )}
+                    </div>
+
+                    {/* Loading Indicator */}
+                    {loading && (
+                        <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border border-slate-200">
+                            <Loader2 className="h-10 w-10 animate-spin text-[#078b91]" />
+                            <p className="mt-4 text-sm font-semibold text-slate-500">
+                                Fetching your consultation entries...
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Error Banner */}
+                    {error && !loading && (
+                        <div className="rounded-3xl border border-red-100 bg-red-50 p-6 flex items-start gap-4">
+                            <AlertCircle className="h-6 w-6 text-red-600 shrink-0" />
+                            <div>
+                                <h3 className="font-black text-red-800">Connection Error</h3>
+                                <p className="mt-1 text-sm text-red-600 font-semibold">{error}</p>
+                                <Button
+                                    onClick={() => window.location.reload()}
+                                    className="mt-4 !bg-red-600 !border-red-600 hover:!bg-red-700 text-white"
+                                    size="sm"
+                                >
+                                    Retry Loading
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Empty View State */}
+                    {!loading && !error && filteredAppointments.length === 0 && (
+                        <div className="flex flex-col items-center justify-center py-20 text-center bg-white rounded-3xl border border-dashed border-slate-300">
+                            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#EAF7F5] text-[#078b91] mb-4">
+                                <Inbox size={32} />
+                            </div>
+                            <h2 className="text-xl font-black text-[#101b3d]">
+                                No appointments found
+                            </h2>
+                            <p className="mt-2 text-sm text-slate-500 max-w-sm leading-6">
+                                You do not have any appointments under this tab. Find an expert vet to schedule a slot.
+                            </p>
+                            <Button
+                                onClick={() => navigate("/doctors")}
+                                className="mt-6 bg-[#078b91] border-[#078b91] text-white hover:bg-[#056f75]"
+                            >
+                                Find Vet Doctors
+                            </Button>
+                        </div>
+                    )}
+
+                    {/* Grid Render */}
+                    {!loading && !error && filteredAppointments.length > 0 && (
+                        <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
+                            {filteredAppointments.map((app) => (
+                                <Card
+                                    key={app.id}
+                                    className="overflow-visible border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md hover:border-[#078b91]/30"
+                                >
+                                    <div className="flex flex-col gap-5 justify-between h-full">
+                                        {/* Top Row: Doctor Info and Status Badge */}
+                                        <div className="flex items-start justify-between gap-3">
+                                            <div className="flex gap-4">
+                                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#EAF7F5] text-[#078b91]">
+                                                    <User size={26} />
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-lg font-black text-[#101b3d]">
+                                                        Dr. {app.doctor.user.fullName}
+                                                    </h3>
+                                                    <p className="text-xs font-bold text-[#078b91] mt-0.5">
+                                                        {app.doctor.specialization}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <span
+                                                className={`rounded-xl px-3 py-1.5 text-xs font-black uppercase tracking-wider ${getStatusBadgeClass(
+                                                    app.status
+                                                )}`}
+                                            >
+                                                {getStatusLabel(app.status)}
+                                            </span>
+                                        </div>
+
+                                        {/* Mid Section: Clinical Description / Issue */}
+                                        <div className="rounded-2xl bg-slate-50 p-4 border border-slate-100 flex flex-col gap-3">
+                                            {/* Pet Tag */}
+                                            <div className="flex items-center justify-between">
+                                                <span className="flex items-center gap-1.5 text-xs font-black uppercase text-slate-400">
+                                                    <Activity size={14} />
+                                                    Pet Patient
+                                                </span>
+                                                <span className="text-xs font-extrabold text-slate-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200">
+                                                    {app.pet?.name || "Unassigned"} ({app.pet?.category})
+                                                </span>
+                                            </div>
+
+                                            {/* Issue details */}
+                                            <div>
+                                                <span className="flex items-center gap-1.5 text-xs font-black uppercase text-slate-400">
+                                                    <FileText size={14} />
+                                                    Issue Report
+                                                </span>
+                                                <p className="mt-1 text-xs font-semibold leading-relaxed text-slate-600 line-clamp-2">
+                                                    {app.petIssueReport?.issue || "Details not specified yet."}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {/* Timing & Cost Details */}
+                                        <div className="grid grid-cols-2 gap-3 pt-1 text-xs text-slate-500 font-semibold border-t border-slate-100/80 pt-4">
+                                            <div className="flex items-center gap-2">
+                                                <CalendarDays size={16} className="text-[#078b91] shrink-0" />
+                                                <span>{formatDate(app.checkupTime)}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Clock size={16} className="text-[#078b91] shrink-0" />
+                                                <span>
+                                                    {formatTime(app.doctorSchedule.startTime)} -{" "}
+                                                    {formatTime(app.doctorSchedule.endTime)}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <MapPin size={16} className="text-[#078b91] shrink-0" />
+                                                <span className="truncate">
+                                                    {app.doctor.address || "In-clinic / Video Call"}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <CreditCard size={16} className="text-[#078b91] shrink-0" />
+                                                <span className="font-extrabold text-slate-700">
+                                                    {app.fees} {app.currency.toUpperCase()}{" "}
+                                                    <span
+                                                        className={`text-[10px] uppercase ml-1 px-1.5 py-0.5 rounded-md ${app.paymentStatus === "SUCCEEDED"
+                                                            ? "bg-emerald-50 text-emerald-700"
+                                                            : "bg-amber-50 text-orange-600"
+                                                            }`}
+                                                    >
+                                                        {app.paymentStatus}
+                                                    </span>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* Bottom action button */}
+                                        {app.status === "PENDING_PAYMENT" && (
+                                            <div className="pt-2">
+                                                <Button
+                                                    onClick={() =>
+                                                        navigate(`/payment?appointmentId=${app.id}`)
+                                                    }
+                                                    className="w-full bg-[#0B8F5A] border-[#0B8F5A] text-white hover:bg-[#097b4d] font-bold text-xs"
+                                                    size="sm"
+                                                >
+                                                    Complete Payment Hold
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </Card>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </section>
+        </main>
+    );
 };
 
-export type SellerOrder = {
-  id: string;
-  orderNumber: string;
-  status: string;
-  totalAmount: string | number;
-  createdAt: string;
-  buyer?: {
-    fullName?: string | null;
-    email?: string | null;
-  };
-  items: Array<{
-    quantity: number;
-    product: MarketplaceProduct;
-  }>;
-};
-
-export const fetchSellerProducts = async () => {
-  const response = await api.get<{ success: boolean; data: MarketplaceProduct[] }>(
-    "seller/products"
-  );
-
-  return response.data.data;
-};
-
-export const createSellerProduct = async (payload: SellerProductPayload | FormData) => {
-  const response = await api.post<{ success: boolean; data: MarketplaceProduct }>(
-    "seller/product",
-    payload
-  );
-
-  return response.data.data;
-};
-
-export const updateSellerProduct = async (
-  productId: string,
-  payload: SellerProductPayload | FormData
-) => {
-  const response = await api.patch<{ success: boolean; data: MarketplaceProduct }>(
-    `seller/product/${productId}`,
-    payload
-  );
-
-  return response.data.data;
-};
-
-export const updateSellerProductStock = async (
-  productId: string,
-  stock: number
-) => {
-  const response = await api.patch<{ success: boolean; data: MarketplaceProduct }>(
-    `seller/product/${productId}/stock`,
-    { stock }
-  );
-
-  return response.data.data;
-};
-
-export const deleteSellerProduct = async (productId: string) => {
-  const response = await api.delete(`seller/product/${productId}`);
-  return response.data;
-};
-
-export const fetchSellerOrders = async () => {
-  const response = await api.get<{ success: boolean; data: SellerOrder[] }>(
-    "seller/orders"
-  );
-
-  return response.data.data;
-};
+export default PetOwnerAppointmentsPage;
 ````
 
-## File: Frontend/src/features/seller/components/SellerHeader.tsx
+## File: Frontend/src/features/seller/components/EditSellerProfileModal.tsx
 ````typescript
-import { FaBell, FaChevronDown } from "react-icons/fa";
+import { type ChangeEvent, useMemo, useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Camera, X } from "lucide-react";
+import { useForm, useWatch } from "react-hook-form";
+
+import Button from "@/shared/components/Button/Button";
 import Input from "@/shared/components/Input/Input";
+import {
+    sellerProfileSchema,
+    type SellerProfileFormData,
+} from "../schemas/sellerProfile.schema";
+import type { SellerProfile } from "../types/seller.types";
 
-const SellerHeader = () => {
-  return (
-    <header className="flex items-center justify-between border-b border-gray-100 bg-white px-7 py-4">
-      <div>
-        <h1 className="text-lg font-semibold text-gray-900">
-          Welcome back, Furries Store
-        </h1>
-        <p className="text-sm text-gray-500">
-          Here's what's happening with your store today.
-        </p>
-      </div>
+export interface EditSellerProfileModalProps {
+    profile: SellerProfile;
+    isSaving: boolean;
+    error?: string;
+    onCancel: () => void;
+    onSubmit: (data: SellerProfileFormData) => void;
+}
 
-      <div className="flex items-center gap-4">
-        <Input placeholder="Search..." className="w-72" />
+const EditSellerProfileModal = ({
+    profile,
+    isSaving,
+    error,
+    onCancel,
+    onSubmit,
+}: EditSellerProfileModalProps) => {
+    const {
+        register,
+        handleSubmit,
+        control,
+        setValue,
+        formState: { errors },
+    } = useForm<SellerProfileFormData>({
+        resolver: zodResolver(sellerProfileSchema),
+        defaultValues: {
+            businessName: profile.businessName || "",
+            phoneNumber: profile.phoneNumber || "",
+            city: profile.city || "",
+            businessAddress: profile.businessAddress || "",
+            storeDescription: profile.storeDescription || "",
+        },
+    });
 
-        <button className="relative rounded-full border border-gray-100 p-3 text-gray-600">
-          <FaBell />
-          <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500" />
-        </button>
+    const storeLogoFile = useWatch({ control, name: "storeLogo" });
 
-        <div className="flex items-center gap-3">
-          <img
-            src="https://i.pravatar.cc/80?img=12"
-            alt="seller"
-            className="h-10 w-10 rounded-full object-cover"
-          />
+    const fallbackLogo = "https://ui-avatars.com/api/?name=Seller+Store&background=E8F7F7&color=178f95";
+    const currentLogoUrl = profile.storeLogo || fallbackLogo;
 
-          <div>
-            <p className="text-sm font-semibold text-gray-900">Furries Store</p>
-            <p className="text-xs text-gray-500">Seller</p>
-          </div>
+    const logoPreviewUrl = useMemo(() => {
+        if (storeLogoFile && storeLogoFile instanceof File) {
+            return URL.createObjectURL(storeLogoFile);
+        }
+        return currentLogoUrl;
+    }, [storeLogoFile, currentLogoUrl]);
 
-          <FaChevronDown className="text-xs text-gray-500" />
+    const handleLogoChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            setValue("storeLogo", file, { shouldDirty: true, shouldValidate: true });
+        }
+    };
+
+    return (
+        <div
+            className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 px-4 py-6 flex items-center justify-center backdrop-blur-xs"
+            role="dialog"
+            aria-modal="true"
+        >
+            <div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl animate-in zoom-in-95 duration-200">
+                <div className="flex items-center justify-between gap-4 border-b border-gray-100 pb-4">
+                    <div>
+                        <h2 className="text-xl font-bold text-gray-900">Edit Store Profile</h2>
+                        <p className="mt-1 text-sm text-gray-500">Update your public brand listings and settings.</p>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={onCancel}
+                        className="flex h-10 w-10 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 transition"
+                    >
+                        <X size={20} />
+                    </button>
+                </div>
+
+                {error && (
+                    <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm font-bold text-red-600 border border-red-100">
+                        {error}
+                    </p>
+                )}
+
+                <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
+                    {/* Logo Upload Uploader */}
+                    <div className="flex justify-center mb-6">
+                        <label className="group relative cursor-pointer block">
+                            <span className="block h-28 w-28 overflow-hidden rounded-full border-4 border-white bg-slate-50 shadow-md">
+                                <img
+                                    src={logoPreviewUrl}
+                                    alt="Store Logo"
+                                    className="h-full w-full object-cover"
+                                />
+                            </span>
+
+                            <span className="absolute bottom-1 right-1 flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-[#178f95] text-white shadow-sm transition group-hover:bg-[#12757a]">
+                                <Camera size={16} />
+                            </span>
+
+                            <input
+                                type="file"
+                                accept="image/png,image/jpeg,image/webp"
+                                className="sr-only"
+                                onChange={handleLogoChange}
+                            />
+                        </label>
+                    </div>
+
+                    {errors.storeLogo && (
+                        <p className="text-center text-xs font-bold text-red-600">
+                            {errors.storeLogo.message as string}
+                        </p>
+                    )}
+
+                    <Input
+                        label="Business Name"
+                        placeholder="e.g., Happy Paws Store"
+                        error={errors.businessName?.message}
+                        {...register("businessName")}
+                    />
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                        <Input
+                            label="Contact Phone"
+                            placeholder="e.g., +923001234567"
+                            error={errors.phoneNumber?.message}
+                            {...register("phoneNumber")}
+                        />
+
+                        <Input
+                            label="City"
+                            placeholder="e.g., Lahore"
+                            error={errors.city?.message}
+                            {...register("city")}
+                        />
+                    </div>
+
+                    <Input
+                        label="Store Address"
+                        placeholder="e.g., Suite 12, Gulberg Boulevard"
+                        error={errors.businessAddress?.message}
+                        {...register("businessAddress")}
+                    />
+
+                    <div>
+                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                            Store Description
+                        </label>
+                        <textarea
+                            rows={3}
+                            placeholder="Write a brief overview of your business..."
+                            className={`w-full resize-none rounded-xl border bg-white px-4 py-3 text-sm font-semibold outline-none transition-all duration-300 placeholder:text-slate-400 ${errors.storeDescription
+                                    ? "border-red-500 focus:border-red-500"
+                                    : "border-slate-200 focus:border-[#178f95] focus:ring-4 focus:ring-[#178f95]/10"
+                                }`}
+                            {...register("storeDescription")}
+                        />
+                        {errors.storeDescription && (
+                            <p className="mt-1 text-xs font-bold text-red-500">
+                                {errors.storeDescription.message}
+                            </p>
+                        )}
+                    </div>
+
+                    <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={onCancel}
+                            disabled={isSaving}
+                        >
+                            Cancel
+                        </Button>
+
+                        <Button
+                            type="submit"
+                            className="!bg-[#178f95] !border-[#178f95] !text-white hover:!bg-[#12757a]"
+                            loading={isSaving}
+                            loadingText="Saving Settings..."
+                        >
+                            Save Brand Settings
+                        </Button>
+                    </div>
+                </form>
+            </div>
         </div>
-      </div>
-    </header>
-  );
+    );
 };
 
-export default SellerHeader;
+export default EditSellerProfileModal;
 ````
 
 ## File: Frontend/src/features/seller/data/sellerDashboard.data.ts
@@ -10388,66 +10780,57 @@ export const sellerProductSchema = z.object({
 export type SellerProductFormData = z.infer<typeof sellerProductSchema>;
 ````
 
-## File: Frontend/src/features/seller/types/seller.types.ts
+## File: Frontend/src/features/seller/schemas/sellerProfile.schema.ts
 ````typescript
-import type { MarketplaceProduct } from "@/features/marketplace1/api/marketplace.api";
-import type { SellerOrder } from "../api/seller.api";
+import { z } from "zod";
 
-export type SellerApiError = {
-  response?: {
-    status?: number;
-    data?: {
-      message?: string;
-    };
-  };
-};
+export const sellerProfileSchema = z.object({
+    businessName: z
+        .string()
+        .trim()
+        .min(2, "Store name must contain at least 2 characters")
+        .max(60, "Store name is too long"),
 
-export type ProductPreviewCardProps = {
-  image: string;
-  title: string;
-  category: string;
-  price: string;
-  stock: string;
-  location: string;
-  description: string;
-  status: string;
-};
+    phoneNumber: z
+        .string()
+        .trim()
+        .min(10, "Please enter a valid phone number (at least 10 digits)")
+        .max(20, "Phone number is too long"),
 
-export type ProductImageUploadProps = {
-  previews: string[];
-  onImageChange: (files: File[]) => void;
-};
+    city: z
+        .string()
+        .trim()
+        .min(2, "City name must contain at least 2 characters"),
 
-export type ProductCardProps = {
-  product: MarketplaceProduct;
-  onEdit: () => void;
-  onDelete: () => void;
-  onView: () => void;
-};
+    businessAddress: z
+        .string()
+        .trim()
+        .min(5, "Please enter a complete business address"),
 
-export type OrdersTableProps = {
-  orders: SellerOrder[];
-};
+    storeDescription: z
+        .string()
+        .trim()
+        .max(500, "Description cannot exceed 500 characters")
+        .optional()
+        .or(z.literal("")),
 
-export type StockTableProps = {
-  products: MarketplaceProduct[];
-  onStockChange: (productId: string, stock: number) => void;
-};
 
-export type RecentOrdersProps = {
-  orders: SellerOrder[];
-  onViewAll: () => void;
-};
+    storeLogo: z
+        .instanceof(File)
+        .optional()
+        .refine(
+            (file) =>
+                !file ||
+                ["image/png", "image/jpeg", "image/webp"].includes(file.type),
+            "Only PNG, JPEG, and WEBP formats are supported"
+        )
+        .refine(
+            (file) => !file || file.size <= 2 * 1024 * 1024,
+            "Store logo must be 2MB or less"
+        ),
+});
 
-export type StockOverviewProps = {
-  products: MarketplaceProduct[];
-};
-
-export type SellerStatCardProps = {
-  title: string;
-  value: string;
-  subtitle: string;
-};
+export type SellerProfileFormData = z.infer<typeof sellerProfileSchema>;
 ````
 
 ## File: Frontend/src/features/Services/components/ServicesCTA.tsx
@@ -10526,97 +10909,6 @@ const ServicesGrid = () => {
 };
 
 export default ServicesGrid;
-````
-
-## File: Frontend/src/features/Services/components/ServicesHero.tsx
-````typescript
-import {
-    FaPaw,
-    FaShieldAlt,
-    FaStethoscope,
-} from "react-icons/fa";
-
-const ServicesHero = () => {
-    return (
-        <section className="bg-gradient-to-br from-[#f5fbff] via-white to-[#d9f7f6] px-5 py-16 lg:px-16">
-            <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-2">
-                <div>
-                    <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-[#009f9d] shadow-sm">
-                        <FaPaw />
-                        PetsVeta Services
-                    </div>
-
-                    <h1 className="max-w-3xl text-4xl font-extrabold leading-tight text-[#07182c] md:text-5xl">
-                        Complete pet-care services for healthier and happier pets.
-                    </h1>
-
-                    <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600">
-                        Explore professional veterinary care, grooming, vaccinations,
-                        emergency support and AI-powered pet assistance in one platform.
-                    </p>
-
-                    <div className="mt-7 flex flex-wrap gap-3">
-                        <span className="flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-[#07182c] shadow-sm">
-                            <FaShieldAlt className="text-[#009f9d]" />
-                            Trusted Care
-                        </span>
-
-                        <span className="flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-[#07182c] shadow-sm">
-                            <FaStethoscope className="text-[#009f9d]" />
-                            Verified Doctors
-                        </span>
-                    </div>
-                </div>
-
-                <div className="rounded-[40px] bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.10)]">
-                    <div className="grid gap-5 rounded-[32px] bg-gradient-to-br from-[#bdf0ee] to-[#fff3ec] p-6 sm:grid-cols-2">
-                        <div className="rounded-3xl bg-white p-5 shadow-sm">
-                            <h3 className="text-3xl font-extrabold text-[#009f9d]">
-                                100+
-                            </h3>
-
-                            <p className="mt-1 text-sm font-semibold text-slate-600">
-                                Veterinary Doctors
-                            </p>
-                        </div>
-
-                        <div className="rounded-3xl bg-white p-5 shadow-sm">
-                            <h3 className="text-3xl font-extrabold text-[#009f9d]">
-                                24/7
-                            </h3>
-
-                            <p className="mt-1 text-sm font-semibold text-slate-600">
-                                Emergency Support
-                            </p>
-                        </div>
-
-                        <div className="rounded-3xl bg-white p-5 shadow-sm">
-                            <h3 className="text-3xl font-extrabold text-[#009f9d]">
-                                AI
-                            </h3>
-
-                            <p className="mt-1 text-sm font-semibold text-slate-600">
-                                Smart Assistance
-                            </p>
-                        </div>
-
-                        <div className="rounded-3xl bg-white p-5 shadow-sm">
-                            <h3 className="text-3xl font-extrabold text-[#009f9d]">
-                                10K+
-                            </h3>
-
-                            <p className="mt-1 text-sm font-semibold text-slate-600">
-                                Happy Pet Owners
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    );
-};
-
-export default ServicesHero;
 ````
 
 ## File: Frontend/src/features/Services/components/ServicesProcess.tsx
@@ -10850,11 +11142,6 @@ export const AdminProtectedRoutes = ({ children }: { children: React.ReactNode }
 }
 ````
 
-## File: Frontend/src/ProtectedRoutes/PetOwnerProtectedRoutes.tsx
-````typescript
-
-````
-
 ## File: Frontend/src/ProtectedRoutes/ProtectedRoutes.tsx
 ````typescript
 import { useAuth } from "@/features/Auth/hooks/authhook";
@@ -10957,6 +11244,27 @@ export default Card;
 ## File: Frontend/src/shared/components/Input/index.ts
 ````typescript
 export { default } from "./Input";
+````
+
+## File: Frontend/src/shared/components/Notfound/NotFoundAnimation.tsx
+````typescript
+import { Player } from "@lottiefiles/react-lottie-player";
+import animationData from "../../../assets/lotties/404-cat.json";
+
+const NotFoundAnimation = () => {
+  return (
+    <div className="w-full max-w-[520px]">
+      <Player
+        autoplay
+        loop
+        src={animationData}
+        style={{ width: "100%", height: "100%" }}
+      />
+    </div>
+  );
+};
+
+export default NotFoundAnimation;
 ````
 
 ## File: Frontend/src/shared/components/NotificationBell/NotificationBell.tsx
@@ -11386,6 +11694,219 @@ module.exports = {
 };
 ````
 
+## File: Backend/app/controllers/seller.controller.js
+````javascript
+const sellerService = require("../services/seller.service");
+const { uploadToCloudinary } = require("../utils/cloudinary.utils");
+
+const getUserId = (req) => {
+  return req.user?.id || req.user?.userId;
+};
+
+const uploadProductImages = async (files = []) => {
+  const uploadedImages = [];
+
+  for (const file of files) {
+    const uploadedImage = await uploadToCloudinary(
+      file.buffer,
+      "pets-veta/marketplace-products"
+    );
+
+    uploadedImages.push({
+      publicUrl: uploadedImage.secure_url,
+      publicId: uploadedImage.public_id,
+    });
+  }
+
+  return uploadedImages;
+};
+
+exports.createOrUpdateSellerProfile = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized user",
+      });
+    }
+
+    // 1. Clone body parameters to build our payload
+    const payload = { ...req.body };
+
+    // 2. If a brand logo file is attached, upload it to Cloudinary
+    if (req.file) {
+      const uploadedImage = await uploadToCloudinary(
+        req.file.buffer,
+        "pets-veta/seller-logos"
+      );
+      payload.storeLogo = uploadedImage.secure_url;
+    }
+
+    // 3. Save profile metrics in the database
+    const profile = await sellerService.createOrUpdateSellerProfile(
+      userId,
+      payload
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Seller profile saved successfully",
+      data: profile,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.getMySellerProfile = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+
+    const profile = await sellerService.getMySellerProfile(userId);
+
+    return res.status(200).json({
+      success: true,
+      data: profile,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.createProduct = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+    const uploadedImages = await uploadProductImages(req.files);
+    const payload = req.body || {};
+
+    const product = await sellerService.createProduct(userId, {
+      ...payload,
+      images: uploadedImages,
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Product created successfully",
+      data: product,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.getMyProducts = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+
+    const products = await sellerService.getMyProducts(userId);
+
+    return res.status(200).json({
+      success: true,
+      data: products,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.updateProduct = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+    const { id } = req.params;
+    const uploadedImages = await uploadProductImages(req.files);
+    const payload = req.body || {};
+
+    const product = await sellerService.updateProduct(userId, id, {
+      ...payload,
+      images: uploadedImages,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Product updated successfully",
+      data: product,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.deleteProduct = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+    const { id } = req.params;
+
+    await sellerService.deleteProduct(userId, id);
+
+    return res.status(200).json({
+      success: true,
+      message: "Product deleted successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.updateProductStock = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+    const { id } = req.params;
+    const { stock } = req.body;
+
+    const product = await sellerService.updateProductStock(userId, id, stock);
+
+    return res.status(200).json({
+      success: true,
+      message: "Stock updated successfully",
+      data: product,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.getSellerOrders = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+
+    const orders = await sellerService.getSellerOrders(userId);
+
+    return res.status(200).json({
+      success: true,
+      data: orders,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+````
+
 ## File: Backend/app/middleware/rateLimiter.js
 ````javascript
 const redisClient = require('../config/redis.config');
@@ -11471,6 +11992,43 @@ module.exports = {
 }
 ````
 
+## File: Backend/app/routes/seller.routes.js
+````javascript
+const express = require("express");
+const router = express.Router();
+
+const {
+  createOrUpdateSellerProfile,
+  getMySellerProfile,
+  createProduct,
+  getMyProducts,
+  updateProduct,
+  deleteProduct,
+  updateProductStock,
+  getSellerOrders,
+} = require("../controllers/seller.controller");
+
+const { protect } = require("../middleware/auth.middleware");
+const upload = require("../config/multer.config");
+
+
+router.post("/profile", protect, upload.single("storeLogo"), createOrUpdateSellerProfile); // 💡 Updated: Added multer upload processing
+router.get("/profile", protect, getMySellerProfile);
+
+
+router.post("/product", protect, upload.array("images", 5), createProduct);
+router.get("/products", protect, getMyProducts);
+router.patch("/product/:id", protect, upload.array("images", 5), updateProduct);
+router.delete("/product/:id", protect, deleteProduct);
+
+router.patch("/product/:id/stock", protect, updateProductStock);
+
+
+router.get("/orders", protect, getSellerOrders);
+
+module.exports = router;
+````
+
 ## File: Backend/app/server.js
 ````javascript
 const app = require('./app');
@@ -11486,451 +12044,168 @@ app.listen(port, () => {
 })
 ````
 
-## File: Backend/app/services/stripe.service.js
+## File: Backend/app/services/marketplaceOrder.service.js
 ````javascript
-const { stripe } = require("../config/stripe");
-const prisma = require("../config/prisma");
-const AppError = require("../utils/AppError");
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 
-const {
-  PaymentStatus,
-  AppointmentStatus,
-  ScheduleStatus,
-} = require("@prisma/client");
+const generateOrderNumber = () => {
+  return `PV-${Date.now()}`;
+};
 
-const createAppointmentPaymentIntent = async ({ appointmentId, petOwnerId }) => {
-  if (!appointmentId || !petOwnerId) {
-    throw new AppError("Appointment ID or user ID is missing", 400);
+exports.createMarketplaceOrder = async (buyerId, payload) => {
+  const { items, shippingAddress, phoneNumber } = payload;
+
+  if (!items || !Array.isArray(items) || items.length === 0) {
+    throw new Error("Order items are required");
   }
 
-  const appointment = await prisma.appointment.findFirst({
+  return prisma.$transaction(async (tx) => {
+    const productIds = items.map((item) => item.productId);
+
+    const products = await tx.marketplaceProduct.findMany({
+      where: {
+        id: {
+          in: productIds,
+        },
+        status: "ACTIVE",
+      },
+      include: {
+        seller: true, // 💡 Already includes SellerProfile (which contains userId)
+      },
+    });
+
+    if (products.length !== items.length) {
+      throw new Error("Some products are not available");
+    }
+
+    const isOwnerPurchasing = products.some(
+      (product) => product.seller.userId === buyerId
+    );
+
+    if (isOwnerPurchasing) {
+      throw new Error("You cannot purchase your own listed products or pets.");
+    }
+
+    const sellerIds = [...new Set(products.map((product) => product.sellerId))];
+
+    if (sellerIds.length > 1) {
+      throw new Error("One order can contain products from one seller only");
+    }
+
+    let totalAmount = 0;
+
+    const orderItemsData = items.map((item) => {
+      const product = products.find((p) => p.id === item.productId);
+
+      if (!product) {
+        throw new Error("Product not found");
+      }
+
+      const quantity = Number(item.quantity) || 1;
+
+      if (product.stock < quantity) {
+        throw new Error(`${product.title} has only ${product.stock} stock`);
+      }
+
+      totalAmount += Number(product.price) * quantity;
+
+      return {
+        productId: product.id,
+        quantity,
+        price: product.price,
+      };
+    });
+
+    const order = await tx.marketplaceOrder.create({
+      data: {
+        orderNumber: generateOrderNumber(),
+        buyerId,
+        sellerId: sellerIds[0],
+        totalAmount,
+        shippingAddress,
+        phoneNumber,
+        items: {
+          create: orderItemsData,
+        },
+      },
+      include: {
+        buyer: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+            phone: true,
+          },
+        },
+        seller: true,
+        items: {
+          include: {
+            product: {
+              include: {
+                images: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    for (const item of items) {
+      const quantity = Number(item.quantity) || 1;
+
+      const product = products.find((p) => p.id === item.productId);
+
+      const newStock = product.stock - quantity;
+
+      await tx.marketplaceProduct.update({
+        where: {
+          id: item.productId,
+        },
+        data: {
+          stock: newStock,
+          status: newStock <= 0 ? "SOLD_OUT" : "ACTIVE",
+        },
+      });
+    }
+
+    return order;
+  });
+};
+
+exports.getMyMarketplaceOrders = async (buyerId) => {
+  return prisma.marketplaceOrder.findMany({
     where: {
-      id: appointmentId,
-      petOwnerId,
+      buyerId,
     },
     include: {
-      doctor: {
+      seller: {
         include: {
           user: {
             select: {
-              fullName: true,
-            },
-          },
-        },
-      },
-      doctorSchedule: true,
-      payment: true,
-    },
-  });
-
-  if (!appointment) {
-    throw new AppError("Appointment not found", 404);
-  }
-
-  if (appointment.status !== AppointmentStatus.PENDING_PAYMENT) {
-    throw new AppError(
-      `Appointment is not ready for payment. Current status is ${appointment.status}`,
-      400
-    );
-  }
-
-  if (appointment.paymentStatus === PaymentStatus.SUCCEEDED) {
-    throw new AppError("Payment is already completed for this appointment", 400);
-  }
-
-  if (appointment.expiresAt && appointment.expiresAt < new Date()) {
-    throw new AppError(
-      "Appointment hold has expired. Please select slot again.",
-      400
-    );
-  }
-
-  if (!appointment.petId) {
-    throw new AppError("Pet is missing from appointment", 400);
-  }
-
-  if (!appointment.petIssueReportId) {
-    throw new AppError("Pet issue report is missing from appointment", 400);
-  }
-
-  if (
-    appointment.doctorSchedule.status !== ScheduleStatus.HELD ||
-    appointment.doctorSchedule.lockedByAppointmentId !== appointment.id
-  ) {
-    throw new AppError("This slot is no longer held for this appointment", 400);
-  }
-
-  const stripeAmount = appointment.fees * 100;
-  const currency = appointment.currency || "pkr";
-
-  
-  if (
-    appointment.payment &&
-    appointment.payment.stripePaymentIntentId &&
-    appointment.payment.stripeClientSecret &&
-    [
-      PaymentStatus.PENDING,
-      PaymentStatus.REQUIRES_PAYMENT_METHOD,
-      PaymentStatus.REQUIRES_ACTION,
-      PaymentStatus.PROCESSING,
-    ].includes(appointment.payment.status)
-  ) {
-    return {
-      appointmentId: appointment.id,
-      paymentId: appointment.payment.id,
-      clientSecret: appointment.payment.stripeClientSecret,
-      amount: appointment.payment.amount,
-      currency: appointment.payment.currency,
-      reused: true,
-    };
-  }
-
-  const metadata = {
-    appointmentId: appointment.id,
-    doctorId: appointment.doctorId,
-    petOwnerId: appointment.petOwnerId,
-    petId: appointment.petId,
-    petIssueReportId: appointment.petIssueReportId,
-    scheduleId: appointment.scheduleId,
-  };
-
-  const paymentIntent = await stripe.paymentIntents.create(
-    {
-      amount: stripeAmount,
-      currency,
-      automatic_payment_methods: {
-        enabled: true,
-      },
-      description: `Veterinary appointment with Dr. ${appointment.doctor?.user?.fullName || "Doctor"
-        }`,
-      metadata,
-    },
-    {
-      idempotencyKey: `appointment-payment-${appointment.id}`,
-    }
-  );
-
-  const payment = await prisma.payment.upsert({
-    where: {
-      appointmentId: appointment.id,
-    },
-    update: {
-      stripePaymentIntentId: paymentIntent.id,
-      stripeClientSecret: paymentIntent.client_secret,
-      amount: stripeAmount,
-      currency,
-      status: PaymentStatus.REQUIRES_PAYMENT_METHOD,
-      metadata,
-    },
-    create: {
-      appointmentId: appointment.id,
-      userId: petOwnerId,
-      stripePaymentIntentId: paymentIntent.id,
-      stripeClientSecret: paymentIntent.client_secret,
-      amount: stripeAmount,
-      currency,
-      status: PaymentStatus.REQUIRES_PAYMENT_METHOD,
-      metadata,
-    },
-  });
-
-  await prisma.appointment.update({
-    where: {
-      id: appointment.id,
-    },
-    data: {
-      paymentStatus: PaymentStatus.REQUIRES_PAYMENT_METHOD,
-    },
-  });
-
-  return {
-    appointmentId: appointment.id,
-    paymentId: payment.id,
-    clientSecret: paymentIntent.client_secret,
-    amount: stripeAmount,
-    currency,
-    reused: false,
-  };
-};
-
-
-const getAppointmentPaymentStatus = async ({ appointmentId, petOwnerId }) => {
-  if (!appointmentId || !petOwnerId) {
-    throw new AppError("Appointment ID or user ID is missing", 400);
-  }
-
-  const appointment = await prisma.appointment.findFirst({
-    where: {
-      id: appointmentId,
-      petOwnerId,
-    },
-    select: {
-      id: true,
-      doctorId: true,
-      petOwnerId: true,
-      petId: true,
-      petIssueReportId: true,
-      scheduleId: true,
-
-      fees: true,
-      currency: true,
-
-      status: true,
-      paymentStatus: true,
-
-      checkupTime: true,
-      expiresAt: true,
-      confirmedAt: true,
-      createdAt: true,
-      updatedAt: true,
-
-      doctor: {
-        select: {
-          id: true,
-          specialization: true,
-          user: {
-            select: {
+              id: true,
               fullName: true,
               email: true,
+              phone: true,
             },
           },
         },
       },
-
-      doctorSchedule: {
-        select: {
-          id: true,
-          status: true,
-          date: true,
-          startTime: true,
-          endTime: true,
-          lockedByAppointmentId: true,
-        },
-      },
-
-      pet: {
-        select: {
-          id: true,
-          name: true,
-          breed: true,
-          category: true,
-        },
-      },
-
-      petIssueReport: {
-        select: {
-          id: true,
-          issue: true,
-          createdAt: true,
-        },
-      },
-
-      payment: {
-        select: {
-          id: true,
-          stripePaymentIntentId: true,
-          stripeChargeId: true,
-          amount: true,
-          currency: true,
-          status: true,
-          receiptUrl: true,
-          failureReason: true,
-          paidAt: true,
-          cancelledAt: true,
-          refundedAt: true,
+      items: {
+        include: {
+          product: {
+            include: {
+              images: true,
+            },
+          },
         },
       },
     },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
-
-  if (!appointment) {
-    throw new AppError("Appointment not found", 404);
-  }
-
-  return appointment;
 };
-
-module.exports = {
-  createAppointmentPaymentIntent,
-  getAppointmentPaymentStatus,
-};
-````
-
-## File: Backend/app/utils/auth.utils.js
-````javascript
-const nodemailer = require('nodemailer');
-const AppError = require('./AppError');
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_PASSWORD, // app password
-  },
-});
-
-const otpGenerator = () => {
-  const otp = Math.floor(100000 + Math.random() * 900000);
-
-  return otp.toString();
-}
-
-const sendOtp = async (email, otpCode) => {
-  try {
-    const info = await transporter.sendMail({
-      from: 'abdullahsuleman755@gmail.com',
-      to: email,
-      subject: "OTP Code",
-      text: "Your OTP Code", // fallback
-      html: `
-  <body style="margin: 0; padding: 0; background-color: #eaf1ed; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
-
-    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #eaf1ed; padding: 40px 20px;">
-      <tr>
-        <td align="center">
-
-          <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #fdfbf7; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
-
-            <!-- Header -->
-            <tr>
-              <td style="padding: 40px 40px 20px 40px;">
-                <table width="100%">
-                  <tr>
-                    <td width="50%">
-                      <img src="YOUR_LOGO_URL_HERE.png" style="width: 140px;" />
-                      <p style="color: #553e2a; font-size: 13px;">Compassion. Care. Trust.</p>
-                    </td>
-                    <td width="50%" style="text-align: right;">
-                      <img src="YOUR_HEADER_IMAGE_URL_HERE.png" style="width: 200px;" />
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-
-            <!-- Title -->
-            <tr>
-              <td align="center" style="padding: 20px;">
-                <h1 style="color: #4a3320;">Your OTP Code</h1>
-                <p style="color: #4a3320;">
-                  Use the code below to verify your account
-                </p>
-              </td>
-            </tr>
-
-            <!-- OTP -->
-            <tr>
-              <td align="center" style="padding: 30px;">
-                <div style="background:#faeadd; padding:20px; font-size:40px; font-weight:bold; letter-spacing:10px; color:#5a3f28; border-radius:12px;">
-                  ${otpCode}
-                </div>
-              </td>
-            </tr>
-
-          </table>
-
-        </td>
-      </tr>
-    </table>
-
-  </body>
-  `,
-    });
-
-    console.log("Message sent: %s", info.messageId);
-
-
-    return info;
-
-  } catch (err) {
-    console.error("Error while sending mail:", err);
-
-    throw new AppError(`Error is Sending Mail to ${email} ${error.message}`);
-  }
-}
-
-const sendStatusEmail = async (email, status) => {
-  const isApproved = status.toLowerCase() === 'approved';
-
-  // Dynamic branding configuration based on approval/rejection status
-  const config = {
-    subject: isApproved ? " Welcome to the Pack! Your Application is Approved" : "Update Regarding Your Application",
-    title: isApproved ? "Application Approved!" : "Application Status Update",
-    accentColor: isApproved ? "#2e7d32" : "#d32f2f",
-    bgColor: isApproved ? "#e8f5e9" : "#ffebee",
-    messageHtml: isApproved
-      ? `We are absolutely thrilled to welcome you to the family! Our team has verified your credentials, and your profile is now live. Let's make the world a happier, healthier place for our furry friends together! 🐾`
-      : `Thank you for taking the time to apply with us. After a careful review of your profile, we regret to inform you that we cannot approve your application at this time. We sincerely appreciate your love and dedication to pet care. 🐾`,
-    badgeText: isApproved ? "APPROVED" : "NOT APPROVED"
-  };
-
-  try {
-    const info = await transporter.sendMail({
-      from: 'abdullahsuleman755@gmail.com',
-      to: email,
-      subject: config.subject,
-      text: isApproved ? "Your application has been approved." : "Your application has been rejected.", // Fallback
-      html: `
-      <body style="margin: 0; padding: 0; background-color: #eaf1ed; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
-        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #eaf1ed; padding: 40px 20px;">
-          <tr>
-            <td align="center">
-              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #fdfbf7; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
-                
-                <tr>
-                  <td style="padding: 40px 40px 20px 40px;">
-                    <table width="100%">
-                      <tr>
-                        <td width="50%">
-                          <img src="YOUR_LOGO_URL_HERE.png" style="width: 140px;" alt="Logo" />
-                          <p style="color: #553e2a; font-size: 13px; margin: 5px 0 0 0;">Compassion. Care. Trust.</p>
-                        </td>
-                        <td width="50%" style="text-align: right;">
-                          <img src="YOUR_HEADER_IMAGE_URL_HERE.png" style="width: 200px;" alt="Pets Veta Header" />
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td style="padding: 20px 40px; text-align: center;">
-                    <h1 style="color: #4a3320; font-size: 28px; margin-bottom: 10px;">${config.title}</h1>
-                    <p style="color: #5a4b3e; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
-                      ${config.messageHtml}
-                    </p>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td align="center" style="padding-bottom: 50px;">
-                    <div style="background: ${config.bgColor}; max-width: 200px; padding: 15px 25px; font-size: 18px; font-weight: bold; letter-spacing: 2px; color: ${config.accentColor}; border: 2px solid ${config.accentColor}; border-radius: 12px; text-align: center;">
-                      ${config.badgeText}
-                    </div>
-                  </td>
-                </tr>
-
-              </table>
-            </td>
-          </tr>
-        </table>
-      </body>
-      `,
-    });
-
-    console.log("Status email sent successfully: %s", info.messageId);
-    return info;
-
-  } catch (err) {
-    console.error("Error sending status email:", err);
-    throw err;
-  }
-};
-
-module.exports = {
-  otpGenerator,
-  sendOtp,
-  sendStatusEmail
-}
 ````
 
 ## File: Backend/app/utils/cloudinary.utils.js
@@ -12057,92 +12332,6 @@ const AboutCTA = () => {
 };
 
 export default AboutCTA;
-````
-
-## File: Frontend/src/features/About/components/AboutHero.tsx
-````typescript
-import { FaPaw, FaShieldAlt, FaUserMd } from "react-icons/fa";
-
-const AboutHero = () => {
-  return (
-    <section className="bg-gradient-to-br from-[#f5fbff] via-white to-[#d9f7f6] px-5 py-16 lg:px-16">
-      <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-2">
-        <div>
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-[#009f9d] shadow-sm">
-            <FaPaw />
-            About PetsVeta
-          </div>
-
-          <h1 className="text-4xl font-extrabold leading-tight text-[#07182c] md:text-5xl">
-            Trusted pet care, marketplace and veterinary support in one place.
-          </h1>
-
-          <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600">
-            PetsVeta is designed to help pet owners find verified doctors,
-            quality pet products, reliable services and smart AI assistance for
-            better pet care.
-          </p>
-
-          <div className="mt-7 flex flex-wrap gap-3">
-            <span className="flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-[#07182c] shadow-sm">
-              <FaShieldAlt className="text-[#009f9d]" />
-              Verified Doctors
-            </span>
-
-            <span className="flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-[#07182c] shadow-sm">
-              <FaUserMd className="text-[#009f9d]" />
-              Smart Pet Care
-            </span>
-          </div>
-        </div>
-
-        <div className="rounded-[40px] bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.10)]">
-          <div className="rounded-[32px] bg-gradient-to-br from-[#bdf0ee] to-[#fff3ec] p-8">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="rounded-3xl bg-white p-5 shadow-sm">
-                <h3 className="text-3xl font-extrabold text-[#009f9d]">
-                  100+
-                </h3>
-                <p className="mt-1 text-sm font-semibold text-slate-600">
-                  Verified Doctors
-                </p>
-              </div>
-
-              <div className="rounded-3xl bg-white p-5 shadow-sm">
-                <h3 className="text-3xl font-extrabold text-[#009f9d]">
-                  10K+
-                </h3>
-                <p className="mt-1 text-sm font-semibold text-slate-600">
-                  Pet Owners
-                </p>
-              </div>
-
-              <div className="rounded-3xl bg-white p-5 shadow-sm">
-                <h3 className="text-3xl font-extrabold text-[#009f9d]">
-                  24/7
-                </h3>
-                <p className="mt-1 text-sm font-semibold text-slate-600">
-                  Pet Support
-                </p>
-              </div>
-
-              <div className="rounded-3xl bg-white p-5 shadow-sm">
-                <h3 className="text-3xl font-extrabold text-[#009f9d]">
-                  4.8
-                </h3>
-                <p className="mt-1 text-sm font-semibold text-slate-600">
-                  Average Rating
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-export default AboutHero;
 ````
 
 ## File: Frontend/src/features/About/components/AboutStats.tsx
@@ -12355,169 +12544,120 @@ export type DoctorRequestCardProps = {
 };
 ````
 
-## File: Frontend/src/features/AiAssistance/components/AiChatBox.tsx
+## File: Frontend/src/features/AiAssistance/api/aiAssistant.api.ts
 ````typescript
-import { useState } from "react";
-import { FaPaperPlane, FaRobot, FaUser, FaPaw } from "react-icons/fa";
+import { api, handleAxiosError } from "../../api interface/axios.interface";
 
-import Button from "../../../shared/components/Button";
-import type { AiMessage } from "../types/aiAssistance.types";
+export const sendAiAssistantMessage = async (prompt: string) => {
+  try {
+    const response = await api.post("/ai/assistant-chat", { prompt });
+    return response.data.data.response as string;
+  } catch (error) {
+    handleAxiosError(error);
+  }
+};
+````
 
-const AiChatBox = () => {
-    const [message, setMessage] = useState("");
+## File: Frontend/src/features/AiAssistance/components/AiHero.tsx
+````typescript
+import {
+    FaBrain,
+    FaPaw,
+    FaRobot,
+    FaShieldAlt,
+} from "react-icons/fa";
 
-    const [messages, setMessages] = useState<AiMessage[]>([
-        {
-            id: 1,
-            sender: "ai",
-            text: "Hello! I am your PetsVeta AI Assistant. Tell me your pet symptoms and I will guide you.",
-        },
-    ]);
-
-    const handleSendMessage = () => {
-        if (!message.trim()) return;
-
-        const userMessage: AiMessage = {
-            id: Date.now(),
-            sender: "user",
-            text: message,
-        };
-
-        const aiReply: AiMessage = {
-            id: Date.now() + 1,
-            sender: "ai",
-            text: "Thanks for sharing. Based on the symptoms, please monitor your pet closely and consult a verified veterinary doctor if the issue continues.",
-        };
-
-        setMessages((prev) => [...prev, userMessage, aiReply]);
-        setMessage("");
-    };
-
+const AiHero = () => {
     return (
-        <section className="bg-white px-5 py-16 lg:px-16">
-            <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1fr_380px]">
-                <div className="rounded-3xl bg-[#f5fbff] p-4 shadow-[0_10px_35px_rgba(15,23,42,0.08)] md:p-6">
-                    <div className="mb-5 flex items-center justify-between rounded-3xl bg-white p-5 shadow-sm">
-                        <div>
-                            <h2 className="text-2xl font-extrabold text-[#07182c]">
-                                Ask AI Assistant
-                            </h2>
-
-                            <p className="mt-1 text-sm text-slate-500">
-                                Describe your pet symptoms or care question.
-                            </p>
-                        </div>
-
-                        <div className="hidden h-12 w-12 items-center justify-center rounded-2xl bg-[#eefafa] text-xl text-[#009f9d] sm:flex">
-                            <FaRobot />
-                        </div>
+        <section className="mt-20 bg-gradient-to-br from-[#f5fbff] via-white to-[#d9f7f6] px-5 py-16 lg:px-16">
+            <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-2">
+                <div>
+                    <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-[#009f9d] shadow-sm">
+                        <FaRobot />
+                        AI Pet Assistant
                     </div>
 
-                    <div className="h-[420px] space-y-4 overflow-y-auto rounded-3xl bg-white p-5">
-                        {messages.map((item) => (
-                            <div
-                                key={item.id}
-                                className={`flex ${item.sender === "user" ? "justify-end" : "justify-start"
-                                    }`}
-                            >
-                                <div
-                                    className={`flex max-w-[85%] gap-3 rounded-3xl p-4 ${item.sender === "user"
-                                        ? "bg-[#07182c] text-white"
-                                        : "bg-[#eefafa] text-[#07182c]"
-                                        }`}
-                                >
-                                    <div
-                                        className={`mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${item.sender === "user"
-                                            ? "bg-white/15"
-                                            : "bg-white text-[#009f9d]"
-                                            }`}
-                                    >
-                                        {item.sender === "user" ? <FaUser /> : <FaRobot />}
-                                    </div>
+                    <h1 className="max-w-3xl text-4xl font-extrabold leading-tight text-[#07182c] md:text-5xl">
+                        Smart AI assistance for your pet’s health and care.
+                    </h1>
 
-                                    <p className="text-sm leading-6">{item.text}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                    <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600">
+                        Describe symptoms, ask pet-care questions and get instant AI-powered
+                        guidance for better pet wellness and faster decision making.
+                    </p>
 
-                    <div className="mt-5 grid gap-3 rounded-3xl bg-white p-4 md:grid-cols-[1fr_auto]">
-                        <textarea
-                            rows={2}
-                            value={message}
-                            onChange={(e) => setMessage(e.target.value)}
-                            placeholder="Example: My dog is vomiting and not eating..."
-                            className="resize-none rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#009f9d] focus:ring-2 focus:ring-[#009f9d]/20"
-                        />
+                    <div className="mt-7 flex flex-wrap gap-3">
+                        <span className="flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-[#07182c] shadow-sm">
+                            <FaBrain className="text-[#009f9d]" />
+                            Smart Suggestions
+                        </span>
 
-                        <Button
-                            type="button"
-                            onClick={handleSendMessage}
-                            className="flex items-center justify-center gap-2"
-                        >
-                            <FaPaperPlane />
-                            Send
-                        </Button>
+                        <span className="flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-[#07182c] shadow-sm">
+                            <FaShieldAlt className="text-[#009f9d]" />
+                            Safe Guidance
+                        </span>
+
+                        <span className="flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-[#07182c] shadow-sm">
+                            <FaPaw className="text-[#009f9d]" />
+                            Pet Focused
+                        </span>
                     </div>
                 </div>
 
-                <aside className="space-y-5">
-                    <div className="rounded-3xl bg-gradient-to-br from-[#bdf0ee] to-[#fff3ec] p-6 shadow-[0_18px_50px_rgba(15,23,42,0.10)]">
-                        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl text-[#009f9d]">
-                            <FaPaw />
+                <div className="rounded-[40px] bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.10)]">
+                    <div className="rounded-[32px] bg-gradient-to-br from-[#bdf0ee] to-[#fff3ec] p-6">
+                        <div className="rounded-3xl bg-white p-5 shadow-sm">
+                            <div className="flex items-start gap-3">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eefafa] text-xl text-[#009f9d]">
+                                    <FaRobot />
+                                </div>
+
+                                <div>
+                                    <h3 className="text-lg font-extrabold text-[#07182c]">
+                                        AI Assistant
+                                    </h3>
+
+                                    <p className="mt-1 text-sm leading-6 text-slate-600">
+                                        Tell me your pet symptoms.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
 
-                        <h3 className="text-2xl font-extrabold text-[#07182c]">
-                            Quick Symptom Guide
-                        </h3>
+                        <div className="mt-4 rounded-3xl bg-[#07182c] p-5 text-white shadow-sm">
+                            <p className="text-sm leading-7">
+                                My cat is not eating and feels weak.
+                            </p>
+                        </div>
 
-                        <p className="mt-3 text-sm leading-6 text-slate-600">
-                            AI can guide you, but serious symptoms should always be checked by
-                            a verified doctor.
-                        </p>
-                    </div>
+                        <div className="mt-4 rounded-3xl bg-white p-5 shadow-sm">
+                            <p className="text-sm leading-7 text-slate-600">
+                                Your pet may have digestion or infection-related issues. We
+                                recommend consulting a verified veterinary physician.
+                            </p>
+                        </div>
 
-                    <div className="rounded-3xl bg-white p-6 shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
-                        <h3 className="text-lg font-extrabold text-[#07182c]">
-                            Try asking:
-                        </h3>
+                        <div className="mt-4 flex flex-wrap gap-3">
+                            <span className="rounded-full bg-white px-4 py-2 text-xs font-bold text-[#009f9d] shadow-sm">
+                                Pet Symptoms
+                            </span>
 
-                        <div className="mt-4 space-y-3">
-                            {[
-                                "My cat is not eating",
-                                "My dog is vomiting",
-                                "My pet has skin allergy",
-                                "Which doctor should I visit?",
-                            ].map((item) => (
-                                <button
-                                    key={item}
-                                    type="button"
-                                    onClick={() => setMessage(item)}
-                                    className="w-full rounded-2xl bg-[#f5fbff] px-4 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-[#eefafa] hover:text-[#009f9d]"
-                                >
-                                    {item}
-                                </button>
-                            ))}
+                            <span className="rounded-full bg-white px-4 py-2 text-xs font-bold text-[#009f9d] shadow-sm">
+                                AI Suggestions
+                            </span>
+
+                            <span className="rounded-full bg-white px-4 py-2 text-xs font-bold text-[#009f9d] shadow-sm">
+                                Smart Guidance
+                            </span>
                         </div>
                     </div>
-
-                    <div className="rounded-3xl bg-[#07182c] p-6 text-white">
-                        <h3 className="text-lg font-extrabold">
-                            Emergency Reminder
-                        </h3>
-
-                        <p className="mt-3 text-sm leading-6 text-white/75">
-                            If your pet has breathing problems, bleeding, seizures, poisoning,
-                            or extreme weakness, contact a vet immediately.
-                        </p>
-                    </div>
-                </aside>
+                </div>
             </div>
         </section>
     );
 };
 
-export default AiChatBox;
+export default AiHero;
 ````
 
 ## File: Frontend/src/features/Appointment/apis/doctorProfile.api.ts
@@ -12649,65 +12789,6 @@ export const AuthSuccess = () => {
 };
 ````
 
-## File: Frontend/src/features/Auth/Context/auth.context.tsx
-````typescript
-import { useState, createContext, useEffect } from 'react'
-import { type ApiResponse, verifyUser } from '../api/loginuser.api';
-import type {
-    AuthContextProviderProps,
-    AuthContextType,
-} from "../types/auth.types";
-
-
-export const AuthContext = createContext<AuthContextType | null>(null);
-
-export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
-
-    const [isAuthenticatedUser, setIsAuthenticateUser] = useState<boolean>(false);
-    const [user, setUser] = useState<ApiResponse | undefined>(undefined);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-
-    useEffect(() => {
-        const veirfyAuthenticatedUser = async () => {
-            try {
-                setIsLoading(true);
-                const response = await verifyUser();
-                console.log("Auth Context working....", response)
-
-                if (response.success) {
-                    setUser(response);
-                    setIsAuthenticateUser(true);
-                } else {
-                    setIsAuthenticateUser(false);
-                    setUser(undefined);
-                }
-
-
-            } catch (error) {
-                console.log("Error in Auth Provider:", error);
-                setIsAuthenticateUser(false);
-                setUser(undefined);
-            } finally {
-                console.log("Finally works");
-                setIsLoading(false);
-            }
-        };
-
-        veirfyAuthenticatedUser();
-
-    }, [])
-
-
-
-
-    return (
-        <AuthContext.Provider value={{ user, setUser, isAuthenticatedUser, setIsAuthenticateUser, isLoading, setIsLoading }}>
-            {children}
-        </AuthContext.Provider>
-    )
-}
-````
-
 ## File: Frontend/src/features/Auth/hooks/useDoctorAccount.ts
 ````typescript
 import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
@@ -12746,52 +12827,6 @@ export const useDoctorAccountHook = (options: UseMutationOptions<ApiResponse, Er
             }
         }
     });
-}
-````
-
-## File: Frontend/src/features/Auth/hooks/useLogin.ts
-````typescript
-import { useMutation, type UseMutationOptions } from '@tanstack/react-query'
-import { userLogin, type ApiResponse } from '../api/loginuser.api'
-import { type LoginFormData } from '../schemas/login.schema'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from './authhook'
-
-const getPostLoginPath = (role: string) => {
-    if (role === "Admin") {
-        return "/admin-dashboard";
-    }
-
-    if (role === "Doctor") {
-        return "/doctor-dashboard";
-    }
-
-    if (role === "PetOwner" || role === "Seller") {
-        return "/choose-dashboard";
-    }
-
-    return "/";
-};
-
-export const useLogin = (options: UseMutationOptions<ApiResponse, Error, LoginFormData>) => {
-    const navigate = useNavigate();
-    const { setIsAuthenticateUser, setUser } = useAuth()
-    return useMutation({
-        mutationFn: userLogin,
-        ...options,
-
-        onSuccess: (data) => {
-            console.log("Login Success", data)
-            setUser(data);
-            setIsAuthenticateUser(true);
-            navigate(getPostLoginPath(data.data.role), { replace: true });
-        },
-
-        onError: (error) => {
-            console.log("Login Error ", error.message)
-        }
-
-    })
 }
 ````
 
@@ -12835,84 +12870,6 @@ export const usePetOwnerHook = (options: UseMutationOptions<ApiResponse, AxiosEr
         }
     })
 }
-````
-
-## File: Frontend/src/features/Auth/pages/ContinueAs.tsx
-````typescript
-import { useNavigate } from "react-router-dom";
-import { Stethoscope, UserRound } from "lucide-react";
-
-const ContinueAsPage = () => {
-  const navigate = useNavigate();
-
-  return (
-    <section className="min-h-screen bg-gradient-to-br from-[#f4fbff] via-white to-[#e8fbfa] flex items-center justify-center px-6 py-12">
-      <div className="w-full max-w-5xl">
-        <div className="text-center mb-10">
-          <span className="inline-block px-5 py-2 rounded-full bg-white shadow text-[#178f95] font-semibold mb-4">
-            Join Pets Veta
-          </span>
-
-          <h1 className="text-3xl md:text-5xl font-bold text-[#17233f] mb-4">
-            Continue as
-          </h1>
-
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Choose your account type to continue registration.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
-          <button
-            onClick={() => navigate("/signup/pet-owner")}
-            className="group bg-white rounded-3xl p-8 shadow-xl border border-gray-100 text-left hover:-translate-y-1 hover:shadow-2xl transition-all duration-300"
-          >
-            <div className="h-16 w-16 rounded-2xl bg-[#e8fbfa] text-[#178f95] flex items-center justify-center mb-6 group-hover:bg-[#178f95] group-hover:text-white transition">
-              <UserRound size={32} />
-            </div>
-
-            <h2 className="text-2xl font-bold text-[#17233f] mb-3">
-              Pet Owner
-            </h2>
-
-            <p className="text-gray-600 mb-7 leading-relaxed">
-              Create an account to book veterinary appointments, manage your pets,
-              and access pet care services.
-            </p>
-
-            <span className="inline-flex items-center justify-center rounded-full bg-[#178f95] text-white px-6 py-3 font-semibold group-hover:bg-[#12757a] transition">
-              Register as Pet Owner
-            </span>
-          </button>
-
-          <button
-            onClick={() => navigate("/signup/doctor")}
-            className="group bg-white rounded-3xl p-8 shadow-xl border border-gray-100 text-left hover:-translate-y-1 hover:shadow-2xl transition-all duration-300"
-          >
-            <div className="h-16 w-16 rounded-2xl bg-[#fff1ea] text-[#178f95] flex items-center justify-center mb-6 group-hover:bg-[#178f95] group-hover:text-white transition">
-              <Stethoscope size={32} />
-            </div>
-
-            <h2 className="text-2xl font-bold text-[#17233f] mb-3">
-              Doctor
-            </h2>
-
-            <p className="text-gray-600 mb-7 leading-relaxed">
-              Create your doctor profile, submit your verification document,
-              manage availability, and handle appointments.
-            </p>
-
-            <span className="inline-flex items-center justify-center rounded-full bg-[#178f95] text-white px-6 py-3 font-semibold group-hover:bg-[#12757a] transition">
-              Register as Doctor
-            </span>
-          </button>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-export default ContinueAsPage;
 ````
 
 ## File: Frontend/src/features/Auth/pages/doctor-signup.tsx
@@ -13117,35 +13074,6 @@ const ContactCTA = () => {
 };
 
 export default ContactCTA;
-````
-
-## File: Frontend/src/features/Contact/components/ContactHero.tsx
-````typescript
-import { FaEnvelopeOpenText } from "react-icons/fa";
-
-const ContactHero = () => {
-  return (
-    <section className="bg-gradient-to-br from-[#f5fbff] via-white to-[#d9f7f6] px-5 py-16 lg:px-16">
-      <div className="mx-auto max-w-7xl text-center">
-        <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-[#009f9d] shadow-sm">
-          <FaEnvelopeOpenText />
-          Contact PetsVeta
-        </div>
-
-        <h1 className="mx-auto max-w-4xl text-4xl font-extrabold leading-tight text-[#07182c] md:text-5xl">
-          We’re here to help you and your pets.
-        </h1>
-
-        <p className="mx-auto mt-5 max-w-2xl leading-7 text-slate-600">
-          Have questions about appointments, pet care, marketplace products or
-          AI assistance? Contact our team anytime.
-        </p>
-      </div>
-    </section>
-  );
-};
-
-export default ContactHero;
 ````
 
 ## File: Frontend/src/features/Contact/contact.route.tsx
@@ -13806,419 +13734,6 @@ const DoctorSkill = () => {
 export default DoctorSkill;
 ````
 
-## File: Frontend/src/features/Doctorcart/apis/doctorProfile.api.ts
-````typescript
-import { api, handleAxiosError } from "@/features/api interface/axios.interface";
-import type { DoctorProfileFormData } from "../schemas/doctorProfile.schema";
-
-export type DoctorProfileData = {
-  id: string;
-  userId: string;
-  fullName: string;
-  username: string;
-  email: string;
-  phone: string;
-  profileImageUrl: string;
-  specialization: string;
-  education: string;
-  address: string;
-  experience: number;
-  fees: number;
-  isAvailable: boolean;
-  isVerified: "PENDING" | "APPROVED" | "REJECTED";
-};
-
-type BackendDoctorProfileData = {
-  id: string;
-  fullName: string;
-  username: string;
-  email: string;
-  phone: string;
-  profileImageUrl: string;
-  doctors: {
-    id: string;
-    specialization: string;
-    education: string;
-    address: string;
-    experience: number;
-    fees: number;
-    isAvailable: boolean;
-    isVerified: "PENDING" | "APPROVED" | "REJECTED";
-  } | null;
-};
-
-type BackendDoctorProfileResponse = {
-  success: boolean;
-  message: string;
-  data: BackendDoctorProfileData;
-};
-
-export type DoctorProfileApiResponse = {
-  success: boolean;
-  message: string;
-  data: DoctorProfileData;
-};
-
-const mapDoctorProfile = (
-  response: BackendDoctorProfileResponse
-): DoctorProfileApiResponse => {
-  const doctor = response.data.doctors;
-
-  if (!doctor) {
-    throw new Error("Doctor data not found");
-  }
-
-  return {
-    success: response.success,
-    message: response.message,
-    data: {
-      id: doctor.id,
-      userId: response.data.id,
-      fullName: response.data.fullName || "",
-      username: response.data.username || "",
-      email: response.data.email || "",
-      phone: response.data.phone || "",
-      profileImageUrl: response.data.profileImageUrl || "",
-      specialization: doctor.specialization || "",
-      education: doctor.education || "",
-      address: doctor.address || "",
-      experience: doctor.experience || 0,
-      fees: doctor.fees || 0,
-      isAvailable: doctor.isAvailable ?? true,
-      isVerified: doctor.isVerified,
-    },
-  };
-};
-
-export const getDoctorProfileApi = async () => {
-  try {
-    const response = await api.get<BackendDoctorProfileResponse>(
-      "doctor/profile"
-    );
-
-    return mapDoctorProfile(response.data);
-  } catch (error) {
-    handleAxiosError(error);
-    throw error;
-  }
-};
-
-export const updateDoctorProfileApi = async (
-  payload: DoctorProfileFormData
-) => {
-  try {
-    const response = await api.patch<BackendDoctorProfileResponse>(
-      "doctor/profile",
-      payload
-    );
-
-    return mapDoctorProfile(response.data);
-  } catch (error) {
-    handleAxiosError(error);
-    throw error;
-  }
-};
-````
-
-## File: Frontend/src/features/Doctorcart/component/DoctorProfile.tsx
-````typescript
-import {
-  BadgeCheck,
-  BriefcaseBusiness,
-  CalendarDays,
-  CircleCheck,
-  GraduationCap,
-  Languages,
-  Mail,
-  MapPin,
-  Phone,
-  Star,
-  Stethoscope,
-  UserRound,
-  Wallet,
-  IdCard,
-  Pencil,
-} from "lucide-react";
-
-import { useNavigate } from "react-router-dom";
-import Button from "../../../shared/components/Button/Button";
-import type { DoctorProfileData } from "../types/doctorcart.types";
-
-const doctor: DoctorProfileData = {
-  fullName: "Dr. Ayesha Khan",
-  email: "ayesha.khan@gmail.com",
-  phone: "+92 300 1234567",
-  profileImageUrl:
-    "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=500&q=80",
-  specialization: "Veterinary Surgeon",
-  education: "DVM",
-  experience: 5,
-  fees: 2500,
-  rating: 4.8,
-  reviews: 128,
-  licenseNumber: "VS-PK-2021-11234",
-  languages: "English, Urdu, Punjabi",
-  address: "PetCare Clinic, Gulberg III, Lahore",
-  about:
-    "Passionate about animal care and dedicated to providing the best medical services to pets.",
-  isVerified: true,
-  isAvailable: true,
-};
-
-const DoctorProfile = () => {
-  const navigate = useNavigate();
-
-  return (
-    <main className="min-h-screen bg-[#F8FAFA] px-4 py-6 text-[#20263D] sm:px-6 lg:px-8">
-      <section className="mx-auto max-w-7xl">
-        <div className="mb-6">
-          <p className="text-xs font-black uppercase tracking-[0.25em] text-[#078b91]">
-            Doctor Panel
-          </p>
-
-          <h1 className="mt-2 text-3xl font-black tracking-[-0.03em] text-[#101b3d]">
-            Doctor Profile
-          </h1>
-
-          <p className="mt-2 text-sm font-medium text-slate-500">
-            Manage your professional information and public doctor details.
-          </p>
-        </div>
-
-        <section className="grid gap-5 xl:grid-cols-[330px_1fr]">
-          <aside className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm">
-            <div className="relative h-32 bg-gradient-to-br from-[#D4E2E0] via-[#EAF7F5] to-white">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(23,143,149,0.12),transparent_35%),radial-gradient(circle_at_80%_20%,rgba(249,197,168,0.18),transparent_38%)]" />
-            </div>
-
-            <div className="-mt-16 flex flex-col items-center px-6 pb-6">
-              <div className="relative h-32 w-32 overflow-hidden rounded-full border-4 border-white bg-slate-100 shadow-xl">
-                <img
-                  src={doctor.profileImageUrl}
-                  alt={doctor.fullName}
-                  className="h-full w-full object-cover"
-                />
-
-                <span className="absolute bottom-3 right-3 h-5 w-5 rounded-full border-2 border-white bg-green-500" />
-              </div>
-
-              <h2 className="mt-5 text-center text-2xl font-black text-[#101b3d]">
-                {doctor.fullName} 
-              </h2>
-
-              <p className="mt-1 text-sm font-bold text-[#078b91]">
-                {doctor.specialization}
-              </p>
-
-              <div className="mt-5 flex flex-wrap justify-center gap-3">
-                {doctor.isVerified && (
-                  <span className="inline-flex items-center gap-2 rounded-lg bg-[#EAF7F5] px-4 py-2 text-sm font-black text-[#078b91]">
-                    <BadgeCheck size={17} />
-                    Verified
-                  </span>
-                )}
-
-                {doctor.isAvailable && (
-                  <span className="inline-flex items-center gap-2 rounded-lg bg-green-50 px-4 py-2 text-sm font-black text-green-700">
-                    <CircleCheck size={17} />
-                    Available
-                  </span>
-                )}
-              </div>
-
-              <div className="mt-6 h-px w-full bg-slate-200" />
-
-              <div className="mt-6 w-full space-y-5">
-                <ContactRow icon={<Mail size={20} />} value={doctor.email} />
-                <ContactRow icon={<Phone size={20} />} value={doctor.phone} />
-                <ContactRow icon={<MapPin size={20} />} value={doctor.address} />
-              </div>
-
-              <div className="mt-7 w-full">
-                <Button
-                  type="button"
-                  className="flex h-10 w-full items-center justify-center gap-1.5 rounded-xl px-3 py-0 text-xs font-black"
-                  onClick={() => navigate("/doctor-profile/edit")}
-                >
-                  <Pencil size={15} />
-                  Edit Profile
-                </Button>
-              </div>
-            </div>
-          </aside>
-
-          <div className="space-y-5">
-            <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              <MetricCard
-                icon={<BriefcaseBusiness size={28} />}
-                iconClass="bg-[#D4E2E0]/70 text-[#078b91]"
-                label="Experience"
-                value={`${doctor.experience}+ Years`}
-                description="Professional work"
-              />
-
-              <MetricCard
-                icon={<GraduationCap size={30} />}
-                iconClass="bg-purple-100 text-purple-600"
-                label="Education"
-                value={doctor.education}
-                description="Doctor of Veterinary Medicine"
-              />
-
-              <MetricCard
-                icon={<Wallet size={30} />}
-                iconClass="bg-orange-100 text-orange-500"
-                label="Consultation Fee"
-                value={`Rs. ${doctor.fees.toLocaleString()}`}
-                description="Per Consultation"
-              />
-
-              <MetricCard
-                icon={<Star size={30} />}
-                iconClass="bg-blue-100 text-blue-500"
-                label="Total Rating"
-                value={doctor.rating.toString()}
-                description={`(${doctor.reviews} Reviews)`}
-              />
-            </section>
-
-            <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
-              <h2 className="text-xl font-black text-[#101b3d]">
-                Professional Information
-              </h2>
-
-              <div className="mt-6 grid gap-x-8 gap-y-0 lg:grid-cols-2">
-                <InfoRow
-                  icon={<Stethoscope size={23} />}
-                  label="Specialization"
-                  value={doctor.specialization}
-                />
-
-                <InfoRow
-                  icon={<CalendarDays size={23} />}
-                  label="Experience"
-                  value={`${doctor.experience}+ Years`}
-                />
-
-                <InfoRow
-                  icon={<IdCard size={23} />}
-                  label="License Number"
-                  value={doctor.licenseNumber}
-                />
-
-                <InfoRow
-                  icon={<MapPin size={23} />}
-                  label="Clinic Address"
-                  value={doctor.address}
-                />
-
-                <InfoRow
-                  icon={<Languages size={23} />}
-                  label="Languages"
-                  value={doctor.languages}
-                />
-
-                <InfoRow
-                  icon={<UserRound size={23} />}
-                  label="About Me"
-                  value={doctor.about}
-                  noBorder
-                />
-              </div>
-            </section>
-          </div>
-        </section>
-      </section>
-    </main>
-  );
-};
-
-const ContactRow = ({
-  icon,
-  value,
-}: {
-  icon: React.ReactNode;
-  value: string;
-}) => {
-  return (
-    <div className="flex items-start gap-4 text-sm font-semibold text-slate-600">
-      <span className="mt-0.5 text-[#078b91]">{icon}</span>
-      <span className="leading-6">{value}</span>
-    </div>
-  );
-};
-
-const MetricCard = ({
-  icon,
-  iconClass,
-  label,
-  value,
-  description,
-}: {
-  icon: React.ReactNode;
-  iconClass: string;
-  label: string;
-  value: string;
-  description: string;
-}) => {
-  return (
-    <div className="rounded-[22px] border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-      <div className="flex items-center gap-4">
-        <div
-          className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-full ${iconClass}`}
-        >
-          {icon}
-        </div>
-
-        <div>
-          <p className="text-sm font-semibold text-slate-500">{label}</p>
-
-          <h3 className="mt-1 text-2xl font-black text-[#101b3d]">{value}</h3>
-
-          <p className="mt-1 text-sm font-medium leading-5 text-slate-500">
-            {description}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const InfoRow = ({
-  icon,
-  label,
-  value,
-  noBorder = false,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  noBorder?: boolean;
-}) => {
-  return (
-    <div
-      className={`flex gap-4 py-4 ${
-        noBorder ? "" : "border-b border-dashed border-slate-200"
-      }`}
-    >
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#EAF7F5] text-[#078b91]">
-        {icon}
-      </div>
-
-      <div>
-        <p className="text-sm font-semibold text-slate-500">{label}</p>
-
-        <h3 className="mt-1 text-sm font-black leading-6 text-[#101b3d]">
-          {value}
-        </h3>
-      </div>
-    </div>
-  );
-};
-
-export default DoctorProfile;
-````
-
 ## File: Frontend/src/features/Doctorcart/component/FilterSidebar.tsx
 ````typescript
 import Button from "../../../shared/components/Button/Button";
@@ -14344,6 +13859,47 @@ export const doctorAppointmentRoutes = [
     element: <DoctorProfilePage />,
   },
 ];
+````
+
+## File: Frontend/src/features/Doctorcart/schemas/doctorProfile.schema.ts
+````typescript
+import { z } from "zod";
+
+export const doctorProfileSchema = z.object({
+  fullName: z.string().min(2, "Full name is required"),
+
+  username: z.string().min(2, "Username is required"),
+
+  phone: z.string().min(10, "Phone number is required"),
+
+  profileImageUrl: z.string().optional(),
+
+  profileImage: z.any().optional(),
+
+  specialization: z.string().min(2, "Specialization is required"),
+
+  education: z.string().min(2, "Education is required"),
+
+  address: z.string().min(5, "Clinic address is required"),
+
+  experience: z.coerce
+    .number({
+      message: "Experience is required",
+    })
+    .min(0, "Experience cannot be negative")
+    .max(60, "Experience is too high"),
+
+  fees: z.coerce
+    .number({
+      message: "Fees is required",
+    })
+    .min(0, "Fees cannot be negative"),
+
+  isAvailable: z.coerce.boolean(),
+});
+
+export type DoctorProfileFormInput = z.input<typeof doctorProfileSchema>;
+export type DoctorProfileFormData = z.output<typeof doctorProfileSchema>;
 ````
 
 ## File: Frontend/src/features/Landing Page/components/About.tsx
@@ -14937,234 +14493,6 @@ export const marketplaceRoutes = [
 ];
 ````
 
-## File: Frontend/src/features/marketplace1/pages/MarketplaceProductDetailPage.tsx
-````typescript
-// src/features/marketplace1/pages/MarketplaceProductDetailPage.tsx
-
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import {
-  FaHeart,
-  FaMapMarkerAlt,
-  FaStar,
-  FaStore,
-  FaShoppingCart,
-  FaShieldAlt,
-} from "react-icons/fa";
-import Button from "@/shared/components/Button/Button";
-import Card from "@/shared/components/Card/Card";
-import { addToCart } from "@/features/cart/utils/cartStorage";
-import {
-  fetchMarketplaceProductById,
-  getProductImage,
-  getProductPrice,
-  getSellerName,
-  saveMarketplaceListing,
-  toDisplayCategory,
-  type MarketplaceProduct,
-} from "../api/marketplace.api";
-
-const MarketplaceProductDetailPage = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [product, setProduct] = useState<MarketplaceProduct | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [saveMessage, setSaveMessage] = useState("");
-  const [cartError, setCartError] = useState("");
-
-  useEffect(() => {
-    let ignore = false;
-
-    const loadProduct = async () => {
-      if (!id) {
-        setError("Product id missing.");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const data = await fetchMarketplaceProductById(id);
-
-        if (!ignore) {
-          setProduct(data);
-        }
-      } catch {
-        if (!ignore) {
-          setError("Product not found.");
-        }
-      } finally {
-        if (!ignore) {
-          setLoading(false);
-        }
-      }
-    };
-
-    void loadProduct();
-
-    return () => {
-      ignore = true;
-    };
-  }, [id]);
-
-  const handleBuyNow = () => {
-    if (!product) return;
-
-    const result = addToCart({
-      productId: product.id,
-      title: product.title,
-      price: getProductPrice(product),
-      image: getProductImage(product),
-      quantity: 1,
-      sellerId: product.sellerId,
-    });
-
-    if (!result.success) {
-      setCartError(result.message);
-      return;
-    }
-
-    navigate("/cart");
-  };
-
-  const handleSave = async () => {
-    if (!product) return;
-
-    try {
-      await saveMarketplaceListing(product.id);
-      setSaveMessage("Listing saved.");
-    } catch {
-      navigate("/login", {
-        state: { redirectTo: `/marketplace/product/${product.id}` },
-      });
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#f7fbfb] p-10">
-        <h1 className="text-2xl font-semibold text-gray-900">
-          Loading product...
-        </h1>
-      </div>
-    );
-  }
-
-  if (!product || error) {
-    return (
-      <div className="min-h-screen bg-[#f7fbfb] p-10">
-        <h1 className="text-2xl font-semibold text-gray-900">
-          {error || "Product not found"}
-        </h1>
-      </div>
-    );
-  }
-
-  const image = getProductImage(product);
-  const price = getProductPrice(product);
-  const seller = getSellerName(product);
-  const displayCategory = toDisplayCategory(product.category);
-
-  return (
-    <main className="min-h-screen bg-[#f7fbfb] px-5 py-8 lg:px-12">
-      <p className="mb-5 text-sm text-gray-500">
-        Marketplace / {displayCategory} / {product.title}
-      </p>
-
-      <div className="grid gap-6 lg:grid-cols-[1fr_430px]">
-        <Card className="overflow-hidden p-0">
-          <div className="h-[520px] bg-white">
-            <img
-              src={image}
-              alt={product.title}
-              className="h-full w-full object-cover"
-            />
-          </div>
-        </Card>
-
-        <Card>
-          <span className="rounded-full bg-[#178f95]/10 px-3 py-1 text-sm font-semibold text-[#178f95]">
-            {displayCategory}
-          </span>
-
-          <h1 className="mt-4 text-3xl font-extrabold text-[#07182c]">
-            {product.title}
-          </h1>
-
-          <div className="mt-4 flex items-center gap-2">
-            <FaStar className="text-yellow-400" />
-            <span className="font-semibold text-gray-700">
-              New
-            </span>
-            <span className="text-gray-500">Active marketplace listing</span>
-          </div>
-
-          <p className="mt-6 text-3xl font-extrabold text-[#07182c]">
-            PKR {price.toLocaleString()}
-          </p>
-
-          <p className="mt-5 leading-7 text-gray-600">
-            {product.description || "No description provided."}
-          </p>
-
-          <div className="mt-6 space-y-3 text-sm text-gray-600">
-            <p className="flex items-center gap-2">
-              <FaStore className="text-[#178f95]" />
-              Seller: {seller}
-            </p>
-
-            <p className="flex items-center gap-2">
-              <FaMapMarkerAlt className="text-[#178f95]" />
-              Location: {product.location || product.seller?.city || "Pakistan"}
-            </p>
-
-            <p className="flex items-center gap-2">
-              <FaShieldAlt className="text-[#178f95]" />
-              Verified seller product
-            </p>
-          </div>
-
-          <p className="mt-5 text-sm font-medium text-green-600">
-            In Stock{" "}
-            <span className="text-gray-500">{product.stock} available</span>
-          </p>
-
-          <div className="mt-7 grid grid-cols-2 gap-3">
-            <Button className="gap-2" onClick={handleBuyNow}>
-              <FaShoppingCart />
-              Add to Cart
-            </Button>
-
-            <Button variant="outline" className="gap-2" onClick={handleSave}>
-              <FaHeart />
-              Save Listing
-            </Button>
-          </div>
-
-          {cartError && (
-            <p className="mt-3 rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-600">
-              {cartError}
-            </p>
-          )}
-
-          {saveMessage && (
-            <p className="mt-3 rounded-lg bg-green-50 px-4 py-2 text-sm font-medium text-green-700">
-              {saveMessage}
-            </p>
-          )}
-
-          <Button variant="outline" className="mt-3 w-full">
-            Message Seller
-          </Button>
-        </Card>
-      </div>
-    </main>
-  );
-};
-
-export default MarketplaceProductDetailPage;
-````
-
 ## File: Frontend/src/features/Pet Owner/pet details/schemas/petIssueReport.schema.ts
 ````typescript
 import { z } from "zod";
@@ -15182,66 +14510,6 @@ export const petIssueReportSchema = z.object({
 });
 
 export type PetIssueReportFormData = z.infer<typeof petIssueReportSchema>;
-````
-
-## File: Frontend/src/features/Pet Owner/pet profile/api/pets.api.ts
-````typescript
-import { api } from "@/features/api interface/axios.interface";
-
-import type { PetFormData } from "../schemas/pet.schema";
-
-import type {
-  PetResponse,
-  PetsResponse,
-} from "../types/petProfile.types";
-
-export const getMyPetsApi = async (): Promise<PetsResponse> => {
-  const response = await api.get<PetsResponse>("/petOwner/my-pets");
-
-  return response.data;
-};
-
-export const getPetByIdApi = async (
-  petId: string,
-): Promise<PetResponse> => {
-  const response = await api.get<PetResponse>(`/pets/${petId}`);
-
-  return response.data;
-};
-
-export const createPetApi = async (
-  payload: PetFormData,
-): Promise<PetResponse> => {
-  const response = await api.post<PetResponse>("/pets", payload);
-
-  return response.data;
-};
-
-export const updatePetApi = async (
-  petId: string,
-  payload: PetFormData,
-): Promise<PetResponse> => {
-  const response = await api.patch<PetResponse>(
-    `/pets/${petId}`,
-    payload,
-  );
-
-  return response.data;
-};
-
-export const deletePetApi = async (
-  petId: string,
-): Promise<{
-  success: boolean;
-  message: string;
-}> => {
-  const response = await api.delete<{
-    success: boolean;
-    message: string;
-  }>(`/pets/${petId}`);
-
-  return response.data;
-};
 ````
 
 ## File: Frontend/src/features/Pet Owner/pet profile/components/DeletePetModal.tsx
@@ -15526,113 +14794,6 @@ const PetProfileCard = ({
 export default PetProfileCard;
 ````
 
-## File: Frontend/src/features/Pet Owner/pet profile/types/petProfile.types.ts
-````typescript
-import type { InputHTMLAttributes, ReactNode } from "react";
-import type { PetOwnerProfileFormData } from "../schemas/petOwnerProfile.schema";
-
-export type PetCategory = "DOG" | "CAT" | "REPTILE" | "OTHER";
-
-export type PetPicture = {
-  publicUrl: string;
-};
-
-export type PetOwnerProfile = {
-  id: string;
-  fullName: string;
-  username: string;
-  email: string;
-  phone: string;
-  profileImageUrl: string;
-};
-
-export type Pet = {
-  id: string;
-  petOwnerId?: string;
-  name: string;
-  age: number | string;
-  breed: string;
-  category: PetCategory;
-  petPictures: PetPicture[];
-};
-
-export type PetOwnerProfileResponse = {
-  success: boolean;
-  message: string;
-  data: PetOwnerProfile;
-};
-
-export type UpdatePetOwnerProfilePayload = {
-  fullName: string;
-  username: string;
-  phone?: string;
-  profileImage?: File | null;
-  profileImageUrl?: string;
-};
-
-export type PetsResponse = {
-  success: boolean;
-  message: string;
-  data: Pet[];
-};
-
-export type PetResponse = {
-  success: boolean;
-  message: string;
-  data: Pet;
-};
-
-export type EditPetOwnerProfileModalProps = {
-  profile: PetOwnerProfile;
-  isSaving: boolean;
-  error?: string;
-  onCancel: () => void;
-  onSubmit: (data: PetOwnerProfileFormData) => void;
-};
-
-export type PetOwnerProfileFieldProps = {
-  label: string;
-  error?: string;
-  inputProps: InputHTMLAttributes<HTMLInputElement>;
-};
-
-export type PetActionsMenuProps = {
-  petName: string;
-  onEdit: () => void;
-  onDelete: () => void;
-};
-
-export type MyPetsSectionProps = {
-  pets: Pet[];
-  onAddPet: () => void;
-  onEditPet: (petId: string) => void;
-  onDeletePet: (pet: Pet) => void;
-  onBookAppointment: (petId: string) => void;
-};
-
-export type PetProfileCardProps = {
-  pet: Pet;
-  onEdit: (petId: string) => void;
-  onDelete: (pet: Pet) => void;
-  onBookAppointment: (petId: string) => void;
-};
-
-export type PetOwnerProfileHeaderProps = {
-  profile: PetOwnerProfile;
-  onEditProfile: () => void;
-};
-
-export type ProfileMetaProps = {
-  icon: ReactNode;
-  value: string;
-};
-
-export interface PetFormProps {
-  onSubmitSuccess?: (newPet: PetResponse) => void;
-  onCancel?: () => void;
-}
-````
-
 ## File: Frontend/src/features/Pet Owner/SelectPet/components/ExistingPetCard.tsx
 ````typescript
 import {
@@ -15821,86 +14982,6 @@ export type ExistingPetCardProps = {
   pet: ExistingPet;
   onSelect: (pet: ExistingPet) => void;
 };
-````
-
-## File: Frontend/src/features/PetOwnerDashboard/api/petOwnerDashboard.api.ts
-````typescript
-import {api} from "@/features/api interface/axios.interface";
-
-import type {
-  PetOwnerDashboardResponse,
-} from "../types/petOwnerDashboard.types";
-
-export const getPetOwnerDashboardApi =
-  async (): Promise<PetOwnerDashboardResponse> => {
-    const response =
-      await api.get<PetOwnerDashboardResponse>(
-        "/pet-owner/dashboard",
-      );
-
-    return response.data;
-  };
-````
-
-## File: Frontend/src/features/PetOwnerDashboard/components/DashboardHeader.tsx
-````typescript
-import { Bell } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-
-import type {
-  DashboardHeaderProps,
-} from "../types/petOwnerDashboard.types";
-
-const DashboardHeader = ({
-  user,
-}: DashboardHeaderProps) => {
-  const navigate = useNavigate();
-  const firstName =
-    user.fullName.split(" ")[0] || user.fullName;
-
-  return (
-    <header className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-      <div>
-        <h1 className="text-3xl font-black tracking-[-0.04em] text-[#101b3d]">
-          Hi, {firstName}!
-        </h1>
-
-        <p className="mt-2 text-sm font-medium text-slate-500">
-          Here&apos;s what&apos;s happening with your pets today.
-        </p>
-      </div>
-
-      <div className="flex items-center gap-4">
-        <button
-          type="button"
-          aria-label="Notifications"
-          className="relative flex h-11 w-11 items-center justify-center rounded-full text-[#101b3d] transition hover:bg-slate-100"
-        >
-          <Bell size={23} />
-
-          <span className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-black text-white">
-            3
-          </span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => navigate("/pet-owner/profile")}
-          className="flex h-12 w-12 overflow-hidden rounded-full bg-[#EAF7F5] transition hover:ring-4 hover:ring-[#078b91]/10"
-          aria-label="Open pet owner profile"
-        >
-          <img
-            src={user.profileImageUrl}
-            alt={user.fullName}
-            className="h-full w-full object-cover"
-          />
-        </button>
-      </div>
-    </header>
-  );
-};
-
-export default DashboardHeader;
 ````
 
 ## File: Frontend/src/features/PetOwnerDashboard/components/DashboardStats.tsx
@@ -16371,107 +15452,106 @@ const UpcomingAppointments = ({
   const navigate = useNavigate();
 
   return (
-    // <Card className="p-5">
-    //   <div className="flex items-center justify-between gap-3">
-    //     <h2 className="text-xl font-black text-[#101b3d]">
-    //       Upcoming Appointments
-    //     </h2>
+    <Card className="p-5">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-xl font-black text-[#101b3d]">
+          Upcoming Appointments
+        </h2>
 
-    //     <button
-    //       type="button"
-    //       onClick={() =>
-    //         navigate("/pet-owner/appointments")
-    //       }
-    //       className="flex items-center gap-2 text-sm font-black text-[#078b91]"
-    //     >
-    //       View All
-    //       <ArrowRight size={17} />
-    //     </button>
-    //   </div>
+        <button
+          type="button"
+          onClick={() =>
+            navigate("/pet-owner/appointments")
+          }
+          className="flex items-center gap-2 text-sm font-black text-[#078b91]"
+        >
+          View All
+          <ArrowRight size={17} />
+        </button>
+      </div>
 
-    //   <div className="mt-5 space-y-3">
-    //     {appointments.length === 0 ? (
-    //       <div className="rounded-2xl border border-dashed border-slate-300 px-5 py-10 text-center">
-    //         <p className="text-sm font-bold text-slate-500">
-    //           No upcoming appointments.
-    //         </p>
-    //       </div>
-    //     ) : (
-    //       appointments.slice(0, 2).map((appointment, index) => (
-    //         <button
-    //           key={appointment.id}
-    //           type="button"
-    //           onClick={() =>
-    //             navigate(
-    //               `/pet-owner/appointments/${appointment.id}`,
-    //             )
-    //           }
-    //           className="flex w-full items-start gap-4 rounded-2xl border border-slate-200 p-4 text-left transition hover:border-[#078b91]/30 hover:bg-[#F8FCFB]"
-    //         >
-    //           <div className="h-14 w-14 shrink-0 overflow-hidden rounded-full bg-[#EAF7F5]">
-    //             <img
-    //               src={petImages[index % petImages.length]}
-    //               alt={appointment.petName}
-    //               className="h-full w-full object-cover"
-    //             />
-    //           </div>
+      <div className="mt-5 space-y-3">
+        {appointments.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-slate-300 px-5 py-10 text-center">
+            <p className="text-sm font-bold text-slate-500">
+              No upcoming appointments.
+            </p>
+          </div>
+        ) : (
+          appointments.slice(0, 2).map((appointment, index) => (
+            <button
+              key={appointment.id}
+              type="button"
+              onClick={() =>
+                navigate(
+                  `/pet-owner/appointments/${appointment.id}`,
+                )
+              }
+              className="flex w-full items-start gap-4 rounded-2xl border border-slate-200 p-4 text-left transition hover:border-[#078b91]/30 hover:bg-[#F8FCFB]"
+            >
+              <div className="h-14 w-14 shrink-0 overflow-hidden rounded-full bg-[#EAF7F5]">
+                <img
+                  src={petImages[index % petImages.length]}
+                  alt={appointment.petName}
+                  className="h-full w-full object-cover"
+                />
+              </div>
 
-    //           <div className="min-w-0 flex-1">
-    //             <div className="flex items-start justify-between gap-3">
-    //               <div>
-    //                 <h3 className="font-black text-[#101b3d]">
-    //                   {appointment.petName}
-    //                 </h3>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="font-black text-[#101b3d]">
+                      {appointment.petName}
+                    </h3>
 
-    //                 <p className="mt-1 text-sm font-semibold text-slate-600">
-    //                   {appointment.doctorName}
-    //                 </p>
-    //               </div>
+                    <p className="mt-1 text-sm font-semibold text-slate-600">
+                      {appointment.doctorName}
+                    </p>
+                  </div>
 
-    //               <span className="rounded-lg bg-[#EAF7F5] px-3 py-1 text-xs font-black text-[#078b91]">
-    //                 {appointment.appointmentType}
-    //               </span>
-    //             </div>
+                  <span className="rounded-lg bg-[#EAF7F5] px-3 py-1 text-xs font-black text-[#078b91]">
+                    {appointment.appointmentType}
+                  </span>
+                </div>
 
-    //             <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-xs font-semibold text-slate-500">
-    //               <span className="flex items-center gap-2">
-    //                 <CalendarDays size={14} />
-    //                 {formatDate(appointment.checkupTime)}
-    //               </span>
+                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-xs font-semibold text-slate-500">
+                  <span className="flex items-center gap-2">
+                    <CalendarDays size={14} />
+                    {formatDate(appointment.checkupTime)}
+                  </span>
 
-    //               <span className="flex items-center gap-2">
-    //                 <Clock3 size={14} />
-    //                 {formatTime(appointment.checkupTime)}
-    //               </span>
+                  <span className="flex items-center gap-2">
+                    <Clock3 size={14} />
+                    {formatTime(appointment.checkupTime)}
+                  </span>
 
-    //               <span className="flex items-center gap-2">
-    //                 <MapPin size={14} />
-    //                 {appointment.clinicAddress}
-    //               </span>
-    //             </div>
-    //           </div>
+                  <span className="flex items-center gap-2">
+                    <MapPin size={14} />
+                    {appointment.clinicAddress}
+                  </span>
+                </div>
+              </div>
 
-    //           <ArrowRight
-    //             size={18}
-    //             className="mt-5 shrink-0 text-[#078b91]"
-    //           />
-    //         </button>
-    //       ))
-    //     )}
-    //   </div>
+              <ArrowRight
+                size={18}
+                className="mt-5 shrink-0 text-[#078b91]"
+              />
+            </button>
+          ))
+        )}
+      </div>
 
-    //   <button
-    //     type="button"
-    //     onClick={() =>
-    //       navigate("/pet-owner/appointments")
-    //     }
-    //     className="mt-5 flex items-center gap-2 text-sm font-black text-[#078b91]"
-    //   >
-    //     View All Appointments
-    //     <ArrowRight size={17} />
-    //   </button>
-    // </Card>
-    <p>Hello</p>
+      <button
+        type="button"
+        onClick={() =>
+          navigate("/pet-owner/appointments")
+        }
+        className="mt-5 flex items-center gap-2 text-sm font-black text-[#078b91]"
+      >
+        View All Appointments
+        <ArrowRight size={17} />
+      </button>
+    </Card>
   );
 };
 
@@ -16555,155 +15635,115 @@ export const dashboardData: PetOwnerDashboardData = {
 };
 ````
 
-## File: Frontend/src/features/PetOwnerDashboard/pages/PetOwnerDashboardPage.tsx
+## File: Frontend/src/features/seller/api/seller.api.ts
 ````typescript
-import DashboardBanner from "../components/DashboardBanner";
-import DashboardHeader from "../components/DashboardHeader";
-import DashboardSidebar from "../components/DashboardSidebar";
-import DashboardStats from "../components/DashboardStats";
-import MyPetsPreview from "../components/MyPetsPreview";
-import QuickActions from "../components/QuickActions";
-import UpcomingAppointments from "../components/UpcomingAppointments";
+import { api } from "@/features/api interface/axios.interface";
+import type { MarketplaceProduct } from "@/features/marketplace1/api/marketplace.api";
+import type { SellerProfile } from "../types/seller.types";
 
-import { dashboardData } from "../data/dashboard.data";
+export type SellerProductPayload = {
+  title: string;
+  description?: string;
+  category: string;
+  status?: string;
+  price: number;
+  stock: number;
+  location?: string;
+  images?: Array<{
+    publicUrl: string;
+    publicId?: string;
+  }>;
+};
 
-const PetOwnerDashboardPage = () => {
-  return (
-    <main className="min-h-screen bg-[#F8FAFA] text-[#20263D]">
-      <DashboardSidebar />
+export type SellerOrder = {
+  id: string;
+  orderNumber: string;
+  status: string;
+  totalAmount: string | number;
+  createdAt: string;
+  buyer?: {
+    fullName?: string | null;
+    email?: string | null;
+  };
+  items: Array<{
+    quantity: number;
+    product: MarketplaceProduct;
+  }>;
+};
 
-      <section className="min-h-screen px-4 py-6 sm:px-6 lg:ml-[260px] lg:px-8">
-        <div className="mx-auto max-w-[1500px]">
-          <DashboardHeader user={dashboardData.user} />
-
-          <DashboardStats counts={dashboardData.counts} />
-
-          <section className="mt-5 grid gap-5 2xl:grid-cols-[minmax(0,1fr)_390px]">
-            <MyPetsPreview pets={dashboardData.pets} />
-
-            <UpcomingAppointments
-              appointments={dashboardData.upcomingAppointments}
-            />
-          </section>
-
-          <div className="mt-5">
-            <QuickActions />
-          </div>
-
-          <div className="mt-5">
-            <DashboardBanner />
-          </div>
-        </div>
-      </section>
-    </main>
+export const fetchSellerProducts = async () => {
+  const response = await api.get<{ success: boolean; data: MarketplaceProduct[] }>(
+    "seller/products"
   );
+
+  return response.data.data;
 };
 
-export default PetOwnerDashboardPage;
-````
-
-## File: Frontend/src/features/PetOwnerDashboard/petOwnerDashboard.route.tsx
-````typescript
-import PetOwnerDashboardPage from "./pages/PetOwnerDashboardPage";
-
-export const petOwnerDashboardRoutes = [
-  {
-    path: "/pet-owner/dashboard",
-    element: <PetOwnerDashboardPage />,
-  },
-];
-````
-
-## File: Frontend/src/features/PetOwnerDashboard/types/petOwnerDashboard.types.ts
-````typescript
-import type { ReactNode } from "react";
-
-export type PetCategory = "DOG" | "CAT" | "REPTILE" | "OTHER";
-
-export type Pet = {
-  id: string;
-  petOwnerId: string;
-  name: string;
-  age: number | string;
-  breed: string;
-  category: PetCategory;
+export const fetchMySellerProfileApi = async () => {
+  const response = await api.get<{ success: boolean; data: SellerProfile }>(
+    "seller/profile"
+  );
+  return response.data;
 };
 
-export type AppointmentStatus =
-  | "PENDING"
-  | "COMPLETED"
-  | "CANCELLED";
+export const createSellerProduct = async (payload: SellerProductPayload | FormData) => {
+  const response = await api.post<{ success: boolean; data: MarketplaceProduct }>(
+    "seller/product",
+    payload
+  );
 
-export type DashboardAppointment = {
-  id: string;
-  petId: string;
-  petName: string;
-  doctorId: string;
-  doctorName: string;
-  appointmentType: string;
-  checkupTime: string;
-  clinicAddress: string;
-  status: AppointmentStatus;
+  return response.data.data;
 };
 
-export type DashboardCounts = {
-  totalPets: number;
-  totalAppointments: number;
-  upcomingAppointments: number;
-  completedAppointments: number;
-  cancelledAppointments: number;
-  totalReports: number;
+export const updateSellerProduct = async (
+  productId: string,
+  payload: SellerProductPayload | FormData
+) => {
+  const response = await api.patch<{ success: boolean; data: MarketplaceProduct }>(
+    `seller/product/${productId}`,
+    payload
+  );
+
+  return response.data.data;
 };
 
-export type DashboardUser = {
-  id: string;
-  fullName: string;
-  profileImageUrl: string;
+export const updateSellerProductStock = async (
+  productId: string,
+  stock: number
+) => {
+  const response = await api.patch<{ success: boolean; data: MarketplaceProduct }>(
+    `seller/product/${productId}/stock`,
+    { stock }
+  );
+
+  return response.data.data;
 };
 
-export type PetOwnerDashboardData = {
-  user: DashboardUser;
-  counts: DashboardCounts;
-  pets: Pet[];
-  upcomingAppointments: DashboardAppointment[];
+export const deleteSellerProduct = async (productId: string) => {
+  const response = await api.delete(`seller/product/${productId}`);
+  return response.data;
 };
 
-export type PetOwnerDashboardResponse = {
-  success: boolean;
-  message: string;
-  data: PetOwnerDashboardData;
+export const fetchSellerOrders = async () => {
+  const response = await api.get<{ success: boolean; data: SellerOrder[] }>(
+    "seller/orders"
+  );
+
+  return response.data.data;
 };
 
-export type DashboardHeaderProps = {
-  user: DashboardUser;
-};
 
-export type DashboardStatsProps = {
-  counts: DashboardCounts;
-};
-
-export type StatusCountProps = {
-  label: string;
-  value: number;
-  className?: string;
-};
-
-export type DashboardSidebarItem = {
-  label: string;
-  path: string;
-  icon: ReactNode;
-};
-
-export type UpcomingAppointmentsProps = {
-  appointments: DashboardAppointment[];
-};
-
-export type PetPreviewCardProps = {
-  pet: Pet;
-};
-
-export type MyPetsPreviewProps = {
-  pets: Pet[];
+export const createOrUpdateSellerProfileApi = async (payload: FormData) => {
+  const response = await api.post<{ success: boolean; data: SellerProfile }>(
+    "seller/profile",
+    payload,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+  return response.data;
 };
 ````
 
@@ -16777,67 +15817,56 @@ const ProductPreviewCard = ({
 export default ProductPreviewCard;
 ````
 
-## File: Frontend/src/features/seller/components/SellerSidebar.tsx
+## File: Frontend/src/features/seller/components/SellerHeader.tsx
 ````typescript
-import { NavLink } from "react-router-dom";
-import {
-  FaBox,
-  FaChartPie,
-  FaClipboardList,
-  FaHeart,
-  FaPlusCircle,
-  FaShoppingCart,
-  FaStore,
-  FaUser,
-} from "react-icons/fa";
+import { FaBell, FaChevronDown } from "react-icons/fa";
+import Input from "@/shared/components/Input/Input";
+import Logo from "@/shared/components/Logo/Logo";
 
-const links = [
-  { label: "Dashboard", icon: FaChartPie, path: "/seller/dashboard" },
-  { label: "My Listings", icon: FaClipboardList, path: "/seller/listings" },
-  { label: "Add Product", icon: FaPlusCircle, path: "/seller/add-product" },
-  { label: "Orders", icon: FaShoppingCart, path: "/seller/orders" },
-  { label: "Stock", icon: FaBox, path: "/seller/stock" },
-  { label: "Saved Listings", icon: FaHeart, path: "/seller/saved-listings" },
-  { label: "Marketplace", icon: FaStore, path: "/marketplace1" },
-  { label: "Profile", icon: FaUser, path: "/seller/profile" },
-];
-
-const SellerSidebar = () => {
+const SellerHeader = () => {
   return (
-    <aside className="flex min-h-screen w-64 flex-col border-r border-gray-100 bg-white px-5 py-6">
-      <div className="mb-10">
-        <h2 className="text-xl font-bold text-[#178f95]">Pets Veta</h2>
-        <p className="text-xs text-gray-400">Care. Love. Trust.</p>
+    <header className="flex items-center justify-between border-b border-gray-100 bg-white px-7 py-4">
+      <div className="flex items-center gap-4">
+        <Logo />
+
+        <div>
+          <h1 className="text-lg font-semibold text-gray-900">
+            Welcome back, Furries Store
+          </h1>
+          <p className="text-sm text-gray-500">
+            Here's what's happening with your store today.
+          </p>
+        </div>
       </div>
 
-      <nav className="flex-1 space-y-2">
-        {links.map(({ label, icon: Icon, path }) => (
-          <NavLink
-            key={label}
-            to={path}
-            className={({ isActive }) =>
-              `flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition ${
-                isActive
-                  ? "bg-[#e8f7f7] text-[#178f95]"
-                  : "text-gray-600 hover:bg-gray-50"
-              }`
-            }
-          >
-            <Icon className="text-sm" />
-            {label}
-          </NavLink>
-        ))}
-      </nav>
+      <div className="flex items-center gap-4">
+        <Input placeholder="Search..." className="w-72" />
 
-      <div className="rounded-lg bg-[#178f95] p-4 text-white">
-        <p className="text-sm font-semibold">Need Help?</p>
-        <p className="text-xs opacity-90">Contact Support</p>
+        <button className="relative rounded-full border border-gray-100 p-3 text-gray-600">
+          <FaBell />
+          <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500" />
+        </button>
+
+        <div className="flex items-center gap-3">
+          <img
+            src="https://i.pravatar.cc/80?img=12"
+            alt="seller"
+            className="h-10 w-10 rounded-full object-cover"
+          />
+
+          <div>
+            <p className="text-sm font-semibold text-gray-900">Furries Store</p>
+            <p className="text-xs text-gray-500">Seller</p>
+          </div>
+
+          <FaChevronDown className="text-xs text-gray-500" />
+        </div>
       </div>
-    </aside>
+    </header>
   );
 };
 
-export default SellerSidebar;
+export default SellerHeader;
 ````
 
 ## File: Frontend/src/features/seller/components/SellerStatCard.tsx
@@ -16858,47 +15887,93 @@ const SellerStatCard = ({ title, value, subtitle }: SellerStatCardProps) => {
 export default SellerStatCard;
 ````
 
-## File: Frontend/src/features/seller/seller.routes.tsx
+## File: Frontend/src/features/seller/types/seller.types.ts
 ````typescript
-// src/features/seller/routes/seller.routes.tsx
+import type { MarketplaceProduct } from "@/features/marketplace1/api/marketplace.api";
+import type { SellerOrder } from "../api/seller.api";
 
-import SellerDashboardPage from "../seller/pages/SellerDashboardPage";
-import SellerProductsPage from "../seller/pages/SellerProductsPage";
-import SellerProductFormPage from "../seller/pages/SellerProductFormPage";
-import SellerOrdersStockPage from "../seller/pages/SellerOrdersStockPage";
-import SellerSavedListingsPage from "../seller/pages/SellerSavedListingsPage";
-export const sellerRoutes = [
-  {
-    path: "/seller/dashboard",
-    element: <SellerDashboardPage />,
-  },
-  {
-    path: "/seller/listings",
-    element: <SellerProductsPage />,
-  },
+export type SellerApiError = {
+  response?: {
+    status?: number;
+    data?: {
+      message?: string;
+    };
+  };
+};
+export type SellerProfile = {
+  id: string;
+  userId: string;
+  businessName: string | null;
+  businessAddress: string | null;
+  phoneNumber: string | null;
+  city: string | null;
+  storeDescription: string | null;
+  storeLogo: string | null;
+  isActive: boolean;
+  isVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
+  user?: {
+    id: string;
+    fullName: string;
+    username: string;
+    email: string;
+    phone: string | null;
+    profileImageUrl: string | null;
+  };
+  products?: MarketplaceProduct[];
+};
 
-   {
-    path: "/seller/add-product",
-    element: <SellerProductFormPage />,
-  },
-  {
-    path: "/seller/edit-product/:id",
-    element: <SellerProductFormPage />,
-  },
+export type SellerProfileResponse = {
+  success: boolean;
+  data: SellerProfile;
+};
+export type ProductPreviewCardProps = {
+  image: string;
+  title: string;
+  category: string;
+  price: string;
+  stock: string;
+  location: string;
+  description: string;
+  status: string;
+};
 
-   {
-    path: "/seller/orders",
-    element: <SellerOrdersStockPage />,
-  },
-  {
-    path: "/seller/stock",
-    element: <SellerOrdersStockPage />,
-  },
-  {
-    path: "/seller/saved-listings",
-    element: <SellerSavedListingsPage />,
-  },
-];
+export type ProductImageUploadProps = {
+  previews: string[];
+  onImageChange: (files: File[]) => void;
+};
+
+export type ProductCardProps = {
+  product: MarketplaceProduct;
+  onEdit: () => void;
+  onDelete: () => void;
+  onView: () => void;
+};
+
+export type OrdersTableProps = {
+  orders: SellerOrder[];
+};
+
+export type StockTableProps = {
+  products: MarketplaceProduct[];
+  onStockChange: (productId: string, stock: number) => void;
+};
+
+export type RecentOrdersProps = {
+  orders: SellerOrder[];
+  onViewAll: () => void;
+};
+
+export type StockOverviewProps = {
+  products: MarketplaceProduct[];
+};
+
+export type SellerStatCardProps = {
+  title: string;
+  value: string;
+  subtitle: string;
+};
 ````
 
 ## File: Frontend/src/features/Services/components/ServiceCard.tsx
@@ -16940,63 +16015,100 @@ const ServiceCard = ({
 export default ServiceCard;
 ````
 
+## File: Frontend/src/features/Services/components/ServicesHero.tsx
+````typescript
+import {
+    FaPaw,
+    FaShieldAlt,
+    FaStethoscope,
+} from "react-icons/fa";
+
+const ServicesHero = () => {
+    return (
+        <section className="mt-20 bg-gradient-to-br from-[#f5fbff] via-white to-[#d9f7f6] px-5 py-16 lg:px-16">
+            <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-2">
+                <div>
+                    <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-[#009f9d] shadow-sm">
+                        <FaPaw />
+                        PetsVeta Services
+                    </div>
+
+                    <h1 className="max-w-3xl text-4xl font-extrabold leading-tight text-[#07182c] md:text-5xl">
+                        Complete pet-care services for healthier and happier pets.
+                    </h1>
+
+                    <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600">
+                        Explore professional veterinary care, grooming, vaccinations,
+                        emergency support and AI-powered pet assistance in one platform.
+                    </p>
+
+                    <div className="mt-7 flex flex-wrap gap-3">
+                        <span className="flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-[#07182c] shadow-sm">
+                            <FaShieldAlt className="text-[#009f9d]" />
+                            Trusted Care
+                        </span>
+
+                        <span className="flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-[#07182c] shadow-sm">
+                            <FaStethoscope className="text-[#009f9d]" />
+                            Verified Doctors
+                        </span>
+                    </div>
+                </div>
+
+                <div className="rounded-[40px] bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.10)]">
+                    <div className="grid gap-5 rounded-[32px] bg-gradient-to-br from-[#bdf0ee] to-[#fff3ec] p-6 sm:grid-cols-2">
+                        <div className="rounded-3xl bg-white p-5 shadow-sm">
+                            <h3 className="text-3xl font-extrabold text-[#009f9d]">
+                                100+
+                            </h3>
+
+                            <p className="mt-1 text-sm font-semibold text-slate-600">
+                                Veterinary Doctors
+                            </p>
+                        </div>
+
+                        <div className="rounded-3xl bg-white p-5 shadow-sm">
+                            <h3 className="text-3xl font-extrabold text-[#009f9d]">
+                                24/7
+                            </h3>
+
+                            <p className="mt-1 text-sm font-semibold text-slate-600">
+                                Emergency Support
+                            </p>
+                        </div>
+
+                        <div className="rounded-3xl bg-white p-5 shadow-sm">
+                            <h3 className="text-3xl font-extrabold text-[#009f9d]">
+                                AI
+                            </h3>
+
+                            <p className="mt-1 text-sm font-semibold text-slate-600">
+                                Smart Assistance
+                            </p>
+                        </div>
+
+                        <div className="rounded-3xl bg-white p-5 shadow-sm">
+                            <h3 className="text-3xl font-extrabold text-[#009f9d]">
+                                10K+
+                            </h3>
+
+                            <p className="mt-1 text-sm font-semibold text-slate-600">
+                                Happy Pet Owners
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    );
+};
+
+export default ServicesHero;
+````
+
 ## File: Frontend/src/features/Services/index.tsx
 ````typescript
 export { default as servicesRoutes } from "./service.route";
-````
-
-## File: Frontend/src/Global Provider/SmoothScroller.tsx
-````typescript
-import { useEffect } from "react";
-import Lenis from "@studio-freight/lenis";
-
-export default function SmoothScroll({ children }: { children: React.ReactNode }) {
-    useEffect(() => {
-        const lenis = new Lenis({
-            duration: 0.9,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            orientation: "vertical",
-            gestureOrientation: "vertical",
-            smoothWheel: true,
-            wheelMultiplier: 0.95,
-            touchMultiplier: 1.5,
-            infinite: false,
-            syncTouch: false,
-        });
-
-        // 1. Function to instantly snap Lenis to the top
-        const handleScrollToTop = () => {
-            lenis.scrollTo(0, { immediate: true });
-        };
-
-        // 2. Listen to browser navigation history changes natively
-        window.addEventListener("popstate", handleScrollToTop);
-
-        // 3. Patch the standard history pushState to catch programmatic route clicks
-        const originalPushState = history.pushState;
-        history.pushState = function (...args) {
-            originalPushState.apply(this, args);
-            handleScrollToTop(); // Trigger scroll up when a new page is pushed
-        };
-
-        let rafId: number;
-        function raf(time: number) {
-            lenis.raf(time);
-            rafId = requestAnimationFrame(raf);
-        }
-
-        rafId = requestAnimationFrame(raf);
-
-        return () => {
-            lenis.destroy();
-            cancelAnimationFrame(rafId);
-            window.removeEventListener("popstate", handleScrollToTop);
-            history.pushState = originalPushState; // Restore native behavior on cleanup
-        };
-    }, []);
-
-    return <>{children}</>;
-}
 ````
 
 ## File: Frontend/src/ProtectedRoutes/DoctorProtectedRoutes.tsx
@@ -17019,6 +16131,81 @@ export const DoctorProtectedRoute = ({ children }: { children: React.ReactNode }
     }
     return children;
 }
+````
+
+## File: Frontend/src/ProtectedRoutes/PetOwnerProtectedRoutes.tsx
+````typescript
+import { useAuth } from "@/features/Auth/hooks/authhook";
+import Notfound from "@/shared/components/Notfound/Notfound";
+import type React from "react";
+import { Navigate } from "react-router-dom";
+
+export const PetOwnerProtectedRoutes = ({ children }: { children: React.ReactNode }) => {
+    const { isAuthenticatedUser, isLoading, user } = useAuth();
+
+    if (isLoading) {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-[#F8FAFA]">
+                <div className="flex flex-col items-center gap-2">
+                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#078b91] border-t-transparent" />
+                    <p className="text-sm font-semibold text-slate-500">Checking authorization status...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!isAuthenticatedUser) {
+        return <Navigate to="/login" replace />;
+    }
+
+    // Safely verify if the active session is a registered Pet Owner
+    if (!user?.data?.role?.includes("PetOwner")) {
+        return <Notfound />;
+    }
+
+    return <>{children}</>;
+};
+````
+
+## File: Frontend/src/shared/components/BackButton/FloatingBackButton.tsx
+````typescript
+import { ArrowLeft } from "lucide-react";
+
+const getParentPath = () => {
+  const pathParts = window.location.pathname.split("/").filter(Boolean);
+
+  if (pathParts.length <= 1) {
+    return "/";
+  }
+
+  return `/${pathParts.slice(0, -1).join("/")}`;
+};
+
+const FloatingBackButton = () => {
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      window.history.back();
+      return;
+    }
+
+    window.location.href = getParentPath();
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleBack}
+      aria-label="Go back"
+      title="Go back"
+      className="fixed left-5 top-24 z-[80] inline-flex items-center gap-2 rounded-full border border-[#d8eeee] bg-white px-4 py-2 text-sm font-semibold text-[#078b91] shadow-sm transition hover:border-[#078b91] hover:bg-[#f2fbfa]"
+    >
+      <ArrowLeft size={17} />
+      Back
+    </button>
+  );
+};
+
+export default FloatingBackButton;
 ````
 
 ## File: Frontend/src/shared/components/Footer/Footer.tsx
@@ -17235,19 +16422,6 @@ const Input = ({
 };
 
 export default Input;
-````
-
-## File: Frontend/src/shared/components/Notfound/Notfound.tsx
-````typescript
-const Notfound = () => {
-  return (
-    <div>
-      <h2>Notfound</h2>
-    </div>
-  );
-};
-
-export default Notfound;
 ````
 
 ## File: Frontend/src/shared/components/SearchBar/SearchBar.tsx
@@ -17501,85 +16675,678 @@ module.exports = {
 }
 ````
 
-## File: Backend/app/routes/auth.routes.js
+## File: Backend/app/services/stripe.service.js
 ````javascript
-const express = require('express');
-const Router = express.Router();
-const authController = require('../controllers/auth.controller');
-const authMiddleware = require('../middleware/auth.middleware');
-const upload = require('../config/multer.config');
-const { authLimiter } = require('../middleware/rateLimiter');
-const { validateRequest } = require('../middleware/zod.middleware')
-const { doctorSchema, petOwnerSchema, loginSchema, resetPasswordSchema, forgotPasswordSchema } = require('../schema/zod.schema')
+const { stripe } = require("../config/stripe");
+const prisma = require("../config/prisma");
+const AppError = require("../utils/AppError");
 
-Router
-    .route('/me')
-    .get(authMiddleware.protect, authController.verifyUser)
+const {
+  PaymentStatus,
+  AppointmentStatus,
+  ScheduleStatus,
+} = require("@prisma/client");
 
-Router
-    .route('/google/url')
-    .get(authLimiter, authController.getGoogleUrlController)
+const createAppointmentPaymentIntent = async ({ appointmentId, petOwnerId }) => {
+  if (!appointmentId || !petOwnerId) {
+    throw new AppError("Appointment ID or user ID is missing", 400);
+  }
 
-Router
-    .route('/google/callback')
-    .get(authLimiter, authController.handleGoogleCallbackController)
+  const appointment = await prisma.appointment.findFirst({
+    where: {
+      id: appointmentId,
+      petOwnerId,
+    },
+    include: {
+      doctor: {
+        include: {
+          user: {
+            select: {
+              fullName: true,
+            },
+          },
+        },
+      },
+      doctorSchedule: true,
+      payment: true,
+    },
+  });
 
-Router
-    .route('/register/doctor')
-    .post(upload.single('document'), authController.createDoctorAccount)
+  if (!appointment) {
+    throw new AppError("Appointment not found", 404);
+  }
 
-Router
-    .route('/register/pet-owner')
-    .post(authLimiter, validateRequest(petOwnerSchema), authController.createPetOwnerAccount)
+  if (appointment.status !== AppointmentStatus.PENDING_PAYMENT) {
+    throw new AppError(
+      `Appointment is not ready for payment. Current status is ${appointment.status}`,
+      400
+    );
+  }
 
-Router
-    .route('/register/admin')
-    .post(authLimiter, authController.createAdminAccount)
+  if (appointment.paymentStatus === PaymentStatus.SUCCEEDED) {
+    throw new AppError("Payment is already completed for this appointment", 400);
+  }
 
-Router
-    .route('/login/admin')
-    .post(authLimiter, validateRequest(loginSchema), authController.adminLogin)
+  if (appointment.expiresAt && appointment.expiresAt < new Date()) {
+    throw new AppError(
+      "Appointment hold has expired. Please select slot again.",
+      400
+    );
+  }
 
-Router
-    .route('/login/user')
-    .post(authLimiter, validateRequest(loginSchema), authController.loginUserAccount)
+  if (!appointment.petId) {
+    throw new AppError("Pet is missing from appointment", 400);
+  }
 
-Router
-    .route('/logout/user')
-    .post(authMiddleware.protect, authController.logoutUser)
+  if (!appointment.petIssueReportId) {
+    throw new AppError("Pet issue report is missing from appointment", 400);
+  }
 
-Router
-    .route('/refresh/token')
-    .get(authLimiter, authMiddleware.protectRefresh, authController.refreshTokenController)
+  if (
+    appointment.doctorSchedule.status !== ScheduleStatus.HELD ||
+    appointment.doctorSchedule.lockedByAppointmentId !== appointment.id
+  ) {
+    throw new AppError("This slot is no longer held for this appointment", 400);
+  }
 
-Router
-    .route('/verify/email')
-    .post(authLimiter, authController.verifyUserEmail)
-
-Router
-    .route('/resend/otp')
-    .get(authLimiter, authMiddleware.protectOtp, authController.resendUserOtp)
-
-Router
-    .route('/otp-verification')
-    .post(authLimiter, authMiddleware.protectOtp, authController.verifyOtp)
-
-Router
-    .route('/password-resets')
-    .post(authLimiter, authMiddleware.protectOtp, authController.resetUserPassword)
+  const stripeAmount = appointment.fees * 100;
+  const currency = appointment.currency || "pkr";
 
 
+  if (
+    appointment.payment &&
+    appointment.payment.stripePaymentIntentId &&
+    appointment.payment.stripeClientSecret &&
+    [
+      PaymentStatus.PENDING,
+      PaymentStatus.REQUIRES_PAYMENT_METHOD,
+      PaymentStatus.REQUIRES_ACTION,
+      PaymentStatus.PROCESSING,
+    ].includes(appointment.payment.status)
+  ) {
+    return {
+      appointmentId: appointment.id,
+      paymentId: appointment.payment.id,
+      clientSecret: appointment.payment.stripeClientSecret,
+      amount: appointment.payment.amount,
+      currency: appointment.payment.currency,
+      reused: true,
+    };
+  }
+
+  const metadata = {
+    appointmentId: appointment.id,
+    doctorId: appointment.doctorId,
+    petOwnerId: appointment.petOwnerId,
+    petId: appointment.petId,
+    petIssueReportId: appointment.petIssueReportId,
+    scheduleId: appointment.scheduleId,
+  };
+
+  const paymentIntent = await stripe.paymentIntents.create(
+    {
+      amount: stripeAmount,
+      currency,
+      automatic_payment_methods: {
+        enabled: true,
+      },
+      description: `Veterinary appointment with Dr. ${appointment.doctor?.user?.fullName || "Doctor"
+        }`,
+      metadata,
+    },
+    {
+      idempotencyKey: `appointment-payment-${appointment.id}`,
+    }
+  );
+
+  const payment = await prisma.payment.upsert({
+    where: {
+      appointmentId: appointment.id,
+    },
+    update: {
+      stripePaymentIntentId: paymentIntent.id,
+      stripeClientSecret: paymentIntent.client_secret,
+      amount: stripeAmount,
+      currency,
+      status: PaymentStatus.REQUIRES_PAYMENT_METHOD,
+      metadata,
+    },
+    create: {
+      appointmentId: appointment.id,
+      userId: petOwnerId,
+      stripePaymentIntentId: paymentIntent.id,
+      stripeClientSecret: paymentIntent.client_secret,
+      amount: stripeAmount,
+      currency,
+      status: PaymentStatus.REQUIRES_PAYMENT_METHOD,
+      metadata,
+    },
+  });
+
+  await prisma.appointment.update({
+    where: {
+      id: appointment.id,
+    },
+    data: {
+      paymentStatus: PaymentStatus.REQUIRES_PAYMENT_METHOD,
+    },
+  });
+
+  return {
+    appointmentId: appointment.id,
+    paymentId: payment.id,
+    clientSecret: paymentIntent.client_secret,
+    amount: stripeAmount,
+    currency,
+    reused: false,
+  };
+};
 
 
+const getAppointmentPaymentStatus = async ({ appointmentId, petOwnerId }) => {
+  if (!appointmentId || !petOwnerId) {
+    throw new AppError("Appointment ID or user ID is missing", 400);
+  }
+
+  const appointment = await prisma.appointment.findFirst({
+    where: {
+      id: appointmentId,
+      petOwnerId,
+    },
+    select: {
+      id: true,
+      doctorId: true,
+      petOwnerId: true,
+      petId: true,
+      petIssueReportId: true,
+      scheduleId: true,
+
+      fees: true,
+      currency: true,
+
+      status: true,
+      paymentStatus: true,
+
+      checkupTime: true,
+      expiresAt: true,
+      confirmedAt: true,
+      createdAt: true,
+      updatedAt: true,
+
+      doctor: {
+        select: {
+          id: true,
+          specialization: true,
+          user: {
+            select: {
+              fullName: true,
+              email: true,
+            },
+          },
+        },
+      },
+
+      doctorSchedule: {
+        select: {
+          id: true,
+          status: true,
+          date: true,
+          startTime: true,
+          endTime: true,
+          lockedByAppointmentId: true,
+        },
+      },
+
+      pet: {
+        select: {
+          id: true,
+          name: true,
+          breed: true,
+          category: true,
+        },
+      },
+
+      petIssueReport: {
+        select: {
+          id: true,
+          issue: true,
+          createdAt: true,
+        },
+      },
+
+      payment: {
+        select: {
+          id: true,
+          stripePaymentIntentId: true,
+          stripeChargeId: true,
+          amount: true,
+          currency: true,
+          status: true,
+          receiptUrl: true,
+          failureReason: true,
+          paidAt: true,
+          cancelledAt: true,
+          refundedAt: true,
+        },
+      },
+    },
+  });
+
+  if (!appointment) {
+    throw new AppError("Appointment not found", 404);
+  }
+
+  return appointment;
+};
 
 
+// 💡 Added: Creates a Stripe PaymentIntent specifically for Marketplace Orders
+const createOrderPaymentIntent = async ({ orderId, buyerId }) => {
+  if (!orderId || !buyerId) {
+    throw new AppError("Order ID or user ID is missing", 400);
+  }
 
-module.exports = Router;
+  const order = await prisma.marketplaceOrder.findFirst({
+    where: {
+      id: orderId,
+      buyerId,
+    },
+    include: {
+      seller: true,
+    },
+  });
+
+  if (!order) {
+    throw new AppError("Order not found", 404);
+  }
+
+  if (order.status !== "PENDING") {
+    throw new AppError(
+      `Order is not ready for payment. Current status is ${order.status}`,
+      400
+    );
+  }
+
+  if (order.paymentStatus === PaymentStatus.SUCCEEDED) {
+    throw new AppError("Payment is already completed for this order", 400);
+  }
+
+  // If a Stripe session already exists and is still in a pending state, reuse it
+  if (
+    order.stripePaymentIntentId &&
+    order.stripeClientSecret &&
+    [
+      PaymentStatus.PENDING,
+      PaymentStatus.REQUIRES_PAYMENT_METHOD,
+      PaymentStatus.REQUIRES_ACTION,
+      PaymentStatus.PROCESSING,
+    ].includes(order.paymentStatus)
+  ) {
+    return {
+      orderId: order.id,
+      clientSecret: order.stripeClientSecret,
+      amount: Math.round(Number(order.totalAmount) * 100),
+      currency: "pkr",
+      reused: true,
+    };
+  }
+
+  // Convert decimal total to Stripe cents (int)
+  const stripeAmount = Math.round(Number(order.totalAmount) * 100);
+  const currency = "pkr";
+
+  const metadata = {
+    orderId: order.id,
+    buyerId: order.buyerId,
+    sellerId: order.sellerId,
+    orderNumber: order.orderNumber,
+  };
+
+  const paymentIntent = await stripe.paymentIntents.create(
+    {
+      amount: stripeAmount,
+      currency,
+      automatic_payment_methods: {
+        enabled: true,
+      },
+      description: `Marketplace Purchase: Order #${order.orderNumber} from ${order.seller?.businessName || "Verified Seller"
+        }`,
+      metadata,
+    },
+    {
+      idempotencyKey: `order-payment-intent-${order.id}`,
+    }
+  );
+
+  // Save the Stripe session identifiers to the order record
+  await prisma.marketplaceOrder.update({
+    where: {
+      id: order.id,
+    },
+    data: {
+      stripePaymentIntentId: paymentIntent.id,
+      stripeClientSecret: paymentIntent.client_secret,
+      paymentStatus: PaymentStatus.REQUIRES_PAYMENT_METHOD,
+    },
+  });
+
+  return {
+    orderId: order.id,
+    clientSecret: paymentIntent.client_secret,
+    amount: stripeAmount,
+    currency,
+    reused: false,
+  };
+};
+
+// 💡 Added: Fetches the dynamic transaction status of a marketplace order
+const getOrderPaymentStatus = async ({ orderId, buyerId }) => {
+  if (!orderId || !buyerId) {
+    throw new AppError("Order ID or user ID is missing", 400);
+  }
+
+  const order = await prisma.marketplaceOrder.findFirst({
+    where: {
+      id: orderId,
+      buyerId,
+    },
+    include: {
+      seller: {
+        include: {
+          user: {
+            select: {
+              fullName: true,
+            },
+          },
+        },
+      },
+      items: {
+        include: {
+          product: {
+            include: {
+              images: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!order) {
+    throw new AppError("Order not found", 404);
+  }
+
+  return order;
+};
+module.exports = {
+  createAppointmentPaymentIntent,
+  getAppointmentPaymentStatus,
+  createOrderPaymentIntent, 
+  getOrderPaymentStatus,    
+};
 ````
 
-## File: Backend/app/services/payment.service.js
+## File: Backend/app/utils/auth.utils.js
 ````javascript
+const nodemailer = require('nodemailer');
+const AppError = require('./AppError');
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASSWORD,
+  },
+});
 
+const otpGenerator = () => {
+  const otp = Math.floor(100000 + Math.random() * 900000);
+
+  return otp.toString();
+}
+
+const sendOtp = async (email, otpCode) => {
+  try {
+    const info = await transporter.sendMail({
+      from: 'abdullahsuleman755@gmail.com',
+      to: email,
+      subject: "OTP Code",
+      text: "Your OTP Code", // fallback
+      html: `
+  <body style="margin: 0; padding: 0; background-color: #eaf1ed; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #eaf1ed; padding: 40px 20px;">
+      <tr>
+        <td align="center">
+
+          <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #fdfbf7; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
+
+            <!-- Header -->
+            <tr>
+              <td style="padding: 40px 40px 20px 40px;">
+                <table width="100%">
+                  <tr>
+                    <td width="50%">
+                      <img src="YOUR_LOGO_URL_HERE.png" style="width: 140px;" />
+                      <p style="color: #553e2a; font-size: 13px;">Compassion. Care. Trust.</p>
+                    </td>
+                    <td width="50%" style="text-align: right;">
+                      <img src="YOUR_HEADER_IMAGE_URL_HERE.png" style="width: 200px;" />
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Title -->
+            <tr>
+              <td align="center" style="padding: 20px;">
+                <h1 style="color: #4a3320;">Your OTP Code</h1>
+                <p style="color: #4a3320;">
+                  Use the code below to verify your account
+                </p>
+              </td>
+            </tr>
+
+            <!-- OTP -->
+            <tr>
+              <td align="center" style="padding: 30px;">
+                <div style="background:#faeadd; padding:20px; font-size:40px; font-weight:bold; letter-spacing:10px; color:#5a3f28; border-radius:12px;">
+                  ${otpCode}
+                </div>
+              </td>
+            </tr>
+
+          </table>
+
+        </td>
+      </tr>
+    </table>
+
+  </body>
+  `,
+    });
+
+    console.log("Message sent: %s", info.messageId);
+
+
+    return info;
+
+  } catch (err) {
+    console.error("Error while sending mail:", err);
+
+    throw new AppError(`Error is Sending Mail to ${email} ${error.message}`);
+  }
+}
+
+const sendStatusEmail = async (email, status) => {
+  const isApproved = status.toLowerCase() === 'approved';
+
+  // Dynamic branding configuration based on approval/rejection status
+  const config = {
+    subject: isApproved ? " Welcome to the Pack! Your Application is Approved" : "Update Regarding Your Application",
+    title: isApproved ? "Application Approved!" : "Application Status Update",
+    accentColor: isApproved ? "#2e7d32" : "#d32f2f",
+    bgColor: isApproved ? "#e8f5e9" : "#ffebee",
+    messageHtml: isApproved
+      ? `We are absolutely thrilled to welcome you to the family! Our team has verified your credentials, and your profile is now live. Let's make the world a happier, healthier place for our furry friends together! 🐾`
+      : `Thank you for taking the time to apply with us. After a careful review of your profile, we regret to inform you that we cannot approve your application at this time. We sincerely appreciate your love and dedication to pet care. 🐾`,
+    badgeText: isApproved ? "APPROVED" : "NOT APPROVED"
+  };
+
+  try {
+    const info = await transporter.sendMail({
+      from: 'abdullahsuleman755@gmail.com',
+      to: email,
+      subject: config.subject,
+      text: isApproved ? "Your application has been approved." : "Your application has been rejected.", // Fallback
+      html: `
+      <body style="margin: 0; padding: 0; background-color: #eaf1ed; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #eaf1ed; padding: 40px 20px;">
+          <tr>
+            <td align="center">
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #fdfbf7; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
+                
+                <tr>
+                  <td style="padding: 40px 40px 20px 40px;">
+                    <table width="100%">
+                      <tr>
+                        <td width="50%">
+                          <img src="YOUR_LOGO_URL_HERE.png" style="width: 140px;" alt="Logo" />
+                          <p style="color: #553e2a; font-size: 13px; margin: 5px 0 0 0;">Compassion. Care. Trust.</p>
+                        </td>
+                        <td width="50%" style="text-align: right;">
+                          <img src="YOUR_HEADER_IMAGE_URL_HERE.png" style="width: 200px;" alt="Pets Veta Header" />
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="padding: 20px 40px; text-align: center;">
+                    <h1 style="color: #4a3320; font-size: 28px; margin-bottom: 10px;">${config.title}</h1>
+                    <p style="color: #5a4b3e; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
+                      ${config.messageHtml}
+                    </p>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td align="center" style="padding-bottom: 50px;">
+                    <div style="background: ${config.bgColor}; max-width: 200px; padding: 15px 25px; font-size: 18px; font-weight: bold; letter-spacing: 2px; color: ${config.accentColor}; border: 2px solid ${config.accentColor}; border-radius: 12px; text-align: center;">
+                      ${config.badgeText}
+                    </div>
+                  </td>
+                </tr>
+
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+      `,
+    });
+
+    console.log("Status email sent successfully: %s", info.messageId);
+    return info;
+
+  } catch (err) {
+    console.error("Error sending status email:", err);
+    throw err;
+  }
+};
+
+module.exports = {
+  otpGenerator,
+  sendOtp,
+  sendStatusEmail
+}
+````
+
+## File: Frontend/src/features/About/components/AboutHero.tsx
+````typescript
+import { FaPaw, FaShieldAlt, FaUserMd } from "react-icons/fa";
+
+const AboutHero = () => {
+  return (
+    <section className="mt-20 bg-gradient-to-br from-[#f5fbff] via-white to-[#d9f7f6] px-5 py-16 lg:px-16">
+      <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-2">
+        <div>
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-[#009f9d] shadow-sm">
+            <FaPaw />
+            About PetsVeta
+          </div>
+
+          <h1 className="text-4xl font-extrabold leading-tight text-[#07182c] md:text-5xl">
+            Trusted pet care, marketplace and veterinary support in one place.
+          </h1>
+
+          <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600">
+            PetsVeta is designed to help pet owners find verified doctors,
+            quality pet products, reliable services and smart AI assistance for
+            better pet care.
+          </p>
+
+          <div className="mt-7 flex flex-wrap gap-3">
+            <span className="flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-[#07182c] shadow-sm">
+              <FaShieldAlt className="text-[#009f9d]" />
+              Verified Doctors
+            </span>
+
+            <span className="flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-[#07182c] shadow-sm">
+              <FaUserMd className="text-[#009f9d]" />
+              Smart Pet Care
+            </span>
+          </div>
+        </div>
+
+        <div className="rounded-[40px] bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.10)]">
+          <div className="rounded-[32px] bg-gradient-to-br from-[#bdf0ee] to-[#fff3ec] p-8">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="rounded-3xl bg-white p-5 shadow-sm">
+                <h3 className="text-3xl font-extrabold text-[#009f9d]">
+                  100+
+                </h3>
+                <p className="mt-1 text-sm font-semibold text-slate-600">
+                  Verified Doctors
+                </p>
+              </div>
+
+              <div className="rounded-3xl bg-white p-5 shadow-sm">
+                <h3 className="text-3xl font-extrabold text-[#009f9d]">
+                  10K+
+                </h3>
+                <p className="mt-1 text-sm font-semibold text-slate-600">
+                  Pet Owners
+                </p>
+              </div>
+
+              <div className="rounded-3xl bg-white p-5 shadow-sm">
+                <h3 className="text-3xl font-extrabold text-[#009f9d]">
+                  24/7
+                </h3>
+                <p className="mt-1 text-sm font-semibold text-slate-600">
+                  Pet Support
+                </p>
+              </div>
+
+              <div className="rounded-3xl bg-white p-5 shadow-sm">
+                <h3 className="text-3xl font-extrabold text-[#009f9d]">
+                  4.8
+                </h3>
+                <p className="mt-1 text-sm font-semibold text-slate-600">
+                  Average Rating
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default AboutHero;
 ````
 
 ## File: Frontend/src/features/Admin/apis/adminlogin.api.ts
@@ -18405,179 +18172,191 @@ export default function VerifyOtpForm() {
 }
 ````
 
-## File: Frontend/src/features/cart/pages/CheckoutPage.tsx
+## File: Frontend/src/features/Auth/Context/auth.context.tsx
 ````typescript
-import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useState, createContext, useEffect } from 'react'
+import { type ApiResponse, verifyUser } from '../api/loginuser.api';
+import type {
+    AuthContextProviderProps,
+    AuthContextType,
+} from "../types/auth.types";
+
+
+export const AuthContext = createContext<AuthContextType | null>(null);
+
+export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
+
+    const [isAuthenticatedUser, setIsAuthenticateUser] = useState<boolean>(false);
+    const [user, setUser] = useState<ApiResponse | undefined>(undefined);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+
+    useEffect(() => {
+        const veirfyAuthenticatedUser = async () => {
+            try {
+                setIsLoading(true);
+                const response = await verifyUser();
+                console.log("Auth Context working....", response)
+
+                if (response.success) {
+                    setUser(response);
+                    setIsAuthenticateUser(true);
+                } else {
+                    setIsAuthenticateUser(false);
+                    setUser(undefined);
+                }
+
+
+            } catch (error) {
+                console.log("Error in Auth Provider:", error);
+                setIsAuthenticateUser(false);
+                setUser(undefined);
+            } finally {
+                console.log("Finally works");
+                setIsLoading(false);
+            }
+        };
+
+        veirfyAuthenticatedUser();
+
+    }, [])
+
+
+
+
+    return (
+        <AuthContext.Provider value={{ user, setUser, isAuthenticatedUser, setIsAuthenticateUser, isLoading, setIsLoading }}>
+            {children}
+        </AuthContext.Provider>
+    )
+}
+````
+
+## File: Frontend/src/features/Auth/hooks/useLogin.ts
+````typescript
+import { useMutation, type UseMutationOptions } from '@tanstack/react-query'
+import { userLogin, type ApiResponse } from '../api/loginuser.api'
+import { type LoginFormData } from '../schemas/login.schema'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from './authhook'
+
+const getPostLoginPath = (role: string) => {
+    if (role === "Admin") {
+        return "/admin-dashboard";
+    }
+
+    if (role === "Doctor") {
+        return "/doctor-dashboard";
+    }
+
+    if (role === "PetOwner" || role === "Seller") {
+        return "/choose-dashboard";
+    }
+
+    return "/";
+};
+
+export const useLogin = (options: UseMutationOptions<ApiResponse, Error, LoginFormData>) => {
+    const navigate = useNavigate();
+    const { setIsAuthenticateUser, setUser } = useAuth()
+    return useMutation({
+        mutationFn: userLogin,
+        ...options,
+
+        onSuccess: (data) => {
+            console.log("Login Success", data)
+            setUser(data);
+            setIsAuthenticateUser(true);
+            navigate(getPostLoginPath(data.data.role));
+        },
+
+        onError: (error) => {
+            console.log("Login Error ", error.message)
+        }
+
+    })
+}
+````
+
+## File: Frontend/src/features/Auth/pages/ContinueAs.tsx
+````typescript
 import { useNavigate } from "react-router-dom";
-import Button from "@/shared/components/Button/Button";
-import Input from "@/shared/components/Input/Input";
-import Card from "@/shared/components/Card/Card";
-import { clearCart, getCartItems } from "../utils/cartStorage";
-import { api } from "@/features/api interface/axios.interface";
-import {
-  checkoutSchema,
-  type CheckoutFormData,
-} from "../schemas/checkout.schema";
-import type { CartApiError } from "../types/cart.types";
+import { Stethoscope, UserRound } from "lucide-react";
 
-const CheckoutPage = () => {
+const ContinueAsPage = () => {
   const navigate = useNavigate();
-  const [cart, setCart] = useState(getCartItems());
-
-  const [error, setError] = useState("");
-  const [placingOrder, setPlacingOrder] = useState(false);
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<CheckoutFormData>({
-    resolver: zodResolver(checkoutSchema),
-    defaultValues: {
-      phoneNumber: "",
-      shippingAddress: "",
-    },
-  });
-
-  const total = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
-
-  const handlePlaceOrder = async (data: CheckoutFormData) => {
-    setError("");
-
-    if (cart.length === 0) {
-      setError("Your cart is empty.");
-      return;
-    }
-
-    const orderPayload = {
-      items: cart.map((item) => ({
-        productId: item.productId,
-        quantity: item.quantity,
-      })),
-      shippingAddress: data.shippingAddress,
-      phoneNumber: data.phoneNumber,
-    };
-
-    try {
-      setPlacingOrder(true);
-      await api.post("orders", orderPayload);
-      clearCart();
-      setCart([]);
-      navigate("/marketplace1");
-    } catch (err) {
-      const apiError = err as CartApiError;
-
-      if (apiError.response?.status === 401) {
-        navigate("/login", {
-          state: { redirectTo: "/checkout" },
-        });
-        return;
-      }
-
-      setError(apiError.response?.data?.message || "Unable to place the order. Please try again.");
-    } finally {
-      setPlacingOrder(false);
-    }
-  };
 
   return (
-    <main className="min-h-screen bg-[#f7fbfb] px-6 py-8 lg:px-12">
-      <h1 className="text-3xl font-bold text-[#07182c]">Checkout</h1>
+    <section className="min-h-screen bg-gradient-to-br from-[#f4fbff] via-white to-[#e8fbfa] flex items-center justify-center px-6 py-12">
+      <div className="w-full max-w-5xl">
+        <div className="text-center mb-10">
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+            className="mb-4 inline-block rounded-full bg-white px-5 py-2 font-semibold text-[#178f95] shadow transition hover:bg-[#e8fbfa]"
+          >
+            Join Pets Veta
+          </button>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,560px)_360px]">
-      <Card>
-        <form onSubmit={handleSubmit(handlePlaceOrder)}>
-        {error && (
-          <p className="mb-4 rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-600">
-            {error}
+          <h1 className="text-3xl md:text-5xl font-bold text-[#17233f] mb-4">
+            Continue as
+          </h1>
+
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Choose your account type to continue registration.
           </p>
-        )}
-
-        <Input
-          label="Phone Number"
-          placeholder="03000000000"
-          error={errors.phoneNumber?.message}
-          {...register("phoneNumber")}
-        />
-
-        <div className="mt-4">
-          <Input
-            label="Shipping Address"
-            placeholder="Lahore, Pakistan"
-            error={errors.shippingAddress?.message}
-            {...register("shippingAddress")}
-          />
         </div>
 
-        <Button
-          className="mt-6 w-full"
-          type="submit"
-          disabled={placingOrder}
-        >
-          {placingOrder ? "Placing Order..." : "Place Order"}
-        </Button>
-        </form>
-      </Card>
-
-      <Card>
-        <h2 className="text-xl font-bold text-[#07182c]">Order Summary</h2>
-
-        <div className="mt-5 space-y-4">
-          {cart.length === 0 && (
-            <p className="text-sm text-gray-500">Your cart is empty.</p>
-          )}
-
-          {cart.map((item) => (
-            <div
-              key={item.productId}
-              className="flex items-center justify-between gap-4 border-b border-gray-100 pb-3"
-            >
-              <div className="flex min-w-0 items-center gap-3">
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="h-12 w-12 rounded-lg object-cover"
-                />
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-gray-900">
-                    {item.title}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    Qty {item.quantity}
-                  </p>
-                </div>
-              </div>
-
-              <p className="text-sm font-semibold text-gray-900">
-                PKR {(item.price * item.quantity).toLocaleString()}
-              </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
+          <button
+            onClick={() => navigate("/signup/pet-owner")}
+            className="group bg-white rounded-3xl p-8 shadow-xl border border-gray-100 text-left hover:-translate-y-1 hover:shadow-2xl transition-all duration-300"
+          >
+            <div className="h-16 w-16 rounded-2xl bg-[#e8fbfa] text-[#178f95] flex items-center justify-center mb-6 group-hover:bg-[#178f95] group-hover:text-white transition">
+              <UserRound size={32} />
             </div>
-          ))}
-        </div>
 
-        <div className="mt-5 flex justify-between text-base font-bold">
-          <span>Total</span>
-          <span>PKR {total.toLocaleString()}</span>
-        </div>
+            <h2 className="text-2xl font-bold text-[#17233f] mb-3">
+              Pet Owner
+            </h2>
 
-        <Button
-          variant="outline"
-          className="mt-5 w-full"
-          onClick={() => navigate("/cart")}
-        >
-          Back to Cart
-        </Button>
-      </Card>
+            <p className="text-gray-600 mb-7 leading-relaxed">
+              Create an account to book veterinary appointments, manage your pets,
+              and access pet care services.
+            </p>
+
+            <span className="inline-flex items-center justify-center rounded-full bg-[#178f95] text-white px-6 py-3 font-semibold group-hover:bg-[#12757a] transition">
+              Register as Pet Owner
+            </span>
+          </button>
+
+          <button
+            onClick={() => navigate("/signup/doctor")}
+            className="group bg-white rounded-3xl p-8 shadow-xl border border-gray-100 text-left hover:-translate-y-1 hover:shadow-2xl transition-all duration-300"
+          >
+            <div className="h-16 w-16 rounded-2xl bg-[#fff1ea] text-[#178f95] flex items-center justify-center mb-6 group-hover:bg-[#178f95] group-hover:text-white transition">
+              <Stethoscope size={32} />
+            </div>
+
+            <h2 className="text-2xl font-bold text-[#17233f] mb-3">
+              Doctor
+            </h2>
+
+            <p className="text-gray-600 mb-7 leading-relaxed">
+              Create your doctor profile, submit your verification document,
+              manage availability, and handle appointments.
+            </p>
+
+            <span className="inline-flex items-center justify-center rounded-full bg-[#178f95] text-white px-6 py-3 font-semibold group-hover:bg-[#12757a] transition">
+              Register as Doctor
+            </span>
+          </button>
+        </div>
       </div>
-    </main>
+    </section>
   );
 };
 
-export default CheckoutPage;
+export default ContinueAsPage;
 ````
 
 ## File: Frontend/src/features/Contact/components/ContactForm.tsx
@@ -18679,6 +18458,35 @@ const ContactForm = () => {
 };
 
 export default ContactForm;
+````
+
+## File: Frontend/src/features/Contact/components/ContactHero.tsx
+````typescript
+import { FaEnvelopeOpenText } from "react-icons/fa";
+
+const ContactHero = () => {
+  return (
+    <section className="mt-20 bg-gradient-to-br from-[#f5fbff] via-white to-[#d9f7f6] px-5 py-16 lg:px-16">
+      <div className="mx-auto max-w-7xl text-center">
+        <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-[#009f9d] shadow-sm">
+          <FaEnvelopeOpenText />
+          Contact PetsVeta
+        </div>
+
+        <h1 className="mx-auto max-w-4xl text-4xl font-extrabold leading-tight text-[#07182c] md:text-5xl">
+          We’re here to help you and your pets.
+        </h1>
+
+        <p className="mx-auto mt-5 max-w-2xl leading-7 text-slate-600">
+          Have questions about appointments, pet care, marketplace products or
+          AI assistance? Contact our team anytime.
+        </p>
+      </div>
+    </section>
+  );
+};
+
+export default ContactHero;
 ````
 
 ## File: Frontend/src/features/Doctor/api/doctorAvailabilityServices.ts
@@ -19149,6 +18957,518 @@ const DoctorServicesTable = ({ onEdit, onDelete }: DoctorServicesTableProps) => 
 export default DoctorServicesTable;
 ````
 
+## File: Frontend/src/features/Doctorcart/apis/doctorProfile.api.ts
+````typescript
+import { api, handleAxiosError } from "@/features/api interface/axios.interface";
+import type { DoctorProfileFormData } from "../schemas/doctorProfile.schema";
+
+export type DoctorProfileData = {
+  id: string;
+  userId: string;
+  fullName: string;
+  username: string;
+  email: string;
+  phone: string;
+  profileImageUrl: string;
+  specialization: string;
+  education: string;
+  address: string;
+  experience: number;
+  fees: number;
+  isAvailable: boolean;
+  isVerified: "PENDING" | "APPROVED" | "REJECTED";
+};
+
+type BackendDoctorProfileData = {
+  id: string;
+  fullName: string;
+  username: string;
+  email: string;
+  phone: string;
+  profileImageUrl: string;
+  doctors: {
+    id: string;
+    specialization: string;
+    education: string;
+    address: string;
+    experience: number;
+    fees: number;
+    isAvailable: boolean;
+    isVerified: "PENDING" | "APPROVED" | "REJECTED";
+  } | null;
+};
+
+type BackendDoctorProfileResponse = {
+  success: boolean;
+  message: string;
+  data: BackendDoctorProfileData;
+};
+
+export type DoctorProfileApiResponse = {
+  success: boolean;
+  message: string;
+  data: DoctorProfileData;
+};
+
+type UpdateDoctorProfilePayload = DoctorProfileFormData | FormData;
+
+const mapDoctorProfile = (
+  response: BackendDoctorProfileResponse
+): DoctorProfileApiResponse => {
+  const user = response.data;
+  const doctor = user.doctors;
+
+  if (!doctor) {
+    throw new Error("Doctor data not found");
+  }
+
+  return {
+    success: response.success,
+    message: response.message,
+    data: {
+      id: doctor.id,
+      userId: user.id,
+      fullName: user.fullName || "",
+      username: user.username || "",
+      email: user.email || "",
+      phone: user.phone || "",
+      profileImageUrl: user.profileImageUrl || "",
+      specialization: doctor.specialization || "",
+      education: doctor.education || "",
+      address: doctor.address || "",
+      experience: doctor.experience || 0,
+      fees: doctor.fees || 0,
+      isAvailable: doctor.isAvailable ?? false,
+      isVerified: doctor.isVerified,
+    },
+  };
+};
+
+export const getDoctorProfileApi = async () => {
+  try {
+    const response = await api.get<BackendDoctorProfileResponse>(
+      "/doctor/profile"
+    );
+
+    return mapDoctorProfile(response.data);
+  } catch (error) {
+    handleAxiosError(error);
+    throw error;
+  }
+};
+
+export const updateDoctorProfileApi = async (
+  payload: UpdateDoctorProfilePayload
+) => {
+  try {
+    const isFormData = payload instanceof FormData;
+
+    const response = await api.patch<BackendDoctorProfileResponse>(
+      "/doctor/profile",
+      payload,
+      isFormData
+        ? {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        : undefined
+    );
+
+    return mapDoctorProfile(response.data);
+  } catch (error) {
+    handleAxiosError(error);
+    throw error;
+  }
+};
+````
+
+## File: Frontend/src/features/Doctorcart/component/DoctorProfile.tsx
+````typescript
+import { useEffect, useState, type ReactNode } from "react";
+import {
+  BadgeCheck,
+  BriefcaseBusiness,
+  CalendarDays,
+  CircleCheck,
+  GraduationCap,
+  Languages,
+  Mail,
+  MapPin,
+  Phone,
+  Star,
+  Stethoscope,
+  UserRound,
+  Wallet,
+  IdCard,
+  Pencil,
+} from "lucide-react";
+
+import { useNavigate } from "react-router-dom";
+import Button from "../../../shared/components/Button/Button";
+import {
+  getDoctorProfileApi,
+  type DoctorProfileData as ApiDoctorProfileData,
+} from "../apis/doctorProfile.api";
+
+type DoctorProfileData = {
+  fullName: string;
+  email: string;
+  phone: string;
+  profileImageUrl: string;
+  specialization: string;
+  education: string;
+  experience: number;
+  fees: number;
+  rating: number;
+  reviews: number;
+  licenseNumber: string;
+  languages: string;
+  address: string;
+  about: string;
+  isVerified: boolean;
+  isAvailable: boolean;
+};
+
+const DEFAULT_DOCTOR_IMAGE =
+  "https://ui-avatars.com/api/?name=Doctor&background=078b91&color=fff";
+
+const mapApiDoctorToProfile = (
+  apiDoctor: ApiDoctorProfileData
+): DoctorProfileData => {
+  return {
+    fullName: apiDoctor.fullName || "Doctor",
+    email: apiDoctor.email || "Not provided",
+    phone: apiDoctor.phone || "Not provided",
+    profileImageUrl: apiDoctor.profileImageUrl || DEFAULT_DOCTOR_IMAGE,
+    specialization: apiDoctor.specialization || "Veterinary Doctor",
+    education: apiDoctor.education || "Not provided",
+    experience: apiDoctor.experience || 0,
+    fees: apiDoctor.fees || 0,
+    rating: 0,
+    reviews: 0,
+    licenseNumber: "Not provided",
+    languages: "English, Urdu",
+    address: apiDoctor.address || "Not provided",
+    about:
+      "Passionate about animal care and dedicated to providing the best medical services to pets.",
+    isVerified: apiDoctor.isVerified === "APPROVED",
+    isAvailable: apiDoctor.isAvailable,
+  };
+};
+
+const DoctorProfile = () => {
+  const navigate = useNavigate();
+
+  const [doctor, setDoctor] = useState<DoctorProfileData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    const fetchDoctorProfile = async () => {
+      try {
+        setLoading(true);
+        setErrorMessage("");
+
+        const response = await getDoctorProfileApi();
+
+        const mappedDoctor = mapApiDoctorToProfile(response.data);
+
+        setDoctor(mappedDoctor);
+      } catch (error) {
+        console.log("Doctor profile fetch error:", error);
+        setErrorMessage("Failed to load doctor profile");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDoctorProfile();
+  }, []);
+
+  if (loading) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#F8FAFA] px-4 py-6 text-[#20263D] sm:px-6 lg:px-8">
+        <div className="rounded-[28px] border border-slate-200 bg-white px-8 py-6 shadow-sm">
+          <p className="text-sm font-black text-[#078b91]">
+            Loading doctor profile...
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  if (errorMessage || !doctor) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#F8FAFA] px-4 py-6 text-[#20263D] sm:px-6 lg:px-8">
+        <div className="max-w-md rounded-[28px] border border-slate-200 bg-white p-8 text-center shadow-sm">
+          <h2 className="text-2xl font-black text-[#101b3d]">
+            {errorMessage || "Doctor profile not found"}
+          </h2>
+
+          <p className="mt-3 text-sm font-medium text-slate-500">
+            Please login as doctor and try again.
+          </p>
+
+          <div className="mt-6">
+            <Button type="button" onClick={() => navigate("/login")}>
+              Go to Login
+            </Button>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main className="min-h-screen bg-[#F8FAFA] px-4 py-6 text-[#20263D] sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-7xl">
+        <div className="mb-6">
+          <p className="text-xs font-black uppercase tracking-[0.25em] text-[#078b91]">
+            Doctor Panel
+          </p>
+
+          <h1 className="mt-2 text-3xl font-black tracking-[-0.03em] text-[#101b3d]">
+            Doctor Profile
+          </h1>
+
+          <p className="mt-2 text-sm font-medium text-slate-500">
+            Manage your professional information and public doctor details.
+          </p>
+        </div>
+
+        <section className="grid gap-5 xl:grid-cols-[330px_1fr]">
+          <aside className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm">
+            <div className="relative h-32 bg-gradient-to-br from-[#D4E2E0] via-[#EAF7F5] to-white">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(23,143,149,0.12),transparent_35%),radial-gradient(circle_at_80%_20%,rgba(249,197,168,0.18),transparent_38%)]" />
+            </div>
+
+            <div className="-mt-16 flex flex-col items-center px-6 pb-6">
+              <div className="relative h-32 w-32 overflow-hidden rounded-full border-4 border-white bg-slate-100 shadow-xl">
+                <img
+                  src={doctor.profileImageUrl}
+                  alt={doctor.fullName}
+                  className="h-full w-full object-cover"
+                />
+
+                <span
+                  className={`absolute bottom-3 right-3 h-5 w-5 rounded-full border-2 border-white ${
+                    doctor.isAvailable ? "bg-green-500" : "bg-red-500"
+                  }`}
+                />
+              </div>
+
+              <h2 className="mt-5 text-center text-2xl font-black text-[#101b3d]">
+                {doctor.fullName} 
+              </h2>
+
+              <p className="mt-1 text-sm font-bold text-[#078b91]">
+                {doctor.specialization}
+              </p>
+
+              <div className="mt-5 flex flex-wrap justify-center gap-3">
+                {doctor.isVerified && (
+                  <span className="inline-flex items-center gap-2 rounded-lg bg-[#EAF7F5] px-4 py-2 text-sm font-black text-[#078b91]">
+                    <BadgeCheck size={17} />
+                    Verified
+                  </span>
+                )}
+
+                {doctor.isAvailable && (
+                  <span className="inline-flex items-center gap-2 rounded-lg bg-green-50 px-4 py-2 text-sm font-black text-green-700">
+                    <CircleCheck size={17} />
+                    Available
+                  </span>
+                )}
+              </div>
+
+              <div className="mt-6 h-px w-full bg-slate-200" />
+
+              <div className="mt-6 w-full space-y-5">
+                <ContactRow icon={<Mail size={20} />} value={doctor.email} />
+                <ContactRow icon={<Phone size={20} />} value={doctor.phone} />
+                <ContactRow icon={<MapPin size={20} />} value={doctor.address} />
+              </div>
+
+              <div className="mt-7 w-full">
+                <Button
+                  type="button"
+                  className="flex h-10 w-full items-center justify-center gap-1.5 rounded-xl px-3 py-0 text-xs font-black"
+                  onClick={() => navigate("/doctor-profile/edit")}
+                >
+                  <Pencil size={15} />
+                  Edit Profile
+                </Button>
+              </div>
+            </div>
+          </aside>
+
+          <div className="space-y-5">
+            <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <MetricCard
+                icon={<BriefcaseBusiness size={28} />}
+                iconClass="bg-[#D4E2E0]/70 text-[#078b91]"
+                label="Experience"
+                value={`${doctor.experience}+ Years`}
+                description="Professional work"
+              />
+
+              <MetricCard
+                icon={<GraduationCap size={30} />}
+                iconClass="bg-purple-100 text-purple-600"
+                label="Education"
+                value={doctor.education}
+                description="Doctor of Veterinary Medicine"
+              />
+
+              <MetricCard
+                icon={<Wallet size={30} />}
+                iconClass="bg-orange-100 text-orange-500"
+                label="Consultation Fee"
+                value={`Rs. ${doctor.fees.toLocaleString()}`}
+                description="Per Consultation"
+              />
+
+              <MetricCard
+                icon={<Star size={30} />}
+                iconClass="bg-blue-100 text-blue-500"
+                label="Total Rating"
+                value={doctor.rating.toString()}
+                description={`(${doctor.reviews} Reviews)`}
+              />
+            </section>
+
+            <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+              <h2 className="text-xl font-black text-[#101b3d]">
+                Professional Information
+              </h2>
+
+              <div className="mt-6 grid gap-x-8 gap-y-0 lg:grid-cols-2">
+                <InfoRow
+                  icon={<Stethoscope size={23} />}
+                  label="Specialization"
+                  value={doctor.specialization}
+                />
+
+                <InfoRow
+                  icon={<CalendarDays size={23} />}
+                  label="Experience"
+                  value={`${doctor.experience}+ Years`}
+                />
+
+                <InfoRow
+                  icon={<IdCard size={23} />}
+                  label="License Number"
+                  value={doctor.licenseNumber}
+                />
+
+                <InfoRow
+                  icon={<MapPin size={23} />}
+                  label="Clinic Address"
+                  value={doctor.address}
+                />
+
+                <InfoRow
+                  icon={<Languages size={23} />}
+                  label="Languages"
+                  value={doctor.languages}
+                />
+
+                <InfoRow
+                  icon={<UserRound size={23} />}
+                  label="About Me"
+                  value={doctor.about}
+                  noBorder
+                />
+              </div>
+            </section>
+          </div>
+        </section>
+      </section>
+    </main>
+  );
+};
+
+const ContactRow = ({ icon, value }: { icon: ReactNode; value: string }) => {
+  return (
+    <div className="flex items-start gap-4 text-sm font-semibold text-slate-600">
+      <span className="mt-0.5 text-[#078b91]">{icon}</span>
+      <span className="leading-6">{value}</span>
+    </div>
+  );
+};
+
+const MetricCard = ({
+  icon,
+  iconClass,
+  label,
+  value,
+  description,
+}: {
+  icon: ReactNode;
+  iconClass: string;
+  label: string;
+  value: string;
+  description: string;
+}) => {
+  return (
+    <div className="rounded-[22px] border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+      <div className="flex items-center gap-4">
+        <div
+          className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-full ${iconClass}`}
+        >
+          {icon}
+        </div>
+
+        <div>
+          <p className="text-sm font-semibold text-slate-500">{label}</p>
+
+          <h3 className="mt-1 text-2xl font-black text-[#101b3d]">{value}</h3>
+
+          <p className="mt-1 text-sm font-medium leading-5 text-slate-500">
+            {description}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const InfoRow = ({
+  icon,
+  label,
+  value,
+  noBorder = false,
+}: {
+  icon: ReactNode;
+  label: string;
+  value: string;
+  noBorder?: boolean;
+}) => {
+  return (
+    <div
+      className={`flex gap-4 py-4 ${
+        noBorder ? "" : "border-b border-dashed border-slate-200"
+      }`}
+    >
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#EAF7F5] text-[#078b91]">
+        {icon}
+      </div>
+
+      <div>
+        <p className="text-sm font-semibold text-slate-500">{label}</p>
+
+        <h3 className="mt-1 text-sm font-black leading-6 text-[#101b3d]">
+          {value}
+        </h3>
+      </div>
+    </div>
+  );
+};
+
+export default DoctorProfile;
+````
+
 ## File: Frontend/src/features/Doctorcart/component/DoctorsList.tsx
 ````typescript
 import DoctorCard from "./DoctorCard";
@@ -19192,321 +19512,6 @@ const DoctorsList = ({
 };
 
 export default DoctorsList;
-````
-
-## File: Frontend/src/features/Doctorcart/component/EditDoctorProfileForm.tsx
-````typescript
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-
-import Button from "../../../shared/components/Button/Button";
-import Input from "../../../shared/components/Input/Input";
-
-import {
-  doctorProfileSchema,
-  type DoctorProfileFormData,
-  type DoctorProfileFormInput,
-} from "../schemas/doctorProfile.schema";
-
-import { updateDoctorProfileApi } from "../apis/doctorProfile.api";
-import { useDoctorProfileById } from "../hooks/useDoctorProfile";
-
-const EditDoctorProfileForm = () => {
-  const navigate = useNavigate();
-
-  const [apiError, setApiError] = useState("");
-  const [apiMessage, setApiMessage] = useState("");
-
-  const { data: profileData, isLoading, error } = useDoctorProfileById();
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    watch,
-    setValue,
-    formState: { errors, isSubmitting },
-  } = useForm<DoctorProfileFormInput, unknown, DoctorProfileFormData>({
-    resolver: zodResolver(doctorProfileSchema),
-    defaultValues: {
-      fullName: "",
-      username: "",
-      phone: "",
-      profileImageUrl: "",
-      specialization: "",
-      education: "",
-      address: "",
-      experience: "",
-      fees: "",
-      isAvailable: true,
-    },
-  });
-
-  const isAvailable = watch("isAvailable");
-
-  useEffect(() => {
-    if (profileData?.success) {
-      const d = profileData.data;
-      reset({
-        fullName: d.fullName || "",
-        username: d.username || "",
-        phone: d.phone || "",
-        profileImageUrl: d.profileImageUrl || "",
-        specialization: d.specialization || "",
-        education: d.education || "",
-        address: d.address || "",
-        experience: String(d.experience ?? ""),
-        fees: String(d.fees ?? ""),
-        isAvailable: d.isAvailable ?? true,
-      });
-    }
-
-    if (error) {
-      console.log("Fetch doctor profile error:", error);
-      setApiError("Failed to load doctor profile.");
-    }
-  }, [profileData, error, reset]);
-
-  const onSubmit = async (data: DoctorProfileFormData) => {
-    try {
-      setApiError("");
-      setApiMessage("");
-
-      const response = await updateDoctorProfileApi(data);
-
-      if (response.success) {
-        setApiMessage(response.message || "Profile updated successfully.");
-
-        setTimeout(() => {
-          navigate("/doctor-profile");
-        }, 700);
-      }
-    } catch (error) {
-      console.log("Update doctor profile error:", error);
-      setApiError("Failed to update profile. Please try again.");
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <main className="min-h-screen bg-[#F8FAFA] px-4 py-6 text-[#20263D] sm:px-6 lg:px-8">
-        <section className="mx-auto max-w-5xl">
-          <div className="rounded-[28px] border border-slate-200 bg-white p-8 shadow-sm">
-            <p className="text-sm font-bold text-slate-500">
-              Loading doctor profile...
-            </p>
-          </div>
-        </section>
-      </main>
-    );
-  }
-
-  return (
-    <main className="min-h-screen bg-[#F8FAFA] px-4 py-6 text-[#20263D] sm:px-6 lg:px-8">
-      <section className="mx-auto max-w-5xl">
-        <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-xs font-black uppercase tracking-[0.25em] text-[#078b91]">
-              Doctor Panel
-            </p>
-
-            <h1 className="mt-2 text-3xl font-black tracking-[-0.03em] text-[#101b3d]">
-              Edit Doctor Profile
-            </h1>
-
-            <p className="mt-2 text-sm font-medium text-slate-500">
-              Update your professional details, clinic information, and public
-              profile.
-            </p>
-          </div>
-
-          <Button
-            type="button"
-            variant="outline"
-            className="h-11 w-auto px-6"
-            onClick={() => navigate("/doctor-profile")}
-          >
-            Cancel
-          </Button>
-        </div>
-
-        {apiError && (
-          <div className="mb-5 rounded-2xl border border-red-100 bg-red-50 px-5 py-3 text-sm font-bold text-red-600">
-            {apiError}
-          </div>
-        )}
-
-        {apiMessage && (
-          <div className="mb-5 rounded-2xl border border-green-100 bg-green-50 px-5 py-3 text-sm font-bold text-green-700">
-            {apiMessage}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Basic Information */}
-          <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="mb-6">
-              <h2 className="text-xl font-black text-[#101b3d]">
-                Basic Information
-              </h2>
-              <p className="mt-1 text-sm font-medium text-slate-500">
-                These details are connected with your account profile.
-              </p>
-            </div>
-
-            <div className="grid gap-5 md:grid-cols-2">
-              <Input
-                label="Full Name"
-                placeholder="Dr. Ayesha Khan"
-                error={errors.fullName?.message}
-                {...register("fullName")}
-              />
-
-              <Input
-                label="Username"
-                placeholder="dr_ayesha"
-                error={errors.username?.message}
-                {...register("username")}
-              />
-
-              <Input
-                label="Phone"
-                placeholder="+92 300 1234567"
-                error={errors.phone?.message}
-                {...register("phone")}
-              />
-
-              <Input
-                label="Profile Image URL"
-                placeholder="https://example.com/profile.jpg"
-                error={errors.profileImageUrl?.message}
-                {...register("profileImageUrl")}
-              />
-            </div>
-          </section>
-
-          {/* Professional Information */}
-          <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="mb-6">
-              <h2 className="text-xl font-black text-[#101b3d]">
-                Professional Information
-              </h2>
-              <p className="mt-1 text-sm font-medium text-slate-500">
-                These details will be visible to pet owners.
-              </p>
-            </div>
-
-            <div className="grid gap-5 md:grid-cols-2">
-              <Input
-                label="Specialization"
-                placeholder="Veterinary Surgeon"
-                error={errors.specialization?.message}
-                {...register("specialization")}
-              />
-
-              <Input
-                label="Education"
-                placeholder="DVM"
-                error={errors.education?.message}
-                {...register("education")}
-              />
-
-              <Input
-                label="Experience"
-                type="number"
-                placeholder="5"
-                error={errors.experience?.message}
-                {...register("experience")}
-              />
-
-              <Input
-                label="Consultation Fees"
-                type="number"
-                placeholder="2500"
-                error={errors.fees?.message}
-                {...register("fees")}
-              />
-            </div>
-
-            <div className="mt-5">
-              <label className="mb-2 block text-sm font-black text-[#20263D]">
-                Clinic Address
-              </label>
-
-              <textarea
-                rows={3}
-                placeholder="PetCare Clinic, Gulberg III, Lahore"
-                className={`w-full resize-none rounded-xl border bg-white px-4 py-3 text-sm font-medium outline-none transition-all duration-300 placeholder:text-slate-400 ${
-                  errors.address
-                    ? "border-red-500 focus:border-red-500"
-                    : "border-slate-200 focus:border-[#078b91] focus:ring-4 focus:ring-[#D4E2E0]/60"
-                }`}
-                {...register("address")}
-              />
-
-              {errors.address && (
-                <p className="mt-1.5 text-xs font-semibold text-red-500">
-                  {errors.address.message}
-                </p>
-              )}
-            </div>
-
-            <div className="mt-5 rounded-2xl border border-slate-200 bg-[#F8FAFA] p-4">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <h3 className="text-sm font-black text-[#101b3d]">
-                    Availability Status
-                  </h3>
-                  <p className="mt-1 text-xs font-semibold text-slate-500">
-                    Turn this on if you are available for appointments.
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setValue("isAvailable", !isAvailable)}
-                  className={`relative h-8 w-14 rounded-full transition ${
-                    isAvailable ? "bg-[#078b91]" : "bg-slate-300"
-                  }`}
-                >
-                  <span
-                    className={`absolute top-1 h-6 w-6 rounded-full bg-white shadow transition ${
-                      isAvailable ? "left-7" : "left-1"
-                    }`}
-                  />
-                </button>
-              </div>
-            </div>
-          </section>
-
-          {/* Buttons */}
-          <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-            <Button
-              type="button"
-              variant="outline"
-              className="h-11 w-auto px-7"
-              onClick={() => navigate("/doctor-profile")}
-            >
-              Cancel
-            </Button>
-
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="h-11 w-auto px-7"
-            >
-              {isSubmitting ? "Saving..." : "Save Changes"}
-            </Button>
-          </div>
-        </form>
-      </section>
-    </main>
-  );
-};
-
-export default EditDoctorProfileForm;
 ````
 
 ## File: Frontend/src/features/Doctorcart/hooks/useGetDoctors.ts
@@ -19778,456 +19783,6 @@ const MarketplaceDetailPanel = ({
 export default MarketplaceDetailPanel;
 ````
 
-## File: Frontend/src/features/marketplace1/components/MarketplaceProductCard.tsx
-````typescript
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  FaHeart,
-  FaRegHeart,
-  FaMapMarkerAlt,
-  FaStar,
-  FaStore,
-} from "react-icons/fa";
-import Button from "@/shared/components/Button/Button";
-import Card from "@/shared/components/Card/Card";
-import { addToCart } from "@/features/cart/utils/cartStorage";
-import {
-  getProductImage,
-  getProductPrice,
-  getSellerName,
-  toDisplayCategory,
-} from "../api/marketplace.api";
-import type { MarketplaceProductCardProps } from "../types/marketplace.types";
-
-const MarketplaceProductCard = ({
-  product,
-  saved,
-  onSave,
-  onDetails,
-}: MarketplaceProductCardProps) => {
-  const navigate = useNavigate();
-  const [cartError, setCartError] = useState("");
-
-  const handleBuyNow = () => {
-    const image = getProductImage(product);
-    const price = getProductPrice(product);
-
-    const result = addToCart({
-      productId: product.id,
-      title: product.title,
-      price,
-      image,
-      quantity: 1,
-      sellerId: product.sellerId,
-    });
-
-    if (!result.success) {
-      setCartError(result.message);
-      return;
-    }
-
-    navigate("/cart");
-  };
-
-  const image = getProductImage(product);
-  const price = getProductPrice(product);
-  const seller = getSellerName(product);
-
-  return (
-    <Card className="overflow-hidden p-0">
-      <div className="relative h-48 bg-gray-50">
-        <button
-          type="button"
-          onClick={() => navigate(`/marketplace/product/${product.id}`)}
-          className="block h-full w-full overflow-hidden text-left"
-          aria-label={`View details for ${product.title}`}
-        >
-          <img
-            src={image}
-            alt={product.title}
-            className="h-full w-full object-cover transition duration-300 hover:scale-105"
-          />
-        </button>
-
-        <span className="absolute left-3 top-3 rounded-md bg-[#e8f7f7] px-3 py-1 text-xs font-semibold text-[#178f95]">
-          {toDisplayCategory(product.category)}
-        </span>
-
-        <button
-          type="button"
-          onClick={onSave}
-          className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#07182c] shadow-sm"
-        >
-          {saved ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
-        </button>
-      </div>
-
-      <div className="p-4">
-        <h3 className="text-base font-bold text-[#07182c]">{product.title}</h3>
-
-        <p className="mt-2 flex items-center gap-2 text-sm text-gray-500">
-          <FaStore className="text-[#178f95]" />
-          {seller}
-        </p>
-
-        <div className="mt-3 flex items-center justify-between">
-          <p className="text-lg font-bold text-[#178f95]">
-            PKR {price.toLocaleString()}
-          </p>
-
-          <div className="flex items-center gap-3 text-sm">
-            <span className="flex items-center gap-1 text-gray-700">
-              <FaStar className="text-yellow-400" />
-              New
-            </span>
-
-            <span className="flex items-center gap-1 text-gray-500">
-              <FaMapMarkerAlt />
-              {product.location || "Pakistan"}
-            </span>
-          </div>
-        </div>
-
-        <div className="mt-4 grid grid-cols-2 gap-3">
-          <Button variant="outline" size="sm" onClick={onDetails}>
-            Details
-          </Button>
-
-          <Button
-            size="sm"
-            onClick={handleBuyNow}
-            className="bg-[#F9C5A8] text-[#c94d00] hover:bg-[#f7b58f]"
-          >
-            Add to Cart
-          </Button>
-        </div>
-
-        {cartError && (
-          <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-600">
-            {cartError}
-          </p>
-        )}
-      </div>
-    </Card>
-  );
-};
-
-export default MarketplaceProductCard;
-````
-
-## File: Frontend/src/features/marketplace1/pages/MarketplacePage.tsx
-````typescript
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  FaPaw,
-  FaShoppingBag,
-  FaSlidersH,
-  FaThLarge,
-  FaUndo,
-} from "react-icons/fa";
-import Button from "@/shared/components/Button/Button";
-import Input from "@/shared/components/Input/Input";
-import MarketplaceProductCard from "../components/MarketplaceProductCard";
-import MarketplaceDetailPanel from "../components/MarketplaceDetailPanel";
-import MarketplacePagination from "../components/MarketplacePagination";
-import {
-  fetchMarketplaceProducts,
-  fetchSavedMarketplaceListings,
-  removeMarketplaceListing,
-  saveMarketplaceListing,
-  toBackendCategory,
-  type MarketplaceProduct,
-} from "../api/marketplace.api";
-
-const ITEMS_PER_PAGE = 12;
-
-const MarketplacePage = () => {
-  const navigate = useNavigate();
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("All");
-  const [location, setLocation] = useState("All");
-  const [page, setPage] = useState(1);
-  const [savedIds, setSavedIds] = useState<string[]>([]);
-  const [products, setProducts] = useState<MarketplaceProduct[]>([]);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  const [selectedProduct, setSelectedProduct] =
-    useState<MarketplaceProduct | null>(null);
-
-  const categories = ["All", "Pets", "Food", "Accessories"];
-
-  const queryCategory = useMemo(
-    () => (category === "All" ? "" : toBackendCategory(category)),
-    [category]
-  );
-
-  useEffect(() => {
-    let ignore = false;
-
-    const loadProducts = async () => {
-      try {
-        setLoading(true);
-        setError("");
-
-        const data = await fetchMarketplaceProducts({
-          page,
-          limit: ITEMS_PER_PAGE,
-          search,
-          category: queryCategory,
-          location: location === "All" ? "" : location,
-        });
-
-        if (ignore) return;
-
-        setProducts(data.products);
-        setTotalPages(data.pagination.totalPages || 1);
-        setSelectedProduct((current) => {
-          if (current && data.products.some((product) => product.id === current.id)) {
-            return current;
-          }
-
-          return data.products[0] || null;
-        });
-      } catch {
-        if (!ignore) {
-          setError("Unable to load marketplace products. Please check your connection and try again.");
-        }
-      } finally {
-        if (!ignore) {
-          setLoading(false);
-        }
-      }
-    };
-
-    void loadProducts();
-
-    return () => {
-      ignore = true;
-    };
-  }, [page, search, queryCategory, location]);
-
-  useEffect(() => {
-    const loadSaved = async () => {
-      try {
-        const saved = await fetchSavedMarketplaceListings();
-        setSavedIds(saved.map((item) => item.productId));
-      } catch {
-        setSavedIds([]);
-      }
-    };
-
-    void loadSaved();
-  }, []);
-
-  const toggleSave = async (id: string) => {
-    const isSaved = savedIds.includes(id);
-
-    try {
-      if (isSaved) {
-        await removeMarketplaceListing(id);
-        setSavedIds((prev) => prev.filter((savedId) => savedId !== id));
-        return;
-      }
-
-      await saveMarketplaceListing(id);
-      setSavedIds((prev) => [...prev, id]);
-    } catch {
-      navigate("/login", {
-        state: {
-          redirectTo: "/marketplace1",
-        },
-      });
-    }
-  };
-
-  const clearFilters = () => {
-    setSearch("");
-    setCategory("All");
-    setLocation("All");
-    setPage(1);
-  };
-
-  return (
-    <main className="min-h-screen bg-[#f7fbfb] px-6 py-8 lg:px-12">
-      <section className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div>
-          <h1 className="text-4xl font-bold text-[#07182c]">
-            Pet Marketplace
-          </h1>
-
-          <p className="mt-2 text-gray-500">
-            Buy pets, food, and accessories from verified sellers.
-          </p>
-        </div>
-
-        <Button className="gap-2" onClick={() => navigate("/seller/add-product")}>
-          <FaShoppingBag />
-          Sell Your Product
-        </Button>
-      </section>
-
-      <section className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-        <div className="grid gap-4 lg:grid-cols-[1.4fr_0.9fr_0.9fr_auto]">
-          <Input
-            placeholder="Search pets, food, accessories..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-          />
-
-          <select
-            value={category}
-            onChange={(e) => {
-              setCategory(e.target.value);
-              setPage(1);
-            }}
-            className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-[#178f95]"
-          >
-            <option>All</option>
-            <option>Pets</option>
-            <option>Food</option>
-            <option>Accessories</option>
-          </select>
-
-          <select
-            value={location}
-            onChange={(e) => {
-              setLocation(e.target.value);
-              setPage(1);
-            }}
-            className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-[#178f95]"
-          >
-            <option>All</option>
-            <option>Lahore</option>
-            <option>Karachi</option>
-            <option>Islamabad</option>
-            <option>Multan</option>
-          </select>
-
-          <Button variant="outline" className="gap-2" onClick={clearFilters}>
-            <FaUndo />
-            Clear Filters
-          </Button>
-        </div>
-
-        <div className="mt-4 flex flex-wrap gap-3">
-          {categories.map((item) => (
-            <button
-              key={item}
-              onClick={() => {
-                setCategory(item);
-                setPage(1);
-              }}
-              className={`flex items-center gap-2 rounded-full border px-5 py-2 text-sm font-semibold transition ${
-                category === item
-                  ? "border-[#178f95] bg-[#178f95] text-white"
-                  : "border-gray-200 bg-white text-gray-600 hover:border-[#178f95] hover:text-[#178f95]"
-              }`}
-            >
-              <FaPaw />
-              {item}
-            </button>
-          ))}
-        </div>
-      </section>
-
-      <section
-        className={`mt-6 grid gap-6 ${
-          selectedProduct ? "xl:grid-cols-[1fr_330px]" : "grid-cols-1"
-        }`}
-      >
-        <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-          <div className="mb-5 flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-[#07182c]">
-                Latest Pet Listings
-              </h2>
-
-              <p className="text-sm text-gray-500">
-                Showing {products.length} available listings
-              </p>
-            </div>
-
-            <div className="hidden items-center gap-3 lg:flex">
-              <Button variant="outline" size="sm" className="gap-2">
-                <FaSlidersH />
-                Sort by: Newest First
-              </Button>
-
-              <Button variant="outline" size="sm">
-                <FaThLarge />
-              </Button>
-            </div>
-          </div>
-
-          <div
-            className={`grid gap-5 ${
-              selectedProduct
-                ? "lg:grid-cols-2 2xl:grid-cols-3"
-                : "md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
-            }`}
-          >
-            {loading && (
-              <p className="col-span-full rounded-lg bg-gray-50 p-5 text-sm text-gray-500">
-                Loading marketplace products...
-              </p>
-            )}
-
-            {error && (
-              <p className="col-span-full rounded-lg bg-red-50 p-5 text-sm font-medium text-red-600">
-                {error}
-              </p>
-            )}
-
-            {!loading && !error && products.length === 0 && (
-              <p className="col-span-full rounded-lg bg-gray-50 p-5 text-sm text-gray-500">
-                No active listings found.
-              </p>
-            )}
-
-            {products.map((product) => (
-              <MarketplaceProductCard
-                key={product.id}
-                product={product}
-                saved={savedIds.includes(product.id)}
-                onSave={() => toggleSave(product.id)}
-                onDetails={() => setSelectedProduct(product)}
-              />
-            ))}
-          </div>
-
-          {totalPages > 1 && (
-            <MarketplacePagination
-              page={page}
-              totalPages={totalPages}
-              onPageChange={(nextPage) => {
-                setPage(nextPage);
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-            />
-          )}
-        </div>
-
-        {selectedProduct && (
-          <MarketplaceDetailPanel
-            product={selectedProduct}
-            onClose={() => setSelectedProduct(null)}
-          />
-        )}
-      </section>
-    </main>
-  );
-};
-
-export default MarketplacePage;
-````
-
 ## File: Frontend/src/features/Payment/components/PaymentSummaryCard.tsx
 ````typescript
 
@@ -20385,238 +19940,6 @@ const MyPetsSection = ({
 };
 
 export default MyPetsSection;
-````
-
-## File: Frontend/src/features/Pet Owner/pet profile/components/PetForm.tsx
-````typescript
-import { Calendar, List, PawPrint, Shield, User, ImagePlus } from "lucide-react";
-import { useForm, useWatch } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
-
-import Input from "../../../../shared/components/Input/Input";
-import Button from "../../../../shared/components/Button/Button";
-import {
-  petSchema,
-  type PetFormInput,
-  type PetFormData,
-} from "../schemas/pet.schema";
-import { useAuth } from "@/features/Auth/hooks/authhook";
-import type { PetFormProps } from "../types/petProfile.types";
-// import { type submitPetData } from "../apis/pet.api";
-
-const PetForm = ({ onCancel }: PetFormProps) => {
-  const { user } = useAuth();
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [previews, setPreviews] = useState<string[]>([]);
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    control,
-    formState: { errors, isSubmitting },
-  } = useForm<PetFormInput, unknown, PetFormData>({
-    resolver: zodResolver(petSchema),
-    defaultValues: {
-      name: "",
-      age: "",
-      breed: "",
-      category: undefined,
-    },
-  });
-
-  // Watch the photos field to trigger preview generation
-  const selectedPhotos = useWatch({ control, name: "photos" });
-
-  useEffect(() => {
-    if (!selectedPhotos || selectedPhotos.length === 0) {
-      setPreviews([]);
-      return;
-    }
-
-    const objectUrls = Array.from(selectedPhotos).map((file) =>
-      URL.createObjectURL(file as File)
-    );
-
-    setPreviews(objectUrls);
-
-    return () => {
-      objectUrls.forEach((url) => URL.revokeObjectURL(url));
-    };
-  }, [selectedPhotos]);
-
-  const onSubmit = async (data: PetFormData) => {
-    setSubmitError(null);
-    console.log("Pet Form Data:", data);
-    const petOwnerId = user?.data?.id;
-    if (!petOwnerId) {
-      setSubmitError("You must be logged in to register a pet.");
-      return;
-    }
-  };
-
-  return (
-    <section className="w-full max-w-2xl overflow-hidden rounded-3xl bg-white shadow-2xl shadow-purple-200/60 text-[#1F1F2E]">
-      <div className="relative h-36 bg-gradient-to-br from-[#F4ECFF] to-[#E9DDFF] px-6 flex flex-col justify-center">
-        <h1 className="text-2xl font-black tracking-tight text-[#4c249f] sm:text-3xl">
-          Register Pet
-        </h1>
-        <p className="mt-1 text-sm font-semibold text-[#8B64D7]">
-          Please enter your pet details
-        </p>
-
-        <span className="absolute right-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-[#6D3DD9] shadow-lg shadow-purple-100">
-          <PawPrint size={28} />
-        </span>
-      </div>
-
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 px-6 py-6">
-        {submitError && (
-          <div className="bg-red-50 text-red-650 p-3 rounded-2xl text-xs font-semibold border border-red-100 mb-3">
-            {submitError}
-          </div>
-        )}
-
-        {/* Photo Upload Section - Full Width */}
-        <div className="w-full">
-          <label className="mb-2 block text-sm font-black">
-            Pet Photos
-          </label>
-          <label className="flex flex-col items-center justify-center w-full h-28 rounded-xl border-2 border-dashed border-purple-200 bg-[#F6F0FF]/50 hover:bg-[#F4ECFF] transition-colors cursor-pointer focus-within:border-[#6D3DD9] focus-within:ring-4 focus-within:ring-purple-100">
-            <div className="flex flex-col items-center justify-center pt-4 pb-4 text-[#6D3DD9]">
-              <ImagePlus size={26} className="mb-1 opacity-80" />
-              <p className="text-xs font-semibold">
-                Click to upload <span className="font-normal text-slate-500">or drag and drop</span>
-              </p>
-            </div>
-            <input
-              type="file"
-              multiple
-              className="hidden"
-              accept="image/*"
-              {...register("photos")}
-            />
-          </label>
-
-          {/* Previews Grid */}
-          {previews.length > 0 && (
-            <div className="mt-3 grid grid-cols-6 gap-2">
-              {previews.map((src, i) => (
-                <div key={src} className="relative aspect-square rounded-lg overflow-hidden border border-purple-100 shadow-sm">
-                  <img src={src} alt={`preview-${i}`} className="object-cover w-full h-full" />
-                </div>
-              ))}
-            </div>
-          )}
-
-          {errors.photos && (
-            <p className="mt-1 text-xs font-semibold text-red-500">
-              {errors.photos.message as string}
-            </p>
-          )}
-        </div>
-
-        {/* Row 1: Name and Age */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
-            label="Pet Name"
-            type="text"
-            placeholder="Enter pet name"
-            error={errors.name?.message}
-            icon={<User size={18} />}
-            {...register("name")}
-          />
-
-          <Input
-            label="Age"
-            type="number"
-            placeholder="Enter age"
-            error={errors.age?.message}
-            icon={<Calendar size={18} />}
-            rightText="Years"
-            {...register("age")}
-          />
-        </div>
-
-        {/* Row 2: Breed and Category */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
-            label="Breed"
-            type="text"
-            placeholder="Enter breed"
-            error={errors.breed?.message}
-            icon={<Shield size={18} />}
-            {...register("breed")}
-          />
-
-          <div>
-            <label className="mb-2 block text-sm font-black">
-              Category <span className="text-red-500">*</span>
-            </label>
-
-            <div className="relative flex h-14 items-center rounded-xl border border-slate-200 bg-white px-4 transition focus-within:border-[#6D3DD9] focus-within:ring-4 focus-within:ring-purple-100">
-              <List size={18} className="mr-3 text-[#6D3DD9]" />
-
-              <select
-                {...register("category")}
-                className="h-full w-full bg-transparent text-sm font-semibold text-slate-600 outline-none"
-              >
-                <option value="">Select category</option>
-                <option value="DOG">Dog</option>
-                <option value="CAT">Cat</option>
-                <option value="REPTILE">Reptile</option>
-                <option value="OTHER">Other</option>
-              </select>
-            </div>
-
-            {errors.category && (
-              <p className="mt-1 text-xs font-semibold text-red-500">
-                {errors.category.message}
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Info Box - Full Width */}
-        <div className="rounded-2xl border border-purple-100 bg-[#F6F0FF] p-4">
-          <h3 className="text-sm font-black text-[#4B2DB5]">
-            About Pet Categories
-          </h3>
-          <p className="mt-1 text-xs leading-5 text-slate-600">
-            Choose the correct category to help us provide better care for your pet.
-          </p>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-3 pt-2">
-          <Button
-            type="button"
-            variant="outline"
-            className="border-[#6D3DD9]/35 text-[#6D3DD9]"
-            onClick={() => {
-              reset();
-              setPreviews([]);
-              if (onCancel) onCancel();
-            }}
-          >
-            Cancel
-          </Button>
-
-          <Button
-            type="submit"
-            isSubmitting={isSubmitting}
-            className="bg-[#6D3DD9] hover:bg-[#5630B2] hover:text-white"
-          >
-            Save Pet
-          </Button>
-        </div>
-      </form>
-    </section>
-  );
-};
-
-export default PetForm;
 ````
 
 ## File: Frontend/src/features/Pet Owner/pet profile/components/PetOwnerProfileHeader.tsx
@@ -21054,142 +20377,450 @@ export const petProfileRoutes = [
 ];
 ````
 
-## File: Frontend/src/features/PetOwnerDashboard/components/DashboardSidebar.tsx
+## File: Frontend/src/features/Pet Owner/pet profile/schemas/pet.schema.ts
 ````typescript
-import {
-  CalendarDays,
-  LayoutDashboard,
-  LogOut,
-  PawPrint,
-  Settings,
-  ShoppingCart,
-  Stethoscope,
-  UserRound,
-  FileText,
-} from "lucide-react";
+import { z } from "zod";
 
-import { NavLink, useNavigate } from "react-router-dom";
-import type { DashboardSidebarItem } from "../types/petOwnerDashboard.types";
+export const petSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(2, "Pet name must contain at least 2 characters")
+    .max(50, "Pet name is too long"),
 
-const sidebarItems: DashboardSidebarItem[] = [
-  {
-    label: "Dashboard",
-    path: "/pet-owner/dashboard",
-    icon: <LayoutDashboard size={20} />,
-  },
-  {
-    label: "Appointments",
-    path: "/pet-owner/appointments",
-    icon: <CalendarDays size={20} />,
-  },
-  // {
-  //   label: "Reports",
-  //   path: "/pet-owner/reports",
-  //   icon: <FileText size={20} />,
-  // },
-  {
-    label: "Find Doctor",
-    path: "/doctors",
-    icon: <Stethoscope size={20} />,
-  },
-  {
-    label: "Marketplace",
-    path: "/marketplace1",
-    icon: <ShoppingCart size={20} />,
-  },
-  {
-    label: "Cart",
-    path: "/cart",
-    icon: <ShoppingCart size={20} />,
-  },
-  {
-    label: "Profile",
-    path: "/pet-owner/profile",
-    icon: <UserRound size={20} />,
-  },
-  // {
-  //   label: "Settings",
-  //   path: "/pet-owner/settings",
-  //   icon: <Settings size={20} />,
-  // },
-];
+  age: z.coerce
+    .number({
+      message: "Age is required",
+    })
+    .min(0, "Age cannot be negative")
+    .max(100, "Enter a valid pet age"),
 
-const DashboardSidebar = () => {
-  const navigate = useNavigate();
+  breed: z
+    .string()
+    .trim()
+    .min(2, "Breed must contain at least 2 characters")
+    .max(50, "Breed is too long"),
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
+  category: z.enum(["DOG", "CAT", "REPTILE", "OTHER"], {
+    message: "Please select a category",
+  }),
+
+  // 💡 Added: Informs TypeScript that photos exist in the schema
+  photos: z.any().optional(),
+});
+
+export type PetFormInput = z.input<typeof petSchema>;
+export type PetFormData = z.output<typeof petSchema>;
+````
+
+## File: Frontend/src/features/PetOwnerDashboard/api/petOwnerDashboard.api.ts
+````typescript
+import { api } from "@/features/api interface/axios.interface";
+import type {
+  PetOwnerDashboardResponse,
+  PetOwnerAppointmentsResponse, 
+} from "../types/petOwnerDashboard.types";
+
+export const getPetOwnerDashboardApi =
+  async (): Promise<PetOwnerDashboardResponse> => {
+    const response =
+      await api.get<PetOwnerDashboardResponse>(
+        "/pet-owner/dashboard",
+      );
+
+    return response.data;
   };
 
+
+export const getPetOwnerAppointmentsApi = async (): Promise<PetOwnerAppointmentsResponse> => {
+  const response = await api.get<PetOwnerAppointmentsResponse>("petOwner/appointments");
+  return response.data;
+};
+````
+
+## File: Frontend/src/features/PetOwnerDashboard/components/DashboardHeader.tsx
+````typescript
+import { Bell } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import Logo from "@/shared/components/Logo/Logo";
+
+import type {
+  DashboardHeaderProps,
+} from "../types/petOwnerDashboard.types";
+
+const DashboardHeader = ({
+  user,
+}: DashboardHeaderProps) => {
+  const navigate = useNavigate();
+  const firstName =
+    user.fullName.split(" ")[0] || user.fullName;
+
   return (
-    <aside className="fixed left-0 top-0 hidden h-screen w-[260px] border-r border-slate-200 bg-white lg:flex lg:flex-col">
-      {/* Logo */}
-      <div className="flex items-center gap-3 border-b border-slate-100 px-7 py-6">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EAF7F5] text-[#078b91]">
-          <PawPrint size={27} />
+    <header className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+        <div className="lg:hidden">
+          <Logo />
         </div>
 
         <div>
-          <h1 className="text-xl font-black text-[#078b91]">
-            Pets Veta
+          <h1 className="text-3xl font-black tracking-[-0.04em] text-[#101b3d]">
+            Hi, {firstName}!
           </h1>
 
-          <p className="text-xs font-semibold text-slate-500">
-            Care • Love • Heal
+          <p className="mt-2 text-sm font-medium text-slate-500">
+            Here&apos;s what&apos;s happening with your pets today.
           </p>
         </div>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 space-y-2 px-4 py-6">
-        {sidebarItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            className={({ isActive }) =>
-              `flex items-center gap-4 rounded-xl px-4 py-3.5 text-sm font-bold transition ${
-                isActive
-                  ? "bg-[#EAF7F5] text-[#078b91]"
-                  : "text-[#20263D] hover:bg-slate-50"
-              }`
-            }
-          >
-            {item.icon}
-            {item.label}
-          </NavLink>
-        ))}
-      </nav>
+      <div className="flex items-center gap-4">
+        <button
+          type="button"
+          aria-label="Notifications"
+          className="relative flex h-11 w-11 items-center justify-center rounded-full text-[#101b3d] transition hover:bg-slate-100"
+        >
+          <Bell size={23} />
 
-      {/* Small sidebar info */}
-      {/* <div className="mx-4 mb-5 rounded-2xl bg-[#F1FAF8] p-5">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-[#078b91]">
-          <PawPrint size={24} />
-        </div>
+          <span className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-black text-white">
+            3
+          </span>
+        </button>
 
-        <h3 className="mt-4 text-lg font-black text-[#101b3d]">
-          We care for your pets
-        </h3>
-
-        <p className="mt-2 text-sm font-medium leading-6 text-slate-500">
-          Book appointments and track your pet&apos;s health easily.
-        </p>
-      </div> */}
-
-      {/* Logout */}
-      <button
-        type="button"
-        onClick={handleLogout}
-        className="mx-5 mb-6 flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-red-500 transition hover:bg-red-50"
-      >
-        <LogOut size={20} />
-        Logout
-      </button>
-    </aside>
+        <button
+          type="button"
+          onClick={() => navigate("/pet-owner/profile")}
+          className="flex h-12 w-12 overflow-hidden rounded-full bg-[#EAF7F5] transition hover:ring-4 hover:ring-[#078b91]/10"
+          aria-label="Open pet owner profile"
+        >
+          <img
+            src={user.profileImageUrl}
+            alt={user.fullName}
+            className="h-full w-full object-cover"
+          />
+        </button>
+      </div>
+    </header>
   );
 };
 
-export default DashboardSidebar;
+export default DashboardHeader;
+````
+
+## File: Frontend/src/features/PetOwnerDashboard/pages/PetOwnerDashboardPage.tsx
+````typescript
+import { useEffect, useState } from "react";
+import DashboardBanner from "../components/DashboardBanner";
+import DashboardHeader from "../components/DashboardHeader";
+import DashboardSidebar from "../components/DashboardSidebar";
+import DashboardStats from "../components/DashboardStats";
+import MyPetsPreview from "../components/MyPetsPreview";
+import QuickActions from "../components/QuickActions";
+
+import { dashboardData } from "../data/dashboard.data";
+import { getMyPetsApi } from "@/features/Pet Owner/pet profile/api/pets.api";
+import { useAuth } from "@/features/Auth/hooks/authhook";
+import type { Pet } from "../types/petOwnerDashboard.types";
+
+const PetOwnerDashboardPage = () => {
+  const { user } = useAuth();
+  const [pets, setPets] = useState<Pet[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // 1. Fetch real-time registered pets from database
+  useEffect(() => {
+    let ignore = false;
+
+    const loadPetsData = async () => {
+      try {
+        setLoading(true);
+        const response = await getMyPetsApi();
+        if (ignore) return;
+
+        if (response.success && Array.isArray(response.data)) {
+          // Map to correct dashboard type compatibility
+          const mappedPets: Pet[] = response.data.map((pet: any) => ({
+            id: pet.id,
+            petOwnerId: pet.petOwnerId || "",
+            name: pet.name,
+            age: pet.age,
+            breed: pet.breed,
+            category: pet.category,
+          }));
+          setPets(mappedPets);
+        }
+      } catch (error) {
+        console.error("Failed to load dynamic dashboard pets:", error);
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadPetsData();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  // 2. Resolve active authenticated user data, fallback gracefully to static model
+  const headerUser = user?.data
+    ? {
+      id: user.data.id,
+      fullName: user.data.name || user.data.username || "Pet Parent",
+      profileImageUrl:
+        user.data.profileImageUrl &&
+          !user.data.profileImageUrl.toLowerCase().includes("enter your image")
+          ? user.data.profileImageUrl
+          : "https://ui-avatars.com/api/?name=Pet+Owner&background=EAF7F5&color=078b91",
+    }
+    : dashboardData.user;
+
+  // 3. Compute stats metrics dynamically using real pet database counts
+  const dynamicCounts = {
+    ...dashboardData.counts,
+    totalPets: pets.length, // Automatically binds live list count
+  };
+
+  return (
+    <main className="min-h-screen bg-[#F8FAFA] text-[#20263D]">
+      <DashboardSidebar />
+
+      <section className="min-h-screen px-4 py-6 sm:px-6 lg:ml-[260px] lg:px-8">
+        <div className="mx-auto max-w-[1500px]">
+          <DashboardHeader user={headerUser} />
+
+          <DashboardStats counts={dynamicCounts} />
+
+          {/* This section now loads live database-backed pets dynamically */}
+          <div className="mt-5">
+            {loading ? (
+              <div className="rounded-3xl border border-slate-200 bg-white p-12 text-center text-sm font-semibold text-slate-500 shadow-sm">
+                <div className="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-[#078b91] border-t-transparent mb-2" />
+                Updating dynamic profiles...
+              </div>
+            ) : (
+              <MyPetsPreview pets={pets} />
+            )}
+          </div>
+
+          <div className="mt-5">
+            <QuickActions />
+          </div>
+
+          <div className="mt-5">
+            <DashboardBanner />
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+};
+
+export default PetOwnerDashboardPage;
+````
+
+## File: Frontend/src/features/PetOwnerDashboard/petOwnerDashboard.route.tsx
+````typescript
+import PetOwnerDashboardPage from "./pages/PetOwnerDashboardPage";
+import PetOwnerAppointmentsPage from "./pages/PetOwnerAppointmentsPage";
+import { PetOwnerProtectedRoutes } from "@/ProtectedRoutes/PetOwnerProtectedRoutes"; 
+
+export const petOwnerDashboardRoutes = [
+  {
+    path: "/pet-owner/dashboard",
+    element: (
+      <PetOwnerProtectedRoutes>
+        <PetOwnerDashboardPage />
+      </PetOwnerProtectedRoutes>
+    ),
+  },
+  {
+    path: "/pet-owner/appointments",
+    element: (
+      <PetOwnerProtectedRoutes>
+        <PetOwnerAppointmentsPage />
+      </PetOwnerProtectedRoutes>
+    ),
+  },
+];
+````
+
+## File: Frontend/src/features/PetOwnerDashboard/types/petOwnerDashboard.types.ts
+````typescript
+import type { ReactNode } from "react";
+
+export type PetCategory = "DOG" | "CAT" | "REPTILE" | "OTHER";
+
+export type Pet = {
+  id: string;
+  petOwnerId: string;
+  name: string;
+  age: number | string;
+  breed: string;
+  category: PetCategory;
+};
+export type DBAppointmentStatus =
+  | "PENDING_DETAILS"
+  | "PENDING_REPORT"
+  | "PENDING_PAYMENT"
+  | "PAYMENT_PROCESSING"
+  | "CONFIRMED"
+  | "PAYMENT_FAILED"
+  | "EXPIRED"
+  | "CANCELLED"
+  | "COMPLETED"
+  | "REFUNDED"
+  | "NO_SHOW";
+
+export type DBPaymentStatus =
+  | "PENDING"
+  | "REQUIRES_PAYMENT_METHOD"
+  | "REQUIRES_ACTION"
+  | "PROCESSING"
+  | "SUCCEEDED"
+  | "FAILED"
+  | "CANCELLED"
+  | "REFUNDED";
+
+export interface PetOwnerAppointment {
+  id: string;
+  doctorId: string;
+  petOwnerId: string;
+  petId: string | null;
+  petIssueReportId: string | null;
+  scheduleId: string;
+  fees: number;
+  currency: string;
+  status: DBAppointmentStatus;
+  paymentStatus: DBPaymentStatus;
+  checkupTime: string;
+  expiresAt: string | null;
+  confirmedAt: string | null;
+  cancelledAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  doctor: {
+    id: string;
+    specialization: string;
+    user: {
+      fullName: string;
+      profileImageUrl: string;
+      email: string;
+      phone: string;
+    };
+  };
+  pet: {
+    id: string;
+    name: string;
+    category: string;
+    breed: string;
+    age: number;
+  } | null;
+  doctorSchedule: {
+    id: string;
+    date: string;
+    startTime: string;
+    endTime: string;
+    status: string;
+  };
+  petIssueReport: {
+    id: string;
+    issue: string;
+    createdAt: string;
+  } | null;
+  payment: {
+    id: string;
+    status: DBPaymentStatus;
+    amount: number;
+    currency: string;
+  } | null;
+}
+
+export interface PetOwnerAppointmentsResponse {
+  success: boolean;
+  message: string;
+  data: PetOwnerAppointment[];
+}
+
+export type AppointmentStatus =
+  | "PENDING"
+  | "COMPLETED"
+  | "CANCELLED";
+
+export type DashboardAppointment = {
+  id: string;
+  petId: string;
+  petName: string;
+  doctorId: string;
+  doctorName: string;
+  appointmentType: string;
+  checkupTime: string;
+  clinicAddress: string;
+  status: AppointmentStatus;
+};
+
+export type DashboardCounts = {
+  totalPets: number;
+  totalAppointments: number;
+  upcomingAppointments: number;
+  completedAppointments: number;
+  cancelledAppointments: number;
+  totalReports: number;
+};
+
+export type DashboardUser = {
+  id: string;
+  fullName: string;
+  profileImageUrl: string;
+};
+
+export type PetOwnerDashboardData = {
+  user: DashboardUser;
+  counts: DashboardCounts;
+  pets: Pet[];
+  upcomingAppointments: DashboardAppointment[];
+};
+
+export type PetOwnerDashboardResponse = {
+  success: boolean;
+  message: string;
+  data: PetOwnerDashboardData;
+};
+
+export type DashboardHeaderProps = {
+  user: DashboardUser;
+};
+
+export type DashboardStatsProps = {
+  counts: DashboardCounts;
+};
+
+export type StatusCountProps = {
+  label: string;
+  value: number;
+  className?: string;
+};
+
+export type DashboardSidebarItem = {
+  label: string;
+  path: string;
+  icon: ReactNode;
+};
+
+export type UpcomingAppointmentsProps = {
+  appointments: DashboardAppointment[];
+};
+
+export type PetPreviewCardProps = {
+  pet: Pet;
+};
+
+export type MyPetsPreviewProps = {
+  pets: Pet[];
+};
 ````
 
 ## File: Frontend/src/features/seller/components/OrdersTable.tsx
@@ -21686,146 +21317,52 @@ const StockTable = ({ products, onStockChange }: StockTableProps) => {
 export default StockTable;
 ````
 
-## File: Frontend/src/features/seller/pages/SellerSavedListingsPage.tsx
+## File: Frontend/src/features/seller/seller.routes.tsx
 ````typescript
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Card from "@/shared/components/Card/Card";
-import Button from "@/shared/components/Button/Button";
-import SellerHeader from "../components/SellerHeader";
-import SellerSidebar from "../components/SellerSidebar";
-import MarketplaceProductCard from "@/features/marketplace1/components/MarketplaceProductCard";
-import {
-  fetchSavedMarketplaceListings,
-  removeMarketplaceListing,
-  type MarketplaceProduct,
-} from "@/features/marketplace1/api/marketplace.api";
-import type { SellerApiError } from "../types/seller.types";
+// src/features/seller/routes/seller.routes.tsx
 
-const SellerSavedListingsPage = () => {
-  const navigate = useNavigate();
-  const [products, setProducts] = useState<MarketplaceProduct[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+import SellerDashboardPage from "../seller/pages/SellerDashboardPage";
+import SellerProductsPage from "../seller/pages/SellerProductsPage";
+import SellerProductFormPage from "../seller/pages/SellerProductFormPage";
+import SellerOrdersStockPage from "../seller/pages/SellerOrdersStockPage";
+import SellerSavedListingsPage from "../seller/pages/SellerSavedListingsPage";
+import SellerProfilePage from "../seller/pages/SellerSavedListingsPage"; // <--- Add this import
 
-  useEffect(() => {
-    let ignore = false;
-
-    const loadSavedListings = async () => {
-      try {
-        const listings = await fetchSavedMarketplaceListings();
-
-        if (!ignore) {
-          setProducts(listings.map((listing) => listing.product).filter(Boolean));
-        }
-      } catch (err) {
-        const apiError = err as SellerApiError;
-
-        if (apiError.response?.status === 401) {
-          navigate("/login", {
-            state: { redirectTo: "/seller/saved-listings" },
-          });
-          return;
-        }
-
-        if (!ignore) {
-          setError("Unable to load saved listings. Please check your connection and try again.");
-        }
-      } finally {
-        if (!ignore) {
-          setLoading(false);
-        }
-      }
-    };
-
-    void loadSavedListings();
-
-    return () => {
-      ignore = true;
-    };
-  }, [navigate]);
-
-  const handleRemoveSaved = async (productId: string) => {
-    try {
-      await removeMarketplaceListing(productId);
-      setProducts((prev) => prev.filter((product) => product.id !== productId));
-    } catch {
-      setError("Unable to remove the saved listing. Please try again.");
-    }
-  };
-
-  return (
-    <div className="flex min-h-screen bg-[#f7fbfb]">
-      <SellerSidebar />
-
-      <main className="flex-1">
-        <SellerHeader />
-
-        <section className="p-7">
-          <div className="flex flex-col gap-4 rounded-xl bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm font-semibold text-[#178f95]">
-                Pet Marketplace
-              </p>
-              <h1 className="mt-1 text-2xl font-semibold text-gray-900">
-                Saved Listings
-              </h1>
-              <p className="mt-2 text-sm text-gray-500">
-                Marketplace products you have saved.
-              </p>
-            </div>
-
-            <Button onClick={() => navigate("/marketplace1")}>
-              Browse Marketplace
-            </Button>
-          </div>
-
-          {loading && (
-            <Card className="mt-6 text-sm text-gray-500">
-              Loading saved listings...
-            </Card>
-          )}
-
-          {error && (
-            <Card className="mt-6 text-sm font-medium text-red-600">
-              {error}
-            </Card>
-          )}
-
-          {!loading && !error && products.length === 0 && (
-            <Card className="mt-6 text-center">
-              <h2 className="text-xl font-semibold text-gray-900">
-                No saved listings
-              </h2>
-              <p className="mt-2 text-sm text-gray-500">
-                Save marketplace products to see them here.
-              </p>
-              <Button className="mt-5" onClick={() => navigate("/marketplace1")}>
-                Go to Marketplace
-              </Button>
-            </Card>
-          )}
-
-          {!loading && !error && products.length > 0 && (
-            <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-              {products.map((product) => (
-                <MarketplaceProductCard
-                  key={product.id}
-                  product={product}
-                  saved
-                  onSave={() => void handleRemoveSaved(product.id)}
-                  onDetails={() => navigate(`/marketplace/product/${product.id}`)}
-                />
-              ))}
-            </div>
-          )}
-        </section>
-      </main>
-    </div>
-  );
-};
-
-export default SellerSavedListingsPage;
+export const sellerRoutes = [
+  {
+    path: "/seller/dashboard",
+    element: <SellerDashboardPage />,
+  },
+  {
+    path: "/seller/listings",
+    element: <SellerProductsPage />,
+  },
+  {
+    path: "/seller/add-product",
+    element: <SellerProductFormPage />,
+  },
+  {
+    path: "/seller/edit-product/:id",
+    element: <SellerProductFormPage />,
+  },
+  {
+    path: "/seller/orders",
+    element: <SellerOrdersStockPage />,
+  },
+  {
+    path: "/seller/stock",
+    element: <SellerOrdersStockPage />,
+  },
+  {
+    path: "/seller/saved-listings",
+    element: <SellerSavedListingsPage />,
+  },
+  // Add this route entry:
+  {
+    path: "/seller/profile",
+    element: <SellerProfilePage />,
+  },
+];
 ````
 
 ## File: Frontend/src/features/Services/components/Banner.tsx
@@ -21970,6 +21507,61 @@ const servicesRoutes = [
 export default servicesRoutes;
 ````
 
+## File: Frontend/src/Global Provider/SmoothScroller.tsx
+````typescript
+import { useEffect } from "react";
+import Lenis from "@studio-freight/lenis";
+
+export default function SmoothScroll({ children }: { children: React.ReactNode }) {
+    useEffect(() => {
+        const lenis = new Lenis({
+            duration: 0.9,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            orientation: "vertical",
+            gestureOrientation: "vertical",
+            smoothWheel: true,
+            wheelMultiplier: 0.95,
+            touchMultiplier: 1.5,
+            infinite: false,
+            syncTouch: false,
+        });
+
+        // 1. Function to instantly snap Lenis to the top
+        const handleScrollToTop = () => {
+            lenis.scrollTo(0, { immediate: true });
+        };
+
+        // 2. Listen to browser navigation history changes natively
+        window.addEventListener("popstate", handleScrollToTop);
+
+        // 3. Patch the standard history pushState to catch programmatic route clicks
+        const originalPushState = history.pushState;
+        history.pushState = function (...args) {
+            const result = originalPushState.apply(this, args);
+            handleScrollToTop(); // Trigger scroll up when a new page is pushed
+            return result;
+        };
+
+        let rafId: number;
+        function raf(time: number) {
+            lenis.raf(time);
+            rafId = requestAnimationFrame(raf);
+        }
+
+        rafId = requestAnimationFrame(raf);
+
+        return () => {
+            lenis.destroy();
+            cancelAnimationFrame(rafId);
+            window.removeEventListener("popstate", handleScrollToTop);
+            history.pushState = originalPushState; // Restore native behavior on cleanup
+        };
+    }, []);
+
+    return <>{children}</>;
+}
+````
+
 ## File: Frontend/src/index.css
 ````css
 @import "tailwindcss";
@@ -22044,29 +21636,43 @@ createRoot(document.getElementById('root')!).render(
 )
 ````
 
-## File: Frontend/src/shared/components/Logo/Logo.tsx
+## File: Frontend/src/shared/components/Notfound/Notfound.tsx
 ````typescript
-const logoUrl = "https://res.cloudinary.com/dqoeyomtf/image/upload/v1779458623/logo_tctgtx.png";
+import NotFoundAnimation from "./NotFoundAnimation";
 
-const Logo = () => {
+const Notfound = () => {
   return (
-    <div className="flex items-center">
-      <div className="w-15 h-15 overflow-hidden">
-        <img
-          src={logoUrl}
-          alt="PETSVETA LOGO"
-          className="w-full h-full object-cover"
-        />
-      </div>
-      <div>
-        <h1 className="font-bold text-sky-800 text-xl">PetsVeta</h1>
-        <p>Care, Connect, Cure</p>
-      </div>
-    </div>
+    <main className="min-h-screen bg-[#f6fff7] flex items-center justify-center px-4">
+      <section className="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-2 items-center gap-10">
+        <div className="flex justify-center">
+          <NotFoundAnimation />
+        </div>
+
+        <div className="text-center lg:text-left">
+          <h1 className="text-4xl md:text-5xl font-bold text-[#138D90]">
+            404 - Page Not Found
+          </h1>
+
+          <p className="mt-4 text-base md:text-lg text-gray-600">
+            Oops! This pet wandered off. The page you are looking for does not exist or may have been moved.
+          </p>
+
+          <div className="mt-7 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <a href="/" className="px-6 py-3 rounded-xl bg-[#138D90] text-white font-medium text-center">
+              Back To Home
+            </a>
+
+            <a href="/doctors" className="px-6 py-3 rounded-xl border border-[#138D90] text-[#138D90] font-medium text-center">
+              Find a Vet
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 };
 
-export default Logo;
+export default Notfound;
 ````
 
 ## File: Backend/app/controllers/doctorSchedule.controller.js
@@ -22117,6 +21723,76 @@ module.exports = {
     getDoctorSchedule,
     getDoctorSchedulesByDoctorId,
 };
+````
+
+## File: Backend/app/routes/auth.routes.js
+````javascript
+const express = require('express');
+const Router = express.Router();
+const authController = require('../controllers/auth.controller');
+const authMiddleware = require('../middleware/auth.middleware');
+const upload = require('../config/multer.config');
+const { authLimiter } = require('../middleware/rateLimiter');
+const { validateRequest } = require('../middleware/zod.middleware')
+const { doctorSchema, petOwnerSchema, loginSchema, resetPasswordSchema, forgotPasswordSchema } = require('../schema/zod.schema')
+
+Router
+    .route('/me')
+    .get(authMiddleware.protect, authController.verifyUser)
+
+Router
+    .route('/google/url')
+    .get(authLimiter, authController.getGoogleUrlController)
+
+Router
+    .route('/google/callback')
+    .get(authLimiter, authController.handleGoogleCallbackController)
+
+Router
+    .route('/register/doctor')
+    .post(upload.single('document'), authController.createDoctorAccount)
+
+Router
+    .route('/register/pet-owner')
+    .post(authLimiter, validateRequest(petOwnerSchema), authController.createPetOwnerAccount)
+
+Router
+    .route('/register/admin')
+    .post(authLimiter, authController.createAdminAccount)
+
+Router
+    .route('/login/admin')
+    .post(authLimiter, validateRequest(loginSchema), authController.adminLogin)
+
+Router
+    .route('/login/user')
+    .post(authLimiter, validateRequest(loginSchema), authController.loginUserAccount)
+
+Router
+    .route('/logout/user')
+    .post(authMiddleware.protect, authController.logoutUser)
+
+Router
+    .route('/refresh/token')
+    .get(authLimiter, authMiddleware.protectRefresh, authController.refreshTokenController)
+
+Router
+    .route('/verify/email')
+    .post(authLimiter, authController.verifyUserEmail)
+
+Router
+    .route('/resend/otp')
+    .get(authLimiter, authMiddleware.protectOtp, authController.resendUserOtp)
+
+Router
+    .route('/otp-verification')
+    .post(authLimiter, authMiddleware.protectOtp, authController.verifyOtp)
+
+Router
+    .route('/password-resets')
+    .post(authLimiter, authMiddleware.protectOtp, authController.resetUserPassword)
+
+module.exports = Router;
 ````
 
 ## File: Backend/app/routes/userdoctor.route.js
@@ -22439,61 +22115,205 @@ const MobileSidebar = ({ open, setOpen }: MobileSidebarProps) => {
 export default MobileSidebar;
 ````
 
-## File: Frontend/src/features/api interface/axios.interface.ts
+## File: Frontend/src/features/AiAssistance/components/AiChatBox.tsx
 ````typescript
-import axios from "axios";
+import { useState } from "react";
+import { FaPaperPlane, FaRobot, FaUser, FaPaw } from "react-icons/fa";
 
-export const api = axios.create({
-    baseURL: 'http://localhost:8000/api/v1/',
-    withCredentials: true
-})
+import Button from "../../../shared/components/Button";
+import type { AiMessage } from "../types/aiAssistance.types";
+import { sendAiAssistantMessage } from "../api/aiAssistant.api";
 
-export const handleAxiosError = (error: unknown) => {
-    if (axios.isAxiosError(error)) {
-        if (error.response) {
-            console.log("Status Code", error.response?.status);
-            console.log("Response Data", error.response?.data);
-        } else if (error.request) {
-            console.log("No Request Response Received", error.request);
+const AiChatBox = () => {
+    const [message, setMessage] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+
+    const [messages, setMessages] = useState<AiMessage[]>([
+        {
+            id: 1,
+            sender: "ai",
+            text: "Hello! I am your PetsVeta AI Assistant. Tell me your pet symptoms and I will guide you.",
+        },
+    ]);
+
+    const handleSendMessage = async () => {
+        if (!message.trim() || isLoading) return;
+
+        const currentMessage = message;
+
+        const userMessage: AiMessage = {
+            id: Date.now(),
+            sender: "user",
+            text: currentMessage,
+        };
+
+        setMessages((prev) => [...prev, userMessage]);
+        setMessage("");
+        setIsLoading(true);
+
+        try {
+            const aiText = await sendAiAssistantMessage(currentMessage);
+
+            const aiReply: AiMessage = {
+                id: Date.now() + 1,
+                sender: "ai",
+                text:
+                    aiText ||
+                    "Sorry, I could not generate a response. Please try again.",
+            };
+
+            setMessages((prev) => [...prev, aiReply]);
+        } catch {
+            const errorReply: AiMessage = {
+                id: Date.now() + 1,
+                sender: "ai",
+                text: "Something went wrong. Please login first or try again later.",
+            };
+
+            setMessages((prev) => [...prev, errorReply]);
+        } finally {
+            setIsLoading(false);
         }
-        
-        throw error;
-    } else {
-        console.error("Non-Axios Error:", error);
-        throw error;
-    }
+    };
+
+    return (
+        <section className="bg-white px-5 py-16 lg:px-16">
+            <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1fr_380px]">
+                <div className="rounded-3xl bg-[#F5FBFF] p-4 shadow-[0_10px_35px_rgba(15,23,42,0.08)] md:p-6">
+                    <div className="mb-5 flex items-center justify-between rounded-3xl bg-white p-5 shadow-sm">
+                        <div>
+                            <h2 className="text-2xl font-extrabold text-[#07182C]">
+                                Ask AI Assistant
+                            </h2>
+
+                            <p className="mt-1 text-sm text-slate-500">
+                                Describe your pet symptoms or care question.
+                            </p>
+                        </div>
+
+                        <div className="hidden h-12 w-12 items-center justify-center rounded-2xl bg-[#EEFAFA] text-xl text-[#009F9D] sm:flex">
+                            <FaRobot />
+                        </div>
+                    </div>
+
+                    <div className="h-[420px] space-y-4 overflow-y-auto rounded-3xl bg-white p-5">
+                        {messages.map((item) => (
+                            <div
+                                key={item.id}
+                                className={`flex ${item.sender === "user" ? "justify-end" : "justify-start"
+                                    }`}
+                            >
+                                <div
+                                    className={`flex max-w-[85%] gap-3 rounded-3xl p-4 ${item.sender === "user"
+                                        ? "bg-[#07182c] text-white"
+                                        : "bg-[#eefafa] text-[#07182c]"
+                                        }`}
+                                >
+                                    <div
+                                        className={`mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${item.sender === "user"
+                                            ? "bg-white/15"
+                                            : "bg-white text-[#009f9d]"
+                                            }`}
+                                    >
+                                        {item.sender === "user" ? <FaUser /> : <FaRobot />}
+                                    </div>
+
+                                    <p className="text-sm leading-6">{item.text}</p>
+                                </div>
+                            </div>
+                        ))}
+
+                        {isLoading && (
+                            <div className="flex justify-start">
+                                <div className="flex max-w-[85%] gap-3 rounded-3xl bg-[#eefafa] p-4 text-[#07182c]">
+                                    <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white text-[#009f9d]">
+                                        <FaRobot />
+                                    </div>
+
+                                    <p className="text-sm leading-6">AI is typing...</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="mt-5 grid gap-3 rounded-3xl bg-white p-4 md:grid-cols-[1fr_auto]">
+                        <textarea
+                            rows={2}
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                            placeholder="Example: My dog is vomiting and not eating..."
+                            disabled={isLoading}
+                            className="resize-none rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#009f9d] focus:ring-2 focus:ring-[#009f9d]/20 disabled:cursor-not-allowed disabled:bg-slate-100"
+                        />
+
+                        <Button
+                            type="button"
+                            onClick={handleSendMessage}
+                            disabled={isLoading}
+                            className="flex items-center justify-center gap-2"
+                        >
+                            <FaPaperPlane />
+                            {isLoading ? "Sending..." : "Send"}
+                        </Button>
+                    </div>
+                </div>
+
+                <aside className="space-y-5">
+                    <div className="rounded-3xl bg-gradient-to-br from-[#BDF0EE] to-[#FFF3EC] p-6 shadow-[0_18px_50px_rgba(15,23,42,0.10)]">
+                        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl text-[#009F9D]">
+                            <FaPaw />
+                        </div>
+
+                        <h3 className="text-2xl font-extrabold text-[#07182C]">
+                            Quick Symptom Guide
+                        </h3>
+
+                        <p className="mt-3 text-sm leading-6 text-slate-600">
+                            AI can guide you, but serious symptoms should always be checked by
+                            a verified doctor.
+                        </p>
+                    </div>
+
+                    <div className="rounded-3xl bg-white p-6 shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
+                        <h3 className="text-lg font-extrabold text-[#07182C]">
+                            Try asking:
+                        </h3>
+
+                        <div className="mt-4 space-y-3">
+                            {[
+                                "My cat is not eating",
+                                "My dog is vomiting",
+                                "My pet has skin allergy",
+                                "Which doctor should I visit?",
+                            ].map((item) => (
+                                <button
+                                    key={item}
+                                    type="button"
+                                    onClick={() => setMessage(item)}
+                                    disabled={isLoading}
+                                    className="w-full rounded-2xl bg-[#f5fbff] px-4 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-[#eefafa] hover:text-[#009f9d] disabled:cursor-not-allowed disabled:opacity-60"
+                                >
+                                    {item}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="rounded-3xl bg-[#07182c] p-6 text-white">
+                        <h3 className="text-lg font-extrabold">Emergency Reminder</h3>
+
+                        <p className="mt-3 text-sm leading-6 text-white/75">
+                            If your pet has breathing problems, bleeding, seizures,
+                            poisoning, or extreme weakness, contact a vet immediately.
+                        </p>
+                    </div>
+                </aside>
+            </div>
+        </section>
+    );
 };
 
-api.interceptors.response.use(
-    (response) => {
-        return response;
-    },
-    async (error) => {
-        const originalRequest = error.config;
-
-        if (error.response?.status === 401 && !originalRequest._retry) {
-            originalRequest._retry = true;
-
-            try {
-                console.log("Acces token expires ...trying to make the new access token");
-
-                await axios.get("http://localhost:8000/api/v1/auth/refresh/token",
-                    {
-                        withCredentials: true
-                    }
-                )
-                console.log("Token Refreshed...");
-                return api(originalRequest);
-
-            } catch (refreshError) {
-                console.error("Refresh Token expired or Invalid");
-
-                return Promise.reject(refreshError);
-            }
-        }
-        return Promise.reject(error);
-    }
-)
+export default AiChatBox;
 ````
 
 ## File: Frontend/src/features/Auth/api/doctor.api.ts
@@ -22692,374 +22512,6 @@ export default function ForgotPasswordForm() {
 }
 ````
 
-## File: Frontend/src/features/Auth/pages/login.tsx
-````typescript
-import LoginComponent from "../components/login-component";
-
-const PawIcon = () => (
-  <svg
-    viewBox="0 0 64 64"
-    className="h-7 w-7 fill-[#178f95]"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <circle cx="18" cy="22" r="7" />
-    <circle cx="32" cy="16" r="7" />
-    <circle cx="46" cy="22" r="7" />
-    <circle cx="24" cy="34" r="6" />
-    <circle cx="40" cy="34" r="6" />
-    <path d="M18 47c0-9 6-17 14-17s14 8 14 17c0 6-5 9-14 9s-14-3-14-9z" />
-  </svg>
-);
-
-const StatCard = ({
-  icon,
-  value,
-  label,
-}: {
-  icon: React.ReactNode;
-  value: string;
-  label: string;
-}) => {
-  return (
-    <div className="flex h-[118px] flex-1 flex-col items-center justify-center rounded-[22px] border border-white/55 bg-white/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_18px_45px_rgba(18,40,60,0.08)] backdrop-blur-2xl">
-      <div className="mb-3 text-[#178f95]">{icon}</div>
-
-      <h3 className="text-[28px] font-extrabold leading-none text-[#178f95]">
-        {value}
-      </h3>
-
-      <p className="mt-2 text-[13px] font-bold text-[#3c4b67]">{label}</p>
-    </div>
-  );
-};
-
-const LoginPage = () => {
-  return (
-    <main className="relative h-screen w-full overflow-hidden bg-[#f8f2ed] text-[#101b3d]">
-      {/* Background */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_8%,rgba(249,197,168,0.92)_0%,rgba(249,197,168,0.62)_28%,transparent_48%),radial-gradient(circle_at_85%_8%,rgba(236,250,249,0.95)_0%,rgba(236,250,249,0.62)_30%,transparent_52%),linear-gradient(180deg,#fff7f2_0%,#eefaf8_44%,#bfe5e1_100%)]" />
-
-      {/* Big glass circles */}
-      <div className="absolute -top-[280px] left-[260px] h-[760px] w-[760px] rounded-full border border-white/30 bg-white/10 shadow-[inset_0_0_90px_rgba(255,255,255,0.45)] backdrop-blur-[2px]" />
-      <div className="absolute bottom-[-220px] right-[-160px] h-[520px] w-[520px] rounded-full border border-white/25 bg-white/10 shadow-[inset_0_0_80px_rgba(255,255,255,0.35)]" />
-
-      {/* Floating bubbles */}
-      <div className="absolute left-[4%] top-[21%] h-8 w-8 rounded-full bg-[#ffb073]/70 shadow-[inset_-8px_-8px_18px_rgba(255,255,255,0.5),0_10px_25px_rgba(249,197,168,0.5)]" />
-      <div className="absolute left-[49%] top-[26%] hidden h-6 w-6 rounded-full bg-white/55 shadow-[inset_-6px_-6px_12px_rgba(255,255,255,0.8)] lg:block" />
-      <div className="absolute bottom-[13%] left-[43%] hidden h-10 w-10 rounded-full bg-[#bdebe8]/75 shadow-[inset_-9px_-9px_15px_rgba(255,255,255,0.9),0_12px_28px_rgba(23,143,149,0.18)] lg:block" />
-
-      {/* Main layout */}
-      <div className="absolute inset-0 z-10 flex items-center justify-center overflow-hidden">
-        <section className="grid w-[125vw] max-w-[1850px] origin-center scale-[0.7] grid-cols-1 items-center gap-14 px-12 lg:grid-cols-[1.05fr_0.95fr]">
-          {/* Left Glass Panel */}
-          <div className="hidden justify-center lg:flex">
-            <div className="relative flex h-[735px] w-full max-w-[800px] flex-col justify-center rounded-[38px] border border-white/55 bg-white/20 px-24 py-16 shadow-[inset_0_1px_1px_rgba(255,255,255,0.95),0_28px_70px_rgba(36,66,90,0.12)] backdrop-blur-[26px]">
-              <div className="absolute inset-0 rounded-[38px] bg-gradient-to-br from-white/25 via-white/10 to-transparent" />
-
-              {/* Floating paw top-left */}
-              <div className="absolute -left-14 -top-14 z-10 flex h-20 w-20 items-center justify-center rounded-2xl bg-white/55 shadow-[0_14px_40px_rgba(31,50,70,0.08)] backdrop-blur-2xl">
-                <PawIcon />
-              </div>
-
-              {/* Floating paw top-right */}
-              <div className="absolute right-9 top-[-28px] z-10 opacity-60">
-                <PawIcon />
-              </div>
-
-              <div className="relative z-10">
-                <h1 className="max-w-[610px] text-[64px] font-extrabold leading-[1.13] tracking-[-0.055em] text-[#101b3d]">
-                  Welcome <br />
-                  Back <br />
-                  to{" "}
-                  <span className="bg-gradient-to-r from-[#178f95] to-[#0c7b84] bg-clip-text text-transparent">
-                    PetsVeta
-                  </span>
-                </h1>
-
-                <p className="mt-8 max-w-[550px] text-[21px] font-medium leading-[1.65] text-[#2f405f]">
-                  Book vet appointments, explore pet services, and shop trusted
-                  pet products from one beautiful platform.
-                </p>
-
-                {/* Trusted card */}
-                <div className="mt-10 flex max-w-[610px] items-center gap-7 rounded-[28px] border border-white/60 bg-white/24 p-5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.9),0_20px_50px_rgba(20,50,70,0.1)] backdrop-blur-3xl">
-                  <div className="relative h-[100px] w-[100px] shrink-0 overflow-hidden rounded-3xl bg-[#fff3e8] shadow-[0_14px_28px_rgba(40,50,70,0.12)]">
-                    <img
-                      src="https://images.unsplash.com/photo-1586671267731-da2cf3ceeb80?auto=format&fit=crop&w=300&q=80"
-                      alt="Dog"
-                      className="h-full w-full object-cover"
-                    />
-
-                    <div className="absolute bottom-[-2px] right-[-2px] flex h-9 w-9 items-center justify-center rounded-full bg-white text-lg shadow-lg">
-                      💗
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-[20px] font-extrabold text-[#101b3d]">
-                      Trusted Pet Care
-                    </h3>
-
-                    <p className="mt-4 text-[17px] font-medium leading-7 text-[#4f5f78]">
-                      Doctors, sellers, and pet parents connected.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Stats */}
-                <div className="mt-10 flex max-w-[610px] gap-5">
-                  <StatCard
-                    value="120+"
-                    label="Doctors"
-                    icon={
-                      <svg
-                        className="h-9 w-9"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M12 12a5 5 0 100-10 5 5 0 000 10zM3 22a9 9 0 0118 0H3z" />
-                      </svg>
-                    }
-                  />
-
-                  <StatCard
-                    value="5k+"
-                    label="Bookings"
-                    icon={
-                      <svg
-                        className="h-9 w-9"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <rect x="3" y="5" width="18" height="16" rx="2" />
-                        <path d="M16 3v4M8 3v4M3 10h18" />
-                      </svg>
-                    }
-                  />
-
-                  <StatCard
-                    value="24/7"
-                    label="Support"
-                    icon={
-                      <svg
-                        className="h-9 w-9"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path d="M4 13a8 8 0 0116 0" />
-                        <path d="M4 13v4a2 2 0 002 2h1v-6H6a2 2 0 00-2 2zM20 13v4a2 2 0 01-2 2h-1v-6h1a2 2 0 012 2z" />
-                      </svg>
-                    }
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Login Card */}
-          <div className="flex justify-center">
-            <div className="flex h-[700px] w-full max-w-[660px] items-center rounded-[34px] border border-white/70 bg-white/72 px-20 py-12 shadow-[0_30px_80px_rgba(30,60,80,0.16)] backdrop-blur-2xl">
-              <LoginComponent />
-            </div>
-          </div>
-        </section>
-      </div>
-    </main>
-  );
-};
-
-export default LoginPage;
-````
-
-## File: Frontend/src/features/Auth/pages/pet-owner-signup.tsx
-````typescript
-import PetOwnerForm from "../components/pets-owner";
-
-const PawIcon = () => (
-  <svg
-    viewBox="0 0 64 64"
-    className="h-7 w-7 fill-[#178f95]"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <circle cx="18" cy="22" r="7" />
-    <circle cx="32" cy="16" r="7" />
-    <circle cx="46" cy="22" r="7" />
-    <circle cx="24" cy="34" r="6" />
-    <circle cx="40" cy="34" r="6" />
-    <path d="M18 47c0-9 6-17 14-17s14 8 14 17c0 6-5 9-14 9s-14-3-14-9z" />
-  </svg>
-);
-
-const StatCard = ({
-  icon,
-  value,
-  label,
-}: {
-  icon: React.ReactNode;
-  value: string;
-  label: string;
-}) => {
-  return (
-    <div className="flex h-[118px] flex-1 flex-col items-center justify-center rounded-[22px] border border-white/55 bg-white/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_18px_45px_rgba(18,40,60,0.08)] backdrop-blur-2xl">
-      <div className="mb-3 text-[#178f95]">{icon}</div>
-
-      <h3 className="text-[28px] font-extrabold leading-none text-[#178f95]">
-        {value}
-      </h3>
-
-      <p className="mt-2 text-[13px] font-bold text-[#3c4b67]">{label}</p>
-    </div>
-  );
-};
-
-const PetOwnerSignupPage = () => {
-  return (
-    <main className="relative h-screen w-full overflow-hidden bg-[#f8f2ed] text-[#101b3d]">
-      {/* Background */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_8%,rgba(249,197,168,0.92)_0%,rgba(249,197,168,0.62)_28%,transparent_48%),radial-gradient(circle_at_85%_8%,rgba(236,250,249,0.95)_0%,rgba(236,250,249,0.62)_30%,transparent_52%),linear-gradient(180deg,#fff7f2_0%,#eefaf8_44%,#bfe5e1_100%)]" />
-
-      {/* Big glass circles */}
-      <div className="absolute -top-[280px] left-[260px] h-[760px] w-[760px] rounded-full border border-white/30 bg-white/10 shadow-[inset_0_0_90px_rgba(255,255,255,0.45)] backdrop-blur-[2px]" />
-
-      <div className="absolute bottom-[-220px] right-[-160px] h-[520px] w-[520px] rounded-full border border-white/25 bg-white/10 shadow-[inset_0_0_80px_rgba(255,255,255,0.35)]" />
-
-      {/* Floating bubbles */}
-      <div className="absolute left-[4%] top-[21%] h-8 w-8 rounded-full bg-[#ffb073]/70 shadow-[inset_-8px_-8px_18px_rgba(255,255,255,0.5),0_10px_25px_rgba(249,197,168,0.5)]" />
-
-      <div className="absolute left-[49%] top-[26%] hidden h-6 w-6 rounded-full bg-white/55 shadow-[inset_-6px_-6px_12px_rgba(255,255,255,0.8)] lg:block" />
-
-      <div className="absolute bottom-[13%] left-[43%] hidden h-10 w-10 rounded-full bg-[#bdebe8]/75 shadow-[inset_-9px_-9px_15px_rgba(255,255,255,0.9),0_12px_28px_rgba(23,143,149,0.18)] lg:block" />
-
-      {/* Main layout */}
-      <div className="absolute inset-0 z-10 flex items-center justify-center overflow-hidden">
-        <section className="grid w-[128vw] max-w-[1850px] origin-center scale-[0.72] grid-cols-1 items-center gap-14 px-12 lg:grid-cols-[1.05fr_0.95fr]">
-          {/* Left Glass Panel */}
-          <div className="hidden justify-center lg:flex">
-            <div className="relative flex h-[720px] w-full max-w-[800px] flex-col justify-center rounded-[38px] border border-white/55 bg-white/20 px-20 py-14 shadow-[inset_0_1px_1px_rgba(255,255,255,0.95),0_28px_70px_rgba(36,66,90,0.12)] backdrop-blur-[26px]">
-              <div className="absolute inset-0 rounded-[38px] bg-gradient-to-br from-white/25 via-white/10 to-transparent" />
-
-              {/* Floating paw top-left */}
-              <div className="absolute -left-14 -top-14 z-10 flex h-20 w-20 items-center justify-center rounded-2xl bg-white/55 shadow-[0_14px_40px_rgba(31,50,70,0.08)] backdrop-blur-2xl">
-                <PawIcon />
-              </div>
-
-              {/* Floating paw top-right */}
-              <div className="absolute right-9 top-[-28px] z-10 opacity-60">
-                <PawIcon />
-              </div>
-
-              <div className="relative z-10">
-                <h1 className="max-w-[610px] text-[64px] font-extrabold leading-[1.13] tracking-[-0.055em] text-[#101b3d]">
-                  Join{" "}
-                  <span className="bg-gradient-to-r from-[#178f95] to-[#0c7b84] bg-clip-text text-transparent">
-                    PetsVeta
-                  </span>
-                </h1>
-
-                <p className="mt-8 max-w-[600px] text-[22px] font-medium leading-[1.6] text-[#2f405f]">
-                  Create your account to book vet appointments, explore pet
-                  services, and shop trusted pet products.
-                </p>
-
-                {/* Trusted Card */}
-                <div className="mt-10 flex max-w-[610px] items-center gap-7 rounded-[28px] border border-white/60 bg-white/24 p-5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.9),0_20px_50px_rgba(20,50,70,0.1)] backdrop-blur-3xl">
-                  <div className="relative h-[100px] w-[100px] shrink-0 overflow-hidden rounded-3xl bg-[#fff3e8] shadow-[0_14px_28px_rgba(40,50,70,0.12)]">
-                    <img
-                      src="https://images.unsplash.com/photo-1586671267731-da2cf3ceeb80?auto=format&fit=crop&w=300&q=80"
-                      alt="Dog"
-                      className="h-full w-full object-cover"
-                    />
-
-                    <div className="absolute bottom-[-2px] right-[-2px] flex h-9 w-9 items-center justify-center rounded-full bg-white text-lg shadow-lg">
-                      💗
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-[20px] font-extrabold text-[#101b3d]">
-                      Complete Pet Care
-                    </h3>
-
-                    <p className="mt-4 text-[17px] font-medium leading-7 text-[#4f5f78]">
-                      Everything for your pet in one place.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Stats */}
-                <div className="mt-10 flex max-w-[610px] gap-5">
-                  <StatCard
-                    value="120+"
-                    label="Doctors"
-                    icon={
-                      <svg
-                        className="h-9 w-9"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M12 12a5 5 0 100-10 5 5 0 000 10zM3 22a9 9 0 0118 0H3z" />
-                      </svg>
-                    }
-                  />
-
-                  <StatCard
-                    value="5k+"
-                    label="Members"
-                    icon={
-                      <svg
-                        className="h-9 w-9"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path d="M17 20h5v-2a4 4 0 00-5-4" />
-                        <path d="M9 20H4v-2a4 4 0 015-4" />
-                        <circle cx="12" cy="7" r="4" />
-                      </svg>
-                    }
-                  />
-
-                  <StatCard
-                    value="24/7"
-                    label="Support"
-                    icon={
-                      <svg
-                        className="h-9 w-9"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path d="M4 13a8 8 0 0116 0" />
-                        <path d="M4 13v4a2 2 0 002 2h1v-6H6a2 2 0 00-2 2zM20 13v4a2 2 0 01-2 2h-1v-6h1a2 2 0 012 2z" />
-                      </svg>
-                    }
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Signup Card */}
-          <div className="flex justify-center">
-            <div className="flex h-[760px] w-full max-w-[700px] items-center rounded-[36px] border border-white/70 bg-white/72 px-16 py-10 shadow-[0_30px_80px_rgba(30,60,80,0.16)] backdrop-blur-2xl">
-              <PetOwnerForm />
-            </div>
-          </div>
-        </section>
-      </div>
-    </main>
-  );
-};
-
-export default PetOwnerSignupPage;
-````
-
 ## File: Frontend/src/features/Auth/schemas/doctor.schema.tsx
 ````typescript
 import { z } from "zod";
@@ -23116,6 +22568,211 @@ export const doctorSchema = z.object({
 // Exporting the inferred TypeScript type so you can use it in your component
 export type DoctorFormData = z.infer<typeof doctorSchema>;
 export type DoctorFormInput = z.input<typeof doctorSchema>;
+````
+
+## File: Frontend/src/features/cart/pages/CheckoutPage.tsx
+````typescript
+import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import Button from "@/shared/components/Button/Button";
+import Input from "@/shared/components/Input/Input";
+import Card from "@/shared/components/Card/Card";
+import { clearCart, getCartItems } from "../utils/cartStorage";
+import { api } from "@/features/api interface/axios.interface";
+import {
+  checkoutSchema,
+  type CheckoutFormData,
+} from "../schemas/checkout.schema";
+import type { CartApiError } from "../types/cart.types";
+
+const CheckoutPage = () => {
+  const navigate = useNavigate();
+
+  // 💡 Added: Resolve if this is a single-item direct pet purchase or standard cart
+  const [directBuyItem] = useState(() => {
+    const raw = localStorage.getItem("pets-veta-direct-buy");
+    return raw ? JSON.parse(raw) : null;
+  });
+
+  const [cart, setCart] = useState(() => {
+    if (directBuyItem) {
+      return [directBuyItem];
+    }
+    return getCartItems();
+  });
+
+  const [error, setError] = useState("");
+  const [placingOrder, setPlacingOrder] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CheckoutFormData>({
+    resolver: zodResolver(checkoutSchema),
+    defaultValues: {
+      phoneNumber: "",
+      shippingAddress: "",
+    },
+  });
+
+  const total = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+
+  const handlePlaceOrder = async (data: CheckoutFormData) => {
+    setError("");
+
+    if (cart.length === 0) {
+      setError("Your cart is empty.");
+      return;
+    }
+
+    const orderPayload = {
+      items: cart.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+      })),
+      shippingAddress: data.shippingAddress,
+      phoneNumber: data.phoneNumber,
+    };
+
+    try {
+      setPlacingOrder(true);
+
+      // 1. Save the order in the database (status: PENDING)
+      const response = await api.post("orders", orderPayload);
+      const order = response.data?.data;
+
+      if (!order?.id) {
+        setError("Failed to initialize checkout. Please try again.");
+        return;
+      }
+
+      // 2. Clear correct local storages
+      if (directBuyItem) {
+        localStorage.removeItem("pets-veta-direct-buy");
+      } else {
+        clearCart();
+      }
+      setCart([]);
+
+      // 3. 💡 Redirect directly to the dedicated order payment page
+      navigate(`/order-payment?orderId=${order.id}`);
+    } catch (err) {
+      const apiError = err as CartApiError;
+
+      if (apiError.response?.status === 401) {
+        navigate("/login", {
+          state: { redirectTo: "/checkout" },
+        });
+        return;
+      }
+
+      setError(apiError.response?.data?.message || "Unable to place the order. Please try again.");
+    } finally {
+      setPlacingOrder(false);
+    }
+  };
+
+  return (
+    <main className="min-h-screen bg-[#f7fbfb] px-6 py-8 lg:px-12">
+      <h1 className="text-3xl font-bold text-[#07182c]">Checkout</h1>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,560px)_360px]">
+        <Card>
+          <form onSubmit={handleSubmit(handlePlaceOrder)}>
+            {error && (
+              <p className="mb-4 rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-600">
+                {error}
+              </p>
+            )}
+
+            <Input
+              label="Phone Number"
+              placeholder="03000000000"
+              error={errors.phoneNumber?.message}
+              {...register("phoneNumber")}
+            />
+
+            <div className="mt-4">
+              <Input
+                label="Shipping Address"
+                placeholder="Lahore, Pakistan"
+                error={errors.shippingAddress?.message}
+                {...register("shippingAddress")}
+              />
+            </div>
+
+            <Button
+              className="mt-6 w-full"
+              type="submit"
+              disabled={placingOrder}
+            >
+              {placingOrder ? "Starting Secure Checkout..." : "Continue to Payment"}
+            </Button>
+          </form>
+        </Card>
+
+        <Card>
+          <h2 className="text-xl font-bold text-[#07182c]">Order Summary</h2>
+
+          <div className="mt-5 space-y-4">
+            {cart.length === 0 && (
+              <p className="text-sm text-gray-500">Your cart is empty.</p>
+            )}
+
+            {cart.map((item) => (
+              <div
+                key={item.productId}
+                className="flex items-center justify-between gap-4 border-b border-gray-100 pb-3"
+              >
+                <div className="flex min-w-0 items-center gap-3">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="h-12 w-12 rounded-lg object-cover"
+                  />
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-gray-900">
+                      {item.title}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Qty {item.quantity}
+                    </p>
+                  </div>
+                </div>
+
+                <p className="text-sm font-semibold text-gray-900">
+                  PKR {(item.price * item.quantity).toLocaleString()}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-5 flex justify-between text-base font-bold">
+            <span>Total</span>
+            <span>PKR {total.toLocaleString()}</span>
+          </div>
+
+          {!directBuyItem && (
+            <Button
+              variant="outline"
+              className="mt-5 w-full"
+              onClick={() => navigate("/cart")}
+            >
+              Back to Cart
+            </Button>
+          )}
+        </Card>
+      </div>
+    </main>
+  );
+};
+
+export default CheckoutPage;
 ````
 
 ## File: Frontend/src/features/Doctor/components/DoctorAvailability/DoctorAvailability.tsx
@@ -23324,89 +22981,6 @@ const DoctorAvailability = () => {
 };
 
 export default DoctorAvailability;
-````
-
-## File: Frontend/src/features/Doctor/components/DoctorSideBar.tsx
-````typescript
-import { CalendarDays, DollarSignIcon, Home, LogOut, Users, X } from "lucide-react";
-import { NavLink } from "react-router-dom";
-import Logo from "@/shared/components/Logo/Logo";
-import type { DoctorSidebarProps } from "../doctor.types";
-
-export const DoctorSidebar = ({ sidebarOpen, setSidebarOpen }: DoctorSidebarProps) => {
-    const sidebarLinks = [
-        { id: 1, label: "Dashboard", icon: Home, address: "doctor-dashboard" },
-        { id: 2, label: "Appointments", icon: CalendarDays, address: "appointments" },
-        { id: 3, label: "Patients", icon: Users, address: "pateints" },
-        { id: 4, label: "Availability", icon: CalendarDays, address: "doctor-availability" },
-        { id: 5, label: "Pricing", icon: DollarSignIcon, address: "doctor-pricing" },
-        { id: 6, label: "Profile", icon: Users, address: "doctor-dashboard-profile" },
-    ];
-
-    return (
-        <>
-            {sidebarOpen && (
-                <button
-                    type="button"
-                    onClick={() => setSidebarOpen(false)}
-                    className="fixed inset-0 z-40 bg-slate-900/40 lg:hidden"
-                    aria-label="Close sidebar"
-                />
-            )}
-
-            <aside
-                className={`fixed left-0 top-0 z-50 h-screen w-72 border-r border-slate-200 bg-white transition-transform duration-300 lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
-                    }`}
-            >
-                <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5">
-                    <div className="flex items-center gap-3">
-                        <Logo />
-                    </div>
-
-                    <button
-                        type="button"
-                        onClick={() => setSidebarOpen(false)}
-                        className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:hidden"
-                        aria-label="Close sidebar"
-                    >
-                        <X size={22} />
-                    </button>
-                </div>
-
-                <nav className="space-y-2 px-4 py-5">
-                    {sidebarLinks.map((link) => {
-                        const Icon = link.icon;
-
-                        return (
-                            <NavLink
-                                to={link.address}
-                                key={link.id}
-                                onClick={() => setSidebarOpen(false)}
-                                className={({ isActive }) => `outline-none flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold transition ${isActive
-                                    ? "bg-teal-700 text-white shadow-md shadow-teal-700/20"
-                                    : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
-                                    }`}
-                            >
-                                <Icon size={19} />
-                                {link.label}
-                            </NavLink>
-                        );
-                    })}
-
-                    <div className="pt-8">
-                        <button
-                            type="button"
-                            className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold text-red-500 transition hover:bg-red-50"
-                        >
-                            <LogOut size={19} />
-                            Logout
-                        </button>
-                    </div>
-                </nav>
-            </aside>
-        </>
-    );
-};
 ````
 
 ## File: Frontend/src/features/Doctor/components/DoctorSkill.tsx
@@ -23673,112 +23247,319 @@ export const getApprovedDoctors = async (
 };
 ````
 
-## File: Frontend/src/features/Landing Page/components/Banner.tsx
+## File: Frontend/src/features/Doctorcart/component/EditDoctorProfileForm.tsx
 ````typescript
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+
+import Button from "../../../shared/components/Button/Button";
+import Input from "../../../shared/components/Input/Input";
 
 import {
-  FaShieldAlt,
-  FaLock,
-  FaHeadset,
-  FaUsers,
-  FaCalendarAlt,
-  FaShoppingBag,
-  FaPaw,
-} from "react-icons/fa";
+  doctorProfileSchema,
+  type DoctorProfileFormData,
+  type DoctorProfileFormInput,
+} from "../schemas/doctorProfile.schema";
 
-import img from "@/assets/shared/images/bannerImage.png";
-import Button from "../../../shared/components/Button/Button";
-import DashboardHomeMenu from "./DashboardHomeMenu";
+import { updateDoctorProfileApi } from "../apis/doctorProfile.api";
+import { useDoctorProfileById } from "../hooks/useDoctorProfile";
 
-export const Banner = () => {
-  return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-[#f4fbff] via-white to-[#e8fbfa] px-6 py-16 lg:px-16 lg:py-20 flex flex-col lg:flex-row items-center justify-between gap-10">
-      <div className="w-full lg:w-1/2 z-10">
-        <div className="inline-flex items-center gap-2 bg-white text-[#07182c] font-semibold px-5 py-3 rounded-full shadow-lg mb-7">
-          <FaPaw className="text-[#009f9d]" />
-          <span>Trusted by 10,000+ pet parents</span>
-        </div>
+const EditDoctorProfileForm = () => {
+  const navigate = useNavigate();
 
-        <h1 className="text-[40px] md:text-[56px] lg:text-[64px] leading-tight font-extrabold text-[#07182c] mb-6">
-          Better care for <br />
-          your pets, <span className="text-[#00a7a5]">every day.</span>
-        </h1>
+  const [apiError, setApiError] = useState("");
+  const [apiMessage, setApiMessage] = useState("");
 
-        <p className="text-base md:text-lg text-slate-700 leading-7 max-w-xl mb-8">
-          PetsVeta is your all-in-one platform for expert care, trusted vets,
-          quality products and a loving community.
-        </p>
+  const { data: profileData, isLoading, error } = useDoctorProfileById();
 
-        <div className="flex flex-wrap gap-4 mb-8">
-          <Link to="/doctors">
-            <Button
-              variant="primary"
-              size="md"
-              className="inline-flex items-center gap-3 !bg-[#009f9d] !border-[#009f9d] !text-white hover:!bg-[#008f8d] hover:!text-white rounded-2xl shadow-xl"
-            >
-              <FaCalendarAlt />
-              Book a Vet Appointment
-            </Button>
-          </Link>
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm<DoctorProfileFormInput, unknown, DoctorProfileFormData>({
+    resolver: zodResolver(doctorProfileSchema),
+    defaultValues: {
+      fullName: "",
+      username: "",
+      phone: "",
+      profileImageUrl: "",
+      specialization: "",
+      education: "",
+      address: "",
+      experience: "",
+      fees: "",
+      isAvailable: true,
+    },
+  });
 
-          <Link to="/marketplace1">
-            <Button
-              variant="outline"
-              size="md"
-              className="inline-flex items-center gap-3 !bg-white !text-[#07182c] !border-white hover:!bg-white hover:!text-[#009f9d] rounded-2xl shadow-lg"
-            >
-              <FaShoppingBag />
-              Explore Marketplace
-            </Button>
-          </Link>
-        </div>
+  const isAvailable = watch("isAvailable");
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-          <div className="flex items-center gap-3 text-sm font-bold text-[#07182c]">
-            <span className="w-10 h-10 rounded-full bg-[#d9f7f6] text-[#008f8d] flex items-center justify-center shrink-0">
-              <FaShieldAlt />
-            </span>
-            Verified Vets
-          </div>
+  useEffect(() => {
+    if (profileData?.success) {
+      const d = profileData.data;
+      reset({
+        fullName: d.fullName || "",
+        username: d.username || "",
+        phone: d.phone || "",
+        profileImageUrl: d.profileImageUrl || "",
+        specialization: d.specialization || "",
+        education: d.education || "",
+        address: d.address || "",
+        experience: String(d.experience ?? ""),
+        fees: String(d.fees ?? ""),
+        isAvailable: d.isAvailable ?? true,
+      });
+    }
 
-          <div className="flex items-center gap-3 text-sm font-bold text-[#07182c]">
-            <span className="w-10 h-10 rounded-full bg-[#d9f7f6] text-[#008f8d] flex items-center justify-center shrink-0">
-              <FaLock />
-            </span>
-            Secure Bookings
-          </div>
+    if (error) {
+      console.log("Fetch doctor profile error:", error);
+      setApiError("Failed to load doctor profile.");
+    }
+  }, [profileData, error, reset]);
 
-          <div className="flex items-center gap-3 text-sm font-bold text-[#07182c]">
-            <span className="w-10 h-10 rounded-full bg-[#d9f7f6] text-[#008f8d] flex items-center justify-center shrink-0">
-              <FaHeadset />
-            </span>
-            24/7 Support
-          </div>
+  const onSubmit = async (data: DoctorProfileFormData) => {
+    try {
+      setApiError("");
+      setApiMessage("");
 
-          <div className="flex items-center gap-3 text-sm font-bold text-[#07182c]">
-            <span className="w-10 h-10 rounded-full bg-[#d9f7f6] text-[#008f8d] flex items-center justify-center shrink-0">
-              <FaUsers />
-            </span>
-            Trusted by Pet Parents
-          </div>
-        </div>
-      </div>
+      const response = await updateDoctorProfileApi(data);
 
-      <div className="relative w-full lg:w-1/2 min-h-[360px] lg:min-h-[520px] flex items-end justify-center">
-        <div className="absolute w-[330px] h-[330px] md:w-[480px] md:h-[480px] rounded-full bg-gradient-to-br from-[#4fd4d1] to-[#009f9d] bottom-4" />
+      if (response.success) {
+        setApiMessage(response.message || "Profile updated successfully.");
 
-        <img
-          src={img}
-          alt="PetsVeta pets"
-          className="relative z-10 w-full max-w-[620px] object-contain"
-        />
-      </div>
+        setTimeout(() => {
+          navigate("/doctor-profile");
+        }, 700);
+      }
+    } catch (error) {
+      console.log("Update doctor profile error:", error);
+      setApiError("Failed to update profile. Please try again.");
+    }
+  };
 
-      <DashboardHomeMenu />
-    </section>
-  );
+  if (isLoading) {
+    return (
+      <main className="min-h-screen bg-[#F8FAFA] px-4 py-6 text-[#20263D] sm:px-6 lg:px-8">
+        <section className="mx-auto max-w-5xl">
+          <div className="rounded-[28px] border border-slate-200 bg-white p-8 shadow-sm">
+            <p className="text-sm font-bold text-slate-500">
+              Loading doctor profile...
+            </p>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  return (
+    <main className="min-h-screen bg-[#F8FAFA] px-4 py-6 text-[#20263D] sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-5xl">
+        <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.25em] text-[#078B91]">
+              Doctor Panel
+            </p>
+
+            <h1 className="mt-2 text-3xl font-black tracking-[-0.03em] text-[#101B3D]">
+              Edit Doctor Profile
+            </h1>
+
+            <p className="mt-2 text-sm font-medium text-slate-500">
+              Update your professional details, clinic information, and public
+              profile.
+            </p>
+          </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            className="h-11 w-auto px-6"
+            onClick={() => navigate("/doctor-profile")}
+          >
+            Cancel
+          </Button>
+        </div>
+
+        {apiError && (
+          <div className="mb-5 rounded-2xl border border-red-100 bg-red-50 px-5 py-3 text-sm font-bold text-red-600">
+            {apiError}
+          </div>
+        )}
+
+        {apiMessage && (
+          <div className="mb-5 rounded-2xl border border-green-100 bg-green-50 px-5 py-3 text-sm font-bold text-green-700">
+            {apiMessage}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {/* Basic Information */}
+          <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-6">
+              <h2 className="text-xl font-black text-[#101B3D]">
+                Basic Information
+              </h2>
+              <p className="mt-1 text-sm font-medium text-slate-500">
+                These details are connected with your account profile.
+              </p>
+            </div>
+
+            <div className="grid gap-5 md:grid-cols-2">
+              <Input
+                label="Full Name"
+                placeholder="Dr. Ayesha Khan"
+                error={errors.fullName?.message}
+                {...register("fullName")}
+              />
+
+              <Input
+                label="Username"
+                placeholder="dr_ayesha"
+                error={errors.username?.message}
+                {...register("username")}
+              />
+
+              <Input
+                label="Phone"
+                placeholder="+92 300 1234567"
+                error={errors.phone?.message}
+                {...register("phone")}
+              />
+
+              <Input
+                label="Profile Image URL"
+                placeholder="https://example.com/profile.jpg"
+                error={errors.profileImageUrl?.message}
+                {...register("profileImageUrl")}
+              />
+            </div>
+          </section>
+
+          {/* Professional Information */}
+          <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-6">
+              <h2 className="text-xl font-black text-[#101B3D]">
+                Professional Information
+              </h2>
+              <p className="mt-1 text-sm font-medium text-slate-500">
+                These details will be visible to pet owners.
+              </p>
+            </div>
+
+            <div className="grid gap-5 md:grid-cols-2">
+              <Input
+                label="Specialization"
+                placeholder="Veterinary Surgeon"
+                error={errors.specialization?.message}
+                {...register("specialization")}
+              />
+
+              <Input
+                label="Education"
+                placeholder="DVM"
+                error={errors.education?.message}
+                {...register("education")}
+              />
+
+              <Input
+                label="Experience"
+                type="number"
+                placeholder="5"
+                error={errors.experience?.message}
+                {...register("experience")}
+              />
+
+              <Input
+                label="Consultation Fees"
+                type="number"
+                placeholder="2500"
+                error={errors.fees?.message}
+                {...register("fees")}
+              />
+            </div>
+
+            <div className="mt-5">
+              <label className="mb-2 block text-sm font-black text-[#20263D]">
+                Clinic Address
+              </label>
+
+              <textarea
+                rows={3}
+                placeholder="PetCare Clinic, Gulberg III, Lahore"
+                className={`w-full resize-none rounded-xl border bg-white px-4 py-3 text-sm font-medium outline-none transition-all duration-300 placeholder:text-slate-400 ${
+                  errors.address
+                    ? "border-red-500 focus:border-red-500"
+                    : "border-slate-200 focus:border-[#078B91] focus:ring-4 focus:ring-[#D4E2E0]/60"
+                }`}
+                {...register("address")}
+              />
+
+              {errors.address && (
+                <p className="mt-1.5 text-xs font-semibold text-red-500">
+                  {errors.address.message}
+                </p>
+              )}
+            </div>
+
+            <div className="mt-5 rounded-2xl border border-slate-200 bg-[#F8FAFA] p-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h3 className="text-sm font-black text-[#101B3D]">
+                    Availability Status
+                  </h3>
+                  <p className="mt-1 text-xs font-semibold text-slate-500">
+                    Turn this on if you are available for appointments.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setValue("isAvailable", !isAvailable)}
+                  className={`relative h-8 w-14 rounded-full transition ${
+                    isAvailable ? "bg-[#078B91]" : "bg-slate-300"
+                  }`}
+                >
+                  <span
+                    className={`absolute top-1 h-6 w-6 rounded-full bg-white shadow transition ${
+                      isAvailable ? "left-7" : "left-1"
+                    }`}
+                  />
+                </button>
+              </div>
+            </div>
+          </section>
+
+          {/* Buttons */}
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              className="h-11 w-auto px-7"
+              onClick={() => navigate("/doctor-profile")}
+            >
+              Cancel
+            </Button>
+
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="h-11 w-auto px-7"
+            >
+              {isSubmitting ? "Saving..." : "Save Changes"}
+            </Button>
+          </div>
+        </form>
+      </section>
+    </main>
+  );
 };
+
+export default EditDoctorProfileForm;
 ````
 
 ## File: Frontend/src/features/Landing Page/routes.tsx
@@ -23825,6 +23606,500 @@ const LandingPageRoutes = [
 ];
 
 export default LandingPageRoutes;
+````
+
+## File: Frontend/src/features/marketplace1/components/MarketplaceProductCard.tsx
+````typescript
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  FaHeart,
+  FaRegHeart,
+  FaMapMarkerAlt,
+  FaStar,
+  FaStore,
+  FaEdit, // 💡 Added
+} from "react-icons/fa";
+import Button from "@/shared/components/Button/Button";
+import Card from "@/shared/components/Card/Card";
+import { addToCart } from "@/features/cart/utils/cartStorage";
+import { useAuth } from "@/features/Auth/hooks/authhook"; // 💡 Added
+import {
+  getProductImage,
+  getProductPrice,
+  getSellerName,
+  toDisplayCategory,
+} from "../api/marketplace.api";
+import type { MarketplaceProductCardProps } from "../types/marketplace.types";
+
+const MarketplaceProductCard = ({
+  product,
+  saved,
+  onSave,
+  onDetails,
+}: MarketplaceProductCardProps) => {
+  const navigate = useNavigate();
+  const { user } = useAuth(); // 💡 Added: Resolve authenticated user session
+  const [cartError, setCartError] = useState("");
+
+  const image = getProductImage(product);
+  const price = getProductPrice(product);
+  const seller = getSellerName(product);
+
+  const isPet = product.category === "PETS";
+
+  // 💡 Added: Check if the logged-in user owns this listed product
+  const isOwnListing = user?.data?.id === product.seller?.user?.id;
+
+  const handleAddToCart = () => {
+    const result = addToCart({
+      productId: product.id,
+      title: product.title,
+      price,
+      image,
+      quantity: 1,
+      sellerId: product.sellerId,
+    });
+
+    if (!result.success) {
+      setCartError(result.message);
+      return;
+    }
+
+    navigate("/cart");
+  };
+
+  const handleDirectBuy = () => {
+    localStorage.removeItem("pets-veta-direct-buy");
+
+    const directBuyItem = {
+      productId: product.id,
+      title: product.title,
+      price,
+      image,
+      quantity: 1,
+      sellerId: product.sellerId,
+    };
+
+    localStorage.setItem("pets-veta-direct-buy", JSON.stringify(directBuyItem));
+    navigate("/checkout");
+  };
+
+  return (
+    <Card className="overflow-hidden p-0">
+      <div className="relative h-44 bg-gray-50">
+        <button
+          type="button"
+          onClick={() => navigate(`/marketplace/product/${product.id}`)}
+          className="block h-full w-full overflow-hidden text-left"
+          aria-label={`View details for ${product.title}`}
+        >
+          <img
+            src={image}
+            alt={product.title}
+            className="h-full w-full object-cover transition duration-300 hover:scale-105"
+          />
+        </button>
+
+        <span className="absolute left-3 top-3 rounded-md bg-[#e8f7f7] px-3 py-1 text-xs font-semibold text-[#178f95]">
+          {toDisplayCategory(product.category)}
+        </span>
+
+        {/* Hide save button if it's the seller's own listing */}
+        {!isOwnListing && (
+          <button
+            type="button"
+            onClick={onSave}
+            className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#07182c] shadow-sm"
+          >
+            {saved ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
+          </button>
+        )}
+      </div>
+
+      <div className="p-4">
+        <h3 className="text-base font-bold text-[#07182c]">{product.title}</h3>
+
+        <p className="mt-2 flex items-center gap-2 text-sm text-gray-500">
+          <FaStore className="text-[#178f95]" />
+          {seller} {isOwnListing && <span className="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-sm ml-1">Your Listing</span>}
+        </p>
+
+        <div className="mt-3 flex items-center justify-between">
+          <p className="text-lg font-bold text-[#178f95]">
+            PKR {price.toLocaleString()}
+          </p>
+
+          <div className="flex items-center gap-3 text-sm">
+            <span className="flex items-center gap-1 text-gray-700">
+              <FaStar className="text-yellow-400" />
+              New
+            </span>
+
+            <span className="flex items-center gap-1 text-gray-500">
+              <FaMapMarkerAlt />
+              {product.location || "Pakistan"}
+            </span>
+          </div>
+        </div>
+
+        <div className="mt-4 grid grid-cols-2 gap-3">
+          <Button variant="outline" size="sm" onClick={onDetails}>
+            Details
+          </Button>
+
+          {/* 💡 Updated: If it's their own listing, show a manage shortcut. Otherwise, show transactional buttons */}
+          {isOwnListing ? (
+            <Button
+              size="sm"
+              onClick={() => navigate(`/seller/edit-product/${product.id}`)}
+              className="bg-gray-100 border border-slate-200 text-slate-700 hover:bg-slate-200 flex items-center justify-center gap-1"
+            >
+              <FaEdit size={12} />
+              Edit
+            </Button>
+          ) : isPet ? (
+            <Button
+              size="sm"
+              onClick={handleDirectBuy}
+              className="bg-[#178f95] text-white hover:bg-[#12757a]"
+            >
+              Buy Now
+            </Button>
+          ) : (
+            <Button
+              size="sm"
+              onClick={handleAddToCart}
+              className="bg-[#F9C5A8] text-[#c94d00] hover:bg-[#f7b58f]"
+            >
+              Add to Cart
+            </Button>
+          )}
+        </div>
+
+        {cartError && (
+          <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-600">
+            {cartError}
+          </p>
+        )}
+      </div>
+    </Card>
+  );
+};
+
+export default MarketplaceProductCard;
+````
+
+## File: Frontend/src/features/marketplace1/pages/MarketplacePage.tsx
+````typescript
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  FaPaw,
+  FaShoppingBag,
+  FaSlidersH,
+  FaThLarge,
+  FaUndo,
+} from "react-icons/fa";
+import Button from "@/shared/components/Button/Button";
+import Input from "@/shared/components/Input/Input";
+import MarketplaceProductCard from "../components/MarketplaceProductCard";
+import MarketplaceDetailPanel from "../components/MarketplaceDetailPanel";
+import MarketplacePagination from "../components/MarketplacePagination";
+import {
+  fetchMarketplaceProducts,
+  fetchSavedMarketplaceListings,
+  removeMarketplaceListing,
+  saveMarketplaceListing,
+  toBackendCategory,
+  type MarketplaceProduct,
+} from "../api/marketplace.api";
+
+const ITEMS_PER_PAGE = 12;
+
+const MarketplacePage = () => {
+  const navigate = useNavigate();
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("All");
+  const [location, setLocation] = useState("All");
+  const [page, setPage] = useState(1);
+  const [savedIds, setSavedIds] = useState<string[]>([]);
+  const [products, setProducts] = useState<MarketplaceProduct[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const [selectedProduct, setSelectedProduct] =
+    useState<MarketplaceProduct | null>(null);
+
+  const categories = ["All", "Pets", "Food", "Accessories"];
+
+  const queryCategory = useMemo(
+    () => (category === "All" ? "" : toBackendCategory(category)),
+    [category]
+  );
+
+  useEffect(() => {
+    let ignore = false;
+
+    const loadProducts = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const data = await fetchMarketplaceProducts({
+          page,
+          limit: ITEMS_PER_PAGE,
+          search,
+          category: queryCategory,
+          location: location === "All" ? "" : location,
+        });
+
+        if (ignore) return;
+
+        setProducts(data.products);
+        setTotalPages(data.pagination.totalPages || 1);
+        setSelectedProduct((current) => {
+          if (current && data.products.some((product) => product.id === current.id)) {
+            return current;
+          }
+
+          return data.products[0] || null;
+        });
+      } catch {
+        if (!ignore) {
+          setError("Unable to load marketplace products. Please check your connection and try again.");
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadProducts();
+
+    return () => {
+      ignore = true;
+    };
+  }, [page, search, queryCategory, location]);
+
+  useEffect(() => {
+    const loadSaved = async () => {
+      try {
+        const saved = await fetchSavedMarketplaceListings();
+        setSavedIds(saved.map((item) => item.productId));
+      } catch {
+        setSavedIds([]);
+      }
+    };
+
+    void loadSaved();
+  }, []);
+
+  const toggleSave = async (id: string) => {
+    const isSaved = savedIds.includes(id);
+
+    try {
+      if (isSaved) {
+        await removeMarketplaceListing(id);
+        setSavedIds((prev) => prev.filter((savedId) => savedId !== id));
+        return;
+      }
+
+      await saveMarketplaceListing(id);
+      setSavedIds((prev) => [...prev, id]);
+    } catch {
+      navigate("/login", {
+        state: {
+          redirectTo: "/marketplace1",
+        },
+      });
+    }
+  };
+
+  const clearFilters = () => {
+    setSearch("");
+    setCategory("All");
+    setLocation("All");
+    setPage(1);
+  };
+
+  return (
+    <main className="min-h-screen bg-[#f7fbfb] px-6 py-8 lg:px-12">
+      <section className="mb-6 mt-20 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+          <h1 className="text-4xl font-bold text-[#07182c]">
+            Pet Marketplace
+          </h1>
+
+          <p className="mt-2 text-gray-500">
+            Buy pets, food, and accessories from verified sellers.
+          </p>
+        </div>
+
+        <Button className="gap-2" onClick={() => navigate("/seller/add-product")}>
+          <FaShoppingBag />
+          Sell Your Product
+        </Button>
+      </section>
+
+      <section className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+        <div className="grid gap-4 lg:grid-cols-[1.4fr_0.9fr_0.9fr_auto]">
+          <Input
+            placeholder="Search pets, food, accessories..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+          />
+
+          <select
+            value={category}
+            onChange={(e) => {
+              setCategory(e.target.value);
+              setPage(1);
+            }}
+            className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-[#178f95]"
+          >
+            <option>All</option>
+            <option>Pets</option>
+            <option>Food</option>
+            <option>Accessories</option>
+          </select>
+
+          <select
+            value={location}
+            onChange={(e) => {
+              setLocation(e.target.value);
+              setPage(1);
+            }}
+            className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-[#178f95]"
+          >
+            <option>All</option>
+            <option>Lahore</option>
+            <option>Karachi</option>
+            <option>Islamabad</option>
+            <option>Multan</option>
+          </select>
+
+          <Button variant="outline" className="gap-2" onClick={clearFilters}>
+            <FaUndo />
+            Clear Filters
+          </Button>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-3">
+          {categories.map((item) => (
+            <button
+              key={item}
+              onClick={() => {
+                setCategory(item);
+                setPage(1);
+              }}
+              className={`flex items-center gap-2 rounded-full border px-5 py-2 text-sm font-semibold transition ${
+                category === item
+                  ? "border-[#178f95] bg-[#178f95] text-white"
+                  : "border-gray-200 bg-white text-gray-600 hover:border-[#178f95] hover:text-[#178f95]"
+              }`}
+            >
+              <FaPaw />
+              {item}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section
+        className={`mt-6 grid gap-6 ${
+          selectedProduct ? "xl:grid-cols-[1fr_330px]" : "grid-cols-1"
+        }`}
+      >
+        <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+          <div className="mb-5 flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-[#07182c]">
+                Latest Pet Listings
+              </h2>
+
+              <p className="text-sm text-gray-500">
+                Showing {products.length} available listings
+              </p>
+            </div>
+
+            <div className="hidden items-center gap-3 lg:flex">
+              <Button variant="outline" size="sm" className="gap-2">
+                <FaSlidersH />
+                Sort by: Newest First
+              </Button>
+
+              <Button variant="outline" size="sm">
+                <FaThLarge />
+              </Button>
+            </div>
+          </div>
+
+          <div
+            className={`grid gap-5 ${
+              selectedProduct
+                ? "lg:grid-cols-2 2xl:grid-cols-3"
+                : "md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+            }`}
+          >
+            {loading && (
+              <p className="col-span-full rounded-lg bg-gray-50 p-5 text-sm text-gray-500">
+                Loading marketplace products...
+              </p>
+            )}
+
+            {error && (
+              <p className="col-span-full rounded-lg bg-red-50 p-5 text-sm font-medium text-red-600">
+                {error}
+              </p>
+            )}
+
+            {!loading && !error && products.length === 0 && (
+              <p className="col-span-full rounded-lg bg-gray-50 p-5 text-sm text-gray-500">
+                No active listings found.
+              </p>
+            )}
+
+            {products.map((product) => (
+              <MarketplaceProductCard
+                key={product.id}
+                product={product}
+                saved={savedIds.includes(product.id)}
+                onSave={() => toggleSave(product.id)}
+                onDetails={() => setSelectedProduct(product)}
+              />
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <MarketplacePagination
+              page={page}
+              totalPages={totalPages}
+              onPageChange={(nextPage) => {
+                setPage(nextPage);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            />
+          )}
+        </div>
+
+        {selectedProduct && (
+          <MarketplaceDetailPanel
+            product={selectedProduct}
+            onClose={() => setSelectedProduct(null)}
+          />
+        )}
+      </section>
+    </main>
+  );
+};
+
+export default MarketplacePage;
 ````
 
 ## File: Frontend/src/features/Payment/page/AppointmentPaymentPage.tsx
@@ -24003,26 +24278,259 @@ const PaymentCancelPage = () => {
 export default PaymentCancelPage;
 ````
 
-## File: Frontend/src/features/Payment/payment.routes.tsx
+## File: Frontend/src/features/Pet Owner/pet profile/api/pets.api.ts
 ````typescript
-import AppointmentPaymentPage from "./page/AppointmentPaymentPage";
-import PaymentSuccessPage from "./page/PaymentSuccessPage";
-import PaymentCancelPage from "./page/PaymentCancelPage";
+import { api } from "@/features/api interface/axios.interface";
+import type { PetFormData } from "../schemas/pet.schema";
+import type { PetResponse, PetsResponse } from "../types/petProfile.types";
 
-export const paymentRoutes = [
-  {
-    path: "/payment",
-    element: <AppointmentPaymentPage />,
-  },
-  {
-    path: "/payment-success",
-    element: <PaymentSuccessPage />,
-  },
-  {
-    path: "/payment-cancel",
-    element: <PaymentCancelPage />,
-  },
+export const getMyPetsApi = async (): Promise<PetsResponse> => {
+  const response = await api.get<PetsResponse>("petOwner/my-pets");
+  return response.data;
+};
+
+export const getPetByIdApi = async (petId: string): Promise<PetResponse> => {
+  const response = await api.get<PetResponse>(`petOwner/pet/${petId}`);
+  return response.data;
+};
+
+// 💡 Corrected: Converts schema properties to FormData to upload files successfully
+export const createPetApi = async (payload: PetFormData): Promise<PetResponse> => {
+  const formData = new FormData();
+  formData.append("name", payload.name);
+  formData.append("age", String(payload.age));
+  formData.append("breed", payload.breed);
+  formData.append("category", payload.category);
+
+  // Safely extract file instances and append them for Multer
+  if (payload.photos) {
+    const fileList = payload.photos as FileList;
+    Array.from(fileList).forEach((file) => {
+      formData.append("photos", file);
+    });
+  }
+
+  // Sends as multipart/form-data to http://localhost:8000/api/v1/petOwner/submit/pet-data
+  const response = await api.post<PetResponse>("petOwner/submit/pet-data", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return response.data;
+};
+
+export const updatePetApi = async (
+  petId: string,
+  payload: PetFormData
+): Promise<PetResponse> => {
+  const response = await api.patch<PetResponse>(`petOwner/pet/${petId}`, payload);
+  return response.data;
+};
+
+export const deletePetApi = async (
+  petId: string
+): Promise<{ success: boolean; message: string }> => {
+  const response = await api.delete<{ success: boolean; message: string }>(
+    `petOwner/pet/${petId}`
+  );
+  return response.data;
+};
+````
+
+## File: Frontend/src/features/Pet Owner/pet profile/types/petProfile.types.ts
+````typescript
+import type { InputHTMLAttributes, ReactNode } from "react";
+import type { PetOwnerProfileFormData } from "../schemas/petOwnerProfile.schema";
+import type { PetFormData, PetFormInput } from "../schemas/pet.schema";
+
+import type { PetFormData, PetFormInput } from "../schemas/pet.schema";
+
+export interface PetFormProps {
+  title?: string;
+  description?: string;
+  defaultValues?: PetFormInput;
+  isSaving?: boolean;
+  onSubmit?: (data: PetFormData) => void | Promise<void>;
+  onSubmitSuccess?: (newPet: PetResponse) => void;
+  onCancel?: () => void;
+}
+export type PetCategory = "DOG" | "CAT" | "REPTILE" | "OTHER";
+
+export type PetPicture = {
+  publicUrl: string;
+};
+
+export type PetOwnerProfile = {
+  id: string;
+  fullName: string;
+  username: string;
+  email: string;
+  phone: string;
+  profileImageUrl: string;
+};
+
+export type Pet = {
+  id: string;
+  petOwnerId?: string;
+  name: string;
+  age: number | string;
+  breed: string;
+  category: PetCategory;
+  petPictures: PetPicture[];
+};
+
+export type PetOwnerProfileResponse = {
+  success: boolean;
+  message: string;
+  data: PetOwnerProfile;
+};
+
+export type UpdatePetOwnerProfilePayload = {
+  fullName: string;
+  username: string;
+  phone?: string;
+  profileImage?: File | null;
+  profileImageUrl?: string;
+};
+
+export type PetsResponse = {
+  success: boolean;
+  message: string;
+  data: Pet[];
+};
+
+export type PetResponse = {
+  success: boolean;
+  message: string;
+  data: Pet;
+};
+
+export type EditPetOwnerProfileModalProps = {
+  profile: PetOwnerProfile;
+  isSaving: boolean;
+  error?: string;
+  onCancel: () => void;
+  onSubmit: (data: PetOwnerProfileFormData) => void;
+};
+
+export type PetOwnerProfileFieldProps = {
+  label: string;
+  error?: string;
+  inputProps: InputHTMLAttributes<HTMLInputElement>;
+};
+
+export type PetActionsMenuProps = {
+  petName: string;
+  onEdit: () => void;
+  onDelete: () => void;
+};
+
+export type MyPetsSectionProps = {
+  pets: Pet[];
+  onAddPet: () => void;
+  onEditPet: (petId: string) => void;
+  onDeletePet: (pet: Pet) => void;
+  onBookAppointment: (petId: string) => void;
+};
+
+export type PetProfileCardProps = {
+  pet: Pet;
+  onEdit: (petId: string) => void;
+  onDelete: (pet: Pet) => void;
+  onBookAppointment: (petId: string) => void;
+};
+
+export type PetOwnerProfileHeaderProps = {
+  profile: PetOwnerProfile;
+  onEditProfile: () => void;
+};
+
+export type ProfileMetaProps = {
+  icon: ReactNode;
+  value: string;
+};
+
+export interface PetFormProps {
+  title?: string;
+  description?: string;
+  defaultValues?: PetFormInput;
+  isSaving?: boolean;
+  onSubmit?: (data: PetFormData) => void | Promise<void>;
+  onSubmitSuccess?: (newPet: PetResponse) => void;
+  onCancel?: () => void;
+}
+````
+
+## File: Frontend/src/features/seller/components/SellerSidebar.tsx
+````typescript
+import { NavLink, useNavigate } from "react-router-dom";
+import {
+  FaBox,
+  FaChartPie,
+  FaClipboardList,
+  FaHeart,
+  FaPlusCircle,
+  FaShoppingCart,
+  FaStore,
+  FaUserCircle,
+  FaUser,
+} from "react-icons/fa";
+
+const links = [
+  { label: "Dashboard", icon: FaChartPie, path: "/seller/dashboard" },
+  { label: "My Listings", icon: FaClipboardList, path: "/seller/listings" },
+  { label: "Add Product", icon: FaPlusCircle, path: "/seller/add-product" },
+  { label: "Orders", icon: FaShoppingCart, path: "/seller/orders" },
+  { label: "Stock", icon: FaBox, path: "/seller/stock" },
+  { label: "Saved Listings", icon: FaHeart, path: "/seller/saved-listings" },
+  { label: "Marketplace", icon: FaStore, path: "/marketplace1" },
+  { label: "Profile", icon: FaUser, path: "/seller/profile" },
+  { label: "Switch to Pet Owner", icon: FaUserCircle, path: "/pet-owner/dashboard" },
 ];
+
+const SellerSidebar = () => {
+  const navigate = useNavigate();
+
+  return (
+    <aside className="flex min-h-screen w-64 flex-col border-r border-gray-100 bg-white px-5 py-6">
+      <button
+        type="button"
+        onClick={() => navigate("/")}
+        className="mb-10 text-left"
+      >
+        <h2 className="text-xl font-bold text-[#178f95]">Pets Veta</h2>
+        <p className="text-xs text-gray-400">Care. Love. Trust.</p>
+      </button>
+
+      <nav className="flex-1 space-y-2">
+        {links.map(({ label, icon: Icon, path }) => (
+          <NavLink
+            key={label}
+            to={path}
+            className={({ isActive }) =>
+              `flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition ${
+                isActive
+                  ? "bg-[#e8f7f7] text-[#178f95]"
+                  : "text-gray-600 hover:bg-gray-50"
+              }`
+            }
+          >
+            <Icon className="text-sm" />
+            {label}
+          </NavLink>
+        ))}
+      </nav>
+
+      <div className="rounded-lg bg-[#178f95] p-4 text-white">
+        <p className="text-sm font-semibold">Need Help?</p>
+        <p className="text-xs opacity-90">Contact Support</p>
+      </div>
+    </aside>
+  );
+};
+
+export default SellerSidebar;
 ````
 
 ## File: Frontend/src/features/seller/pages/SellerDashboardPage.tsx
@@ -24878,6 +25386,309 @@ const SellerProductsPage = () => {
 export default SellerProductsPage;
 ````
 
+## File: Frontend/src/features/seller/pages/SellerSavedListingsPage.tsx
+````typescript
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  FaCheckCircle,
+  FaMapMarkerAlt,
+  FaPhoneAlt,
+  FaShoppingBag,
+  FaStore,
+  FaUsers,
+  FaPlusCircle,
+  FaPencilAlt,
+} from "react-icons/fa";
+
+import SellerHeader from "../components/SellerHeader";
+import SellerSidebar from "../components/SellerSidebar";
+import ProductCard from "../components/ProductCard";
+import EditSellerProfileModal from "../components/EditSellerProfileModal";
+import Card from "@/shared/components/Card/Card";
+import Button from "@/shared/components/Button/Button";
+
+import {
+  fetchMySellerProfileApi,
+  createOrUpdateSellerProfileApi,
+  deleteSellerProduct,
+} from "../api/seller.api";
+import type { SellerProfile } from "../types/seller.types";
+import type { SellerProfileFormData } from "../schemas/sellerProfile.schema";
+
+const SellerProfilePage = () => {
+  const navigate = useNavigate();
+
+  const [profile, setProfile] = useState<SellerProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [profileError, setProfileError] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+
+  const loadSellerProfile = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      const response = await fetchMySellerProfileApi();
+      if (response.success) {
+        setProfile(response.data);
+      }
+    } catch (err: any) {
+      console.error("Seller profile query failed:", err);
+      if (err?.response?.status === 401) {
+        navigate("/login", { state: { redirectTo: "/seller/profile" } });
+        return;
+      }
+      setError("Unable to load store profile details. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadSellerProfile();
+  }, []);
+
+  const handleProfileUpdate = async (data: SellerProfileFormData) => {
+    try {
+      setIsSaving(true);
+      setProfileError("");
+
+      const formData = new FormData();
+      formData.append("businessName", data.businessName);
+      formData.append("phoneNumber", data.phoneNumber);
+      formData.append("city", data.city);
+      formData.append("businessAddress", data.businessAddress);
+      formData.append("storeDescription", data.storeDescription || "");
+
+      if (data.storeLogo instanceof File) {
+        formData.append("storeLogo", data.storeLogo);
+      }
+
+      const response = await createOrUpdateSellerProfileApi(formData);
+      if (response.success) {
+        setProfile(response.data);
+        setOpenModal(false);
+        // Refresh local dashboard bindings
+        await loadSellerProfile();
+      }
+    } catch (err: any) {
+      console.error("Store update failed:", err);
+      setProfileError(
+        err?.response?.data?.message || "Failed to update your store identity."
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleProductDelete = async (productId: string) => {
+    if (!window.confirm("Are you sure you want to delete this product?")) return;
+    try {
+      await deleteSellerProduct(productId);
+      // Remove deleted item from local state list
+      if (profile) {
+        setProfile({
+          ...profile,
+          products: profile.products?.filter((p) => p.id !== productId) || [],
+        });
+      }
+    } catch (err) {
+      console.error("Product deletion failed:", err);
+    }
+  };
+
+  const fallbackLogo = "https://ui-avatars.com/api/?name=Seller+Store&background=E8F7F7&color=178f95";
+  const products = profile?.products || [];
+
+  return (
+    <div className="flex min-h-screen bg-[#f7fbfb] text-[#20263D]">
+      <SellerSidebar />
+
+      <main className="flex-1">
+        <SellerHeader />
+
+        <section className="p-7 max-w-[1600px] mx-auto">
+          {loading && !profile && (
+            <div className="flex justify-center items-center py-20 bg-white rounded-3xl shadow-sm border border-slate-100">
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#178f95] border-t-transparent" />
+            </div>
+          )}
+
+          {error && (
+            <Card className="p-6 text-sm font-semibold text-red-600 bg-red-50 border border-red-100">
+              {error}
+            </Card>
+          )}
+
+          {!loading && profile && (
+            <div className="space-y-6">
+              {/* Brand Header Identity Card */}
+              <Card className="relative overflow-hidden p-6 sm:p-8">
+                <div className="absolute right-0 top-0 h-32 w-32 bg-[#178f95]/5 rounded-bl-full" />
+
+                <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
+                  <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-full border-4 border-slate-50 bg-slate-50 shadow-md">
+                    <img
+                      src={profile.storeLogo || fallbackLogo}
+                      alt={profile.businessName || "Store storefront logo"}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <h1 className="text-3xl font-extrabold text-gray-900 leading-tight">
+                        {profile.businessName || "Your Storefront"}
+                      </h1>
+
+                      <span className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-bold ${profile.isVerified
+                          ? "bg-green-50 text-green-700 border border-green-100"
+                          : "bg-amber-50 text-orange-600 border border-amber-100"
+                        }`}>
+                        <FaCheckCircle />
+                        {profile.isVerified ? "Verified Shop" : "Pending Verification"}
+                      </span>
+                    </div>
+
+                    <p className="mt-2 text-sm text-gray-500 font-medium">
+                      Store Username: @{profile.user?.username || "seller"}
+                    </p>
+
+                    <p className="mt-4 text-sm leading-6 text-gray-600 max-w-3xl">
+                      {profile.storeDescription || "No store description configured yet. Setup store profile details to build trust."}
+                    </p>
+
+                    <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-xs font-bold text-gray-500">
+                      <span className="flex items-center gap-2">
+                        <FaStore className="text-[#178f95] text-sm" />
+                        {profile.businessAddress || "Address unconfigured"}
+                      </span>
+                      <span className="flex items-center gap-2">
+                        <FaMapMarkerAlt className="text-[#178f95] text-sm" />
+                        {profile.city || "Pakistan"}
+                      </span>
+                      <span className="flex items-center gap-2">
+                        <FaPhoneAlt className="text-[#178f95] text-sm" />
+                        {profile.phoneNumber || "No contact digits"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="shrink-0 pt-4 sm:pt-0">
+                    <Button
+                      variant="outline"
+                      className="flex h-11 w-full sm:w-auto items-center justify-center gap-2 border-slate-200 px-5 text-slate-700 hover:border-[#178f95] hover:text-[#178f95]"
+                      onClick={() => setOpenModal(true)}
+                    >
+                      <FaPencilAlt size={14} />
+                      Edit Brand Profile
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Performance Metrics Cards */}
+              <div className="grid gap-5 grid-cols-1 sm:grid-cols-3">
+                <Card className="p-5 flex items-center gap-4">
+                  <div className="h-14 w-14 shrink-0 rounded-2xl bg-[#E8F7F7] text-[#178f95] flex items-center justify-center text-xl">
+                    <FaShoppingBag />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Total Products</p>
+                    <h3 className="mt-1 text-2xl font-black text-gray-900">{products.length}</h3>
+                  </div>
+                </Card>
+
+                <Card className="p-5 flex items-center gap-4">
+                  <div className="h-14 w-14 shrink-0 rounded-2xl bg-amber-50 text-orange-500 flex items-center justify-center text-xl">
+                    <FaStore />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Low Stock Listings</p>
+                    <h3 className="mt-1 text-2xl font-black text-orange-600">
+                      {products.filter((p) => p.stock > 0 && p.stock <= 3).length}
+                    </h3>
+                  </div>
+                </Card>
+
+                <Card className="p-5 flex items-center gap-4">
+                  <div className="h-14 w-14 shrink-0 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center text-xl">
+                    <FaUsers />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Account Type</p>
+                    <h3 className="mt-1 text-2xl font-black text-green-700">Verified Seller</h3>
+                  </div>
+                </Card>
+              </div>
+
+              {/* My Products Section Grid */}
+              <div className="space-y-4">
+                <div>
+                  <h2 className="text-xl font-extrabold text-gray-900">My Listings ({products.length})</h2>
+                  <p className="text-xs font-semibold text-gray-400 mt-1">Manage, update, or preview your dynamic product catalogs.</p>
+                </div>
+
+                <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                  {/* Create New Shortcut Card */}
+                  <Card className="flex min-h-[300px] flex-col items-center justify-center border-dashed border-gray-300 text-center">
+                    <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gray-50 text-gray-600 shadow-xs">
+                      <FaPlusCircle className="text-2xl text-[#178f95]" />
+                    </div>
+
+                    <h3 className="text-base font-bold text-gray-900">Add New Product</h3>
+                    <p className="mt-2 max-w-[200px] text-xs font-semibold text-gray-400 leading-5">
+                      Create and post a new pet listing to the live marketplace catalog.
+                    </p>
+
+                    <Button
+                      className="mt-6 !bg-[#178f95] !border-[#178f95] !text-white hover:!bg-[#12757a]"
+                      size="sm"
+                      onClick={() => navigate("/seller/add-product")}
+                    >
+                      Create Listing
+                    </Button>
+                  </Card>
+
+                  {/* Render products */}
+                  {products.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      onEdit={() => navigate(`/seller/edit-product/${product.id}`)}
+                      onDelete={() => void handleProductDelete(product.id)}
+                      onView={() => navigate(`/marketplace/product/${product.id}`)}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </section>
+      </main>
+
+      {/* Edit Modal popup */}
+      {openModal && profile && (
+        <EditSellerProfileModal
+          profile={profile}
+          isSaving={isSaving}
+          error={profileError}
+          onCancel={() => {
+            setOpenModal(false);
+            setProfileError("");
+          }}
+          onSubmit={handleProfileUpdate}
+        />
+      )}
+    </div>
+  );
+};
+
+export default SellerProfilePage;
+````
+
 ## File: Frontend/src/shared/components/Button/Button.tsx
 ````typescript
 import type { ButtonHTMLAttributes, ReactNode } from "react";
@@ -24959,631 +25770,38 @@ const Button = ({
 export default Button;
 ````
 
-## File: Backend/app/controllers/doctor.controller.js
-````javascript
-const sendResponse = require('../utils/SendResponse');
-const AppError = require('../utils/AppError');
-const catchAsync = require('../utils/CatchAsync');
-const requireFields = require('../utils/validateRequest')
-const authServices = require('../services/auth.services');
-const doctorServices = require('../services/doctor.services');
+## File: Frontend/src/shared/components/Logo/Logo.tsx
+````typescript
+import { useNavigate } from "react-router-dom";
 
+const logoUrl = "https://res.cloudinary.com/dqoeyomtf/image/upload/v1779458623/logo_tctgtx.png";
 
-const fetchDoctorServices = catchAsync(async (req, res) => {
-    const email = req.user.email;
-    const validUser = await authServices.verifyEmail(email);
+const Logo = () => {
+  const navigate = useNavigate();
 
-    if (!validUser) {
-        throw new AppError("User is Invalid", 400)
-    }
-
-    const servicesData = await doctorServices.getDoctorServices(validUser.id);
-    return sendResponse(res, 200, "Successfully Fetch Services", servicesData);
-})
-
-
-const createDoctorServicePricing = catchAsync(async (req, res) => {
-
-    const email = req.user.email;
-    requireFields(["skill", "price"], req.body);
-
-    const skills = {
-        skill: req.body.skill,
-        price: req.body.price
-    }
-
-    const validUser = await authServices.verifyEmail(email);
-    if (!validUser) {
-        throw new AppError("User is Invalid", 400)
-    }
-    if (validUser.userRole.role !== 'Doctor') {
-        throw new AppError("Role is Invalid", 401);
-    }
-
-    console.log("Valid User Role is ", validUser.userRole.userId);
-    const savedSkills = await doctorServices.addDoctorService(skills, validUser.userRole.userId);
-    if (savedSkills === true) {
-        return sendResponse(res, 400, "Skill ALready Exist",)
-    }
-
-    return sendResponse(res, 201, "Success", skills);
-})
-
-const deleteDoctorService = catchAsync(async (req, res) => {
-    const email = req.user.email;
-    const { serviceId } = req.body;
-    console.log("Service Id is ", serviceId);
-    const validUser = await authServices.verifyEmail(email);
-    if (!serviceId) {
-        throw new AppError("Service Id not found", 400)
-    }
-    if (!validUser) {
-        throw new AppError("User is Invalid", 400)
-    }
-    if (validUser.userRole.role !== 'Doctor') {
-        throw new AppError("Role is Invalid", 401);
-    }
-
-    const deletedService = await doctorServices.deleteDoctorService(serviceId);
-    console.log("Service Delete is ", deletedService);
-
-    return sendResponse(res, 201, "Success", { deletedService: deletedService })
-
-})
-
-const updateDoctorService = catchAsync(async (req, res) => {
-    console.log("Request in edit controlelr ", req.body);
-    requireFields(["serviceId", "price", "skill"], req.body);
-
-    const { serviceId, skill, price } = req.body;
-    const updateService = await doctorServices.updateDoctorServices(serviceId, skill, price);
-    console.log("Updated Service", updateService);
-
-    return sendResponse(res, 201, "Updated Service", updateService);
-
-})
-
-const fetchDoctorAppointments = catchAsync(async (req, res) => {
-    const appointments = await doctorServices.getDoctorAppointments(req.user.id);
-
-    return sendResponse(res, 200, "Doctor appointments fetched successfully", appointments);
-})
-
-const getDoctorProfile = catchAsync(async (req, res) => {
-    const userId = req.user.id;
-
-    const doctorProfile = await doctorServices.getDoctorProfile(userId);
-
-    if (!doctorProfile) {
-        throw new AppError("Doctor profile not found", 404);
-    }
-
-    if (!doctorProfile.doctors) {
-        throw new AppError("Doctor data not found", 404);
-    }
-
-    return sendResponse(
-        res,
-        200,
-        "Doctor profile fetched successfully",
-        doctorProfile
-    );
-});
-
-
-const updateDoctorProfile = catchAsync(async (req, res) => {
-    const userId = req.user.id;
-
-    const {
-        fullName,
-        username,
-        phone,
-        profileImageUrl,
-        specialization,
-        education,
-        experience,
-        fees,
-        address,
-        isAvailable,
-    } = req.body;
-
-    requireFields(
-        [
-            "fullName",
-            "username",
-            "phone",
-            "profileImageUrl",
-            "specialization",
-            "education",
-            "experience",
-            "fees",
-            "address",
-            "isAvailable",
-        ],
-        req.body
-    );
-
-    const updatedDoctorProfile = await doctorServices.updateDoctorProfile(
-        userId,
-        {
-            fullName,
-            username,
-            phone,
-            profileImageUrl,
-            specialization,
-            education,
-            experience,
-            fees,
-            address,
-            isAvailable,
-        }
-    );
-
-    return sendResponse(
-        res,
-        200,
-        "Doctor profile updated successfully",
-        updatedDoctorProfile
-    );
-});
-
-module.exports = {
-    createDoctorServicePricing,
-    fetchDoctorServices,
-    deleteDoctorService,
-    updateDoctorService,
-    fetchDoctorAppointments,
-    getDoctorProfile,
-    updateDoctorProfile,
-};
-````
-
-## File: Backend/app/controllers/payment.controller.js
-````javascript
-const catchAsync = require("../utils/CatchAsync");
-const sendResponse = require("../utils/SendResponse");
-const stripeService = require("../services/stripe.service");
-
-const { stripe } = require("../config/stripe");
-const prisma = require("../config/prisma");
-
-const {
-  PaymentStatus,
-  AppointmentStatus,
-  ScheduleStatus,
-} = require("@prisma/client");
-
-const createPaymentIntent = catchAsync(async (req, res) => {
-  const petOwnerId = req.user?.id;
-
-  if (!petOwnerId) {
-    return sendResponse(res, 401, "Please login first", {});
-  }
-
-  const appointmentId = req.params.appointmentId || req.body.appointmentId;
-
-  if (!appointmentId) {
-    return sendResponse(res, 400, "Appointment ID is required", {});
-  }
-
-  const result = await stripeService.createAppointmentPaymentIntent({
-    appointmentId,
-    petOwnerId,
-  });
-
-  return sendResponse(res, 200, "Payment intent created successfully", result);
-});
-
-const getPaymentStatus = catchAsync(async (req, res) => {
-  const petOwnerId = req.user?.id;
-
-  if (!petOwnerId) {
-    return sendResponse(res, 401, "Please login first", {});
-  }
-
-  const { appointmentId } = req.params;
-
-  if (!appointmentId) {
-    return sendResponse(res, 400, "Appointment ID is required", {});
-  }
-
-  const result = await stripeService.getAppointmentPaymentStatus({
-    appointmentId,
-    petOwnerId,
-  });
-
-  return sendResponse(res, 200, "Appointment payment status fetched", result);
-});
-
-const stripeWebhook = async (req, res) => {
-  let event;
-
-  try {
-    const sig = req.headers["stripe-signature"];
-
-    event = stripe.webhooks.constructEvent(
-      req.body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
-  } catch (err) {
-    console.error("Webhook signature verification failed:", err.message);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-
-  try {
-    const existingEvent = await prisma.paymentEvent.findUnique({
-      where: {
-        stripeEventId: event.id,
-      },
-    });
-
-    if (existingEvent?.processed) {
-      return res.status(200).json({
-        received: true,
-        duplicate: true,
-      });
-    }
-
-    const paymentIntent = event.data.object;
-    const appointmentIdFromMetadata = paymentIntent.metadata?.appointmentId;
-
-    const paymentEvent =
-      existingEvent ||
-      (await prisma.paymentEvent.create({
-        data: {
-          stripeEventId: event.id,
-          eventType: event.type,
-          appointmentId: appointmentIdFromMetadata || null,
-          stripePaymentIntentId: paymentIntent.id || null,
-          payload: event,
-          processed: false,
-        },
-      }));
-
-    switch (event.type) {
-      case "payment_intent.processing": {
-        await handlePaymentIntentProcessing(paymentIntent, paymentEvent.id);
-        break;
-      }
-
-      case "payment_intent.succeeded": {
-        await handlePaymentIntentSucceeded(paymentIntent, paymentEvent.id);
-        break;
-      }
-
-      case "payment_intent.payment_failed": {
-        await handlePaymentIntentFailed(paymentIntent, paymentEvent.id);
-        break;
-      }
-
-      case "payment_intent.canceled": {
-        await handlePaymentIntentCanceled(paymentIntent, paymentEvent.id);
-        break;
-      }
-
-      default: {
-        await prisma.paymentEvent.update({
-          where: {
-            id: paymentEvent.id,
-          },
-          data: {
-            processed: true,
-            processedAt: new Date(),
-          },
-        });
-
-        console.log(`Unhandled Stripe event type: ${event.type}`);
-      }
-    }
-
-    return res.status(200).json({ received: true });
-  } catch (error) {
-    console.error("Webhook processing failed:", error);
-
-    return res.status(500).json({
-      received: false,
-      error: error.message,
-    });
-  }
+  return (
+    <button
+      type="button"
+      onClick={() => navigate("/")}
+      className="flex items-center text-left"
+      aria-label="Go to home"
+    >
+      <div className="w-15 h-15 overflow-hidden">
+        <img
+          src={logoUrl}
+          alt="PETSVETA LOGO"
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <div>
+        <h1 className="font-bold text-sky-800 text-xl">PetsVeta</h1>
+        <p>Care, Connect, Cure</p>
+      </div>
+    </button>
+  );
 };
 
-const handlePaymentIntentProcessing = async (paymentIntent, paymentEventId) => {
-  const payment = await prisma.payment.findUnique({
-    where: {
-      stripePaymentIntentId: paymentIntent.id,
-    },
-  });
-
-  if (!payment) {
-    throw new Error(`Payment not found for PaymentIntent ${paymentIntent.id}`);
-  }
-
-  await prisma.$transaction([
-    prisma.payment.update({
-      where: {
-        id: payment.id,
-      },
-      data: {
-        status: PaymentStatus.PROCESSING,
-      },
-    }),
-
-    prisma.appointment.update({
-      where: {
-        id: payment.appointmentId,
-      },
-      data: {
-        paymentStatus: PaymentStatus.PROCESSING,
-        status: AppointmentStatus.PAYMENT_PROCESSING,
-      },
-    }),
-
-    prisma.paymentEvent.update({
-      where: {
-        id: paymentEventId,
-      },
-      data: {
-        paymentId: payment.id,
-        appointmentId: payment.appointmentId,
-        processed: true,
-        processedAt: new Date(),
-      },
-    }),
-  ]);
-};
-
-const handlePaymentIntentSucceeded = async (paymentIntent, paymentEventId) => {
-  const appointmentIdFromMetadata = paymentIntent.metadata?.appointmentId;
-
-  const payment = await prisma.payment.findUnique({
-    where: {
-      stripePaymentIntentId: paymentIntent.id,
-    },
-    include: {
-      appointment: {
-        include: {
-          doctorSchedule: true,
-        },
-      },
-    },
-  });
-
-  if (!payment) {
-    throw new Error(`Payment not found for PaymentIntent ${paymentIntent.id}`);
-  }
-
-  if (
-    appointmentIdFromMetadata &&
-    appointmentIdFromMetadata !== payment.appointmentId
-  ) {
-    throw new Error(
-      "PaymentIntent metadata appointmentId does not match DB payment appointmentId"
-    );
-  }
-
-  if (payment.amount !== paymentIntent.amount) {
-    throw new Error("Payment amount mismatch");
-  }
-
-  if (payment.currency.toLowerCase() !== paymentIntent.currency.toLowerCase()) {
-    throw new Error("Payment currency mismatch");
-  }
-
-  const appointment = payment.appointment;
-
-  await prisma.$transaction(async (tx) => {
-    if (appointment.status === AppointmentStatus.CONFIRMED) {
-      await tx.paymentEvent.update({
-        where: {
-          id: paymentEventId,
-        },
-        data: {
-          paymentId: payment.id,
-          appointmentId: appointment.id,
-          processed: true,
-          processedAt: new Date(),
-        },
-      });
-
-      return;
-    }
-
-    if (
-      appointment.doctorSchedule.status !== ScheduleStatus.HELD ||
-      appointment.doctorSchedule.lockedByAppointmentId !== appointment.id
-    ) {
-      throw new Error("Schedule is not held by this appointment");
-    }
-
-    await tx.payment.update({
-      where: {
-        id: payment.id,
-      },
-      data: {
-        status: PaymentStatus.SUCCEEDED,
-        paidAt: new Date(),
-        stripeChargeId:
-          typeof paymentIntent.latest_charge === "string"
-            ? paymentIntent.latest_charge
-            : null,
-      },
-    });
-
-    await tx.appointment.update({
-      where: {
-        id: appointment.id,
-      },
-      data: {
-        status: AppointmentStatus.CONFIRMED,
-        paymentStatus: PaymentStatus.SUCCEEDED,
-        confirmedAt: new Date(),
-      },
-    });
-
-    await tx.doctorSchedule.update({
-      where: {
-        id: appointment.scheduleId,
-      },
-      data: {
-        status: ScheduleStatus.BOOKED,
-        lockedByAppointmentId: appointment.id,
-      },
-    });
-
-    await tx.paymentEvent.update({
-      where: {
-        id: paymentEventId,
-      },
-      data: {
-        paymentId: payment.id,
-        appointmentId: appointment.id,
-        processed: true,
-        processedAt: new Date(),
-      },
-    });
-  });
-};
-
-const handlePaymentIntentFailed = async (paymentIntent, paymentEventId) => {
-  const payment = await prisma.payment.findUnique({
-    where: {
-      stripePaymentIntentId: paymentIntent.id,
-    },
-  });
-
-  if (!payment) {
-    throw new Error(`Payment not found for PaymentIntent ${paymentIntent.id}`);
-  }
-
-  const failureMessage =
-    paymentIntent.last_payment_error?.message || "Payment failed";
-
-  await prisma.$transaction([
-    prisma.payment.update({
-      where: {
-        id: payment.id,
-      },
-      data: {
-        status: PaymentStatus.FAILED,
-        failureReason: failureMessage,
-      },
-    }),
-
-    prisma.appointment.update({
-      where: {
-        id: payment.appointmentId,
-      },
-      data: {
-        paymentStatus: PaymentStatus.FAILED,
-        status: AppointmentStatus.PAYMENT_FAILED,
-      },
-    }),
-
-    prisma.paymentEvent.update({
-      where: {
-        id: paymentEventId,
-      },
-      data: {
-        paymentId: payment.id,
-        appointmentId: payment.appointmentId,
-        processed: true,
-        processedAt: new Date(),
-        processingError: failureMessage,
-      },
-    }),
-  ]);
-};
-
-const handlePaymentIntentCanceled = async (paymentIntent, paymentEventId) => {
-  const payment = await prisma.payment.findUnique({
-    where: {
-      stripePaymentIntentId: paymentIntent.id,
-    },
-    include: {
-      appointment: true,
-    },
-  });
-
-  if (!payment) {
-    throw new Error(`Payment not found for PaymentIntent ${paymentIntent.id}`);
-  }
-
-  await prisma.$transaction([
-    prisma.payment.update({
-      where: {
-        id: payment.id,
-      },
-      data: {
-        status: PaymentStatus.CANCELLED,
-        cancelledAt: new Date(),
-      },
-    }),
-
-    prisma.appointment.update({
-      where: {
-        id: payment.appointmentId,
-      },
-      data: {
-        paymentStatus: PaymentStatus.CANCELLED,
-        status: AppointmentStatus.EXPIRED,
-      },
-    }),
-
-    prisma.doctorSchedule.update({
-      where: {
-        id: payment.appointment.scheduleId,
-      },
-      data: {
-        status: ScheduleStatus.AVAILABLE,
-        lockedByUserId: null,
-        lockedByAppointmentId: null,
-        lockedAt: null,
-      },
-    }),
-
-    prisma.paymentEvent.update({
-      where: {
-        id: paymentEventId,
-      },
-      data: {
-        paymentId: payment.id,
-        appointmentId: payment.appointmentId,
-        processed: true,
-        processedAt: new Date(),
-      },
-    }),
-  ]);
-};
-
-module.exports = {
-  createPaymentIntent,
-  getPaymentStatus,
-  stripeWebhook,
-};
-````
-
-## File: Backend/app/routes/payment.routes.js
-````javascript
-const express = require("express");
-const Router = express.Router();
-
-const paymentController = require("../controllers/payment.controller");
-const { protect } = require("../middleware/auth.middleware");
-
-Router.post(
-    "/appointments/:appointmentId/create-payment-intent",
-    protect,
-    paymentController.createPaymentIntent
-);
-
-Router.get(
-    "/appointments/:appointmentId/status",
-    protect,
-    paymentController.getPaymentStatus
-);
-
-module.exports = Router;
+export default Logo;
 ````
 
 ## File: Backend/app/services/doctorSchedule.service.js
@@ -26030,6 +26248,63 @@ const AdminLayout = () => {
 export default AdminLayout;
 ````
 
+## File: Frontend/src/features/api interface/axios.interface.ts
+````typescript
+import axios from "axios";
+
+export const api = axios.create({
+  baseURL: 'http://localhost:8000/api/v1',
+  withCredentials: true,
+});
+
+export const handleAxiosError = (error: unknown) => {
+  if (axios.isAxiosError(error)) {
+    if (error.response) {
+      console.log("Status Code", error.response?.status);
+      console.log("Response Data", error.response?.data);
+    } else if (error.request) {
+      console.log("No Request Response Received", error.request);
+    }
+
+    throw error;
+  } else {
+    console.error("Non-Axios Error:", error);
+    throw error;
+  }
+};
+
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url?.includes("/auth/refresh/token")
+    ) {
+      originalRequest._retry = true;
+
+      try {
+        await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/auth/refresh/token`,
+          {
+            withCredentials: true,
+          }
+        );
+
+        return api(originalRequest);
+      } catch (refreshError) {
+        console.error("Refresh token expired or invalid. Redirecting to login...");
+        return Promise.reject(refreshError);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+````
+
 ## File: Frontend/src/features/Appointment/pages/BookAppointmentPage.tsx
 ````typescript
 import { useState } from "react";
@@ -26321,307 +26596,469 @@ const BookAppointmentPage = () => {
 export default BookAppointmentPage;
 ````
 
-## File: Frontend/src/features/Appointment/pages/DoctorProfilePage.tsx
+## File: Frontend/src/features/Auth/pages/login.tsx
 ````typescript
-import { Link, useNavigate, useParams } from "react-router-dom";
-import {
-    FaArrowLeft,
-    FaCheckCircle,
-    FaGraduationCap,
-    FaUserMd,
-} from "react-icons/fa";
-import { User } from 'lucide-react'
+import LoginComponent from "../components/login-component";
+import { useNavigate } from "react-router-dom";
 
-import { getDoctorProfileData } from "../apis/doctorProfile.api";
-import { useEffect, useState } from "react";
-import BookingModal from "../components/BookSlotModal";
-import { bookDoctorSlot } from "../apis/bookSlot";
-import { type BookableSlot } from "../apis/doctorProfile.api";
-import type { DoctorProfileViewData } from "../types/appointment.types";
+const PawIcon = () => (
+  <svg
+    viewBox="0 0 64 64"
+    className="h-7 w-7 fill-[#178f95]"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle cx="18" cy="22" r="7" />
+    <circle cx="32" cy="16" r="7" />
+    <circle cx="46" cy="22" r="7" />
+    <circle cx="24" cy="34" r="6" />
+    <circle cx="40" cy="34" r="6" />
+    <path d="M18 47c0-9 6-17 14-17s14 8 14 17c0 6-5 9-14 9s-14-3-14-9z" />
+  </svg>
+);
 
+const StatCard = ({
+  icon,
+  value,
+  label,
+}: {
+  icon: React.ReactNode;
+  value: string;
+  label: string;
+}) => {
+  return (
+    <div className="flex h-[118px] flex-1 flex-col items-center justify-center rounded-[22px] border border-white/55 bg-white/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_18px_45px_rgba(18,40,60,0.08)] backdrop-blur-2xl">
+      <div className="mb-3 text-[#178f95]">{icon}</div>
 
-const DoctorProfilePage = () => {
-    const { id } = useParams();
+      <h3 className="text-[28px] font-extrabold leading-none text-[#178f95]">
+        {value}
+      </h3>
 
-    const [doctor, setDoctor] = useState<DoctorProfileViewData>(null);
-    const [loading, setLoading] = useState(false);
-
-
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedSlot, setSelectedSlot] = useState<BookableSlot | null>(null);
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        const doctorProfileData = async () => {
-            setLoading(true);
-            if (id) {
-                const data = await getDoctorProfileData(id);
-                setDoctor(data);
-            }
-
-            setLoading(false);
-        };
-        doctorProfileData();
-    }, [id]);
-
-    const handleConfirmBooking = async (scheduleId: string) => {
-        console.log("Confirmed booking for Schedule ID:", scheduleId);
-
-        if (!scheduleId || !doctor?.id) {
-            console.log("IDs not found");
-            return;
-        }
-
-        const schedule = {
-            slotId: scheduleId,
-            doctorId: doctor.id,
-        };
-
-        try {
-            const response = await bookDoctorSlot(schedule);
-
-            console.log("Slot lock response is:", response);
-
-            if (!response?.success || !response?.data?.appointmentId) {
-                console.log("Failed to lock slot");
-                return;
-            }
-
-            // Pehle old booking data clear kar do taake stale data issue na aaye
-            localStorage.removeItem("doctorId");
-            localStorage.removeItem("scheduleId");
-            localStorage.removeItem("appointmentId");
-            localStorage.removeItem("petPatientId");
-
-            // New booking data save karo
-            localStorage.setItem("doctorId", doctor.id);
-            localStorage.setItem("scheduleId", scheduleId);
-            localStorage.setItem("appointmentId", response.data.appointmentId);
-
-            setIsModalOpen(false);
-            setSelectedSlot(null);
-
-            navigate("/book-appointment");
-        } catch (error) {
-            console.log("Slot booking error:", error);
-        }
-    };
-
-    if (!doctor) {
-        return (
-            <section className="min-h-screen bg-[#f5fbff] px-5 py-12 lg:px-16">
-                <div className="mx-auto max-w-4xl rounded-3xl bg-white p-8 text-center shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
-                    <h1 className="text-3xl font-extrabold text-[#07182c]">
-                        {loading ? "Loading..." : "Doctor Not Found"}
-                    </h1>
-                    <p className="mt-2 text-slate-500">
-                        The doctor profile you are looking for does not exist.
-                    </p>
-                    <Link
-                        to="/doctors"
-                        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#009f9d] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#007f7d]"
-                    >
-                        <FaArrowLeft />
-                        Back to Doctors
-                    </Link>
-                </div>
-            </section>
-        );
-    }
-
-    return (
-        <section className="min-h-screen bg-[#f5fbff] px-5 py-12 lg:px-16">
-            <div className="mx-auto max-w-7xl">
-                <Link
-                    to="/doctors"
-                    className="mb-6 inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-bold text-[#009f9d] shadow-sm transition hover:bg-[#eefafa]"
-                >
-                    <FaArrowLeft />
-                    Back to Doctors
-                </Link>
-
-                <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
-                    <div className="space-y-6">
-                        {/* Profile Card */}
-                        <div className="rounded-3xl bg-white p-6 shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
-                            <div className="grid gap-6 md:grid-cols-[220px_1fr]">
-                                <div className="relative h-60 overflow-hidden flex justify-center items-center rounded-3xl bg-[#eefafa]">
-                                    {doctor.image.startsWith('/') ? (
-                                        <img
-                                            src={doctor.image}
-                                            alt={doctor.name}
-                                            className="h-full w-full object-cover"
-                                        />
-                                    ) : (
-                                        <User size={112} className="text-slate-300" />
-                                    )}
-                                </div>
-
-                                <div>
-                                    <div className="flex flex-wrap items-center gap-2">
-                                        <h1 className="text-3xl font-extrabold text-[#07182c]">
-                                            {doctor.name}
-                                        </h1>
-                                        <FaCheckCircle className="text-xl text-[#009f9d]" />
-                                    </div>
-                                    <p className="mt-2 text-lg font-bold text-slate-500">
-                                        {doctor.specialization}
-                                    </p>
-
-                                    <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                                        <div className="rounded-2xl bg-[#f5fbff] p-4">
-                                            <p className="text-sm font-semibold text-slate-500">
-                                                Experience
-                                            </p>
-                                            <h3 className="mt-1 text-xl font-extrabold text-[#07182c]">
-                                                {doctor.experience} Years
-                                            </h3>
-                                        </div>
-                                        <div className="rounded-2xl bg-[#f5fbff] p-4">
-                                            <p className="text-sm font-semibold text-slate-500">
-                                                Consultation Fee
-                                            </p>
-                                            <h3 className="mt-1 text-xl font-extrabold text-[#07182c]">
-                                                Rs. {doctor.fees}
-                                            </h3>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Education Card */}
-                        <div className="rounded-3xl bg-white p-6 shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
-                            <h2 className="mb-4 flex items-center gap-2 text-xl font-extrabold text-[#07182c]">
-                                <FaGraduationCap className="text-[#009f9d]" />
-                                Education & Qualification
-                            </h2>
-                            <div className="space-y-4">
-                                <div>
-                                    <p className="text-sm font-bold text-slate-500">Education</p>
-                                    <p className="mt-1 font-semibold text-[#07182c]">{doctor.education}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm font-bold text-slate-500">Qualification</p>
-                                    <p className="mt-1 font-semibold text-[#07182c]">{doctor.specialization}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Booking Sidebar */}
-                    <aside className="h-fit rounded-3xl bg-white p-6 shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
-                        <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#eefafa] text-2xl text-[#009f9d]">
-                            <FaUserMd />
-                        </div>
-
-                        <h2 className="text-2xl font-extrabold text-[#07182c]">
-                            Select Slot to Book Appointment
-                        </h2>
-                        <p className="mt-2 text-sm leading-6 text-slate-500">
-                            Select this doctor and continue to appointment form.
-                        </p>
-
-                        <div className="mt-5">
-                            <h3 className="text-sm font-extrabold text-[#07182c]">
-                                Available Slots
-                            </h3>
-
-                            {doctor.availableSlots?.length > 0 ? (
-                                <div className="mt-3 grid grid-cols-2 gap-3">
-                                    {doctor.availableSlots.slice(0, 8).map((slot) => {
-                                        // Format the date to show on the button (e.g., Jun 19)
-                                        const shortDate = new Date(slot.date).toLocaleDateString("en-US", {
-                                            month: "short",
-                                            day: "numeric",
-                                        });
-
-                                        return (
-                                            <button
-                                                key={slot.scheduleId}
-                                                id={slot.scheduleId}
-                                                onClick={() => {
-                                                    setSelectedSlot(slot);
-                                                    setIsModalOpen(true);
-                                                }}
-                                                className="flex flex-col items-center justify-center rounded-xl border border-slate-200 px-2 py-3 text-center text-xs font-extrabold text-[#07182c] transition hover:border-[#009f9d] hover:bg-[#eefafa]"
-                                            >
-                                                <span className="mb-1 block text-[11px] font-bold text-[#009f9d]">
-                                                    {shortDate} • {slot.day.slice(0, 3)}
-                                                </span>
-                                                <span>
-                                                    {slot.startTime} - {slot.endTime}
-                                                </span>
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            ) : (
-                                <p className="mt-3 rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-500">
-                                    No appointment slots available.
-                                </p>
-                            )}
-                        </div>
-                    </aside>
-                </div>
-            </div>
-
-            {/* Render the Modal */}
-            <BookingModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onConfirm={handleConfirmBooking}
-                slot={selectedSlot}
-            />
-        </section>
-    );
+      <p className="mt-2 text-[13px] font-bold text-[#3c4b67]">{label}</p>
+    </div>
+  );
 };
 
-export default DoctorProfilePage;
+const LoginPage = () => {
+  const navigate = useNavigate();
+
+  return (
+    <main className="relative h-screen w-full overflow-hidden bg-[#f8f2ed] text-[#101b3d]">
+      {/* Background */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_8%,rgba(249,197,168,0.92)_0%,rgba(249,197,168,0.62)_28%,transparent_48%),radial-gradient(circle_at_85%_8%,rgba(236,250,249,0.95)_0%,rgba(236,250,249,0.62)_30%,transparent_52%),linear-gradient(180deg,#fff7f2_0%,#eefaf8_44%,#bfe5e1_100%)]" />
+
+      {/* Big glass circles */}
+      <div className="absolute -top-[280px] left-[260px] h-[760px] w-[760px] rounded-full border border-white/30 bg-white/10 shadow-[inset_0_0_90px_rgba(255,255,255,0.45)] backdrop-blur-[2px]" />
+      <div className="absolute bottom-[-220px] right-[-160px] h-[520px] w-[520px] rounded-full border border-white/25 bg-white/10 shadow-[inset_0_0_80px_rgba(255,255,255,0.35)]" />
+
+      {/* Floating bubbles */}
+      <div className="absolute left-[4%] top-[21%] h-8 w-8 rounded-full bg-[#ffb073]/70 shadow-[inset_-8px_-8px_18px_rgba(255,255,255,0.5),0_10px_25px_rgba(249,197,168,0.5)]" />
+      <div className="absolute left-[49%] top-[26%] hidden h-6 w-6 rounded-full bg-white/55 shadow-[inset_-6px_-6px_12px_rgba(255,255,255,0.8)] lg:block" />
+      <div className="absolute bottom-[13%] left-[43%] hidden h-10 w-10 rounded-full bg-[#bdebe8]/75 shadow-[inset_-9px_-9px_15px_rgba(255,255,255,0.9),0_12px_28px_rgba(23,143,149,0.18)] lg:block" />
+
+      {/* Main layout */}
+      <div className="absolute inset-0 z-10 flex items-center justify-center overflow-hidden">
+        <section className="grid w-[125vw] max-w-[1850px] origin-center scale-[0.7] grid-cols-1 items-center gap-14 px-12 lg:grid-cols-[1.05fr_0.95fr]">
+          {/* Left Glass Panel */}
+          <div className="hidden justify-center lg:flex">
+            <div className="relative flex h-[735px] w-full max-w-[800px] flex-col justify-center rounded-[38px] border border-white/55 bg-white/20 px-24 py-16 shadow-[inset_0_1px_1px_rgba(255,255,255,0.95),0_28px_70px_rgba(36,66,90,0.12)] backdrop-blur-[26px]">
+              <div className="absolute inset-0 rounded-[38px] bg-gradient-to-br from-white/25 via-white/10 to-transparent" />
+
+              {/* Floating paw top-left */}
+              <div className="absolute -left-14 -top-14 z-10 flex h-20 w-20 items-center justify-center rounded-2xl bg-white/55 shadow-[0_14px_40px_rgba(31,50,70,0.08)] backdrop-blur-2xl">
+                <PawIcon />
+              </div>
+
+              {/* Floating paw top-right */}
+              <div className="absolute right-9 top-[-28px] z-10 opacity-60">
+                <PawIcon />
+              </div>
+
+              <div className="relative z-10">
+                <h1 className="max-w-[610px] text-[64px] font-extrabold leading-[1.13] tracking-[-0.055em] text-[#101b3d]">
+                  Welcome <br />
+                  Back <br />
+                  to{" "}
+                  <button
+                    type="button"
+                    onClick={() => navigate("/")}
+                    className="bg-gradient-to-r from-[#178f95] to-[#0c7b84] bg-clip-text text-transparent transition hover:opacity-80"
+                  >
+                    PetsVeta
+                  </button>
+                </h1>
+
+                <p className="mt-8 max-w-[550px] text-[21px] font-medium leading-[1.65] text-[#2f405f]">
+                  Book vet appointments, explore pet services, and shop trusted
+                  pet products from one beautiful platform.
+                </p>
+
+                {/* Trusted card */}
+                <div className="mt-10 flex max-w-[610px] items-center gap-7 rounded-[28px] border border-white/60 bg-white/24 p-5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.9),0_20px_50px_rgba(20,50,70,0.1)] backdrop-blur-3xl">
+                  <div className="relative h-[100px] w-[100px] shrink-0 overflow-hidden rounded-3xl bg-[#fff3e8] shadow-[0_14px_28px_rgba(40,50,70,0.12)]">
+                    <img
+                      src="https://images.unsplash.com/photo-1586671267731-da2cf3ceeb80?auto=format&fit=crop&w=300&q=80"
+                      alt="Dog"
+                      className="h-full w-full object-cover"
+                    />
+
+                    <div className="absolute bottom-[-2px] right-[-2px] flex h-9 w-9 items-center justify-center rounded-full bg-white text-lg shadow-lg">
+                      💗
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-[20px] font-extrabold text-[#101b3d]">
+                      Trusted Pet Care
+                    </h3>
+
+                    <p className="mt-4 text-[17px] font-medium leading-7 text-[#4f5f78]">
+                      Doctors, sellers, and pet parents connected.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Stats */}
+                <div className="mt-10 flex max-w-[610px] gap-5">
+                  <StatCard
+                    value="120+"
+                    label="Doctors"
+                    icon={
+                      <svg
+                        className="h-9 w-9"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 12a5 5 0 100-10 5 5 0 000 10zM3 22a9 9 0 0118 0H3z" />
+                      </svg>
+                    }
+                  />
+
+                  <StatCard
+                    value="5k+"
+                    label="Bookings"
+                    icon={
+                      <svg
+                        className="h-9 w-9"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <rect x="3" y="5" width="18" height="16" rx="2" />
+                        <path d="M16 3v4M8 3v4M3 10h18" />
+                      </svg>
+                    }
+                  />
+
+                  <StatCard
+                    value="24/7"
+                    label="Support"
+                    icon={
+                      <svg
+                        className="h-9 w-9"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path d="M4 13a8 8 0 0116 0" />
+                        <path d="M4 13v4a2 2 0 002 2h1v-6H6a2 2 0 00-2 2zM20 13v4a2 2 0 01-2 2h-1v-6h1a2 2 0 012 2z" />
+                      </svg>
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Login Card */}
+          <div className="flex justify-center">
+            <div className="flex h-[700px] w-full max-w-[660px] items-center rounded-[34px] border border-white/70 bg-white/72 px-20 py-12 shadow-[0_30px_80px_rgba(30,60,80,0.16)] backdrop-blur-2xl">
+              <LoginComponent />
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  );
+};
+
+export default LoginPage;
 ````
 
-## File: Frontend/src/features/Doctor/doctor.route.tsx
+## File: Frontend/src/features/Auth/pages/pet-owner-signup.tsx
 ````typescript
-import DoctorDashboardPage from "./pages/DoctorDashboardPage";
-import DoctorProfilePage from "./pages/DoctorProfilePage";
-import { DoctorProtectedRoute } from "@/ProtectedRoutes/DoctorProtectedRoutes";
-import DoctorSkill from "./pages/SkillPricing";
-import { DoctorLayout } from "./Layout/doctor.layout";
-import DoctorAvailabilityPage from "./pages/DoctorAvailabilityPage";
-import PatientsPage from "./pages/PatientsPage";
+import PetOwnerForm from "../components/pets-owner";
+import { useNavigate } from "react-router-dom";
 
-export const doctorDashboardRoutes = [
-  {
-    path: "/",
-    element: (
-      <DoctorProtectedRoute>
-        <DoctorLayout />
-      </DoctorProtectedRoute>
-    ),
-    children: [
-      {
-        path: "doctor-dashboard",
-        element: <DoctorDashboardPage />,
-      },
-      {
-        path: "doctor-dashboard-profile",
-        element: <DoctorProfilePage />,
-      },
-      {
-        path: "doctor-pricing",
-        element: <DoctorSkill />,
-      },
-      {
-        path: "doctor-availability",
-        element: <DoctorAvailabilityPage />,
-      },
-      {
-        path: "pateints",
-        element: <PatientsPage />
-      }
-    ],
-  },
-];
+const PawIcon = () => (
+  <svg
+    viewBox="0 0 64 64"
+    className="h-7 w-7 fill-[#178f95]"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle cx="18" cy="22" r="7" />
+    <circle cx="32" cy="16" r="7" />
+    <circle cx="46" cy="22" r="7" />
+    <circle cx="24" cy="34" r="6" />
+    <circle cx="40" cy="34" r="6" />
+    <path d="M18 47c0-9 6-17 14-17s14 8 14 17c0 6-5 9-14 9s-14-3-14-9z" />
+  </svg>
+);
+
+const StatCard = ({
+  icon,
+  value,
+  label,
+}: {
+  icon: React.ReactNode;
+  value: string;
+  label: string;
+}) => {
+  return (
+    <div className="flex h-[118px] flex-1 flex-col items-center justify-center rounded-[22px] border border-white/55 bg-white/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_18px_45px_rgba(18,40,60,0.08)] backdrop-blur-2xl">
+      <div className="mb-3 text-[#178f95]">{icon}</div>
+
+      <h3 className="text-[28px] font-extrabold leading-none text-[#178f95]">
+        {value}
+      </h3>
+
+      <p className="mt-2 text-[13px] font-bold text-[#3c4b67]">{label}</p>
+    </div>
+  );
+};
+
+const PetOwnerSignupPage = () => {
+  const navigate = useNavigate();
+
+  return (
+    <main className="relative h-screen w-full overflow-hidden bg-[#f8f2ed] text-[#101b3d]">
+      {/* Background */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_8%,rgba(249,197,168,0.92)_0%,rgba(249,197,168,0.62)_28%,transparent_48%),radial-gradient(circle_at_85%_8%,rgba(236,250,249,0.95)_0%,rgba(236,250,249,0.62)_30%,transparent_52%),linear-gradient(180deg,#fff7f2_0%,#eefaf8_44%,#bfe5e1_100%)]" />
+
+      {/* Big glass circles */}
+      <div className="absolute -top-[280px] left-[260px] h-[760px] w-[760px] rounded-full border border-white/30 bg-white/10 shadow-[inset_0_0_90px_rgba(255,255,255,0.45)] backdrop-blur-[2px]" />
+
+      <div className="absolute bottom-[-220px] right-[-160px] h-[520px] w-[520px] rounded-full border border-white/25 bg-white/10 shadow-[inset_0_0_80px_rgba(255,255,255,0.35)]" />
+
+      {/* Floating bubbles */}
+      <div className="absolute left-[4%] top-[21%] h-8 w-8 rounded-full bg-[#ffb073]/70 shadow-[inset_-8px_-8px_18px_rgba(255,255,255,0.5),0_10px_25px_rgba(249,197,168,0.5)]" />
+
+      <div className="absolute left-[49%] top-[26%] hidden h-6 w-6 rounded-full bg-white/55 shadow-[inset_-6px_-6px_12px_rgba(255,255,255,0.8)] lg:block" />
+
+      <div className="absolute bottom-[13%] left-[43%] hidden h-10 w-10 rounded-full bg-[#bdebe8]/75 shadow-[inset_-9px_-9px_15px_rgba(255,255,255,0.9),0_12px_28px_rgba(23,143,149,0.18)] lg:block" />
+
+      {/* Main layout */}
+      <div className="absolute inset-0 z-10 flex items-center justify-center overflow-hidden">
+        <section className="grid w-[128vw] max-w-[1850px] origin-center scale-[0.72] grid-cols-1 items-center gap-14 px-12 lg:grid-cols-[1.05fr_0.95fr]">
+          {/* Left Glass Panel */}
+          <div className="hidden justify-center lg:flex">
+            <div className="relative flex h-[720px] w-full max-w-[800px] flex-col justify-center rounded-[38px] border border-white/55 bg-white/20 px-20 py-14 shadow-[inset_0_1px_1px_rgba(255,255,255,0.95),0_28px_70px_rgba(36,66,90,0.12)] backdrop-blur-[26px]">
+              <div className="absolute inset-0 rounded-[38px] bg-gradient-to-br from-white/25 via-white/10 to-transparent" />
+
+              {/* Floating paw top-left */}
+              <div className="absolute -left-14 -top-14 z-10 flex h-20 w-20 items-center justify-center rounded-2xl bg-white/55 shadow-[0_14px_40px_rgba(31,50,70,0.08)] backdrop-blur-2xl">
+                <PawIcon />
+              </div>
+
+              {/* Floating paw top-right */}
+              <div className="absolute right-9 top-[-28px] z-10 opacity-60">
+                <PawIcon />
+              </div>
+
+              <div className="relative z-10">
+                <h1 className="max-w-[610px] text-[64px] font-extrabold leading-[1.13] tracking-[-0.055em] text-[#101b3d]">
+                  Join{" "}
+                  <button
+                    type="button"
+                    onClick={() => navigate("/")}
+                    className="bg-gradient-to-r from-[#178f95] to-[#0c7b84] bg-clip-text text-transparent transition hover:opacity-80"
+                  >
+                    PetsVeta
+                  </button>
+                </h1>
+
+                <p className="mt-8 max-w-[600px] text-[22px] font-medium leading-[1.6] text-[#2f405f]">
+                  Create your account to book vet appointments, explore pet
+                  services, and shop trusted pet products.
+                </p>
+
+                {/* Trusted Card */}
+                <div className="mt-10 flex max-w-[610px] items-center gap-7 rounded-[28px] border border-white/60 bg-white/24 p-5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.9),0_20px_50px_rgba(20,50,70,0.1)] backdrop-blur-3xl">
+                  <div className="relative h-[100px] w-[100px] shrink-0 overflow-hidden rounded-3xl bg-[#fff3e8] shadow-[0_14px_28px_rgba(40,50,70,0.12)]">
+                    <img
+                      src="https://images.unsplash.com/photo-1586671267731-da2cf3ceeb80?auto=format&fit=crop&w=300&q=80"
+                      alt="Dog"
+                      className="h-full w-full object-cover"
+                    />
+
+                    <div className="absolute bottom-[-2px] right-[-2px] flex h-9 w-9 items-center justify-center rounded-full bg-white text-lg shadow-lg">
+                      💗
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-[20px] font-extrabold text-[#101b3d]">
+                      Complete Pet Care
+                    </h3>
+
+                    <p className="mt-4 text-[17px] font-medium leading-7 text-[#4f5f78]">
+                      Everything for your pet in one place.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Stats */}
+                <div className="mt-10 flex max-w-[610px] gap-5">
+                  <StatCard
+                    value="120+"
+                    label="Doctors"
+                    icon={
+                      <svg
+                        className="h-9 w-9"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 12a5 5 0 100-10 5 5 0 000 10zM3 22a9 9 0 0118 0H3z" />
+                      </svg>
+                    }
+                  />
+
+                  <StatCard
+                    value="5k+"
+                    label="Members"
+                    icon={
+                      <svg
+                        className="h-9 w-9"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path d="M17 20h5v-2a4 4 0 00-5-4" />
+                        <path d="M9 20H4v-2a4 4 0 015-4" />
+                        <circle cx="12" cy="7" r="4" />
+                      </svg>
+                    }
+                  />
+
+                  <StatCard
+                    value="24/7"
+                    label="Support"
+                    icon={
+                      <svg
+                        className="h-9 w-9"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path d="M4 13a8 8 0 0116 0" />
+                        <path d="M4 13v4a2 2 0 002 2h1v-6H6a2 2 0 00-2 2zM20 13v4a2 2 0 01-2 2h-1v-6h1a2 2 0 012 2z" />
+                      </svg>
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Signup Card */}
+          <div className="flex justify-center">
+            <div className="flex h-[760px] w-full max-w-[700px] items-center rounded-[36px] border border-white/70 bg-white/72 px-16 py-10 shadow-[0_30px_80px_rgba(30,60,80,0.16)] backdrop-blur-2xl">
+              <PetOwnerForm />
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  );
+};
+
+export default PetOwnerSignupPage;
+````
+
+## File: Frontend/src/features/Doctor/components/DoctorSideBar.tsx
+````typescript
+import { CalendarDays, DollarSignIcon, Home, LogOut, Users, X } from "lucide-react";
+import { NavLink } from "react-router-dom";
+import Logo from "@/shared/components/Logo/Logo";
+import type { DoctorSidebarProps } from "../doctor.types";
+
+export const DoctorSidebar = ({ sidebarOpen, setSidebarOpen }: DoctorSidebarProps) => {
+    const sidebarLinks = [
+        { id: 1, label: "Dashboard", icon: Home, address: "doctor-dashboard" },
+        { id: 2, label: "Appointments", icon: CalendarDays, address: "appointments" },
+        { id: 3, label: "Patients", icon: Users, address: "pateints" },
+        { id: 4, label: "Availability", icon: CalendarDays, address: "doctor-availability" },
+        { id: 5, label: "Pricing", icon: DollarSignIcon, address: "doctor-pricing" },
+        { id: 6, label: "Profile", icon: Users, address: "doctor-profile" },
+    ];
+
+    return (
+        <>
+            {sidebarOpen && (
+                <button
+                    type="button"
+                    onClick={() => setSidebarOpen(false)}
+                    className="fixed inset-0 z-40 bg-slate-900/40 lg:hidden"
+                    aria-label="Close sidebar"
+                />
+            )}
+
+            <aside
+                className={`fixed left-0 top-0 z-50 h-screen w-72 border-r border-slate-200 bg-white transition-transform duration-300 lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+                    }`}
+            >
+                <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+                    <div className="flex items-center gap-3">
+                        <Logo />
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={() => setSidebarOpen(false)}
+                        className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:hidden"
+                        aria-label="Close sidebar"
+                    >
+                        <X size={22} />
+                    </button>
+                </div>
+
+                <nav className="space-y-2 px-4 py-5">
+                    {sidebarLinks.map((link) => {
+                        const Icon = link.icon;
+
+                        return (
+                            <NavLink
+                                to={link.address}
+                                key={link.id}
+                                onClick={() => setSidebarOpen(false)}
+                                className={({ isActive }) => `outline-none flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold transition ${isActive
+                                    ? "bg-teal-700 text-white shadow-md shadow-teal-700/20"
+                                    : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
+                                    }`}
+                            >
+                                <Icon size={19} />
+                                {link.label}
+                            </NavLink>
+                        );
+                    })}
+
+                    <div className="pt-8">
+                        <button
+                            type="button"
+                            className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold text-red-500 transition hover:bg-red-50"
+                        >
+                            <LogOut size={19} />
+                            Logout
+                        </button>
+                    </div>
+                </nav>
+            </aside>
+        </>
+    );
+};
 ````
 
 ## File: Frontend/src/features/Doctorcart/component/DoctorCard.tsx
@@ -26708,6 +27145,114 @@ const DoctorCard = ({ doctor }: DoctorCardProps) => {
 
 
 export default DoctorCard;
+````
+
+## File: Frontend/src/features/Landing Page/components/Banner.tsx
+````typescript
+import { Link } from "react-router-dom";
+
+import {
+  FaShieldAlt,
+  FaLock,
+  FaHeadset,
+  FaUsers,
+  FaCalendarAlt,
+  FaShoppingBag,
+  FaPaw,
+} from "react-icons/fa";
+
+import img from "@/assets/shared/images/bannerImage.png";
+import Button from "../../../shared/components/Button/Button";
+import DashboardHomeMenu from "./DashboardHomeMenu";
+
+export const Banner = () => {
+  return (
+    <section className="relative mt-20 overflow-hidden bg-gradient-to-br from-[#f4fbff] via-white to-[#e8fbfa] px-6 py-16 lg:px-16 lg:py-20 flex flex-col lg:flex-row items-center justify-between gap-10">
+      <div className="w-full lg:w-1/2 z-10">
+        <div className="inline-flex items-center gap-2 bg-white text-[#07182c] font-semibold px-5 py-3 rounded-full shadow-lg mb-7">
+          <FaPaw className="text-[#009f9d]" />
+          <span>Trusted by 10,000+ pet parents</span>
+        </div>
+
+        <h1 className="text-[40px] md:text-[56px] lg:text-[64px] leading-tight font-extrabold text-[#07182c] mb-6">
+          Better care for <br />
+          your pets, <span className="text-[#00a7a5]">every day.</span>
+        </h1>
+
+        <p className="text-base md:text-lg text-slate-700 leading-7 max-w-xl mb-8">
+          PetsVeta is your all-in-one platform for expert care, trusted vets,
+          quality products and a loving community.
+        </p>
+
+        <div className="flex flex-wrap gap-4 mb-8">
+          <Link to="/doctors">
+            <Button
+              variant="primary"
+              size="md"
+              className="inline-flex items-center gap-3 !bg-[#009f9d] !border-[#009f9d] !text-white hover:!bg-[#008f8d] hover:!text-white rounded-2xl shadow-xl"
+            >
+              <FaCalendarAlt />
+              Book a Vet Appointment
+            </Button>
+          </Link>
+
+          <Link to="/marketplace1">
+            <Button
+              variant="outline"
+              size="md"
+              className="inline-flex items-center gap-3 !bg-white !text-[#07182c] !border-white hover:!bg-white hover:!text-[#009f9d] rounded-2xl shadow-lg"
+            >
+              <FaShoppingBag />
+              Explore Marketplace
+            </Button>
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+          <div className="flex items-center gap-3 text-sm font-bold text-[#07182c]">
+            <span className="w-10 h-10 rounded-full bg-[#d9f7f6] text-[#008f8d] flex items-center justify-center shrink-0">
+              <FaShieldAlt />
+            </span>
+            Verified Vets
+          </div>
+
+          <div className="flex items-center gap-3 text-sm font-bold text-[#07182c]">
+            <span className="w-10 h-10 rounded-full bg-[#d9f7f6] text-[#008f8d] flex items-center justify-center shrink-0">
+              <FaLock />
+            </span>
+            Secure Bookings
+          </div>
+
+          <div className="flex items-center gap-3 text-sm font-bold text-[#07182c]">
+            <span className="w-10 h-10 rounded-full bg-[#d9f7f6] text-[#008f8d] flex items-center justify-center shrink-0">
+              <FaHeadset />
+            </span>
+            24/7 Support
+          </div>
+
+          <div className="flex items-center gap-3 text-sm font-bold text-[#07182c]">
+            <span className="w-10 h-10 rounded-full bg-[#d9f7f6] text-[#008f8d] flex items-center justify-center shrink-0">
+              <FaUsers />
+            </span>
+            Trusted by Pet Parents
+          </div>
+        </div>
+      </div>
+
+      <div className="relative w-full lg:w-1/2 min-h-[360px] lg:min-h-[520px] flex items-end justify-center">
+        <div className="absolute w-[330px] h-[330px] md:w-[480px] md:h-[480px] rounded-full bg-gradient-to-br from-[#4fd4d1] to-[#009f9d] bottom-4" />
+
+        <img
+          src={img}
+          alt="PetsVeta pets"
+          className="relative z-10 w-full max-w-[620px] object-contain"
+        />
+      </div>
+
+      <DashboardHomeMenu />
+    </section>
+  );
+};
 ````
 
 ## File: Frontend/src/features/Landing Page/components/Services.tsx
@@ -26913,6 +27458,334 @@ const Services = () => {
 };
 
 export default Services;
+````
+
+## File: Frontend/src/features/marketplace1/pages/MarketplaceProductDetailPage.tsx
+````typescript
+// src/features/marketplace1/pages/MarketplaceProductDetailPage.tsx
+
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "@/features/Auth/hooks/authhook";
+import {
+  FaArrowLeft,
+  FaHeart,
+  FaMapMarkerAlt,
+  FaStar,
+  FaStore,
+  FaShoppingCart,
+  FaShieldAlt,
+} from "react-icons/fa";
+import Button from "@/shared/components/Button/Button";
+import Card from "@/shared/components/Card/Card";
+import { addToCart } from "@/features/cart/utils/cartStorage";
+import {
+  fetchMarketplaceProductById,
+  getProductImage,
+  getProductPrice,
+  getSellerName,
+  saveMarketplaceListing,
+  toDisplayCategory,
+  type MarketplaceProduct,
+} from "../api/marketplace.api";
+
+
+const MarketplaceProductDetailPage = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [product, setProduct] = useState<MarketplaceProduct | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [saveMessage, setSaveMessage] = useState("");
+  const [cartError, setCartError] = useState("");
+  const { user } = useAuth();
+
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    navigate("/marketplace1");
+  };
+
+  useEffect(() => {
+    let ignore = false;
+
+    const loadProduct = async () => {
+      if (!id) {
+        setError("Product id missing.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const data = await fetchMarketplaceProductById(id);
+
+        if (!ignore) {
+          setProduct(data);
+        }
+      } catch {
+        if (!ignore) {
+          setError("Product not found.");
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadProduct();
+
+    return () => {
+      ignore = true;
+    };
+  }, [id]);
+
+
+  const handleBuyNow = () => {
+    if (!product) return;
+
+    const result = addToCart({
+      productId: product.id,
+      title: product.title,
+      price: getProductPrice(product),
+      image: getProductImage(product),
+      quantity: 1,
+      sellerId: product.sellerId,
+    });
+
+    if (!result.success) {
+      setCartError(result.message);
+      return;
+    }
+
+    navigate("/cart");
+  };
+
+  // 💡 Added: Direct adoption/purchase bypass logic
+  const handleDirectBuy = () => {
+    if (!product) return;
+    localStorage.removeItem("pets-veta-direct-buy"); // Clear old sessions
+
+    const directBuyItem = {
+      productId: product.id,
+      title: product.title,
+      price: getProductPrice(product),
+      image: getProductImage(product),
+      quantity: 1,
+      sellerId: product.sellerId,
+    };
+
+    localStorage.setItem("pets-veta-direct-buy", JSON.stringify(directBuyItem));
+    navigate("/checkout"); // Forward straight to direct payment form
+  };
+
+  const handleSave = async () => {
+    if (!product) return;
+
+    try {
+      await saveMarketplaceListing(product.id);
+      setSaveMessage("Listing saved.");
+    } catch {
+      navigate("/login", {
+        state: { redirectTo: `/marketplace/product/${product.id}` },
+      });
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="mt-20 min-h-screen bg-[#f7fbfb] p-10">
+        <div className="mb-5">
+          <BackToMarketplaceButton onClick={handleBack} />
+        </div>
+        <h1 className="text-2xl font-semibold text-gray-900">
+          Loading product...
+        </h1>
+      </div>
+    );
+  }
+
+  if (!product || error) {
+    return (
+      <div className="mt-20 min-h-screen bg-[#f7fbfb] p-10">
+        <div className="mb-5">
+          <BackToMarketplaceButton onClick={handleBack} />
+        </div>
+        <h1 className="text-2xl font-semibold text-gray-900">
+          {error || "Product not found"}
+        </h1>
+      </div>
+    );
+  }
+
+  const image = getProductImage(product);
+  const price = getProductPrice(product);
+  const seller = getSellerName(product);
+  const displayCategory = toDisplayCategory(product.category);
+  const isPet = product.category === "PETS";
+  const isOwnListing = user?.data?.id === product?.seller?.user?.id;
+
+  return (
+    <main className="min-h-screen bg-[#f7fbfb] px-5 py-8 lg:px-12">
+      <p className="mb-5 text-sm text-gray-500">
+        Marketplace / {displayCategory} / {product.title}
+      </p>
+      <div className="mt-6 space-y-3 text-sm text-gray-600">
+        <p className="flex items-center gap-2">
+          <FaStore className="text-[#178f95]" />
+          Seller: {seller} {isOwnListing && <span className="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-sm ml-1 font-bold">Your Store Listing</span>}
+        </p>
+
+        <p className="flex items-center gap-2">
+          <FaMapMarkerAlt className="text-[#178f95]" />
+          Location: {product.location || product.seller?.city || "Pakistan"}
+        </p>
+
+        <p className="flex items-center gap-2">
+          <FaShieldAlt className="text-[#178f95]" />
+          Verified seller product
+        </p>
+      </div>
+
+      <p className="mt-5 text-sm font-medium text-green-600">
+        In Stock{" "}
+        <span className="text-gray-500">{product.stock} available</span>
+      </p>
+
+      <div className="mt-7 grid grid-cols-2 gap-3">
+        {/* 💡 Updated: If own listing, let them manage it directly. Otherwise, show cart/buy actions */}
+        {isOwnListing ? (
+          <Button
+            className="gap-2 !bg-gray-100 !border-slate-200 !text-slate-700 hover:!bg-slate-200"
+            onClick={() => navigate(`/seller/edit-product/${product.id}`)}
+          >
+            Edit Listing
+          </Button>
+        ) : isPet ? (
+          <Button className="gap-2 !bg-[#178f95] !border-[#178f95] !text-white hover:!bg-[#12757a]" onClick={handleDirectBuy}>
+            Buy Now
+          </Button>
+        ) : (
+          <Button className="gap-2" onClick={handleBuyNow}>
+            <FaShoppingCart />
+            Add to Cart
+          </Button>
+        )}
+
+        {!isOwnListing ? (
+          <Button variant="outline" className="gap-2" onClick={handleSave}>
+            <FaHeart />
+            Save Listing
+          </Button>
+        ) : (
+          <Button variant="outline" className="gap-2" onClick={() => navigate("/seller/listings")}>
+            View All Listings
+          </Button>
+        )}
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-[1fr_430px]">
+        <Card className="overflow-hidden p-0">
+          <div className="h-[520px] bg-white">
+            <img
+              src={image}
+              alt={product.title}
+              className="h-full w-full object-cover"
+            />
+          </div>
+        </Card>
+
+        <Card>
+          <span className="rounded-full bg-[#178f95]/10 px-3 py-1 text-sm font-semibold text-[#178f95]">
+            {displayCategory}
+          </span>
+
+          <h1 className="mt-4 text-3xl font-extrabold text-[#07182c]">
+            {product.title}
+          </h1>
+
+          <div className="mt-4 flex items-center gap-2">
+            <FaStar className="text-yellow-400" />
+            <span className="font-semibold text-gray-700">
+              New
+            </span>
+            <span className="text-gray-500">Active marketplace listing</span>
+          </div>
+
+          <p className="mt-6 text-3xl font-extrabold text-[#07182c]">
+            PKR {price.toLocaleString()}
+          </p>
+
+          <p className="mt-5 leading-7 text-gray-600">
+            {product.description || "No description provided."}
+          </p>
+
+          <div className="mt-6 space-y-3 text-sm text-gray-600">
+            <p className="flex items-center gap-2">
+              <FaStore className="text-[#178f95]" />
+              Seller: {seller}
+            </p>
+
+            <p className="flex items-center gap-2">
+              <FaMapMarkerAlt className="text-[#178f95]" />
+              Location: {product.location || product.seller?.city || "Pakistan"}
+            </p>
+
+            <p className="flex items-center gap-2">
+              <FaShieldAlt className="text-[#178f95]" />
+              Verified seller product
+            </p>
+          </div>
+
+          <p className="mt-5 text-sm font-medium text-green-600">
+            In Stock{" "}
+            <span className="text-gray-500">{product.stock} available</span>
+          </p>
+
+          <div className="mt-7 grid grid-cols-2 gap-3">
+            {/* 💡 Updated: Shows "Buy Now" for live pets, and "Add to Cart" for consumables */}
+            {isPet ? (
+              <Button className="gap-2 !bg-[#178f95] !border-[#178f95] !text-white hover:!bg-[#12757a]" onClick={handleDirectBuy}>
+                Buy Now
+              </Button>
+            ) : (
+              <Button className="gap-2" onClick={handleBuyNow}>
+                <FaShoppingCart />
+                Add to Cart
+              </Button>
+            )}
+
+            <Button variant="outline" className="gap-2" onClick={handleSave}>
+              <FaHeart />
+              Save Listing
+            </Button>
+          </div>
+
+          {cartError && (
+            <p className="mt-3 rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-600">
+              {cartError}
+            </p>
+          )}
+
+          {saveMessage && (
+            <p className="mt-3 rounded-lg bg-green-50 px-4 py-2 text-sm font-medium text-green-700">
+              {saveMessage}
+            </p>
+          )}
+
+          <Button variant="outline" className="mt-3 w-full">
+            Message Seller
+          </Button>
+        </Card>
+      </div>
+    </main>
+  );
+};
+
+export default MarketplaceProductDetailPage;
 ````
 
 ## File: Frontend/src/features/Payment/page/PaymentSuccessPage.tsx
@@ -27147,6 +28020,312 @@ const PaymentSuccessPage = () => {
 export default PaymentSuccessPage;
 ````
 
+## File: Frontend/src/features/Payment/payment.routes.tsx
+````typescript
+import AppointmentPaymentPage from "./page/AppointmentPaymentPage";
+import PaymentSuccessPage from "./page/PaymentSuccessPage";
+import PaymentCancelPage from "./page/PaymentCancelPage";
+
+// 💡 Added: New Order checkout pages
+import OrderPaymentPage from "./page/OrderPaymentPage";
+import OrderPaymentSuccessPage from "./page/OrderPaymentSuccessPage";
+
+export const paymentRoutes = [
+  {
+    path: "/payment",
+    element: <AppointmentPaymentPage />,
+  },
+  {
+    path: "/payment-success",
+    element: <PaymentSuccessPage />,
+  },
+  {
+    path: "/payment-cancel",
+    element: <PaymentCancelPage />,
+  },
+  // Add these entries:
+  {
+    path: "/order-payment",
+    element: <OrderPaymentPage />,
+  },
+  {
+    path: "/order-payment-success",
+    element: <OrderPaymentSuccessPage />,
+  },
+];
+````
+
+## File: Frontend/src/features/Pet Owner/pet profile/components/PetForm.tsx
+````typescript
+import { Calendar, List, PawPrint, Shield, User, ImagePlus } from "lucide-react";
+import { useForm, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useMemo, useState } from "react";
+
+import Input from "../../../../shared/components/Input/Input";
+import Button from "../../../../shared/components/Button/Button";
+import {
+  petSchema,
+  type PetFormInput,
+  type PetFormData,
+} from "../schemas/pet.schema";
+import { createPetApi } from "../api/pets.api";
+import { useAuth } from "@/features/Auth/hooks/authhook";
+import type { PetFormProps } from "../types/petProfile.types";
+
+const PetForm = ({
+  title = "Register Pet",
+  description = "Please enter your pet details below",
+  defaultValues,
+  isSaving = false,
+  onSubmit: parentOnSubmit,
+  onSubmitSuccess,
+  onCancel,
+}: PetFormProps) => {
+  const { user } = useAuth();
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    control,
+    formState: { errors, isSubmitting },
+  } = useForm<PetFormInput, unknown, PetFormData>({
+    resolver: zodResolver(petSchema),
+    defaultValues: defaultValues || {
+      name: "",
+      age: undefined,
+      breed: "",
+      category: undefined,
+    },
+  });
+
+  // Keep form fields synced if defaultValues are loaded asynchronously (Edit Mode)
+  useEffect(() => {
+    if (defaultValues) {
+      reset(defaultValues);
+    }
+  }, [defaultValues, reset]);
+
+  // Watch the photos field to generate live previews
+  const selectedPhotos = useWatch({ control, name: "photos" });
+
+  const previews = useMemo(() => {
+    if (!selectedPhotos || selectedPhotos.length === 0) {
+      return [];
+    }
+
+    return Array.from(selectedPhotos).map((file) =>
+      URL.createObjectURL(file as File)
+    );
+  }, [selectedPhotos]);
+
+  useEffect(() => {
+    return () => {
+      previews.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [previews]);
+
+  const handleFormSubmit = async (data: PetFormData) => {
+    setSubmitError(null);
+
+    // 1. If a custom submission handler is provided by the parent (like in Add/Edit pages), delegate upwards
+    if (parentOnSubmit) {
+      try {
+        await parentOnSubmit(data);
+      } catch (err: any) {
+        setSubmitError(err?.message || "Failed to submit pet form.");
+      }
+      return;
+    }
+
+    // 2. Otherwise, run self-contained profile modal flow
+    const petOwnerId = user?.data?.id;
+    if (!petOwnerId) {
+      setSubmitError("You must be logged in to register a pet.");
+      return;
+    }
+
+    // Photo validation for self-contained creation mode
+    if (!defaultValues && (!data.photos || data.photos.length === 0)) {
+      setSubmitError("At least one pet photo is required.");
+      return;
+    }
+
+    try {
+      const response = await createPetApi(data);
+
+      reset();
+      setPreviews([]);
+
+      if (onSubmitSuccess) {
+        onSubmitSuccess(response);
+      }
+    } catch (err: any) {
+      console.error("Pet submission failed:", err);
+      setSubmitError(
+        err?.response?.data?.message || "An error occurred while saving the pet profile."
+      );
+    }
+  };
+
+  const showLoading = isSubmitting || isSaving;
+
+  return (
+    <section className="w-full max-w-2xl overflow-hidden rounded-3xl bg-white shadow-2xl shadow-purple-200/60 text-[#1F1F2E]">
+      <div className="relative h-36 bg-gradient-to-br from-[#F4ECFF] to-[#E9DDFF] px-6 flex flex-col justify-center">
+        <h1 className="text-2xl font-black tracking-tight text-[#4c249f] sm:text-3xl">
+          {title}
+        </h1>
+        <p className="mt-1 text-sm font-semibold text-[#8B64D7]">
+          {description}
+        </p>
+
+        <span className="absolute right-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-[#6D3DD9] shadow-lg shadow-purple-100">
+          <PawPrint size={28} />
+        </span>
+      </div>
+
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-5 px-6 py-6">
+        {submitError && (
+          <div className="bg-red-50 text-red-700 p-3 rounded-2xl text-xs font-semibold border border-red-100 mb-3">
+            {submitError}
+          </div>
+        )}
+
+        {/* Photo Upload Section (Hide files preview in Edit mode if empty or not updating) */}
+        {!defaultValues && (
+          <div className="w-full">
+            <label className="mb-2 block text-sm font-black text-slate-700">
+              Pet Photos
+            </label>
+            <label className="flex flex-col items-center justify-center w-full h-28 rounded-xl border-2 border-dashed border-purple-200 bg-[#F6F0FF]/50 hover:bg-[#F4ECFF] transition-colors cursor-pointer focus-within:border-[#6D3DD9] focus-within:ring-4 focus-within:ring-purple-100">
+              <div className="flex flex-col items-center justify-center pt-4 pb-4 text-[#6D3DD9]">
+                <ImagePlus size={26} className="mb-1 opacity-80" />
+                <p className="text-xs font-semibold">
+                  Click to upload <span className="font-normal text-slate-500">or drag and drop</span>
+                </p>
+              </div>
+              <input
+                type="file"
+                multiple
+                className="hidden"
+                accept="image/*"
+                {...register("photos")}
+              />
+            </label>
+
+            {/* Previews Grid */}
+            {previews.length > 0 && (
+              <div className="mt-3 grid grid-cols-6 gap-2">
+                {previews.map((src, i) => (
+                  <div key={src} className="relative aspect-square rounded-lg overflow-hidden border border-purple-100 shadow-sm">
+                    <img src={src} alt={`preview-${i}`} className="object-cover w-full h-full" />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {errors.photos && (
+              <p className="mt-1 text-xs font-semibold text-red-500">
+                {errors.photos.message as string}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Name and Age inputs */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            label="Pet Name"
+            type="text"
+            placeholder="Enter pet name"
+            error={errors.name?.message}
+            icon={<User size={18} />}
+            {...register("name")}
+          />
+
+          <Input
+            label="Age"
+            type="number"
+            placeholder="Enter age"
+            error={errors.age?.message}
+            icon={<Calendar size={18} />}
+            rightText="Years"
+            {...register("age")}
+          />
+        </div>
+
+        {/* Breed and Category inputs */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            label="Breed"
+            type="text"
+            placeholder="Enter breed"
+            error={errors.breed?.message}
+            icon={<Shield size={18} />}
+            {...register("breed")}
+          />
+
+          <div>
+            <label className="mb-2 block text-sm font-black">
+              Category <span className="text-red-500">*</span>
+            </label>
+
+            <div className="relative flex h-14 items-center rounded-xl border border-slate-200 bg-white px-4 transition focus-within:border-[#6D3DD9] focus-within:ring-4 focus-within:ring-purple-100">
+              <List size={18} className="mr-3 text-[#6D3DD9]" />
+
+              <select
+                {...register("category")}
+                className="h-full w-full bg-transparent text-sm font-semibold text-slate-600 outline-none"
+              >
+                <option value="">Select category</option>
+                <option value="DOG">Dog</option>
+                <option value="CAT">Cat</option>
+                <option value="REPTILE">Reptile</option>
+                <option value="OTHER">Other</option>
+              </select>
+            </div>
+
+            {errors.category && (
+              <p className="mt-1 text-xs font-semibold text-red-500">
+                {errors.category.message}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="grid grid-cols-2 gap-3 pt-2">
+          <Button
+            type="button"
+            variant="outline"
+            className="border-[#6D3DD9]/35 text-[#6D3DD9]"
+            onClick={() => {
+              reset();
+              if (onCancel) onCancel();
+            }}
+          >
+            Cancel
+          </Button>
+
+          <Button
+            type="submit"
+            disabled={showLoading}
+            className="bg-[#6D3DD9] hover:bg-[#5630B2] hover:text-white"
+          >
+            {showLoading ? "Saving..." : "Save Pet"}
+          </Button>
+        </div>
+      </form>
+    </section>
+  );
+};
+
+export default PetForm;
+````
+
 ## File: Frontend/src/shared/components/Navbar/navbar.data.ts
 ````typescript
 interface NavData {
@@ -27196,6 +28375,799 @@ const NAVLINK: NavData[] = [
 export default NAVLINK;
 ````
 
+## File: Backend/app/controllers/doctor.controller.js
+````javascript
+const sendResponse = require('../utils/SendResponse');
+const AppError = require('../utils/AppError');
+const catchAsync = require('../utils/CatchAsync');
+const requireFields = require('../utils/validateRequest');
+const authServices = require('../services/auth.services');
+const doctorServices = require('../services/doctor.services');
+const { uploadToCloudinary } = require('../utils/cloudinary.utils');
+
+const fetchDoctorServices = catchAsync(async (req, res) => {
+    const email = req.user.email;
+    const validUser = await authServices.verifyEmail(email);
+
+    if (!validUser) {
+        throw new AppError("User is Invalid", 400);
+    }
+
+    const servicesData = await doctorServices.getDoctorServices(validUser.id);
+    return sendResponse(res, 200, "Successfully Fetch Services", servicesData);
+});
+
+const createDoctorServicePricing = catchAsync(async (req, res) => {
+    const email = req.user.email;
+
+    requireFields(["skill", "price"], req.body);
+
+    const skills = {
+        skill: req.body.skill,
+        price: req.body.price
+    };
+
+    const validUser = await authServices.verifyEmail(email);
+
+    if (!validUser) {
+        throw new AppError("User is Invalid", 400);
+    }
+
+    if (validUser.userRole.role !== 'Doctor') {
+        throw new AppError("Role is Invalid", 401);
+    }
+
+    console.log("Valid User Role is ", validUser.userRole.userId);
+
+    const savedSkills = await doctorServices.addDoctorService(
+        skills,
+        validUser.userRole.userId
+    );
+
+    if (savedSkills === true) {
+        return sendResponse(res, 400, "Skill ALready Exist");
+    }
+
+    return sendResponse(res, 201, "Success", skills);
+});
+
+const deleteDoctorService = catchAsync(async (req, res) => {
+    const email = req.user.email;
+    const { serviceId } = req.body;
+
+    console.log("Service Id is ", serviceId);
+
+    const validUser = await authServices.verifyEmail(email);
+
+    if (!serviceId) {
+        throw new AppError("Service Id not found", 400);
+    }
+
+    if (!validUser) {
+        throw new AppError("User is Invalid", 400);
+    }
+
+    if (validUser.userRole.role !== 'Doctor') {
+        throw new AppError("Role is Invalid", 401);
+    }
+
+    const deletedService = await doctorServices.deleteDoctorService(serviceId);
+
+    console.log("Service Delete is ", deletedService);
+
+    return sendResponse(res, 201, "Success", { deletedService });
+});
+
+const updateDoctorService = catchAsync(async (req, res) => {
+    console.log("Request in edit controlelr ", req.body);
+
+    requireFields(["serviceId", "price", "skill"], req.body);
+
+    const { serviceId, skill, price } = req.body;
+
+    const updateService = await doctorServices.updateDoctorServices(
+        serviceId,
+        skill,
+        price
+    );
+
+    console.log("Updated Service", updateService);
+
+    return sendResponse(res, 201, "Updated Service", updateService);
+});
+
+const fetchDoctorAppointments = catchAsync(async (req, res) => {
+    const appointments = await doctorServices.getDoctorAppointments(req.user.id);
+
+    return sendResponse(
+        res,
+        200,
+        "Doctor appointments fetched successfully",
+        appointments
+    );
+});
+
+const getDoctorProfile = catchAsync(async (req, res) => {
+    const userId = req.user.id;
+
+    const doctorProfile = await doctorServices.getDoctorProfile(userId);
+
+    if (!doctorProfile) {
+        throw new AppError("Doctor profile not found", 404);
+    }
+
+    if (!doctorProfile.doctors) {
+        throw new AppError("Doctor data not found", 404);
+    }
+
+    return sendResponse(
+        res,
+        200,
+        "Doctor profile fetched successfully",
+        doctorProfile
+    );
+});
+
+const updateDoctorProfile = catchAsync(async (req, res) => {
+    const userId = req.user.id;
+    const body = req.body || {};
+
+    console.log("Doctor profile update body:", body);
+    console.log("Doctor profile update file:", req.file);
+
+    const {
+        fullName,
+        username,
+        phone,
+        specialization,
+        education,
+        experience,
+        fees,
+        address,
+        isAvailable,
+    } = body;
+
+    requireFields(
+        [
+            "fullName",
+            "username",
+            "phone",
+            "specialization",
+            "education",
+            "experience",
+            "fees",
+            "address",
+            "isAvailable",
+        ],
+        body
+    );
+
+    let profileImageUrl = body.profileImageUrl;
+
+    if (req.file) {
+        const uploadedImage = await uploadToCloudinary(
+            req.file.buffer,
+            "pets-veta/doctor-profile-images"
+        );
+
+        profileImageUrl = uploadedImage.secure_url;
+    }
+
+    const updatedDoctorProfile = await doctorServices.updateDoctorProfile(
+        userId,
+        {
+            fullName,
+            username,
+            phone,
+            profileImageUrl,
+            specialization,
+            education,
+            experience,
+            fees,
+            address,
+            isAvailable,
+        }
+    );
+
+    return sendResponse(
+        res,
+        200,
+        "Doctor profile updated successfully",
+        updatedDoctorProfile
+    );
+});
+
+module.exports = {
+    createDoctorServicePricing,
+    fetchDoctorServices,
+    deleteDoctorService,
+    updateDoctorService,
+    fetchDoctorAppointments,
+    getDoctorProfile,
+    updateDoctorProfile,
+};
+````
+
+## File: Backend/app/controllers/payment.controller.js
+````javascript
+const catchAsync = require("../utils/CatchAsync");
+const sendResponse = require("../utils/SendResponse");
+const stripeService = require("../services/stripe.service");
+
+const { stripe } = require("../config/stripe");
+const prisma = require("../config/prisma");
+
+const {
+  PaymentStatus,
+  AppointmentStatus,
+  ScheduleStatus,
+} = require("@prisma/client");
+
+const createPaymentIntent = catchAsync(async (req, res) => {
+  const petOwnerId = req.user?.id;
+
+  if (!petOwnerId) {
+    return sendResponse(res, 401, "Please login first", {});
+  }
+
+  const appointmentId = req.params.appointmentId || req.body.appointmentId;
+
+  if (!appointmentId) {
+    return sendResponse(res, 400, "Appointment ID is required", {});
+  }
+
+  const result = await stripeService.createAppointmentPaymentIntent({
+    appointmentId,
+    petOwnerId,
+  });
+
+  return sendResponse(res, 200, "Payment intent created successfully", result);
+});
+
+const getPaymentStatus = catchAsync(async (req, res) => {
+  const petOwnerId = req.user?.id;
+
+  if (!petOwnerId) {
+    return sendResponse(res, 401, "Please login first", {});
+  }
+
+  const { appointmentId } = req.params;
+
+  if (!appointmentId) {
+    return sendResponse(res, 400, "Appointment ID is required", {});
+  }
+
+  const result = await stripeService.getAppointmentPaymentStatus({
+    appointmentId,
+    petOwnerId,
+  });
+
+  return sendResponse(res, 200, "Appointment payment status fetched", result);
+});
+
+const stripeWebhook = async (req, res) => {
+  let event;
+
+  try {
+    const sig = req.headers["stripe-signature"];
+
+    event = stripe.webhooks.constructEvent(
+      req.body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
+  } catch (err) {
+    console.error("Webhook signature verification failed:", err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  try {
+    const existingEvent = await prisma.paymentEvent.findUnique({
+      where: {
+        stripeEventId: event.id,
+      },
+    });
+
+    if (existingEvent?.processed) {
+      return res.status(200).json({
+        received: true,
+        duplicate: true,
+      });
+    }
+
+    const paymentIntent = event.data.object;
+    const appointmentIdFromMetadata = paymentIntent.metadata?.appointmentId;
+    const orderIdFromMetadata = paymentIntent.metadata?.orderId; // 💡 Added: extract order identity from Stripe metadata
+
+    const paymentEvent =
+      existingEvent ||
+      (await prisma.paymentEvent.create({
+        data: {
+          stripeEventId: event.id,
+          eventType: event.type,
+          appointmentId: appointmentIdFromMetadata || null,
+          stripePaymentIntentId: paymentIntent.id || null,
+          payload: event,
+          processed: false,
+        },
+      }));
+
+    // 💡 Added: If it's a marketplace order payment event, delegate to handleOrderWebhook immediately
+    if (orderIdFromMetadata) {
+      await handleOrderWebhook(event.type, paymentIntent, paymentEvent.id);
+      return res.status(200).json({ received: true });
+    }
+
+    // Standard appointments flow remains completely untouched
+    switch (event.type) {
+      case "payment_intent.processing": {
+        await handlePaymentIntentProcessing(paymentIntent, paymentEvent.id);
+        break;
+      }
+
+      case "payment_intent.succeeded": {
+        await handlePaymentIntentSucceeded(paymentIntent, paymentEvent.id);
+        break;
+      }
+
+      case "payment_intent.payment_failed": {
+        await handlePaymentIntentFailed(paymentIntent, paymentEvent.id);
+        break;
+      }
+
+      case "payment_intent.canceled": {
+        await handlePaymentIntentCanceled(paymentIntent, paymentEvent.id);
+        break;
+      }
+
+      default: {
+        await prisma.paymentEvent.update({
+          where: {
+            id: paymentEvent.id,
+          },
+          data: {
+            processed: true,
+            processedAt: new Date(),
+          },
+        });
+
+        console.log(`Unhandled Stripe event type: ${event.type}`);
+      }
+    }
+
+    return res.status(200).json({ received: true });
+  } catch (error) {
+    console.error("Webhook processing failed:", error);
+
+    return res.status(500).json({
+      received: false,
+      error: error.message,
+    });
+  }
+};
+
+const handlePaymentIntentProcessing = async (paymentIntent, paymentEventId) => {
+  const payment = await prisma.payment.findUnique({
+    where: {
+      stripePaymentIntentId: paymentIntent.id,
+    },
+  });
+
+  if (!payment) {
+    throw new Error(`Payment not found for PaymentIntent ${paymentIntent.id}`);
+  }
+
+  await prisma.$transaction([
+    prisma.payment.update({
+      where: {
+        id: payment.id,
+      },
+      data: {
+        status: PaymentStatus.PROCESSING,
+      },
+    }),
+
+    prisma.appointment.update({
+      where: {
+        id: payment.appointmentId,
+      },
+      data: {
+        paymentStatus: PaymentStatus.PROCESSING,
+        status: AppointmentStatus.PAYMENT_PROCESSING,
+      },
+    }),
+
+    prisma.paymentEvent.update({
+      where: {
+        id: paymentEventId,
+      },
+      data: {
+        paymentId: payment.id,
+        appointmentId: payment.appointmentId,
+        processed: true,
+        processedAt: new Date(),
+      },
+    }),
+  ]);
+};
+
+const handlePaymentIntentSucceeded = async (paymentIntent, paymentEventId) => {
+  const appointmentIdFromMetadata = paymentIntent.metadata?.appointmentId;
+
+  const payment = await prisma.payment.findUnique({
+    where: {
+      stripePaymentIntentId: paymentIntent.id,
+    },
+    include: {
+      appointment: {
+        include: {
+          doctorSchedule: true,
+        },
+      },
+    },
+  });
+
+  if (!payment) {
+    throw new Error(`Payment not found for PaymentIntent ${paymentIntent.id}`);
+  }
+
+  if (
+    appointmentIdFromMetadata &&
+    appointmentIdFromMetadata !== payment.appointmentId
+  ) {
+    throw new Error(
+      "PaymentIntent metadata appointmentId does not match DB payment appointmentId"
+    );
+  }
+
+  if (payment.amount !== paymentIntent.amount) {
+    throw new Error("Payment amount mismatch");
+  }
+
+  if (payment.currency.toLowerCase() !== paymentIntent.currency.toLowerCase()) {
+    throw new Error("Payment currency mismatch");
+  }
+
+  const appointment = payment.appointment;
+
+  await prisma.$transaction(async (tx) => {
+    if (appointment.status === AppointmentStatus.CONFIRMED) {
+      await tx.paymentEvent.update({
+        where: {
+          id: paymentEventId,
+        },
+        data: {
+          paymentId: payment.id,
+          appointmentId: appointment.id,
+          processed: true,
+          processedAt: new Date(),
+        },
+      });
+
+      return;
+    }
+
+    if (
+      appointment.doctorSchedule.status !== ScheduleStatus.HELD ||
+      appointment.doctorSchedule.lockedByAppointmentId !== appointment.id
+    ) {
+      throw new Error("Schedule is not held by this appointment");
+    }
+
+    await tx.payment.update({
+      where: {
+        id: payment.id,
+      },
+      data: {
+        status: PaymentStatus.SUCCEEDED,
+        paidAt: new Date(),
+        stripeChargeId:
+          typeof paymentIntent.latest_charge === "string"
+            ? paymentIntent.latest_charge
+            : null,
+      },
+    });
+
+    await tx.appointment.update({
+      where: {
+        id: appointment.id,
+      },
+      data: {
+        status: AppointmentStatus.CONFIRMED,
+        paymentStatus: PaymentStatus.SUCCEEDED,
+        confirmedAt: new Date(),
+      },
+    });
+
+    await tx.doctorSchedule.update({
+      where: {
+        id: appointment.scheduleId,
+      },
+      data: {
+        status: ScheduleStatus.BOOKED,
+        lockedByAppointmentId: appointment.id,
+      },
+    });
+
+    await tx.paymentEvent.update({
+      where: {
+        id: paymentEventId,
+      },
+      data: {
+        paymentId: payment.id,
+        appointmentId: appointment.id,
+        processed: true,
+        processedAt: new Date(),
+      },
+    });
+  });
+};
+
+const handlePaymentIntentFailed = async (paymentIntent, paymentEventId) => {
+  const payment = await prisma.payment.findUnique({
+    where: {
+      stripePaymentIntentId: paymentIntent.id,
+    },
+  });
+
+  if (!payment) {
+    throw new Error(`Payment not found for PaymentIntent ${paymentIntent.id}`);
+  }
+
+  const failureMessage =
+    paymentIntent.last_payment_error?.message || "Payment failed";
+
+  await prisma.$transaction([
+    prisma.payment.update({
+      where: {
+        id: payment.id,
+      },
+      data: {
+        status: PaymentStatus.FAILED,
+        failureReason: failureMessage,
+      },
+    }),
+
+    prisma.appointment.update({
+      where: {
+        id: payment.appointmentId,
+      },
+      data: {
+        paymentStatus: PaymentStatus.FAILED,
+        status: AppointmentStatus.PAYMENT_FAILED,
+      },
+    }),
+
+    prisma.paymentEvent.update({
+      where: {
+        id: paymentEventId,
+      },
+      data: {
+        paymentId: payment.id,
+        appointmentId: payment.appointmentId,
+        processed: true,
+        processedAt: new Date(),
+        processingError: failureMessage,
+      },
+    }),
+  ]);
+};
+
+const handlePaymentIntentCanceled = async (paymentIntent, paymentEventId) => {
+  const payment = await prisma.payment.findUnique({
+    where: {
+      stripePaymentIntentId: paymentIntent.id,
+    },
+    include: {
+      appointment: true,
+    },
+  });
+
+  if (!payment) {
+    throw new Error(`Payment not found for PaymentIntent ${paymentIntent.id}`);
+  }
+
+  await prisma.$transaction([
+    prisma.payment.update({
+      where: {
+        id: payment.id,
+      },
+      data: {
+        status: PaymentStatus.CANCELLED,
+        cancelledAt: new Date(),
+      },
+    }),
+
+    prisma.appointment.update({
+      where: {
+        id: payment.appointmentId,
+      },
+      data: {
+        paymentStatus: PaymentStatus.CANCELLED,
+        status: AppointmentStatus.EXPIRED,
+      },
+    }),
+
+    prisma.doctorSchedule.update({
+      where: {
+        id: payment.appointment.scheduleId,
+      },
+      data: {
+        status: ScheduleStatus.AVAILABLE,
+        lockedByUserId: null,
+        lockedByAppointmentId: null,
+        lockedAt: null,
+      },
+    }),
+
+    prisma.paymentEvent.update({
+      where: {
+        id: paymentEventId,
+      },
+      data: {
+        paymentId: payment.id,
+        appointmentId: payment.appointmentId,
+        processed: true,
+        processedAt: new Date(),
+      },
+    }),
+  ]);
+};
+
+
+const createOrderPaymentIntent = catchAsync(async (req, res) => {
+  const buyerId = req.user?.id;
+
+  if (!buyerId) {
+    return sendResponse(res, 401, "Please login first", {});
+  }
+
+  const orderId = req.params.orderId || req.body.orderId;
+
+  if (!orderId) {
+    return sendResponse(res, 400, "Order ID is required", {});
+  }
+
+  const result = await stripeService.createOrderPaymentIntent({
+    orderId,
+    buyerId,
+  });
+
+  return sendResponse(res, 200, "Order payment intent created successfully", result);
+});
+
+
+const getOrderPaymentStatus = catchAsync(async (req, res) => {
+  const buyerId = req.user?.id;
+
+  if (!buyerId) {
+    return sendResponse(res, 401, "Please login first", {});
+  }
+
+  const { orderId } = req.params;
+
+  if (!orderId) {
+    return sendResponse(res, 400, "Order ID is required", {});
+  }
+
+  const result = await stripeService.getOrderPaymentStatus({
+    orderId,
+    buyerId,
+  });
+
+  return sendResponse(res, 200, "Order payment status fetched successfully", result);
+});
+
+// 💡 Added: Dedicated e-commerce webhook handler with built-in real-time stock recovery
+const handleOrderWebhook = async (eventType, paymentIntent, paymentEventId) => {
+  const orderId = paymentIntent.metadata?.orderId;
+
+  if (!orderId) {
+    throw new Error("Order ID is missing from PaymentIntent metadata");
+  }
+
+  await prisma.$transaction(async (tx) => {
+    const order = await tx.marketplaceOrder.findUnique({
+      where: { id: orderId },
+      include: { items: true },
+    });
+
+    if (!order) {
+      throw new Error(`Order not found for PaymentIntent metadata ID: ${orderId}`);
+    }
+
+    // Skip processing if order has already been paid/confirmed
+    if (order.paymentStatus === "SUCCEEDED" && eventType === "payment_intent.succeeded") {
+      await tx.paymentEvent.update({
+        where: { id: paymentEventId },
+        data: {
+          stripePaymentIntentId: paymentIntent.id,
+          processed: true,
+          processedAt: new Date(),
+        },
+      });
+      return;
+    }
+
+    switch (eventType) {
+      case "payment_intent.processing": {
+        await tx.marketplaceOrder.update({
+          where: { id: orderId },
+          data: {
+            paymentStatus: "PROCESSING",
+          },
+        });
+        break;
+      }
+
+      case "payment_intent.succeeded": {
+        await tx.marketplaceOrder.update({
+          where: { id: orderId },
+          data: {
+            paymentStatus: "SUCCEEDED",
+            status: "CONFIRMED", // Transition fulfillment status
+          },
+        });
+        break;
+      }
+
+      case "payment_intent.payment_failed": {
+        await tx.marketplaceOrder.update({
+          where: { id: orderId },
+          data: {
+            paymentStatus: "FAILED",
+          },
+        });
+        break;
+      }
+
+      case "payment_intent.canceled": {
+        await tx.marketplaceOrder.update({
+          where: { id: orderId },
+          data: {
+            paymentStatus: "CANCELLED",
+            status: "CANCELLED",
+          },
+        });
+
+        // 🐾 Inventory Protection: Restore product stock if checkout was aborted
+        for (const item of order.items) {
+          await tx.marketplaceProduct.update({
+            where: { id: item.productId },
+            data: {
+              stock: {
+                increment: item.quantity,
+              },
+              status: "ACTIVE", // Revive listing state
+            },
+          });
+        }
+        break;
+      }
+    }
+
+    // Log the transaction event to the database audit log
+    await tx.paymentEvent.update({
+      where: { id: paymentEventId },
+      data: {
+        stripePaymentIntentId: paymentIntent.id,
+        processed: true,
+        processedAt: new Date(),
+      },
+    });
+  });
+};
+
+module.exports = {
+  createPaymentIntent,
+  getPaymentStatus,
+  stripeWebhook,
+  createOrderPaymentIntent,
+  getOrderPaymentStatus,
+  handleOrderWebhook
+};
+````
+
 ## File: Backend/app/routes/admin.routes.js
 ````javascript
 const express = require('express');
@@ -27229,6 +29201,42 @@ Router
 Router
     .route('/reject/doctor')
     .post(authMiddleware.protect, authenticateRole.authenticateUserRole('Admin'), adminController.rejectDoctor)
+
+module.exports = Router;
+````
+
+## File: Backend/app/routes/payment.routes.js
+````javascript
+const express = require("express");
+const Router = express.Router();
+
+const paymentController = require("../controllers/payment.controller");
+const { protect } = require("../middleware/auth.middleware");
+
+Router.post(
+    "/appointments/:appointmentId/create-payment-intent",
+    protect,
+    paymentController.createPaymentIntent
+);
+
+Router.get(
+    "/appointments/:appointmentId/status",
+    protect,
+    paymentController.getPaymentStatus
+);
+
+
+Router.post(
+    "/orders/:orderId/create-payment-intent",
+    protect,
+    paymentController.createOrderPaymentIntent
+);
+
+Router.get(
+    "/orders/:orderId/status",
+    protect,
+    paymentController.getOrderPaymentStatus
+);
 
 module.exports = Router;
 ````
@@ -27530,6 +29538,50 @@ const AuthRouter = [
 export default AuthRouter;
 ````
 
+## File: Frontend/src/features/Doctor/doctor.route.tsx
+````typescript
+import DoctorDashboardPage from "./pages/DoctorDashboardPage";
+import DoctorProfilePage from "../Doctorcart/pages/EditDoctorProfilePage";
+import { DoctorProtectedRoute } from "@/ProtectedRoutes/DoctorProtectedRoutes";
+import DoctorSkill from "./pages/SkillPricing";
+import { DoctorLayout } from "./Layout/doctor.layout";
+import DoctorAvailabilityPage from "./pages/DoctorAvailabilityPage";
+import PatientsPage from "./pages/PatientsPage";
+
+export const doctorDashboardRoutes = [
+  {
+    path: "/",
+    element: (
+      <DoctorProtectedRoute>
+        <DoctorLayout />
+      </DoctorProtectedRoute>
+    ),
+    children: [
+      {
+        path: "doctor-dashboard",
+        element: <DoctorDashboardPage />,
+      },
+      {
+        path: "doctor-profile",
+        element: <DoctorProfilePage />,
+      },
+      {
+        path: "doctor-pricing",
+        element: <DoctorSkill />,
+      },
+      {
+        path: "doctor-availability",
+        element: <DoctorAvailabilityPage />,
+      },
+      {
+        path: "pateints",
+        element: <PatientsPage />
+      }
+    ],
+  },
+];
+````
+
 ## File: Frontend/src/features/Doctorcart/component/FindDoctor.tsx
 ````typescript
 import { useState } from "react";
@@ -27591,35 +29643,6 @@ const FindDoctor = () => {
 };
 
 export default FindDoctor;
-````
-
-## File: Frontend/src/features/Payment/api/payment.api.ts
-````typescript
-import { api, handleAxiosError } from "@/features/api interface/axios.interface";
-
-export const createAppointmentPaymentIntent = async (appointmentId: string) => {
-    try {
-        const response = await api.post(
-            `/payment/appointments/${appointmentId}/create-payment-intent`
-        );
-
-        return response.data;
-    } catch (error) {
-        handleAxiosError(error);
-    }
-};
-
-export const getAppointmentPaymentStatus = async (appointmentId: string) => {
-    try {
-        const response = await api.get(
-            `/payment/appointments/${appointmentId}/status`
-        );
-
-        return response.data;
-    } catch (error) {
-        handleAxiosError(error);
-    }
-};
 ````
 
 ## File: Frontend/src/features/Pet Owner/pet details/apis/pet.api.ts
@@ -27688,6 +29711,149 @@ export const getPetsData = async (): Promise<PetResponse[] | undefined> => {
     throw error;
   }
 };
+````
+
+## File: Frontend/src/features/PetOwnerDashboard/components/DashboardSidebar.tsx
+````typescript
+import {
+  CalendarDays,
+  LayoutDashboard,
+  LogOut,
+  PawPrint,
+  Settings,
+  ShoppingCart,
+  Stethoscope,
+  Store,
+  UserRound,
+  FileText,
+} from "lucide-react";
+
+import { NavLink, useNavigate } from "react-router-dom";
+import type { DashboardSidebarItem } from "../types/petOwnerDashboard.types";
+
+const sidebarItems: DashboardSidebarItem[] = [
+  {
+    label: "Dashboard",
+    path: "/pet-owner/dashboard",
+    icon: <LayoutDashboard size={20} />,
+  },
+  {
+    label: "Appointments",
+    path: "/pet-owner/appointments",
+    icon: <CalendarDays size={20} />,
+  },
+  // {
+  //   label: "Reports",
+  //   path: "/pet-owner/reports",
+  //   icon: <FileText size={20} />,
+  // },
+  {
+    label: "Find Doctor",
+    path: "/doctors",
+    icon: <Stethoscope size={20} />,
+  },
+  {
+    label: "Marketplace",
+    path: "/marketplace1",
+    icon: <ShoppingCart size={20} />,
+  },
+  {
+    label: "Cart",
+    path: "/cart",
+    icon: <ShoppingCart size={20} />,
+  },
+  {
+    label: "Profile",
+    path: "/pet-owner/profile",
+    icon: <UserRound size={20} />,
+  },
+  // {
+  //   label: "Settings",
+  //   path: "/pet-owner/settings",
+  //   icon: <Settings size={20} />,
+  // },
+];
+
+const DashboardSidebar = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
+  return (
+    <aside className="fixed left-0 top-0 hidden h-screen w-[260px] border-r border-slate-200 bg-white lg:flex lg:flex-col">
+      {/* Logo */}
+      <button
+        type="button"
+        onClick={() => navigate("/")}
+        className="flex w-full items-center gap-3 border-b border-slate-100 px-7 py-6 text-left"
+      >
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EAF7F5] text-[#078b91]">
+          <PawPrint size={27} />
+        </div>
+
+        <div>
+          <h1 className="text-xl font-black text-[#078b91]">
+            Pets Veta
+          </h1>
+
+          <p className="text-xs font-semibold text-slate-500">
+            Care • Love • Heal
+          </p>
+        </div>
+      </button>
+
+      {/* Navigation */}
+      <nav className="flex-1 space-y-2 px-4 py-6">
+        {sidebarItems.map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            className={({ isActive }) =>
+              `flex items-center gap-4 rounded-xl px-4 py-3.5 text-sm font-bold transition ${
+                isActive
+                  ? "bg-[#EAF7F5] text-[#078b91]"
+                  : "text-[#20263D] hover:bg-slate-50"
+              }`
+            }
+          >
+            {item.icon}
+            {item.label}
+          </NavLink>
+        ))}
+      </nav>
+
+      {/* Small sidebar info */}
+      {/* <div className="mx-4 mb-5 rounded-2xl bg-[#F1FAF8] p-5">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-[#078b91]">
+          <PawPrint size={24} />
+        </div>
+
+        <h3 className="mt-4 text-lg font-black text-[#101b3d]">
+          We care for your pets
+        </h3>
+
+        <p className="mt-2 text-sm font-medium leading-6 text-slate-500">
+          Book appointments and track your pet&apos;s health easily.
+        </p>
+      </div> */}
+
+      {/* Logout */}
+      <button
+        type="button"
+        onClick={handleLogout}
+        className="mx-5 mb-6 flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-red-500 transition hover:bg-red-50"
+      >
+        <LogOut size={20} />
+        Logout
+      </button>
+    </aside>
+  );
+};
+
+export default DashboardSidebar;
 ````
 
 ## File: Backend/app/controllers/admin.controller.js
@@ -28086,88 +30252,263 @@ module.exports = {
 };
 ````
 
-## File: Frontend/package.json
-````json
-{
-  "name": "pets-veta-frontend",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@hookform/resolvers": "^5.2.2",
-    "@reduxjs/toolkit": "^2.12.0",
-    "@stripe/react-stripe-js": "^6.6.0",
-    "@stripe/stripe-js": "^9.8.0",
-    "@studio-freight/lenis": "^1.0.42",
-    "@tailwindcss/vite": "^4.3.0",
-    "@tanstack/react-query": "^5.101.0",
-    "@tanstack/react-query-devtools": "^5.101.0",
-    "axios": "^1.16.1",
-    "lucide-react": "^1.16.0",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6",
-    "react-hook-form": "^7.75.0",
-    "react-icons": "^5.6.0",
-    "react-redux": "^9.3.0",
-    "react-router-dom": "^7.15.0",
-    "sonner": "^2.0.7",
-    "tailwindcss": "^4.3.0",
-    "zod": "^4.4.3"
-  },
-  "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "@types/node": "^24.12.3",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.1",
-    "eslint": "^10.3.0",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-refresh": "^0.5.2",
-    "globals": "^17.6.0",
-    "typescript": "~6.0.2",
-    "typescript-eslint": "^8.59.2",
-    "vite": "^8.0.12"
-  }
-}
-````
-
-## File: Frontend/src/app/App.tsx
+## File: Frontend/src/features/Appointment/pages/DoctorProfilePage.tsx
 ````typescript
-import { RouterProvider } from "react-router-dom"
-import Router from "../routes/routes"
-import { AuthContextProvider } from "@/features/Auth/Context/auth.context"
-import { QueryProvider } from "@/features/Auth/Query/Providers/AuthQueryProvider"
-import SmoothScroll from "@/Global Provider/SmoothScroller"
+import { Link, useNavigate, useParams } from "react-router-dom";
+import {
+    FaArrowLeft,
+    FaCheckCircle,
+    FaGraduationCap,
+    FaUserMd,
+} from "react-icons/fa";
+import { User } from 'lucide-react'
 
-function App() {
+import { getDoctorProfileData } from "../apis/doctorProfile.api";
+import type { BookableSlot } from "../apis/doctorProfile.api";
+import { useEffect, useState } from "react";
+import BookingModal from "../components/BookSlotModal";
+import { bookDoctorSlot } from "../apis/bookSlot";
+import type { DoctorProfileViewData } from "../types/appointment.types";
 
 
-  return (
-    <>
+const DoctorProfilePage = () => {
+    const { id } = useParams();
 
-      <QueryProvider>
+    const [doctor, setDoctor] = useState<DoctorProfileViewData>(null);
+    const [loading, setLoading] = useState(false);
 
-        <AuthContextProvider>
-          <SmoothScroll>
 
-            <RouterProvider router={Router} />
-          </SmoothScroll>
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedSlot, setSelectedSlot] = useState<BookableSlot | null>(null);
+    const navigate = useNavigate();
 
-        </AuthContextProvider>
+    useEffect(() => {
+        const doctorProfileData = async () => {
+            setLoading(true);
+            if (id) {
+                const data = await getDoctorProfileData(id);
+                setDoctor(data);
+            }
 
-      </QueryProvider>
+            setLoading(false);
+        };
+        doctorProfileData();
+    }, [id]);
 
-    </>
-  )
-}
+    const handleConfirmBooking = async (scheduleId: string) => {
+        console.log("Confirmed booking for Schedule ID:", scheduleId);
 
-export default App
+        if (!scheduleId || !doctor?.id) {
+            console.log("IDs not found");
+            return;
+        }
+
+        const schedule = {
+            slotId: scheduleId,
+            doctorId: doctor.id,
+        };
+
+        try {
+            const response = await bookDoctorSlot(schedule);
+
+            console.log("Slot lock response is:", response);
+
+            if (!response?.success || !response?.data?.appointmentId) {
+                console.log("Failed to lock slot");
+                return;
+            }
+
+            // Pehle old booking data clear kar do taake stale data issue na aaye
+            localStorage.removeItem("doctorId");
+            localStorage.removeItem("scheduleId");
+            localStorage.removeItem("appointmentId");
+            localStorage.removeItem("petPatientId");
+
+            // New booking data save karo
+            localStorage.setItem("doctorId", doctor.id);
+            localStorage.setItem("scheduleId", scheduleId);
+            localStorage.setItem("appointmentId", response.data.appointmentId);
+
+            setIsModalOpen(false);
+            setSelectedSlot(null);
+
+            navigate("/book-appointment");
+        } catch (error) {
+            console.log("Slot booking error:", error);
+        }
+    };
+
+    if (!doctor) {
+        return (
+            <section className="min-h-screen bg-[#f5fbff] px-5 py-12 lg:px-16">
+                <div className="mx-auto max-w-4xl rounded-3xl bg-white p-8 text-center shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
+                    <h1 className="text-3xl font-extrabold text-[#07182c]">
+                        {loading ? "Loading..." : "Doctor Not Found"}
+                    </h1>
+                    <p className="mt-2 text-slate-500">
+                        The doctor profile you are looking for does not exist.
+                    </p>
+                    <Link
+                        to="/doctors"
+                        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#009f9d] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#007f7d]"
+                    >
+                        <FaArrowLeft />
+                        Back to Doctors
+                    </Link>
+                </div>
+            </section>
+        );
+    }
+
+    return (
+        <section className="min-h-screen bg-[#f5fbff] px-5 py-12 lg:px-16">
+            <div className="mx-auto max-w-7xl">
+                <Link
+                    to="/doctors"
+                    className="mb-6 inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-bold text-[#009f9d] shadow-sm transition hover:bg-[#eefafa]"
+                >
+                    <FaArrowLeft />
+                    Back to Doctors
+                </Link>
+
+                <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
+                    <div className="space-y-6">
+                        {/* Profile Card */}
+                        <div className="rounded-3xl bg-white p-6 shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
+                            <div className="grid gap-6 md:grid-cols-[220px_1fr]">
+                                <div className="relative h-60 overflow-hidden flex justify-center items-center rounded-3xl bg-[#eefafa]">
+                                    {doctor.image.startsWith('/') ? (
+                                        <img
+                                            src={doctor.image}
+                                            alt={doctor.name}
+                                            className="h-full w-full object-cover"
+                                        />
+                                    ) : (
+                                        <User size={112} className="text-slate-300" />
+                                    )}
+                                </div>
+
+                                <div>
+                                    <div className="flex flex-wrap items-center gap-2">
+                                        <h1 className="text-3xl font-extrabold text-[#07182c]">
+                                            {doctor.name}
+                                        </h1>
+                                        <FaCheckCircle className="text-xl text-[#009f9d]" />
+                                    </div>
+                                    <p className="mt-2 text-lg font-bold text-slate-500">
+                                        {doctor.specialization}
+                                    </p>
+
+                                    <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                                        <div className="rounded-2xl bg-[#f5fbff] p-4">
+                                            <p className="text-sm font-semibold text-slate-500">
+                                                Experience
+                                            </p>
+                                            <h3 className="mt-1 text-xl font-extrabold text-[#07182c]">
+                                                {doctor.experience} Years
+                                            </h3>
+                                        </div>
+                                        <div className="rounded-2xl bg-[#f5fbff] p-4">
+                                            <p className="text-sm font-semibold text-slate-500">
+                                                Consultation Fee
+                                            </p>
+                                            <h3 className="mt-1 text-xl font-extrabold text-[#07182c]">
+                                                Rs. {doctor.fees}
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Education Card */}
+                        <div className="rounded-3xl bg-white p-6 shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
+                            <h2 className="mb-4 flex items-center gap-2 text-xl font-extrabold text-[#07182c]">
+                                <FaGraduationCap className="text-[#009f9d]" />
+                                Education & Qualification
+                            </h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <p className="text-sm font-bold text-slate-500">Education</p>
+                                    <p className="mt-1 font-semibold text-[#07182c]">{doctor.education}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-bold text-slate-500">Qualification</p>
+                                    <p className="mt-1 font-semibold text-[#07182c]">{doctor.specialization}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Booking Sidebar */}
+                    <aside className="h-fit rounded-3xl bg-white p-6 shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
+                        <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#eefafa] text-2xl text-[#009f9d]">
+                            <FaUserMd />
+                        </div>
+
+                        <h2 className="text-2xl font-extrabold text-[#07182c]">
+                            Select Slot to Book Appointment
+                        </h2>
+                        <p className="mt-2 text-sm leading-6 text-slate-500">
+                            Select this doctor and continue to appointment form.
+                        </p>
+
+                        <div className="mt-5">
+                            <h3 className="text-sm font-extrabold text-[#07182c]">
+                                Available Slots
+                            </h3>
+
+                            {doctor.availableSlots?.length > 0 ? (
+                                <div className="mt-3 grid grid-cols-2 gap-3">
+                                    {doctor.availableSlots.slice(0, 8).map((slot) => {
+                                        // Format the date to show on the button (e.g., Jun 19)
+                                        const shortDate = new Date(slot.date).toLocaleDateString("en-US", {
+                                            month: "short",
+                                            day: "numeric",
+                                        });
+
+                                        return (
+                                            <button
+                                                key={slot.scheduleId}
+                                                id={slot.scheduleId}
+                                                onClick={() => {
+                                                    setSelectedSlot(slot);
+                                                    setIsModalOpen(true);
+                                                }}
+                                                className="flex flex-col items-center justify-center rounded-xl border border-slate-200 px-2 py-3 text-center text-xs font-extrabold text-[#07182c] transition hover:border-[#009f9d] hover:bg-[#eefafa]"
+                                            >
+                                                <span className="mb-1 block text-[11px] font-bold text-[#009f9d]">
+                                                    {shortDate} • {slot.day.slice(0, 3)}
+                                                </span>
+                                                <span>
+                                                    {slot.startTime} - {slot.endTime}
+                                                </span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            ) : (
+                                <p className="mt-3 rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-500">
+                                    No appointment slots available.
+                                </p>
+                            )}
+                        </div>
+                    </aside>
+                </div>
+            </div>
+
+            {/* Render the Modal */}
+            <BookingModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onConfirm={handleConfirmBooking}
+                slot={selectedSlot}
+            />
+        </section>
+    );
+};
+
+export default DoctorProfilePage;
 ````
 
 ## File: Frontend/src/features/Auth/components/doctor-form.tsx
@@ -28369,328 +30710,55 @@ export default function DoctorForm() {
 }
 ````
 
-## File: Frontend/src/features/Auth/components/login-component.tsx
+## File: Frontend/src/features/Payment/api/payment.api.ts
 ````typescript
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useLogin } from "../hooks/useLogin";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { getGoogleAuthUrlApi } from "../api/petOwner.api";
-import { type ApiResponse } from "../api/loginuser.api";
-import { useAuth } from "../hooks/authhook";
+import { api, handleAxiosError } from "@/features/api interface/axios.interface";
 
-import {
-  loginSchema,
-  type LoginFormData,
-} from "../../Auth/schemas/login.schema";
-
-
-
-const PawIcon = () => (
-  <svg
-    viewBox="0 0 64 64"
-    className="h-8 w-8 fill-[#178f95]"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <circle cx="18" cy="22" r="7" />
-    <circle cx="32" cy="16" r="7" />
-    <circle cx="46" cy="22" r="7" />
-    <circle cx="24" cy="34" r="6" />
-    <circle cx="40" cy="34" r="6" />
-    <path d="M18 47c0-9 6-17 14-17s14 8 14 17c0 6-5 9-14 9s-14-3-14-9z" />
-  </svg>
-);
-
-const getPostLoginPath = (role: string) => {
-  if (role === "Admin") {
-    return "/admin-dashboard";
-  }
-
-  if (role === "Doctor") {
-    return "/doctor-dashboard";
-  }
-
-  if (role === "PetOwner" || role === "Seller") {
-    return "/choose-dashboard";
-  }
-
-  return "/";
+export const createAppointmentPaymentIntent = async (appointmentId: string) => {
+    try {
+        const response = await api.post(
+            `/payment/appointments/${appointmentId}/create-payment-intent`
+        );
+        return response.data;
+    } catch (error) {
+        handleAxiosError(error);
+    }
 };
 
-export default function LoginComponent() {
-
-  const [showPassword, setShowPassword] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const [forbiddenError, setForbiddenError] = useState("");
-  const [apiMesg, setApiMesg] = useState("");
-
-  const { isAuthenticatedUser, user } = useAuth()
-  const navigate = useNavigate();
-
-  const { mutate: login, isPending: isloggingIn } = useLogin({
-    onSuccess: (response: ApiResponse) => {
-
-      if (response.success) {
-
-
-        setApiMesg(response.message);
-        console.log("Role is ", response.data.role);
-
-        reset();
-
-      }
-
-    },
-    onError: (error) => {
-      setForbiddenError("Login Failed.Please check you email and password");
-      console.log("Login Error", error)
-    }
-  })
-
-  useEffect(() => {
-    console.log("Working")
-    if (isAuthenticatedUser && user?.data) {
-      navigate(getPostLoginPath(user.data.role), { replace: true });
-    }
-  }, [isAuthenticatedUser, user, navigate]);
-
-
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
-  });
-
-  const onSubmit = async (data: LoginFormData) => {
-    setForbiddenError('');
-    setApiMesg('');
-    login(data)
-
-  };
-
-  const handleGoogleLogin = async () => {
+export const getAppointmentPaymentStatus = async (appointmentId: string) => {
     try {
-      setIsGoogleLoading(true);
-      setForbiddenError("");
-
-      const result = await getGoogleAuthUrlApi();
-
-      if (result.success && result.data?.url) {
-        window.location.href = result.data.url;
-      }
+        const response = await api.get(
+            `/payment/appointments/${appointmentId}/status`
+        );
+        return response.data;
     } catch (error) {
-      setForbiddenError("Google login failed. Please try again.");
-
-      if (error instanceof Error) {
-        console.log("Google Auth Error:", error.message);
-      }
-    } finally {
-      setIsGoogleLoading(false);
+        handleAxiosError(error);
     }
-  };
+};
 
-  return (
-    <div className="w-full">
-      <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-[22px] bg-[#dff3f2] shadow-[0_12px_28px_rgba(23,143,149,0.18)]">
-        <PawIcon />
-      </div>
+// 💡 Added: Creates a Stripe session payload for product orders
+export const createOrderPaymentIntentApi = async (orderId: string) => {
+    try {
+        const response = await api.post(
+            `/payment/orders/${orderId}/create-payment-intent`
+        );
+        return response.data;
+    } catch (error) {
+        handleAxiosError(error);
+    }
+};
 
-      <div className="mb-6 text-center">
-        <h1 className="text-[26px] font-extrabold leading-tight tracking-[-0.04em] text-[#101b3d] md:text-[30px]">
-          Welcome Back
-        </h1>
-
-        <p className="mt-2 text-[13px] font-medium text-[#6d7891]">
-          Login to your PetsVeta account
-        </p>
-      </div>
-
-      {forbiddenError && (
-        <p className="mb-3 rounded-xl bg-red-50 px-4 py-2 text-center text-[13px] font-bold text-red-600">
-          {forbiddenError}
-        </p>
-      )}
-
-      {apiMesg && (
-        <p className="mb-3 rounded-xl bg-green-50 px-4 py-2 text-center text-[13px] font-bold text-green-600">
-          {apiMesg}
-        </p>
-      )}
-
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div>
-          <label className="mb-2 block text-[13px] font-bold text-[#17233f]">
-            Email Address
-          </label>
-
-          <div className="flex h-[48px] items-center rounded-2xl border border-[#d8dde8] bg-white/70 px-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] transition-all duration-300 focus-within:border-[#178f95] focus-within:shadow-[0_0_0_4px_rgba(23,143,149,0.12)]">
-            <svg
-              className="mr-4 h-5 w-5 text-[#7b8497]"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-18 8h18a2 2 0 002-2V6a2 2 0 00-2-2H3a2 2 0 00-2 2v8a2 2 0 002 2z"
-              />
-            </svg>
-
-            <input
-              type="email"
-              placeholder="example@gmail.com"
-              className="h-full w-full bg-transparent text-[14px] font-medium text-[#17233f] outline-none placeholder:text-[#8993a6]"
-              {...register("email")}
-            />
-          </div>
-
-          {errors.email && (
-            <p className="mt-1.5 text-[12px] font-semibold text-red-600">
-              {errors.email.message}
-            </p>
-          )}
-        </div>
-
-        <div>
-          <label className="mb-2 block text-[13px] font-bold text-[#17233f]">
-            Password
-          </label>
-
-          <div className="flex h-[48px] items-center rounded-2xl border border-[#d8dde8] bg-white/70 px-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] transition-all duration-300 focus-within:border-[#178f95] focus-within:shadow-[0_0_0_4px_rgba(23,143,149,0.12)]">
-            <svg
-              className="mr-4 h-5 w-5 text-[#7b8497]"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 11c.828 0 1.5.672 1.5 1.5S12.828 14 12 14s-1.5-.672-1.5-1.5S11.172 11 12 11z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M17 11V8a5 5 0 00-10 0v3M6 11h12v9H6z"
-              />
-            </svg>
-
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Enter your password"
-              className="h-full w-full bg-transparent text-[14px] font-medium text-[#17233f] outline-none placeholder:text-[#8993a6]"
-              {...register("password")}
-            />
-
-            <button
-              type="button"
-              onClick={() => setShowPassword((prev) => !prev)}
-              className="ml-3 text-[#7b8497] transition hover:text-[#178f95]"
-              aria-label={showPassword ? "Hide password" : "Show password"}
-            >
-              {showPassword ? (
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M3 3l18 18"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M10.58 10.58A2 2 0 0012 14a2 2 0 001.42-3.42"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9.88 4.24A9.77 9.77 0 0112 4c6 0 9.75 8 9.75 8a17.9 17.9 0 01-2.19 3.2M6.61 6.61C3.73 8.48 2.25 12 2.25 12s3.75 8 9.75 8a9.9 9.9 0 004.18-.92"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M2.25 12s3.75-6.75 9.75-6.75S21.75 12 21.75 12 18 18.75 12 18.75 2.25 12 2.25 12z"
-                  />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
-              )}
-            </button>
-          </div>
-
-          {errors.password && (
-            <p className="mt-1.5 text-[12px] font-semibold text-red-600">
-              {errors.password.message}
-            </p>
-          )}
-
-          <div className="mt-2 text-right">
-            <a
-              href="/forgot-password"
-              className="text-[13px] font-extrabold text-[#178f95] transition hover:text-[#0f7075]"
-            >
-              Forgot Password?
-            </a>
-          </div>
-        </div>
-
-        <button
-          type="submit"
-          disabled={isloggingIn}
-          className="mt-1 flex h-[50px] w-full items-center justify-center gap-3 rounded-2xl bg-[#15265d] text-[15px] font-extrabold text-white shadow-[0_16px_30px_rgba(21,38,93,0.24)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#101f4d] active:translate-y-0"
-        >
-          {isloggingIn ? "Logginin In" : "Log In"}
-          <span className="text-lg leading-none">→</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={handleGoogleLogin}
-          disabled={isGoogleLoading}
-          className="flex h-[50px] w-full items-center justify-center gap-3 rounded-2xl border border-[#d8dde8] bg-white text-[14px] font-extrabold text-[#17233f] shadow-[0_4px_12px_rgba(23,143,149,0.08)] transition-all duration-300 hover:border-[#178f95] hover:bg-[#f8fbfb] disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          <img
-            src="https://www.svgrepo.com/show/355037/google.svg"
-            className="h-5 w-5"
-            alt="Google"
-          />
-          {isGoogleLoading ? "Connecting..." : "Continue with Google"}
-        </button>
-
-        <p className="pt-1 text-center text-[13px] font-medium text-[#7b8497]">
-          Don&apos;t have an account?{" "}
-          <a
-            href="/doctor-signup"
-            className="font-extrabold text-[#178f95] transition hover:text-[#0f7075]"
-          >
-            Sign up
-          </a>
-        </p>
-      </form>
-    </div>
-  );
-}
+// 💡 Added: Polls the transaction status of an order
+export const getOrderPaymentStatusApi = async (orderId: string) => {
+    try {
+        const response = await api.get(
+            `/payment/orders/${orderId}/status`
+        );
+        return response.data;
+    } catch (error) {
+        handleAxiosError(error);
+    }
+};
 ````
 
 ## File: Backend/app/controllers/auth.controller.js
@@ -29302,500 +31370,6 @@ module.exports = {
 };
 ````
 
-## File: Backend/app/routes/petOwner.routes.js
-````javascript
-const express = require('express');
-const authMiddleware = require('../middleware/auth.middleware');
-const authenticateRole = require('../middleware/authorizeRole.middleware');
-const petOwnerController = require('../controllers/petOwner.controller');
-const { petOwnerLimiter } = require('../middleware/rateLimiter')
-const upload = require('../config/multer.config');
-
-const Router = express.Router();
-
-Router
-    .route('/my-pets')
-    .get(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.getPetsData)
-
-Router
-    .route('/pet-profile')
-    .get(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.getPetOwnerById)
-    .patch(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), upload.single('profileImage'), petOwnerController.updatePetOwnerProfile);
-
-
-Router
-    .route("/submit/pet-data")
-    .post(
-        petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole("PetOwner"), upload.array('photos', 5), petOwnerController.registerPet);
-
-Router
-    .route('/submit/pet-issue')
-    .post(
-        petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), upload.array('image', 5), petOwnerController.registerPetIssue);
-Router
-    .route('/petOwner-data')
-    .get(petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.getPetOwnerById)
-
-Router
-    .route('/pets-data')
-    .get(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.getPetsData)
-
-Router
-    .route('/book-slot')
-    .post(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.lockDoctorSlot)
-module.exports = Router;
-````
-
-## File: Backend/app/services/doctor.services.js
-````javascript
-const  prisma  = require('../config/prisma')
-const { PaymentStatus } = require('@prisma/client')
-
-
-const addDoctorService = async (skills, userId) => {
-    console.log("Skills are ", skills, userId);
-    let isExisting = false;
-
-    const doSkillExist = await prisma.doctorSkill.findFirst({
-        where: {
-            userId: userId,
-            skill: {
-                equals: skills.skill,
-                mode: 'insensitive'
-            }
-        }
-    });
-    if (doSkillExist) {
-        isExisting = true;
-        return isExisting;
-    }
-
-    const newSkills = await prisma.doctorSkill.create({
-        data: {
-            skill: skills.skill,
-            price: skills.price,
-            userId: userId
-        },
-    })
-    return newSkills;
-}
-
-
-const deleteDoctorService = async (serviceId) => {
-    const deletedSkill = await prisma.doctorSkill.delete({
-        where: {
-            id: serviceId
-        }
-    })
-    return deletedSkill;
-}
-
-
-const getDoctorServices = async (userId) => {
-
-    const services = await prisma.doctorSkill?.findMany({
-        where: {
-            userId: userId
-        }
-    })
-    if (!services) {
-        return false;
-    }
-    return services;
-}
-
-
-const updateDoctorServices = async (serviceId, skill, price) => {
-    const updatedService = await prisma.doctorSkill.update({
-        where: {
-            id: serviceId
-        },
-        data: {
-            price: price,
-            skill: skill
-        }
-    })
-
-    return updatedService;
-}
-
-
-const getDoctorAppointments = async (userId) => {
-
-    const doctor = await prisma.doctor.findUnique({
-        where: {
-            userId,
-        },
-        select: {
-            id: true,
-        },
-    });
-
-    if (!doctor) {
-        throw new Error("Doctor not found");
-    }
-
-    return prisma.appointment.findMany({
-        where: {
-            doctorId: doctor.id,
-            paymentStatus: PaymentStatus.SUCCEEDED
-        },
-        orderBy: {
-            checkupTime: "asc",
-        },
-        select: {
-            id: true,
-            fees: true,
-            checkupTime: true,
-            status: true,
-            petIssueReport: {
-                select: {
-                    id: true,
-                    issue: true,
-                    user: {
-                        select: {
-                            fullName: true,
-                            email: true,
-                            phone: true,
-                            profileImageUrl: true,
-                        },
-                    },
-                    pet: {
-                        select: {
-                            id: true,
-                            name: true,
-                            age: true,
-                            breed: true,
-                            category: true,
-                        },
-                    },
-                },
-            },
-        },
-    });
-}
-
-
-const getDoctorProfile = async (userId) => {
-    const doctorProfile = await prisma.user.findUnique({
-        where: {
-            id: userId,
-        },
-        select: {
-            id: true,
-            fullName: true,
-            username: true,
-            email: true,
-            phone: true,
-            profileImageUrl: true,
-            isActive: true,
-            doctors: {
-                select: {
-                    id: true,
-                    specialization: true,
-                    education: true,
-                    experience: true,
-                    fees: true,
-                    address: true,
-                    isAvailable: true,
-                    isVerified: true,
-                },
-            },
-        },
-    });
-
-    return doctorProfile;
-};
-
-
-const updateDoctorProfile = async (userId, profileData) => {
-    const {
-        fullName,
-        username,
-        phone,
-        profileImageUrl,
-        specialization,
-        education,
-        experience,
-        fees,
-        address,
-        isAvailable,
-    } = profileData;
-
-    const updatedProfile = await prisma.user.update({
-        where: {
-            id: userId,
-        },
-        data: {
-            fullName,
-            username,
-            phone,
-            profileImageUrl,
-
-            doctors: {
-                update: {
-                    specialization,
-                    education,
-                    experience: Number(experience),
-                    fees: Number(fees),
-                    address,
-                    isAvailable,
-                },
-            },
-        },
-        select: {
-            id: true,
-            fullName: true,
-            username: true,
-            email: true,
-            phone: true,
-            profileImageUrl: true,
-            isActive: true,
-            doctors: {
-                select: {
-                    id: true,
-                    specialization: true,
-                    education: true,
-                    experience: true,
-                    fees: true,
-                    address: true,
-                    isAvailable: true,
-                    isVerified: true,
-                },
-            },
-        },
-    });
-
-    return updatedProfile;
-};
-
-module.exports = {
-    addDoctorService,
-    deleteDoctorService,
-    getDoctorServices,
-    updateDoctorServices,
-    getDoctorAppointments,
-    getDoctorProfile,
-    updateDoctorProfile,
-};
-````
-
-## File: Backend/package.json
-````json
-{
-  "name": "pets-veta-backend",
-  "version": "1.0.0",
-  "description": "",
-  "license": "ISC",
-  "author": "",
-  "type": "commonjs",
-  "main": "app.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
-  },
-  "prisma": {
-    "seed": "node prisma/seed.js"
-  },
-  "dependencies": {
-    "@prisma/client": "^6.19.3",
-    "bcrypt": "^6.0.0",
-    "cloudinary": "^2.10.0",
-    "cookie-parser": "^1.4.7",
-    "cors": "^2.8.6",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "express-rate-limit": "^8.5.2",
-    "google-auth-library": "^10.6.2",
-    "jsonwebtoken": "^9.0.3",
-    "multer": "^2.1.1",
-    "node-cron": "^4.5.0",
-    "nodemailer": "^8.0.7",
-    "pg": "^8.20.0",
-    "rate-limit-redis": "^5.0.0",
-    "redis": "^6.0.0",
-    "streamifier": "^0.1.1",
-    "stripe": "^22.2.0",
-    "zod": "^4.4.3"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.14",
-    "prisma": "^6.19.3"
-  }
-}
-````
-
-## File: Frontend/src/features/Admin/components/AdminLogin.tsx
-````typescript
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ShieldCheck } from "lucide-react";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import { loginAdminAccount, type ApiResponse } from '../apis/adminlogin.api'
-
-import {
-  adminLoginSchema,
-  type AdminLoginFormValues,
-} from "../schema/admin.login.schema";
-
-import Button from "../../../shared/components/Button/Button";
-import Input from "../../../shared/components/Input/Input";
-import { useAuth } from "@/features/Auth/hooks/authhook";
-
-const AdminLoginPage = () => {
-  const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
-  const { setUser, setIsAuthenticateUser } = useAuth();
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<AdminLoginFormValues>({
-    resolver: zodResolver(adminLoginSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
-
-
-  const handleadminmlogin = async (data: { email: string; password: string; }) => {
-    try {
-      const response: ApiResponse = await loginAdminAccount(data);
-      if (response.success) {
-        setUser(response);
-        setIsAuthenticateUser(true);
-        navigate('/admin-dashboard')
-        // return;
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error("Login failed:", error.message);
-      } else {
-        console.error("An unexpected error occurred:", error);
-      }
-      return;
-    }
-
-
-  };
-
-  return (
-    <main className="min-h-screen bg-[#FFF8F4] px-4 py-8 text-[#20263D] sm:px-6 lg:px-8">
-      <section className="mx-auto flex min-h-[calc(100vh-64px)] max-w-7xl items-center justify-center">
-        <div className="grid w-full overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-2xl shadow-slate-200/70 lg:grid-cols-2">
-          <div className="relative hidden overflow-hidden bg-gradient-to-br from-[#20263D] via-[#26304d] to-[#078b91] p-10 text-white lg:block">
-            <div className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-[#F9C5A8]/20 blur-3xl" />
-            <div className="absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-[#D4E2E0]/25 blur-3xl" />
-
-            <div className="relative z-10 flex h-full flex-col justify-between">
-              <div>
-                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 backdrop-blur">
-                  <ShieldCheck size={34} />
-                </div>
-
-                <h1 className="mt-8 max-w-md text-5xl font-black leading-tight">
-                  PetsVeta Admin Panel
-                </h1>
-
-                <p className="mt-5 max-w-md text-sm leading-7 text-white/75">
-                  Manage doctors, sellers, appointments, products, approvals,
-                  and platform activity from one secure dashboard.
-                </p>
-              </div>
-
-              <div className="rounded-3xl bg-white/10 p-6 backdrop-blur">
-                <p className="text-sm font-semibold text-white/80">
-                  Admin Access
-                </p>
-
-                <h3 className="mt-2 text-2xl font-black">
-                  Review doctor signup requests
-                </h3>
-
-                <p className="mt-3 text-sm leading-6 text-white/70">
-                  Approve or reject doctors after checking their details,
-                  license, experience, and profile information.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="px-6 py-10 sm:px-10 md:px-14 lg:px-16">
-            <div className="mx-auto max-w-md">
-              <div className="mb-8 text-center lg:text-left">
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#D4E2E0]/70 text-[#078b91] lg:mx-0">
-                  <ShieldCheck size={34} />
-                </div>
-
-                <h2 className="mt-6 text-3xl font-black text-[#20263D] md:text-4xl">
-                  Admin Login
-                </h2>
-
-                <p className="mt-3 text-sm leading-7 text-slate-500">
-                  Login to manage PetsVeta platform operations.
-                </p>
-              </div>
-
-              <form onSubmit={handleSubmit(handleadminmlogin)} className="space-y-5">
-                <Input
-                  label="Email Address"
-                  type="email"
-                  placeholder="admin@petsveta.com"
-                  error={errors.email?.message}
-                  {...register("email")}
-                />
-
-                <Input
-                  label="Password"
-                  type="password"
-                  placeholder="Enter password"
-                  showPassword={showPassword}
-                  onTogglePassword={() => setShowPassword((prev) => !prev)}
-                  error={errors.password?.message}
-                  {...register("password")}
-                />
-
-                <div className="flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
-                  <label className="flex items-center gap-2 text-slate-500">
-                    <input
-                      type="checkbox"
-                      className="h-4 w-4 rounded border-slate-300 accent-[#078b91]"
-                    />
-                    Remember me
-                  </label>
-
-
-                </div>
-
-                <Button
-                  type="submit"
-                  isSubmitting={isSubmitting}
-                  className="bg-[#20263D] font-black shadow-lg shadow-slate-300 hover:bg-[#111827] hover:text-white hover:border-transparent"
-                >
-                  {isSubmitting ? "Logging In" : " Login as Admin"}
-                </Button>
-              </form >
-
-              <div className="mt-8 rounded-2xl bg-[#D4E2E0]/35 p-4">
-                <p className="text-sm font-semibold leading-6 text-slate-600">
-                  This page is only for platform administrators. Doctors and
-                  sellers should use their own login portals.
-                </p>
-              </div>
-            </div >
-          </div >
-        </div >
-      </section >
-    </main >
-  );
-};
-
-export default AdminLoginPage;
-````
-
 ## File: Frontend/src/features/Pet Owner/pet details/components/PetForm.tsx
 ````typescript
 import { Calendar, List, PawPrint, Shield, User, ImagePlus } from "lucide-react";
@@ -30056,6 +31630,76 @@ const PetForm = ({ onSubmitSuccess, onCancel }: PetFormProps) => {
 };
 
 export default PetForm;
+````
+
+## File: Backend/app/routes/petOwner.routes.js
+````javascript
+const express = require('express');
+const authMiddleware = require('../middleware/auth.middleware');
+const authenticateRole = require('../middleware/authorizeRole.middleware');
+const petOwnerController = require('../controllers/petOwner.controller');
+const { petOwnerLimiter } = require('../middleware/rateLimiter')
+const upload = require('../config/multer.config');
+
+const Router = express.Router();
+
+Router
+    .route('/my-pets')
+    .get(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.getPetsData)
+
+Router
+    .route('/pet-profile')
+    .get(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.getPetOwnerById)
+    .patch(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), upload.single('profileImage'), petOwnerController.updatePetOwnerProfile);
+
+
+Router
+    .route("/submit/pet-data")
+    .post(
+        petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole("PetOwner"), upload.array('photos', 5), petOwnerController.registerPet);
+
+Router
+    .route('/submit/pet-issue')
+    .post(
+        petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), upload.array('image', 5), petOwnerController.registerPetIssue);
+Router
+    .route('/petOwner-data')
+    .get(petOwnerLimiter, authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.getPetOwnerById)
+
+Router
+    .route('/pets-data')
+    .get(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.getPetsData)
+
+Router
+    .route('/book-slot')
+    .post(authMiddleware.protect, authenticateRole.authenticateUserRole('PetOwner'), petOwnerController.lockDoctorSlot)
+Router
+    .route('/appointments')
+    .get(
+        authMiddleware.protect,
+        authenticateRole.authenticateUserRole('PetOwner'),
+        petOwnerController.getPetOwnerAppointments
+    );
+
+Router
+    .route('/pet/:petId')
+    .get(
+        authMiddleware.protect,
+        authenticateRole.authenticateUserRole('PetOwner'),
+        petOwnerController.getPetById
+    )
+    .patch(
+        authMiddleware.protect,
+        authenticateRole.authenticateUserRole('PetOwner'),
+        petOwnerController.updatePet
+    )
+    .delete(
+        authMiddleware.protect,
+        authenticateRole.authenticateUserRole('PetOwner'),
+        petOwnerController.deletePet
+    );
+
+module.exports = Router;
 ````
 
 ## File: Backend/app/services/auth.services.js
@@ -30378,185 +32022,184 @@ module.exports = {
 };
 ````
 
-## File: Backend/app/services/petOwner.services.js
+## File: Backend/app/services/doctor.services.js
 ````javascript
-const prisma = require('../config/prisma');
-const AppError = require('../utils/AppError');
-const {
-    ScheduleStatus,
-    AppointmentStatus,
-    PaymentStatus
-} = require('@prisma/client');
+const  prisma  = require('../config/prisma')
+const { PaymentStatus } = require('@prisma/client')
 
 
+const addDoctorService = async (skills, userId) => {
+    console.log("Skills are ", skills, userId);
 
-const saveUserPet = async (pet) => {
-    const newPet = await prisma.pet.create({
+    let isExisting = false;
+
+    const doSkillExist = await prisma.doctorSkill.findFirst({
+        where: {
+            userId: userId,
+            skill: {
+                equals: skills.skill,
+                mode: 'insensitive'
+            }
+        }
+    });
+
+    if (doSkillExist) {
+        isExisting = true;
+        return isExisting;
+    }
+
+    const newSkills = await prisma.doctorSkill.create({
         data: {
-            petOwnerId: pet.petOwnerId,
-            name: pet.name,
-            age: pet.age,
-            breed: pet.breed,
-            category: pet.category
-        }
-    });
-    return newPet;
-}
-
-const registerPetIssue = async (petIssue) => {
-    if (!petIssue) {
-        throw new AppError("Registration data not found", 400);
-    }
-
-    const { appointmentId, petId, issue, petOwnerId } = petIssue;
-
-    if (!appointmentId || !petId || !issue || !petOwnerId) {
-        throw new AppError("Appointment, pet, issue, or user id is missing", 400);
-    }
-
-    const result = await prisma.$transaction(async (tx) => {
-        const appointment = await tx.appointment.findFirst({
-            where: {
-                id: appointmentId,
-                petOwnerId
-            },
-            include: {
-                doctorSchedule: true
-            }
-        });
-
-        if (!appointment) {
-            throw new AppError("Appointment not found", 404);
-        }
-
-        if (
-            appointment.status !== AppointmentStatus.PENDING_DETAILS &&
-            appointment.status !== AppointmentStatus.PENDING_REPORT &&
-            appointment.status !== AppointmentStatus.PENDING_PAYMENT
-        ) {
-            throw new AppError("This appointment is not available for report submission", 400);
-        }
-
-        if (appointment.expiresAt && appointment.expiresAt < new Date()) {
-            throw new AppError("This appointment hold has expired. Please select the slot again.", 400);
-        }
-
-        if (
-            appointment.doctorSchedule.status !== ScheduleStatus.HELD ||
-            appointment.doctorSchedule.lockedByAppointmentId !== appointment.id
-        ) {
-            throw new AppError("This slot is no longer held for your appointment", 400);
-        }
-
-        const pet = await tx.pet.findFirst({
-            where: {
-                id: petId,
-                petOwnerId
-            }
-        });
-
-        if (!pet) {
-            throw new AppError("Invalid pet selected", 400);
-        }
-
-        let registerIssue;
-
-        if (appointment.petIssueReportId) {
-            registerIssue = await tx.petIssueReport.findUnique({
-                where: {
-                    id: appointment.petIssueReportId
-                }
-            });
-        } else {
-            registerIssue = await tx.petIssueReport.create({
-                data: {
-                    petOwnerId,
-                    petId,
-                    issue
-                }
-            });
-        }
-
-        if (!registerIssue) {
-            throw new AppError("Issue in creating pet report", 400);
-        }
-        const holdMinutes = Number(process.env.APPOINTMENT_HOLD_MINUTES || 15);
-        const newExpiresAt = new Date(Date.now() + holdMinutes * 60 * 1000);
-
-        const updatedAppointment = await tx.appointment.update({
-            where: {
-                id: appointment.id
-            },
-            data: {
-                petId,
-                petIssueReportId: registerIssue.id,
-                status: AppointmentStatus.PENDING_PAYMENT,
-                expiresAt: newExpiresAt,
-            },
-            select: {
-                id: true,
-                doctorId: true,
-                petOwnerId: true,
-                petId: true,
-                petIssueReportId: true,
-                scheduleId: true,
-                fees: true,
-                currency: true,
-                status: true,
-                paymentStatus: true,
-                expiresAt: true
-            }
-        });
-
-        return {
-            registerIssue,
-            appointment: updatedAppointment
-        };
+            skill: skills.skill,
+            price: skills.price,
+            userId: userId
+        },
     });
 
-    return result;
+    return newSkills;
 };
 
 
+const deleteDoctorService = async (serviceId) => {
+    const deletedSkill = await prisma.doctorSkill.delete({
+        where: {
+            id: serviceId
+        }
+    });
 
-const getUserPets = async (userId) => {
-    if (!userId) {
+    return deletedSkill;
+};
+
+
+const getDoctorServices = async (userId) => {
+    const services = await prisma.doctorSkill?.findMany({
+        where: {
+            userId: userId
+        }
+    });
+
+    if (!services) {
         return false;
     }
-    const pets = await prisma.pet.findMany({
+
+    return services;
+};
+
+const updateDoctorServices = async (serviceId, skill, price) => {
+    const updatedService = await prisma.doctorSkill.update({
         where: {
-            petOwnerId: userId
+            id: serviceId
+        },
+        data: {
+            price: price,
+            skill: skill
+        }
+    });
+
+    return updatedService;
+};
+
+
+const getDoctorAppointments = async (userId) => {
+
+    const doctor = await prisma.doctor.findUnique({
+        where: {
+            userId,
         },
         select: {
             id: true,
-            name: true,
-            age: true,
-            breed: true,
-            category: true,
-            petPictures: {
-                select: {
-                    publicUrl: true
-                }
-            }
-        }
-
+        },
     });
 
-    return pets;
-}
-
-const createPetPictures = async (pet) => {
-    const pictures = await prisma.petPicture.createMany({
-        data: pet
-    })
-}
-
-const updatePetOwnerProfile = async (userId, profileData) => {
-    if (!userId) {
-        return false;
+    if (!doctor) {
+        throw new Error("Doctor not found");
     }
 
-    const { fullName, username, phone, profileImageUrl } = profileData;
+    return prisma.appointment.findMany({
+        where: {
+            doctorId: doctor.id,
+            paymentStatus: PaymentStatus.SUCCEEDED
+        },
+        orderBy: {
+            checkupTime: "asc",
+        },
+        select: {
+            id: true,
+            fees: true,
+            checkupTime: true,
+            status: true,
+            petIssueReport: {
+                select: {
+                    id: true,
+                    issue: true,
+                    user: {
+                        select: {
+                            fullName: true,
+                            email: true,
+                            phone: true,
+                            profileImageUrl: true,
+                        },
+                    },
+                    pet: {
+                        select: {
+                            id: true,
+                            name: true,
+                            age: true,
+                            breed: true,
+                            category: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+};
+
+
+const getDoctorProfile = async (userId) => {
+    const doctorProfile = await prisma.user.findUnique({
+        where: {
+            id: userId,
+        },
+        select: {
+            id: true,
+            fullName: true,
+            username: true,
+            email: true,
+            phone: true,
+            profileImageUrl: true,
+            isActive: true,
+            doctors: {
+                select: {
+                    id: true,
+                    specialization: true,
+                    education: true,
+                    experience: true,
+                    fees: true,
+                    address: true,
+                    isAvailable: true,
+                    isVerified: true,
+                },
+            },
+        },
+    });
+
+    return doctorProfile;
+};
+
+const updateDoctorProfile = async (userId, profileData) => {
+    const {
+        fullName,
+        username,
+        phone,
+        profileImageUrl,
+        specialization,
+        education,
+        experience,
+        fees,
+        address,
+        isAvailable,
+    } = profileData;
 
     const existingUsername = await prisma.user.findFirst({
         where: {
@@ -30568,7 +32211,17 @@ const updatePetOwnerProfile = async (userId, profileData) => {
     });
 
     if (existingUsername) {
-        throw new AppError("Username is already taken", 400);
+        throw new Error("Username already exists");
+    }
+
+    const userUpdateData = {
+        fullName,
+        username,
+        phone,
+    };
+
+    if (profileImageUrl) {
+        userUpdateData.profileImageUrl = profileImageUrl;
     }
 
     const updatedProfile = await prisma.user.update({
@@ -30576,10 +32229,18 @@ const updatePetOwnerProfile = async (userId, profileData) => {
             id: userId,
         },
         data: {
-            fullName,
-            username,
-            phone,
-            ...(profileImageUrl ? { profileImageUrl } : {}),
+            ...userUpdateData,
+
+            doctors: {
+                update: {
+                    specialization,
+                    education,
+                    experience: Number(experience),
+                    fees: Number(fees),
+                    address,
+                    isAvailable: isAvailable === true || isAvailable === "true",
+                },
+            },
         },
         select: {
             id: true,
@@ -30588,150 +32249,664 @@ const updatePetOwnerProfile = async (userId, profileData) => {
             email: true,
             phone: true,
             profileImageUrl: true,
+            isActive: true,
+            doctors: {
+                select: {
+                    id: true,
+                    specialization: true,
+                    education: true,
+                    experience: true,
+                    fees: true,
+                    address: true,
+                    isAvailable: true,
+                    isVerified: true,
+                },
+            },
         },
     });
 
     return updatedProfile;
-}
-
-const updateAppointmentStripeId = async (appointmentId, sessionId) => {
-    if (!appointmentId || !sessionId) {
-        throw new AppError("Appointment or Session Id is Invalid", 400);
-    }
-}
-
-const lockUserSlot = async ({ scheduleId, doctorId, petOwnerId }) => {
-
-    if (!scheduleId || !doctorId || !petOwnerId) {
-        throw new AppError("Schedule, doctor, or user id is missing", 400);
-    }
-
-    const holdMinutes = Number(process.env.APPOINTMENT_HOLD_MINUTES || 15);
-
-    const result = await prisma.$transaction(async (tx) => {
-        const schedule = await tx.doctorSchedule.findFirst({
-            where: {
-                id: scheduleId,
-                doctorId
-            },
-            include: {
-                doctor: true
-            }
-        });
-
-        if (!schedule) {
-            throw new AppError("The selected doctor schedule slot could not be found.", 404);
-        }
-
-        if (schedule.status !== ScheduleStatus.AVAILABLE) {
-            throw new AppError("Schedule is not available", 400);
-        }
-
-        const validDoctor = schedule.doctor;
-
-        if (!validDoctor) {
-            throw new AppError("Doctor is not valid", 400);
-        }
-
-        const startOfDay = new Date(schedule.date);
-        startOfDay.setHours(0, 0, 0, 0);
-
-        const endOfDay = new Date(schedule.date);
-        endOfDay.setHours(23, 59, 59, 999);
-
-        const existingActiveAppointment = await tx.appointment.findFirst({
-            where: {
-                doctorId: schedule.doctorId,
-                petOwnerId,
-                status: {
-                    in: [
-                        AppointmentStatus.PENDING_DETAILS,
-                        AppointmentStatus.PENDING_REPORT,
-                        AppointmentStatus.PENDING_PAYMENT,
-                        AppointmentStatus.PAYMENT_PROCESSING,
-                        AppointmentStatus.CONFIRMED
-                    ]
-                },
-                checkupTime: {
-                    gte: startOfDay,
-                    lte: endOfDay
-                },
-                OR: [
-                    { expiresAt: null },
-                    { expiresAt: { gt: new Date() } }
-                ]
-            }
-        });
-
-        if (existingActiveAppointment) {
-            throw new AppError("You already have an active or pending appointment with this doctor today.", 400);
-        }
-
-        const lockedSchedule = await tx.doctorSchedule.updateMany({
-            where: {
-                id: scheduleId,
-                doctorId,
-                status: ScheduleStatus.AVAILABLE
-            },
-            data: {
-                status: ScheduleStatus.HELD,
-                lockedByUserId: petOwnerId,
-                lockedAt: new Date()
-            }
-        });
-
-        if (lockedSchedule.count === 0) {
-            throw new AppError("This slot was just locked by another user. Please try another slot.", 400);
-        }
-
-        const expiresAt = new Date(Date.now() + holdMinutes * 60 * 1000);
-
-        const appointment = await tx.appointment.create({
-            data: {
-                doctorId: schedule.doctorId,
-                petOwnerId,
-                scheduleId: schedule.id,
-                fees: validDoctor.fees,
-                currency: "pkr",
-                checkupTime: schedule.startTime,
-                expiresAt,
-                status: AppointmentStatus.PENDING_DETAILS,
-                paymentStatus: PaymentStatus.PENDING
-            }
-        });
-
-        await tx.doctorSchedule.update({
-            where: {
-                id: scheduleId
-            },
-            data: {
-                lockedByAppointmentId: appointment.id
-            }
-        });
-
-        return {
-            appointmentId: appointment.id,
-            scheduleId: schedule.id,
-            doctorId: schedule.doctorId,
-            status: appointment.status,
-            scheduleStatus: ScheduleStatus.HELD,
-            expiresAt: appointment.expiresAt,
-            fees: appointment.fees,
-            currency: appointment.currency
-        };
-    });
-
-    return result;
 };
 
 module.exports = {
-    saveUserPet,
-    registerPetIssue,
-    getUserPets,
-    createPetPictures,
-    lockUserSlot,
-    updatePetOwnerProfile,
-    updateAppointmentStripeId
+    addDoctorService,
+    deleteDoctorService,
+    getDoctorServices,
+    updateDoctorServices,
+    getDoctorAppointments,
+    getDoctorProfile,
+    updateDoctorProfile,
+};
+````
+
+## File: Backend/package.json
+````json
+{
+  "name": "pets-veta-backend",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app/server.js"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "dependencies": {
+    "@google/genai": "^2.9.0",
+    "@prisma/client": "^6.19.3",
+    "bcrypt": "^6.0.0",
+    "cloudinary": "^2.10.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
+    "google-auth-library": "^10.6.2",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.1.1",
+    "node-cron": "^4.5.0",
+    "nodemailer": "^8.0.7",
+    "pg": "^8.20.0",
+    "rate-limit-redis": "^5.0.0",
+    "redis": "^6.0.0",
+    "streamifier": "^0.1.1",
+    "stripe": "^22.2.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14",
+    "prisma": "^6.19.3"
+  }
+}
+````
+
+## File: Frontend/package.json
+````json
+{
+  "name": "pets-veta-frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@lottiefiles/react-lottie-player": "^3.6.0",
+    "@stripe/react-stripe-js": "^6.6.0",
+    "@stripe/stripe-js": "^9.8.0",
+    "@studio-freight/lenis": "^1.0.42",
+    "@tailwindcss/vite": "^4.3.0",
+    "@tanstack/react-query": "^5.101.0",
+    "@tanstack/react-query-devtools": "^5.101.0",
+    "axios": "^1.16.1",
+    "lucide-react": "^1.16.0",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "react-hook-form": "^7.75.0",
+    "react-icons": "^5.6.0",
+    "react-redux": "^9.3.0",
+    "react-router-dom": "^7.15.0",
+    "sonner": "^2.0.7",
+    "tailwindcss": "^4.3.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.12.3",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "eslint": "^10.3.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.6.0",
+    "typescript": "~6.0.2",
+    "typescript-eslint": "^8.59.2",
+    "vite": "^8.0.12"
+  }
+}
+````
+
+## File: Frontend/src/app/App.tsx
+````typescript
+import { RouterProvider } from "react-router-dom"
+import Router from "../routes/routes"
+import { AuthContextProvider } from "@/features/Auth/Context/auth.context"
+import { QueryProvider } from "@/features/Auth/Query/Providers/AuthQueryProvider"
+import SmoothScroll from "@/Global Provider/SmoothScroller"
+
+function App() {
+
+
+  return (
+    <>
+
+      <QueryProvider>
+
+        <AuthContextProvider>
+          <SmoothScroll>
+
+            <RouterProvider router={Router} />
+          </SmoothScroll>
+
+        </AuthContextProvider>
+
+      </QueryProvider>
+
+    </>
+  )
+}
+
+export default App
+````
+
+## File: Frontend/src/features/Admin/components/AdminLogin.tsx
+````typescript
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ShieldCheck } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { loginAdminAccount, type ApiResponse } from '../apis/adminlogin.api'
+
+import {
+  adminLoginSchema,
+  type AdminLoginFormValues,
+} from "../schema/admin.login.schema";
+
+import Button from "../../../shared/components/Button/Button";
+import Input from "../../../shared/components/Input/Input";
+import { useAuth } from "@/features/Auth/hooks/authhook";
+
+const AdminLoginPage = () => {
+  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const { setUser, setIsAuthenticateUser } = useAuth();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<AdminLoginFormValues>({
+    resolver: zodResolver(adminLoginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+
+  const handleadminmlogin = async (data: { email: string; password: string; }) => {
+    try {
+      const response: ApiResponse = await loginAdminAccount(data);
+      if (response.success) {
+        setUser(response);
+        setIsAuthenticateUser(true);
+        navigate('/admin-dashboard')
+        // return;
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error("Login failed:", error.message);
+      } else {
+        console.error("An unexpected error occurred:", error);
+      }
+      return;
+    }
+
+
+  };
+
+  return (
+    <main className="min-h-screen bg-[#FFF8F4] px-4 py-8 text-[#20263D] sm:px-6 lg:px-8">
+      <section className="mx-auto flex min-h-[calc(100vh-64px)] max-w-7xl items-center justify-center">
+        <div className="grid w-full overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-2xl shadow-slate-200/70 lg:grid-cols-2">
+          <div className="relative hidden overflow-hidden bg-gradient-to-br from-[#20263D] via-[#26304d] to-[#078b91] p-10 text-white lg:block">
+            <div className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-[#F9C5A8]/20 blur-3xl" />
+            <div className="absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-[#D4E2E0]/25 blur-3xl" />
+
+            <div className="relative z-10 flex h-full flex-col justify-between">
+              <div>
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 backdrop-blur">
+                  <ShieldCheck size={34} />
+                </div>
+
+                <h1 className="mt-8 max-w-md text-5xl font-black leading-tight">
+                  <button
+                    type="button"
+                    onClick={() => navigate("/")}
+                    className="text-left transition hover:text-[#F9C5A8]"
+                  >
+                  PetsVeta Admin Panel
+                  </button>
+                </h1>
+
+                <p className="mt-5 max-w-md text-sm leading-7 text-white/75">
+                  Manage doctors, sellers, appointments, products, approvals,
+                  and platform activity from one secure dashboard.
+                </p>
+              </div>
+
+              <div className="rounded-3xl bg-white/10 p-6 backdrop-blur">
+                <p className="text-sm font-semibold text-white/80">
+                  Admin Access
+                </p>
+
+                <h3 className="mt-2 text-2xl font-black">
+                  Review doctor signup requests
+                </h3>
+
+                <p className="mt-3 text-sm leading-6 text-white/70">
+                  Approve or reject doctors after checking their details,
+                  license, experience, and profile information.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="px-6 py-10 sm:px-10 md:px-14 lg:px-16">
+            <div className="mx-auto max-w-md">
+              <div className="mb-8 text-center lg:text-left">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#D4E2E0]/70 text-[#078b91] lg:mx-0">
+                  <ShieldCheck size={34} />
+                </div>
+
+                <h2 className="mt-6 text-3xl font-black text-[#20263D] md:text-4xl">
+                  Admin Login
+                </h2>
+
+                <p className="mt-3 text-sm leading-7 text-slate-500">
+                  Login to manage PetsVeta platform operations.
+                </p>
+              </div>
+
+              <form onSubmit={handleSubmit(handleadminmlogin)} className="space-y-5">
+                <Input
+                  label="Email Address"
+                  type="email"
+                  placeholder="admin@petsveta.com"
+                  error={errors.email?.message}
+                  {...register("email")}
+                />
+
+                <Input
+                  label="Password"
+                  type="password"
+                  placeholder="Enter password"
+                  showPassword={showPassword}
+                  onTogglePassword={() => setShowPassword((prev) => !prev)}
+                  error={errors.password?.message}
+                  {...register("password")}
+                />
+
+                <div className="flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
+                  <label className="flex items-center gap-2 text-slate-500">
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 rounded border-slate-300 accent-[#078b91]"
+                    />
+                    Remember me
+                  </label>
+
+
+                </div>
+
+                <Button
+                  type="submit"
+                  isSubmitting={isSubmitting}
+                  className="bg-[#20263D] font-black shadow-lg shadow-slate-300 hover:bg-[#111827] hover:text-white hover:border-transparent"
+                >
+                  {isSubmitting ? "Logging In" : " Login as Admin"}
+                </Button>
+              </form >
+
+              <div className="mt-8 rounded-2xl bg-[#D4E2E0]/35 p-4">
+                <p className="text-sm font-semibold leading-6 text-slate-600">
+                  This page is only for platform administrators. Doctors and
+                  sellers should use their own login portals.
+                </p>
+              </div>
+            </div >
+          </div >
+        </div >
+      </section >
+    </main >
+  );
+};
+
+export default AdminLoginPage;
+````
+
+## File: Frontend/src/features/Auth/components/login-component.tsx
+````typescript
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useLogin } from "../hooks/useLogin";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { getGoogleAuthUrlApi } from "../api/petOwner.api";
+import { type ApiResponse } from "../api/loginuser.api";
+import { useAuth } from "../hooks/authhook";
+
+import {
+  loginSchema,
+  type LoginFormData,
+} from "../../Auth/schemas/login.schema";
+
+
+
+const PawIcon = () => (
+  <svg
+    viewBox="0 0 64 64"
+    className="h-8 w-8 fill-[#178f95]"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle cx="18" cy="22" r="7" />
+    <circle cx="32" cy="16" r="7" />
+    <circle cx="46" cy="22" r="7" />
+    <circle cx="24" cy="34" r="6" />
+    <circle cx="40" cy="34" r="6" />
+    <path d="M18 47c0-9 6-17 14-17s14 8 14 17c0 6-5 9-14 9s-14-3-14-9z" />
+  </svg>
+);
+
+const getPostLoginPath = (role: string) => {
+  if (role === "Admin") {
+    return "/admin-dashboard";
+  }
+
+  if (role === "Doctor") {
+    return "/doctor-dashboard";
+  }
+
+  if (role === "PetOwner" || role === "Seller") {
+    return "/choose-dashboard";
+  }
+
+  return "/";
+};
+
+export default function LoginComponent() {
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [forbiddenError, setForbiddenError] = useState("");
+  const [apiMesg, setApiMesg] = useState("");
+
+  const { isAuthenticatedUser, user } = useAuth()
+  const navigate = useNavigate();
+
+  const { mutate: login, isPending: isloggingIn } = useLogin({
+    onSuccess: (response: ApiResponse) => {
+
+      if (response.success) {
+
+
+        setApiMesg(response.message);
+        console.log("Role is ", response.data.role);
+
+        reset();
+
+      }
+
+    },
+    onError: (error) => {
+      setForbiddenError("Login Failed.Please check you email and password");
+      console.log("Login Error", error)
+    }
+  })
+
+  useEffect(() => {
+    console.log("Working")
+    if (isAuthenticatedUser && user?.data) {
+      navigate(getPostLoginPath(user.data.role));
+    }
+  }, [isAuthenticatedUser, user, navigate]);
+
+
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const onSubmit = async (data: LoginFormData) => {
+    setForbiddenError('');
+    setApiMesg('');
+    login(data)
+
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      setIsGoogleLoading(true);
+      setForbiddenError("");
+
+      const result = await getGoogleAuthUrlApi();
+
+      if (result.success && result.data?.url) {
+        window.location.href = result.data.url;
+      }
+    } catch (error) {
+      setForbiddenError("Google login failed. Please try again.");
+
+      if (error instanceof Error) {
+        console.log("Google Auth Error:", error.message);
+      }
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
+
+  return (
+    <div className="w-full">
+      <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-[22px] bg-[#dff3f2] shadow-[0_12px_28px_rgba(23,143,149,0.18)]">
+        <PawIcon />
+      </div>
+
+      <div className="mb-6 text-center">
+        <h1 className="text-[26px] font-extrabold leading-tight tracking-[-0.04em] text-[#101b3d] md:text-[30px]">
+          Welcome Back
+        </h1>
+
+        <p className="mt-2 text-[13px] font-medium text-[#6d7891]">
+          Login to your PetsVeta account
+        </p>
+      </div>
+
+      {forbiddenError && (
+        <p className="mb-3 rounded-xl bg-red-50 px-4 py-2 text-center text-[13px] font-bold text-red-600">
+          {forbiddenError}
+        </p>
+      )}
+
+      {apiMesg && (
+        <p className="mb-3 rounded-xl bg-green-50 px-4 py-2 text-center text-[13px] font-bold text-green-600">
+          {apiMesg}
+        </p>
+      )}
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <div>
+          <label className="mb-2 block text-[13px] font-bold text-[#17233f]">
+            Email Address
+          </label>
+
+          <div className="flex h-[48px] items-center rounded-2xl border border-[#d8dde8] bg-white/70 px-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] transition-all duration-300 focus-within:border-[#178f95] focus-within:shadow-[0_0_0_4px_rgba(23,143,149,0.12)]">
+            <svg
+              className="mr-4 h-5 w-5 text-[#7b8497]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-18 8h18a2 2 0 002-2V6a2 2 0 00-2-2H3a2 2 0 00-2 2v8a2 2 0 002 2z"
+              />
+            </svg>
+
+            <input
+              type="email"
+              placeholder="example@gmail.com"
+              className="h-full w-full bg-transparent text-[14px] font-medium text-[#17233f] outline-none placeholder:text-[#8993a6]"
+              {...register("email")}
+            />
+          </div>
+
+          {errors.email && (
+            <p className="mt-1.5 text-[12px] font-semibold text-red-600">
+              {errors.email.message}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label className="mb-2 block text-[13px] font-bold text-[#17233f]">
+            Password
+          </label>
+
+          <div className="flex h-[48px] items-center rounded-2xl border border-[#d8dde8] bg-white/70 px-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] transition-all duration-300 focus-within:border-[#178f95] focus-within:shadow-[0_0_0_4px_rgba(23,143,149,0.12)]">
+            <svg
+              className="mr-4 h-5 w-5 text-[#7b8497]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 11c.828 0 1.5.672 1.5 1.5S12.828 14 12 14s-1.5-.672-1.5-1.5S11.172 11 12 11z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M17 11V8a5 5 0 00-10 0v3M6 11h12v9H6z"
+              />
+            </svg>
+
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter your password"
+              className="h-full w-full bg-transparent text-[14px] font-medium text-[#17233f] outline-none placeholder:text-[#8993a6]"
+              {...register("password")}
+            />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="ml-3 text-[#7b8497] transition hover:text-[#178f95]"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? (
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3 3l18 18"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M10.58 10.58A2 2 0 0012 14a2 2 0 001.42-3.42"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9.88 4.24A9.77 9.77 0 0112 4c6 0 9.75 8 9.75 8a17.9 17.9 0 01-2.19 3.2M6.61 6.61C3.73 8.48 2.25 12 2.25 12s3.75 8 9.75 8a9.9 9.9 0 004.18-.92"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M2.25 12s3.75-6.75 9.75-6.75S21.75 12 21.75 12 18 18.75 12 18.75 2.25 12 2.25 12z"
+                  />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              )}
+            </button>
+          </div>
+
+          {errors.password && (
+            <p className="mt-1.5 text-[12px] font-semibold text-red-600">
+              {errors.password.message}
+            </p>
+          )}
+
+          <div className="mt-2 text-right">
+            <a
+              href="/forgot-password"
+              className="text-[13px] font-extrabold text-[#178f95] transition hover:text-[#0f7075]"
+            >
+              Forgot Password?
+            </a>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          disabled={isloggingIn}
+          className="mt-1 flex h-[50px] w-full items-center justify-center gap-3 rounded-2xl bg-[#15265d] text-[15px] font-extrabold text-white shadow-[0_16px_30px_rgba(21,38,93,0.24)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#101f4d] active:translate-y-0"
+        >
+          {isloggingIn ? "Logginin In" : "Log In"}
+          <span className="text-lg leading-none">→</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={handleGoogleLogin}
+          disabled={isGoogleLoading}
+          className="flex h-[50px] w-full items-center justify-center gap-3 rounded-2xl border border-[#d8dde8] bg-white text-[14px] font-extrabold text-[#17233f] shadow-[0_4px_12px_rgba(23,143,149,0.08)] transition-all duration-300 hover:border-[#178f95] hover:bg-[#f8fbfb] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <img
+            src="https://www.svgrepo.com/show/355037/google.svg"
+            className="h-5 w-5"
+            alt="Google"
+          />
+          {isGoogleLoading ? "Connecting..." : "Continue with Google"}
+        </button>
+
+        <p className="pt-1 text-center text-[13px] font-medium text-[#7b8497]">
+          Don&apos;t have an account?{" "}
+          <a
+            href="/doctor-signup"
+            className="font-extrabold text-[#178f95] transition hover:text-[#0f7075]"
+          >
+            Sign up
+          </a>
+        </p>
+      </form>
+    </div>
+  );
 }
 ````
 
@@ -31125,257 +33300,518 @@ const PasswordField = ({
 };
 ````
 
-## File: Backend/app/app.js
+## File: Backend/app/services/petOwner.services.js
 ````javascript
-const path = require("path");
-
-require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
-require("./config/redis.config");
-
-const cors = require("cors");
-const express = require("express");
-const cookieParser = require("cookie-parser");
-
-const app = express();
-
-const authRouter = require("./routes/auth.routes");
-const adminRouter = require("./routes/admin.routes");
-const doctorRouter = require("./routes/doctor.routes");
-const userRoutes = require("./routes/userdoctor.route");
-const petOwnerRoutes = require("./routes/petOwner.routes");
-const paymentRouter = require('./routes/payment.routes');
-const sellerRouter = require("./routes/seller.routes");
-const marketplaceRouter = require("./routes/marketplace.routes");
-const marketplaceOrderRouter = require("./routes/marketplaceOrder.routes");
-
-const paymentController = require("./controllers/payment.controller");
-const globalErrorHandler = require("./middleware/globalErrorHandler");
-
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    credentials: true,
-  })
-);
-
-
-app.post(
-  "/api/v1/payment/webhook",
-  express.raw({ type: "application/json" }),
-  paymentController.stripeWebhook
-);
-
-
-app.use(express.json());
-app.use(cookieParser());
-
-app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/admin", adminRouter);
-app.use("/api/v1/doctor", doctorRouter);
-app.use("/api/v1/user", userRoutes);
-app.use("/api/v1/petOwner", petOwnerRoutes);
-app.use("/api/v1/payment", paymentRouter);
-app.use("/api/v1/seller", sellerRouter);
-app.use("/api/v1/marketplace", marketplaceRouter);
-app.use("/api/v1/orders", marketplaceOrderRouter);
-
-app.use(globalErrorHandler);
-
-module.exports = app;
-````
-
-## File: Backend/app/controllers/petOwner.controller.js
-````javascript
-const catchAsync = require('../utils/CatchAsync');
-const AppError = require('../utils/AppError');
-const requireFields = require('../utils/validateRequest');
-const petOwnerServices = require('../services/petOwner.services');
-const sendResponse = require('../utils/SendResponse');
-const authServices = require('../services/auth.services');
-const { stripe } = require('../config/stripe');
 const prisma = require('../config/prisma');
-const cloudinary = require('../utils/cloudinary.utils');
-const streamifier = require('streamifier');
+const AppError = require('../utils/AppError');
+const {
+    ScheduleStatus,
+    AppointmentStatus,
+    PaymentStatus
+} = require('@prisma/client');
 
 
 
-
-
-const registerPet = catchAsync(async (req, res) => {
-    const petOwnerId = req.user?.id;
-
-    if (!petOwnerId) {
-        return sendResponse(res, 401, 'Please login first', {});
-    }
-
-    requireFields(['name', 'age', 'breed', 'category'], req.body);
-
-    const { name, age, breed, category } = req.body;
-    const files = req.files || [];
-
-    if (!files.length) {
-        return sendResponse(res, 400, 'At least one pet picture is required', {});
-    }
-
-    const petOwner = await authServices.getUserById(petOwnerId);
-    console.log("Pet Owner is ", petOwner);
-    if (!petOwner || petOwner.userRole.role !== 'PetOwner') {
-        return sendResponse(res, 403, 'Only pet owner can register pet', {});
-    }
-
-    const pet = {
-        petOwnerId,
-        name,
-        age: parseFloat(age),
-        category,
-        breed,
-    };
-
-    const newPet = await petOwnerServices.saveUserPet(pet);
-
-    if (!newPet) {
-        return sendResponse(res, 400, 'Failed to create Pet', {});
-    }
-
-
-    const uploadPromises = files.map(file =>
-        cloudinary.uploadToCloudinary(file.buffer, "pets")
-    );
-    console.log("Cloudinary Promises are ", uploadPromises);
-    const uploadResults = await Promise.all(uploadPromises);
-    console.log("Upload Results is ", uploadResults);
-    const uploadedPictures = uploadResults.map(result => ({
-        petId: newPet.id,
-        publicUrl: result.secure_url,
-        publicId: result.public_id
-    }));
-    console.log("Uploaded Picture data is ", uploadedPictures);
-
-    await petOwnerServices.createPetPictures(uploadedPictures);
-
-    console.log("Error hitting ===>")
-
-    return sendResponse(res, 201, 'Successfully created Pet', uploadedPictures);
-});
-
-const registerPetIssue = catchAsync(async (req, res) => {
-    const petOwnerId = req.user?.id;
-
-    if (!petOwnerId) {
-        return sendResponse(res, 401, 'Please login first', {});
-    }
-
-    requireFields(['appointmentId', 'petId', 'issue'], req.body);
-
-    const { appointmentId, petId, issue } = req.body;
-
-    const petIssue = {
-        appointmentId,
-        petId,
-        issue,
-        petOwnerId
-    };
-
-    const createPetIssueReport = await petOwnerServices.registerPetIssue(petIssue);
-
-    return sendResponse(res, 201, 'Report created successfully. Please continue to payment.', {
-        petIssue: createPetIssueReport.registerIssue,
-        appointment: createPetIssueReport.appointment,
-        redirectToPayment: true
+const saveUserPet = async (pet) => {
+    const newPet = await prisma.pet.create({
+        data: {
+            petOwnerId: pet.petOwnerId,
+            name: pet.name,
+            age: pet.age,
+            breed: pet.breed,
+            category: pet.category
+        }
     });
-});
+    return newPet;
+}
 
-const getPetOwnerById = catchAsync(async (req, res) => {
-    const { id } = req.user;
-    const getPetOwner = await authServices.getUserById(id);
-
-    if (!getPetOwner) {
-        return sendResponse(res, 400, 'Invalid User', {});
+const registerPetIssue = async (petIssue) => {
+    if (!petIssue) {
+        throw new AppError("Registration data not found", 400);
     }
 
-    const user = {
-        id: getPetOwner.id,
-        fullName: getPetOwner.fullName,
-        username: getPetOwner.username,
-        email: getPetOwner.email,
-        phone: getPetOwner.phone || '',
-        profileImageUrl: getPetOwner.profileImageUrl,
-    };
+    const { appointmentId, petId, issue, petOwnerId } = petIssue;
 
-    return sendResponse(res, 200, 'Successfully Send User', user);
-});
-
-const updatePetOwnerProfile = catchAsync(async (req, res) => {
-    const { id } = req.user;
-    const { fullName, username, phone } = req.body || {};
-
-    requireFields(['fullName', 'username'], req.body);
-
-    let profileImageUrl = req.body?.profileImageUrl;
-
-    if (req.file) {
-        const uploadedImage = await cloudinary.uploadToCloudinary(
-            req.file.buffer,
-            `pets-veta/profile-images/${id}`
-        );
-
-        profileImageUrl = uploadedImage.secure_url;
+    if (!appointmentId || !petId || !issue || !petOwnerId) {
+        throw new AppError("Appointment, pet, issue, or user id is missing", 400);
     }
 
-    const updatedProfile = await petOwnerServices.updatePetOwnerProfile(id, {
-        fullName,
-        username,
-        phone: phone || '',
-        profileImageUrl,
+    const result = await prisma.$transaction(async (tx) => {
+        const appointment = await tx.appointment.findFirst({
+            where: {
+                id: appointmentId,
+                petOwnerId
+            },
+            include: {
+                doctorSchedule: true
+            }
+        });
+
+        if (!appointment) {
+            throw new AppError("Appointment not found", 404);
+        }
+
+        if (
+            appointment.status !== AppointmentStatus.PENDING_DETAILS &&
+            appointment.status !== AppointmentStatus.PENDING_REPORT &&
+            appointment.status !== AppointmentStatus.PENDING_PAYMENT
+        ) {
+            throw new AppError("This appointment is not available for report submission", 400);
+        }
+
+        if (appointment.expiresAt && appointment.expiresAt < new Date()) {
+            throw new AppError("This appointment hold has expired. Please select the slot again.", 400);
+        }
+
+        if (
+            appointment.doctorSchedule.status !== ScheduleStatus.HELD ||
+            appointment.doctorSchedule.lockedByAppointmentId !== appointment.id
+        ) {
+            throw new AppError("This slot is no longer held for your appointment", 400);
+        }
+
+        const pet = await tx.pet.findFirst({
+            where: {
+                id: petId,
+                petOwnerId
+            }
+        });
+
+        if (!pet) {
+            throw new AppError("Invalid pet selected", 400);
+        }
+
+        let registerIssue;
+
+        if (appointment.petIssueReportId) {
+            registerIssue = await tx.petIssueReport.findUnique({
+                where: {
+                    id: appointment.petIssueReportId
+                }
+            });
+        } else {
+            registerIssue = await tx.petIssueReport.create({
+                data: {
+                    petOwnerId,
+                    petId,
+                    issue
+                }
+            });
+        }
+
+        if (!registerIssue) {
+            throw new AppError("Issue in creating pet report", 400);
+        }
+        const holdMinutes = Number(process.env.APPOINTMENT_HOLD_MINUTES || 15);
+        const newExpiresAt = new Date(Date.now() + holdMinutes * 60 * 1000);
+
+        const updatedAppointment = await tx.appointment.update({
+            where: {
+                id: appointment.id
+            },
+            data: {
+                petId,
+                petIssueReportId: registerIssue.id,
+                status: AppointmentStatus.PENDING_PAYMENT,
+                expiresAt: newExpiresAt,
+            },
+            select: {
+                id: true,
+                doctorId: true,
+                petOwnerId: true,
+                petId: true,
+                petIssueReportId: true,
+                scheduleId: true,
+                fees: true,
+                currency: true,
+                status: true,
+                paymentStatus: true,
+                expiresAt: true
+            }
+        });
+
+        return {
+            registerIssue,
+            appointment: updatedAppointment
+        };
     });
 
-    return sendResponse(
-        res,
-        200,
-        'Profile updated successfully',
-        updatedProfile
-    );
-});
-
-const getPetsData = catchAsync(async (req, res) => {
-    const { id } = req.user;
-
-    const petsData = await petOwnerServices.getUserPets(id);
-
-    if (!petsData) {
-        return sendResponse(res, 400, 'Not Pets Data Found', petsData);
-    }
-    console.log("======>>> ", petsData)
-    return sendResponse(res, 200, 'Successfully Send Data', petsData);
-});
-
-const lockDoctorSlot = catchAsync(async (req, res) => {
-    const petOwnerId = req.user?.id;
-
-    if (!petOwnerId) {
-        return sendResponse(res, 401, "Please login first", {});
-    }
-
-    requireFields(["doctorId", "slotId"], req.body);
-
-    const { doctorId, slotId } = req.body;
-
-    const bookSlot = await petOwnerServices.lockUserSlot({
-        scheduleId: slotId,
-        doctorId,
-        petOwnerId
-    });
-
-    return sendResponse(res, 201, "Successfully locked slot", bookSlot);
-});
-module.exports = {
-    registerPetIssue,
-    getPetOwnerById,
-    updatePetOwnerProfile,
-    registerPet,
-    getPetsData,
-    lockDoctorSlot
+    return result;
 };
+
+
+
+const getUserPets = async (userId) => {
+    if (!userId) {
+        return false;
+    }
+    const pets = await prisma.pet.findMany({
+        where: {
+            petOwnerId: userId
+        },
+        select: {
+            id: true,
+            name: true,
+            age: true,
+            breed: true,
+            category: true,
+            petPictures: {
+                select: {
+                    publicUrl: true
+                }
+            }
+        }
+
+    });
+
+    return pets;
+}
+
+const createPetPictures = async (pet) => {
+    const pictures = await prisma.petPicture.createMany({
+        data: pet
+    })
+}
+
+const updatePetOwnerProfile = async (userId, profileData) => {
+    if (!userId) {
+        return false;
+    }
+
+    const { fullName, username, phone, profileImageUrl } = profileData;
+
+    const existingUsername = await prisma.user.findFirst({
+        where: {
+            username,
+            NOT: {
+                id: userId,
+            },
+        },
+    });
+
+    if (existingUsername) {
+        throw new AppError("Username is already taken", 400);
+    }
+
+    const updatedProfile = await prisma.user.update({
+        where: {
+            id: userId,
+        },
+        data: {
+            fullName,
+            username,
+            phone,
+            ...(profileImageUrl ? { profileImageUrl } : {}),
+        },
+        select: {
+            id: true,
+            fullName: true,
+            username: true,
+            email: true,
+            phone: true,
+            profileImageUrl: true,
+        },
+    });
+
+    return updatedProfile;
+}
+
+const updateAppointmentStripeId = async (appointmentId, sessionId) => {
+    if (!appointmentId || !sessionId) {
+        throw new AppError("Appointment or Session Id is Invalid", 400);
+    }
+}
+
+const lockUserSlot = async ({ scheduleId, doctorId, petOwnerId }) => {
+
+    if (!scheduleId || !doctorId || !petOwnerId) {
+        throw new AppError("Schedule, doctor, or user id is missing", 400);
+    }
+
+    const holdMinutes = Number(process.env.APPOINTMENT_HOLD_MINUTES || 15);
+
+    const result = await prisma.$transaction(async (tx) => {
+        const schedule = await tx.doctorSchedule.findFirst({
+            where: {
+                id: scheduleId,
+                doctorId
+            },
+            include: {
+                doctor: true
+            }
+        });
+
+        if (!schedule) {
+            throw new AppError("The selected doctor schedule slot could not be found.", 404);
+        }
+
+        if (schedule.status !== ScheduleStatus.AVAILABLE) {
+            throw new AppError("Schedule is not available", 400);
+        }
+
+        const validDoctor = schedule.doctor;
+
+        if (!validDoctor) {
+            throw new AppError("Doctor is not valid", 400);
+        }
+
+        const startOfDay = new Date(schedule.date);
+        startOfDay.setHours(0, 0, 0, 0);
+
+        const endOfDay = new Date(schedule.date);
+        endOfDay.setHours(23, 59, 59, 999);
+
+        const existingActiveAppointment = await tx.appointment.findFirst({
+            where: {
+                doctorId: schedule.doctorId,
+                petOwnerId,
+                status: {
+                    in: [
+                        AppointmentStatus.PENDING_DETAILS,
+                        AppointmentStatus.PENDING_REPORT,
+                        AppointmentStatus.PENDING_PAYMENT,
+                        AppointmentStatus.PAYMENT_PROCESSING,
+                        AppointmentStatus.CONFIRMED
+                    ]
+                },
+                checkupTime: {
+                    gte: startOfDay,
+                    lte: endOfDay
+                },
+                OR: [
+                    { expiresAt: null },
+                    { expiresAt: { gt: new Date() } }
+                ]
+            }
+        });
+
+        if (existingActiveAppointment) {
+            throw new AppError("You already have an active or pending appointment with this doctor today.", 400);
+        }
+
+        const lockedSchedule = await tx.doctorSchedule.updateMany({
+            where: {
+                id: scheduleId,
+                doctorId,
+                status: ScheduleStatus.AVAILABLE
+            },
+            data: {
+                status: ScheduleStatus.HELD,
+                lockedByUserId: petOwnerId,
+                lockedAt: new Date()
+            }
+        });
+
+        if (lockedSchedule.count === 0) {
+            throw new AppError("This slot was just locked by another user. Please try another slot.", 400);
+        }
+
+        const expiresAt = new Date(Date.now() + holdMinutes * 60 * 1000);
+
+        const appointment = await tx.appointment.create({
+            data: {
+                doctorId: schedule.doctorId,
+                petOwnerId,
+                scheduleId: schedule.id,
+                fees: validDoctor.fees,
+                currency: "pkr",
+                checkupTime: schedule.startTime,
+                expiresAt,
+                status: AppointmentStatus.PENDING_DETAILS,
+                paymentStatus: PaymentStatus.PENDING
+            }
+        });
+
+        await tx.doctorSchedule.update({
+            where: {
+                id: scheduleId
+            },
+            data: {
+                lockedByAppointmentId: appointment.id
+            }
+        });
+
+        return {
+            appointmentId: appointment.id,
+            scheduleId: schedule.id,
+            doctorId: schedule.doctorId,
+            status: appointment.status,
+            scheduleStatus: ScheduleStatus.HELD,
+            expiresAt: appointment.expiresAt,
+            fees: appointment.fees,
+            currency: appointment.currency
+        };
+    });
+
+    return result;
+};
+
+const getPetOwnerAppointments = async (petOwnerId) => {
+    if (!petOwnerId) {
+        throw new AppError("Pet Owner identity is required", 400);
+    }
+
+    const appointments = await prisma.appointment.findMany({
+        where: {
+            petOwnerId: petOwnerId,
+        },
+        orderBy: {
+            checkupTime: "desc",
+        },
+        include: {
+            doctor: {
+                include: {
+                    user: {
+                        select: {
+                            fullName: true,
+                            profileImageUrl: true,
+                            email: true,
+                            phone: true,
+                        },
+                    },
+                },
+            },
+            pet: {
+                select: {
+                    id: true,
+                    name: true,
+                    category: true,
+                    breed: true,
+                    age: true,
+                },
+            },
+            doctorSchedule: {
+                select: {
+                    id: true,
+                    date: true,
+                    startTime: true,
+                    endTime: true,
+                    status: true,
+                },
+            },
+            petIssueReport: {
+                select: {
+                    id: true,
+                    issue: true,
+                    createdAt: true,
+                },
+            },
+            payment: {
+                select: {
+                    id: true,
+                    status: true,
+                    amount: true,
+                    currency: true,
+                },
+            },
+        },
+    });
+
+    return appointments;
+};
+const getPetById = async (petId, petOwnerId) => {
+    if (!petId || !petOwnerId) {
+        throw new AppError("Identity validation parameter missing.", 400);
+    }
+    return await prisma.pet.findFirst({
+        where: {
+            id: petId,
+            petOwnerId
+        },
+        include: {
+            petPictures: {
+                select: {
+                    publicUrl: true
+                }
+            }
+        }
+    });
+};
+
+const updatePet = async (petId, petOwnerId, petData) => {
+    if (!petId || !petOwnerId) {
+        throw new AppError("Identity validation parameter missing.", 400);
+    }
+
+    // 1. Verify that this pet exists and belongs to the logged-in user
+    const existingPet = await prisma.pet.findFirst({
+        where: {
+            id: petId,
+            petOwnerId
+        }
+    });
+
+    if (!existingPet) {
+        throw new AppError("You do not have permission to modify this pet, or it does not exist.", 403);
+    }
+
+    // 2. Perform the update strictly on the unique primary key 'id'
+    return await prisma.pet.update({
+        where: {
+            id: petId
+        },
+        data: {
+            name: petData.name,
+            age: parseFloat(petData.age),
+            breed: petData.breed,
+            category: petData.category
+        }
+    });
+};
+
+const deletePet = async (petId, petOwnerId) => {
+    if (!petId || !petOwnerId) {
+        throw new AppError("Identity validation parameter missing.", 400);
+    }
+
+    // 1. Verify that this pet exists and belongs to the logged-in user
+    const existingPet = await prisma.pet.findFirst({
+        where: {
+            id: petId,
+            petOwnerId
+        }
+    });
+
+    if (!existingPet) {
+        throw new AppError("You do not have permission to delete this pet, or it does not exist.", 403);
+    }
+
+    return await prisma.$transaction(async (tx) => {
+        // 2. Clear out pictures & linked issue reports
+        await tx.petPicture.deleteMany({
+            where: {
+                petId
+            }
+        });
+
+        await tx.petIssueReport.deleteMany({
+            where: {
+                petId
+            }
+        });
+
+   
+        return await tx.pet.delete({
+            where: {
+                id: petId
+            }
+        });
+    });
+};
+module.exports = {
+    saveUserPet,
+    registerPetIssue,
+    getUserPets,
+    createPetPictures,
+    lockUserSlot,
+    updatePetOwnerProfile,
+    updateAppointmentStripeId,
+    getPetOwnerAppointments,
+    getPetOwnerAppointments,
+    getPetById,
+    updatePet,
+    deletePet
+}
 ````
 
 ## File: Frontend/src/features/Pet Owner/pet details/components/PetIssueReportForm.tsx
@@ -31683,6 +34119,323 @@ const PetIssueReportForm = ({
 export default PetIssueReportForm;
 ````
 
+## File: Backend/app/app.js
+````javascript
+const path = require("path");
+
+require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
+require("./config/redis.config");
+
+const cors = require("cors");
+const express = require("express");
+const cookieParser = require("cookie-parser");
+
+const app = express();
+
+const authRouter = require("./routes/auth.routes");
+const adminRouter = require("./routes/admin.routes");
+const doctorRouter = require("./routes/doctor.routes");
+const userRoutes = require("./routes/userdoctor.route");
+const petOwnerRoutes = require("./routes/petOwner.routes");
+const aiRouter = require("./routes/ai.routes");
+
+const sellerRouter = require("./routes/seller.routes");
+const marketplaceRouter = require("./routes/marketplace.routes");
+const marketplaceOrderRouter = require("./routes/marketplaceOrder.routes");
+
+const paymentController = require("./controllers/payment.controller");
+const globalErrorHandler = require("./middleware/globalErrorHandler");
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
+
+
+app.post(
+  "/api/v1/payment/webhook",
+  express.raw({ type: "application/json" }),
+  paymentController.stripeWebhook
+);
+
+
+app.use(express.json());
+app.use(cookieParser());
+
+app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/doctor", doctorRouter);
+app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/petOwner", petOwnerRoutes);
+app.use("/api/v1/ai", aiRouter)
+
+app.use("/api/v1/seller", sellerRouter);
+app.use("/api/v1/marketplace", marketplaceRouter);
+app.use("/api/v1/orders", marketplaceOrderRouter);
+
+app.use(globalErrorHandler);
+
+module.exports = app;
+````
+
+## File: Backend/app/controllers/petOwner.controller.js
+````javascript
+const catchAsync = require('../utils/CatchAsync');
+const AppError = require('../utils/AppError');
+const requireFields = require('../utils/validateRequest');
+const petOwnerServices = require('../services/petOwner.services');
+const sendResponse = require('../utils/SendResponse');
+const authServices = require('../services/auth.services');
+const { stripe } = require('../config/stripe');
+const prisma = require('../config/prisma');
+const cloudinary = require('../utils/cloudinary.utils');
+const streamifier = require('streamifier');
+
+
+
+
+
+const registerPet = catchAsync(async (req, res) => {
+    const petOwnerId = req.user?.id;
+
+    if (!petOwnerId) {
+        return sendResponse(res, 401, 'Please login first', {});
+    }
+
+    requireFields(['name', 'age', 'breed', 'category'], req.body);
+
+    const { name, age, breed, category } = req.body;
+    const files = req.files || [];
+
+    if (!files.length) {
+        return sendResponse(res, 400, 'At least one pet picture is required', {});
+    }
+
+    const petOwner = await authServices.getUserById(petOwnerId);
+    console.log("Pet Owner is ", petOwner);
+    if (!petOwner || petOwner.userRole.role !== 'PetOwner') {
+        return sendResponse(res, 403, 'Only pet owner can register pet', {});
+    }
+
+    const pet = {
+        petOwnerId,
+        name,
+        age: parseFloat(age),
+        category,
+        breed,
+    };
+
+    const newPet = await petOwnerServices.saveUserPet(pet);
+
+    if (!newPet) {
+        return sendResponse(res, 400, 'Failed to create Pet', {});
+    }
+
+
+    const uploadPromises = files.map(file =>
+        cloudinary.uploadToCloudinary(file.buffer, "pets")
+    );
+    console.log("Cloudinary Promises are ", uploadPromises);
+    const uploadResults = await Promise.all(uploadPromises);
+    console.log("Upload Results is ", uploadResults);
+    const uploadedPictures = uploadResults.map(result => ({
+        petId: newPet.id,
+        publicUrl: result.secure_url,
+        publicId: result.public_id
+    }));
+    console.log("Uploaded Picture data is ", uploadedPictures);
+
+    await petOwnerServices.createPetPictures(uploadedPictures);
+
+    console.log("Error hitting ===>")
+
+    return sendResponse(res, 201, 'Successfully created Pet', uploadedPictures);
+});
+
+const registerPetIssue = catchAsync(async (req, res) => {
+    const petOwnerId = req.user?.id;
+
+    if (!petOwnerId) {
+        return sendResponse(res, 401, 'Please login first', {});
+    }
+
+    requireFields(['appointmentId', 'petId', 'issue'], req.body);
+
+    const { appointmentId, petId, issue } = req.body;
+
+    const petIssue = {
+        appointmentId,
+        petId,
+        issue,
+        petOwnerId
+    };
+
+    const createPetIssueReport = await petOwnerServices.registerPetIssue(petIssue);
+
+    return sendResponse(res, 201, 'Report created successfully. Please continue to payment.', {
+        petIssue: createPetIssueReport.registerIssue,
+        appointment: createPetIssueReport.appointment,
+        redirectToPayment: true
+    });
+});
+
+const getPetOwnerById = catchAsync(async (req, res) => {
+    const { id } = req.user;
+    const getPetOwner = await authServices.getUserById(id);
+
+    if (!getPetOwner) {
+        return sendResponse(res, 400, 'Invalid User', {});
+    }
+
+    const user = {
+        id: getPetOwner.id,
+        fullName: getPetOwner.fullName,
+        username: getPetOwner.username,
+        email: getPetOwner.email,
+        phone: getPetOwner.phone || '',
+        profileImageUrl: getPetOwner.profileImageUrl,
+    };
+
+    return sendResponse(res, 200, 'Successfully Send User', user);
+});
+
+const updatePetOwnerProfile = catchAsync(async (req, res) => {
+    const { id } = req.user;
+    const { fullName, username, phone } = req.body || {};
+
+    requireFields(['fullName', 'username'], req.body);
+
+    let profileImageUrl = req.body?.profileImageUrl;
+
+    if (req.file) {
+        const uploadedImage = await cloudinary.uploadToCloudinary(
+            req.file.buffer,
+            `pets-veta/profile-images/${id}`
+        );
+
+        profileImageUrl = uploadedImage.secure_url;
+    }
+
+    const updatedProfile = await petOwnerServices.updatePetOwnerProfile(id, {
+        fullName,
+        username,
+        phone: phone || '',
+        profileImageUrl,
+    });
+
+    return sendResponse(
+        res,
+        200,
+        'Profile updated successfully',
+        updatedProfile
+    );
+});
+
+const getPetsData = catchAsync(async (req, res) => {
+    const { id } = req.user;
+
+    const petsData = await petOwnerServices.getUserPets(id);
+
+    if (!petsData) {
+        return sendResponse(res, 400, 'Not Pets Data Found', petsData);
+    }
+    console.log("======>>> ", petsData)
+    return sendResponse(res, 200, 'Successfully Send Data', petsData);
+});
+
+const lockDoctorSlot = catchAsync(async (req, res) => {
+    const petOwnerId = req.user?.id;
+
+    if (!petOwnerId) {
+        return sendResponse(res, 401, "Please login first", {});
+    }
+
+    requireFields(["doctorId", "slotId"], req.body);
+
+    const { doctorId, slotId } = req.body;
+
+    const bookSlot = await petOwnerServices.lockUserSlot({
+        scheduleId: slotId,
+        doctorId,
+        petOwnerId
+    });
+
+    return sendResponse(res, 201, "Successfully locked slot", bookSlot);
+});
+
+const getPetOwnerAppointments = catchAsync(async (req, res) => {
+    const petOwnerId = req.user?.id;
+
+    if (!petOwnerId) {
+        return sendResponse(res, 401, 'Please login first', {});
+    }
+
+    const appointments = await petOwnerServices.getPetOwnerAppointments(petOwnerId);
+
+    return sendResponse(
+        res,
+        200,
+        'Successfully retrieved pet owner appointments',
+        appointments
+    );
+});
+const getPetById = catchAsync(async (req, res) => {
+    const petOwnerId = req.user?.id;
+    const { petId } = req.params;
+
+    if (!petOwnerId) {
+        return sendResponse(res, 401, 'Please login first', {});
+    }
+
+    const pet = await petOwnerServices.getPetById(petId, petOwnerId);
+    if (!pet) {
+        throw new AppError("Pet profile not found", 404);
+    }
+
+    return sendResponse(res, 200, 'Successfully fetched pet profile', pet);
+});
+
+const updatePet = catchAsync(async (req, res) => {
+    const petOwnerId = req.user?.id;
+    const { petId } = req.params;
+
+    if (!petOwnerId) {
+        return sendResponse(res, 401, 'Please login first', {});
+    }
+
+    requireFields(['name', 'age', 'breed', 'category'], req.body);
+
+    const updated = await petOwnerServices.updatePet(petId, petOwnerId, req.body);
+    return sendResponse(res, 200, 'Pet profile updated successfully', updated);
+});
+
+const deletePet = catchAsync(async (req, res) => {
+    const petOwnerId = req.user?.id;
+    const { petId } = req.params;
+
+    if (!petOwnerId) {
+        return sendResponse(res, 401, 'Please login first', {});
+    }
+
+    await petOwnerServices.deletePet(petId, petOwnerId);
+    return sendResponse(res, 200, 'Pet profile deleted successfully', {});
+});
+module.exports = {
+    registerPetIssue,
+    getPetOwnerById,
+    updatePetOwnerProfile,
+    registerPet,
+    getPetsData,
+    lockDoctorSlot,
+    getPetOwnerAppointments,
+    getPetById,    
+    updatePet,    
+    deletePet     
+};
+````
+
 ## File: Backend/app/routes/doctor.routes.js
 ````javascript
 const express = require('express');
@@ -31729,7 +34482,6 @@ Router
 Router
     .route("/schedule/me")
     .get(
-        doctorLimiter,
         authMiddlware.protect,
         authenticateRole.authenticateUserRole("Doctor"),
         doctorScheduleController.getDoctorSchedule
@@ -31738,7 +34490,6 @@ Router
 Router
     .route("/schedule/doctor/:doctorId")
     .get(doctorScheduleController.getDoctorSchedulesByDoctorId);
-
 
 
 module.exports = Router;
@@ -32229,6 +34980,10 @@ model MarketplaceOrder {
   shippingAddress String?
   phoneNumber     String?
 
+
+  stripePaymentIntentId String? @unique
+  stripeClientSecret    String?
+
   buyer  User                   @relation("MarketplaceBuyerOrders", fields: [buyerId], references: [id], onDelete: Cascade)
   seller SellerProfile          @relation("MarketplaceSellerOrders", fields: [sellerId], references: [id], onDelete: Cascade)
   items  MarketplaceOrderItem[]
@@ -32267,6 +35022,7 @@ import { User } from "lucide-react"; // Lightweight default user icon
 import NAVLINK from "./navbar.data";
 import Button from "../Button/Button";
 import { useAuth } from "@/features/Auth/hooks/authhook";
+import Logo from "../Logo/Logo";
 
 const Navbar = () => {
   // Assuming useAuth returns { user, isAuthenticated } or similar based on standard patterns
@@ -32283,9 +35039,7 @@ const Navbar = () => {
     /* Changed 'sticky top-0' to 'relative' to make it completely static */
     <nav className="fixed top-0 left-0 w-full  z-50 border-b border-gray-100 bg-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <NavLink to="/" className="text-2xl font-bold text-sky-900">
-          Pets Veta
-        </NavLink>
+        <Logo />
 
         {/* Desktop Navigation Links */}
         <ul className="hidden items-center gap-7 lg:flex">

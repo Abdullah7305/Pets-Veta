@@ -1,4 +1,4 @@
-const { default: prisma } = require('../config/prisma');
+const prisma  = require('../config/prisma');
 const { VerificationStatus, Prisma } = require('@prisma/client');
 const AppError = require('../utils/AppError');
 
@@ -237,6 +237,55 @@ const getDoctorWithCertificate = async (doctorId) => {
   return certificate;
 }
 
+const getAllOrders = async (limit, page, status) => {
+  const skip = (page - 1) * limit;
+  const where = {};
+  
+  if (status && status !== 'ALL') {
+    where.status = status;
+  }
+
+  const [orders, totalCount] = await prisma.$transaction([
+    prisma.marketplaceOrder.findMany({
+      where,
+      skip: skip,
+      take: limit,
+      include: {
+        buyer: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+            phone: true,
+          }
+        },
+        seller: {
+          select: {
+            id: true,
+            businessName: true,
+            city: true,
+          }
+        },
+        items: {
+          include: {
+            product: {
+              include: {
+                images: true
+              }
+            }
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc',
+      }
+    }),
+    prisma.marketplaceOrder.count({ where })
+  ]);
+
+  return { orders, totalCount };
+};
+
 module.exports = {
   sendPendingDoctors,
   approvedDoctor,
@@ -245,5 +294,6 @@ module.exports = {
   findDoctorById,
   allDoctors,
   giveDoctorState,
-  getDoctorWithCertificate
+  getDoctorWithCertificate,
+  getAllOrders
 };

@@ -3,15 +3,20 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { sidebarItems } from "../data/sidebar.data";
 import { LogOut, X } from 'lucide-react'
 import { logoutAdmin } from '../apis/adminlogin.api'
+import { useAuth } from "@/features/Auth/hooks/authhook";
 import type { SidebarProps } from "../types/admin.types";
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const navigate = useNavigate();
+  const { setUser, setIsAuthenticateUser } = useAuth();
   const logOutUser = async () => {
     const response = await logoutAdmin();
     console.log(response);
     if (response.success) {
-      navigate('/admin-login')
+      setUser(undefined);
+      setIsAuthenticateUser(false);
+      navigate('/admin-login');
+  
     }
   }
   return (

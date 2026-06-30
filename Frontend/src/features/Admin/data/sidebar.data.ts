@@ -3,6 +3,7 @@ import {
   FaCalendarAlt,
   FaUsers,
   FaCog,
+  FaShoppingBag, // 👈 Imported icon
 } from "react-icons/fa";
 
 export const sidebarItems = [
@@ -23,6 +24,12 @@ export const sidebarItems = [
     title: "Patients",
     address: "pateint",
     icon: FaUsers,
+  },
+  {
+    id: 6, 
+    title: "Orders",
+    address: "orders",
+    icon: FaShoppingBag,
   },
   {
     id: 5,

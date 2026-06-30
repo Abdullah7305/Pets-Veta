@@ -58,7 +58,8 @@ const handleGoogleCallbackController = catchAsync(async (req, res) => {
 
 
 const createDoctorAccount = catchAsync(async (req, res) => {
-    console.log("Doctor Account....", req.body);
+    console.log("Doctor Account....", req.body.password);
+
     if (!req.file) {
 
         throw new AppError("File is missing", 400);
@@ -261,7 +262,7 @@ const adminLogin = catchAsync(async (req, res) => {
         throw new AppError("Invalid User Access", 401);
     }
 
-
+    console.log("Valid User is ", isValidUser);
     const isPasswordMatch = await bcrypt.compare(password, isValidUser.password);
     if (!isPasswordMatch) {
         throw new AppError("Invalid Code or Password", 401);
@@ -302,7 +303,7 @@ const loginUserAccount = catchAsync(async (req, res) => {
 
 
     const user = await authServices.loginUser(req.body);
-
+    console.log("User is ", user);
     if (!user) {
         throw new AppError("Email or Password invalid", 401);
     }
@@ -519,20 +520,22 @@ const resetUserPassword = catchAsync(async (req, res) => {
 })
 
 const logoutUser = catchAsync(async (req, res) => {
-    const { user } = req.user;
     if (!req.user) {
-        throw new AppError("Not Valid User Session", 400)
+        throw new AppError("Not Valid User Session", 400);
     }
-    const userData = await authServices.verifyEmail(req.user.email);
-    if (!user) {
-        return sendResponse(res, 200, "Invalid user ", false);
-    }
-    res.clearCookie('accessToken');
-    res.clearCookie('refreshToken');
-    res.clearCookie('otpToken');
 
-    return sendResponse(res, 200, "User Logout", userData);
-})
+    const userData = await authServices.verifyEmail(req.user.email);
+    if (!userData) {
+        return sendResponse(res, 200, "Invalid user session", false);
+    }
+
+    res.clearCookie('accessToken', cookiesOptions);
+    res.clearCookie('refreshToken', cookiesOptions);
+    res.clearCookie('otpToken', cookiesOptions);
+
+    return sendResponse(res, 200, "User Logout successfully", userData);
+});
+
 
 
 

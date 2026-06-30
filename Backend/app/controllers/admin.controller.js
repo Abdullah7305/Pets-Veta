@@ -127,7 +127,19 @@ const fetchDoctorStats = catchAsync(async (req, res) => {
 
 });
 
+const allOrderList = catchAsync(async (req, res) => {
+    const limit = parseInt(req.query.limit) || 10;
+    const page = parseInt(req.query.page) || 1;
+    const status = req.query.status || 'ALL';
 
+    const { orders, totalCount } = await doctorServices.getAllOrders(limit, page, status);
+
+    if (!orders || orders.length === 0) {
+        return sendResponse(res, 200, 'No Orders Found', { orders: [], totalCount: 0 });
+    }
+
+    return sendResponse(res, 200, 'Success', { orders, totalCount });
+});
 
 module.exports = {
     pendingDoctorList,
@@ -135,5 +147,7 @@ module.exports = {
     rejectDoctor,
     approveupdateDoctor,
     allDoctorList,
-    fetchDoctorStats
+    fetchDoctorStats,
+    allDoctorList,
+    allOrderList
 };

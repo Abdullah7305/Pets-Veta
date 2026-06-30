@@ -99,7 +99,7 @@ const updateDoctorService = catchAsync(async (req, res) => {
 
 const fetchDoctorAppointments = catchAsync(async (req, res) => {
     const appointments = await doctorServices.getDoctorAppointments(req.user.id);
-
+    console.log("Doctor Appointemns are ",appointments);
     return sendResponse(
         res,
         200,
@@ -198,6 +198,17 @@ const updateDoctorProfile = catchAsync(async (req, res) => {
     );
 });
 
+const completeAppointment = catchAsync(async (req, res) => {
+    console.log("Hitting here.....")
+    const { appointmentId } = req.params;
+    const userId = req.user.id;
+
+    const updated = await doctorServices.completeAppointment(appointmentId, userId);
+    console.log("Appointemnt ",updated);
+
+    return sendResponse(res, 200, "Appointment marked as completed successfully", updated);
+});
+
 module.exports = {
     createDoctorServicePricing,
     fetchDoctorServices,
@@ -206,4 +217,5 @@ module.exports = {
     fetchDoctorAppointments,
     getDoctorProfile,
     updateDoctorProfile,
+    completeAppointment
 };

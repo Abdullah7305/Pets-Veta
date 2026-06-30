@@ -1,4 +1,4 @@
-const  prisma  = require('../config/prisma')
+const prisma = require('../config/prisma')
 const { PaymentStatus } = require('@prisma/client')
 
 
@@ -75,7 +75,7 @@ const updateDoctorServices = async (serviceId, skill, price) => {
 
 
 const getDoctorAppointments = async (userId) => {
-
+    console.log("User id is ",userId)
     const doctor = await prisma.doctor.findUnique({
         where: {
             userId,
@@ -88,8 +88,8 @@ const getDoctorAppointments = async (userId) => {
     if (!doctor) {
         throw new Error("Doctor not found");
     }
-
-    return prisma.appointment.findMany({
+    console.log("Doctor for appointment is ", doctor)
+    const appointment = await prisma.appointment.findMany({
         where: {
             doctorId: doctor.id,
             paymentStatus: PaymentStatus.SUCCEEDED
@@ -127,6 +127,8 @@ const getDoctorAppointments = async (userId) => {
             },
         },
     });
+    console.log("Appointein service is ", appointment);
+    return appointment;
 };
 
 
@@ -242,6 +244,48 @@ const updateDoctorProfile = async (userId, profileData) => {
     return updatedProfile;
 };
 
+const completeAppointment = async (appointmentId, userId) => {
+    const doctor = await prisma.doctor.findUnique({
+        where: {
+            userId
+        },
+        select: {
+            id: true
+        }
+    });
+
+    if (!doctor) {
+        throw new AppError("Doctor profile not found", 404);
+    }
+
+    const appointment = await prisma.appointment.findFirst({
+        where: {
+            id: appointmentId,
+            doctorId: doctor.id
+        }
+    });
+
+    if (!appointment) {
+        throw new AppError("Appointment not found or unauthorized", 404);
+    }
+
+    if (appointment.status === "COMPLETED") {
+        throw new AppError("This appointment is already completed.", 400);
+    }
+
+    const updatedAppointment = await prisma.appointment.update({
+        where: {
+            id: appointmentId
+        },
+        data: {
+            status: "COMPLETED",
+            completedAt: new Date()
+        }
+    });
+
+    return updatedAppointment;
+};
+
 module.exports = {
     addDoctorService,
     deleteDoctorService,
@@ -250,4 +294,5 @@ module.exports = {
     getDoctorAppointments,
     getDoctorProfile,
     updateDoctorProfile,
+    completeAppointment
 };

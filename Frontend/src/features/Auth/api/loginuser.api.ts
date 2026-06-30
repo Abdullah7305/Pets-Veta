@@ -1,6 +1,6 @@
 import axios from "axios"
 import type { LoginFormData } from "../schemas/login.schema";
-import { api } from "@/features/api interface/axios.interface";
+import { api,handleAxiosError } from "@/features/api interface/axios.interface";
 
 type Data = {
     id: string,
@@ -22,25 +22,7 @@ export const userLogin = async<T>(data: LoginFormData): Promise<T> => {
         const response = await api.post("auth/login/user", data)
         return response.data;
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            if (error.response) {
-                if (error.response.status == 429) {
-                    throw new Error("Please wait for a minute", { cause: error })
-                }
-                console.log("Status Code", error.response?.status);
-                console.log("Response Data", error.response?.data)
-            }
-            else if (error.request) {
-                console.log("No Request Response Recieved from server", error.request)
-            }
-            else {
-                console.error("Axios setup error:", error.message);
-            }
-
-        }
-        else {
-            console.error("Non-Axios Error:", error);
-        }
+       handleAxiosError(error)
         throw error
 
     }
@@ -57,23 +39,19 @@ export const verifyUser = async (): Promise<ApiResponse> => {
         )
         return response.data;
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            if (error.response) {
-                console.log("Status Code", error.response?.status);
-                console.log("Response Data", error.response?.data)
-            }
-            else if (error.request) {
-                console.log("No Request Response Recieved from server", error.request)
-            }
-            else {
-                console.error("Axios setup error:", error.message);
-            }
-
-        }
-        else {
-            console.error("Non-Axios Error:", error);
-        }
+        handleAxiosError(error)
         throw error
 
     }
 }
+
+
+export const logoutUserApi = async (): Promise<ApiResponse> => {
+    try {
+        const response = await api.post("auth/logout/user");
+        return response.data;
+    } catch (error) {
+        handleAxiosError(error);
+        throw error;
+    }
+};

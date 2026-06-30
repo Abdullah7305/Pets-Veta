@@ -3,15 +3,22 @@ import { useEffect, useState } from "react";
 
 import {
   getDoctorAppointments,
+  completeAppointmentApi, // 👈 Imported API function
   type DoctorAppointment,
 } from "../api/doctorAppointments.api";
 import PatientCard from "../components/PatientCard";
 import Button from "../../../shared/components/Button/Button";
+import CompleteAppointmentModal from "../components/CompleteAppointmentModal"; // 👈 Imported modal
+import { showToast } from "@/shared/utils/toast";
 
 const PatientsPage = () => {
   const [appointments, setAppointments] = useState<DoctorAppointment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCompleting, setIsCompleting] = useState(false);
 
   const loadAppointments = async () => {
     try {
@@ -19,6 +26,8 @@ const PatientsPage = () => {
       setErrorMessage("");
 
       const data = await getDoctorAppointments();
+      console.log("Appointemnts are ",data);
+      
       setAppointments(data);
     } catch (error) {
       setErrorMessage(
@@ -34,6 +43,33 @@ const PatientsPage = () => {
   useEffect(() => {
     loadAppointments();
   }, []);
+
+  const handleOpenCompleteModal = (appointmentId: string) => {
+    setSelectedAppointmentId(appointmentId);
+    setIsModalOpen(true);
+  };
+
+  const handleConfirmComplete = async () => {
+    if (!selectedAppointmentId) return;
+
+    try {
+      setIsCompleting(true);
+      const response = await completeAppointmentApi(selectedAppointmentId);
+
+      if (response?.success) {
+        showToast.success("Appointment completed successfully!");
+        setIsModalOpen(false);
+        setSelectedAppointmentId(null);
+        await loadAppointments(); 
+      } else {
+        showToast.error("Failed to complete appointment.");
+      }
+    } catch (err: any) {
+      showToast.error(err?.message || "An error occurred.");
+    } finally {
+      setIsCompleting(false);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-[#F8FAFA] text-[#20263D]">
@@ -82,7 +118,11 @@ const PatientsPage = () => {
       ) : appointments.length > 0 ? (
         <div className="space-y-4">
           {appointments.map((appointment) => (
-            <PatientCard key={appointment.id} appointment={appointment} />
+            <PatientCard
+              key={appointment.id}
+              appointment={appointment}
+              onMarkAsDone={handleOpenCompleteModal} 
+            />
           ))}
         </div>
       ) : (
@@ -100,6 +140,17 @@ const PatientsPage = () => {
           </p>
         </div>
       )}
+
+      {/* 💡 Confirmation Modal integration */}
+      <CompleteAppointmentModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedAppointmentId(null);
+        }}
+        onConfirm={handleConfirmComplete}
+        isLoading={isCompleting}
+      />
     </main>
   );
 };
