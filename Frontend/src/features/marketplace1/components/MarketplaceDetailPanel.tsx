@@ -64,7 +64,10 @@ const MarketplaceDetailPanel = ({
   const seller = getSellerName(product);
 
   return (
-    <Card className="sticky top-6 max-h-[calc(100vh-48px)] overflow-y-auto p-5">
+    <Card
+      className="sticky top-6 max-h-[calc(100vh-48px)] overflow-y-auto p-5"
+      data-lenis-prevent
+    >
       <div className="mb-5 flex items-center justify-between">
         <h2 className="text-lg font-bold text-[#07182c]">Product Detail</h2>
 

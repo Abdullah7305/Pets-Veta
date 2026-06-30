@@ -6,6 +6,7 @@ import sellerChoice from "@/assets/shared/images/dashboard-choice/seller-choice.
 import userProfile from "@/assets/icons/user-profile-1.jpg";
 import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
+import PageBackButton from "@/shared/components/BackButton/PageBackButton";
 import type { DashboardCardProps } from "../types/auth.types";
 
 const petOwnerItems = [
@@ -83,6 +84,10 @@ const DashboardChoicePage = () => {
         </header>
 
         <section className="mx-auto w-full max-w-[1110px] px-5 pb-6 pt-7 sm:px-8">
+          <div className="mb-6">
+            <PageBackButton fallbackPath="/" />
+          </div>
+
           <div className="text-center">
             <p className="text-[20px] font-black text-[#5b20f2]">
               Welcome back!

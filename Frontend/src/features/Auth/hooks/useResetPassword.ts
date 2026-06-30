@@ -8,11 +8,13 @@ export const useResetPassword = (options: UseMutationOptions<ApiResponse, Error,
     return useMutation({
         mutationFn: resetPasswordRequest,
         ...options,
-        onSuccess: (data) => {
+        onSuccess: (data, variables, context) => {
             console.log("Password Reset Successfully", data)
+            options.onSuccess?.(data, variables, context)
         },
-        onError(error) {
+        onError(error, variables, context) {
             console.log("Error is Reset Password is ", error)
+            options.onError?.(error, variables, context)
         },
     })
 }

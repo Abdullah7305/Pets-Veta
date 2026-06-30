@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 
 import PetForm from "../components/PetForm";
+import PageBackButton from "@/shared/components/BackButton/PageBackButton";
 
 import {
   getPetByIdApi,
@@ -79,6 +80,9 @@ const EditPetPage = () => {
   if (isLoading) {
     return (
       <main className="min-h-screen bg-[#F8FAFA] px-4 py-8">
+        <div className="mx-auto mb-5 max-w-3xl">
+          <PageBackButton fallbackPath="/pet-owner/profile" />
+        </div>
         <div className="mx-auto h-[500px] max-w-3xl animate-pulse rounded-3xl bg-slate-200" />
       </main>
     );
@@ -87,6 +91,9 @@ const EditPetPage = () => {
   if (!defaultValues) {
     return (
       <main className="min-h-screen bg-[#F8FAFA] px-4 py-8">
+        <div className="mx-auto mb-5 max-w-3xl">
+          <PageBackButton fallbackPath="/pet-owner/profile" />
+        </div>
         <div className="mx-auto max-w-3xl rounded-2xl border border-red-100 bg-red-50 px-5 py-4 text-sm font-semibold text-red-600">
           {apiError || "Pet not found."}
         </div>
@@ -96,6 +103,10 @@ const EditPetPage = () => {
 
   return (
     <main className="min-h-screen bg-[#F8FAFA] px-4 py-8 sm:px-6">
+      <div className="mx-auto mb-5 max-w-3xl">
+        <PageBackButton fallbackPath="/pet-owner/profile" />
+      </div>
+
       {apiError && (
         <div className="mx-auto mb-5 max-w-3xl rounded-2xl border border-red-100 bg-red-50 px-5 py-3 text-sm font-semibold text-red-600">
           {apiError}

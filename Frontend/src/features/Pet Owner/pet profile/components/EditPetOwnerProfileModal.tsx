@@ -63,6 +63,7 @@ const EditPetOwnerProfileModal = ({
   return (
     <div
       className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 px-4 py-6"
+      data-lenis-prevent
       role="dialog"
       aria-modal="true"
     >

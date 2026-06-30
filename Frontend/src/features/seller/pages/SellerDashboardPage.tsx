@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
+import PageBackButton from "@/shared/components/BackButton/PageBackButton";
 import SellerHeader from "../components/SellerHeader";
 import SellerSidebar from "../components/SellerSidebar";
 import SellerStatCard from "../components/SellerStatCard";
@@ -90,6 +91,10 @@ const SellerDashboardPage = () => {
         <SellerHeader />
 
         <section className="p-7">
+          <div className="mb-5">
+            <PageBackButton fallbackPath="/" />
+          </div>
+
           {loading && (
             <p className="mb-5 rounded-lg bg-white p-4 text-sm text-gray-500">
               Loading seller dashboard...

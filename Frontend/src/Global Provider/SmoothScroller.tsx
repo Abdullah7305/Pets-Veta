@@ -13,6 +13,9 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
             touchMultiplier: 1.5,
             infinite: false,
             syncTouch: false,
+            prevent: (node) =>
+                node instanceof HTMLElement &&
+                Boolean(node.closest("[data-lenis-prevent]")),
         });
 
         // 1. Function to instantly snap Lenis to the top

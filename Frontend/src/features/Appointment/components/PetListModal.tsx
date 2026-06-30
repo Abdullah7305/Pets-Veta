@@ -28,11 +28,6 @@ const PetListingModal = ({ onClose, onSelect }: PetListingModalProps) => {
             const response = await getUserPets();
             console.log("Response is ", response)
             await new Promise((resolve) => setTimeout(resolve, 800));
-            const mockPetsData: PetListItem[] = [
-                { id: "1", name: "Buddy", photoUrl: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=150" },
-                { id: "2", name: "Luna", photoUrl: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=150" },
-                { id: "3", name: "Max" }, // Missing profile picture fallback test
-            ];
             if (response) {
                 setLoading(false);
                 setPets(response);
@@ -71,7 +66,10 @@ const PetListingModal = ({ onClose, onSelect }: PetListingModalProps) => {
                 </div>
 
                 {/* Dynamic Inner Body Container */}
-                <div className="p-6 max-h-[60vh] overflow-y-auto space-y-3 custom-scrollbar">
+                <div
+                    className="p-6 max-h-[60vh] overflow-y-auto space-y-3 custom-scrollbar"
+                    data-lenis-prevent
+                >
 
                     {/* Loading View State */}
                     {loading && (

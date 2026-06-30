@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Card from "@/shared/components/Card/Card";
 import Button from "@/shared/components/Button/Button";
+import PageBackButton from "@/shared/components/BackButton/PageBackButton";
 import SellerHeader from "../components/SellerHeader";
 import SellerSidebar from "../components/SellerSidebar";
 import MarketplaceProductCard from "@/features/marketplace1/components/MarketplaceProductCard";
@@ -72,6 +73,10 @@ const SellerSavedListingsPage = () => {
         <SellerHeader />
 
         <section className="p-7">
+          <div className="mb-5">
+            <PageBackButton fallbackPath="/seller/dashboard" />
+          </div>
+
           <div className="flex flex-col gap-4 rounded-xl bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-semibold text-[#178f95]">

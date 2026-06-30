@@ -54,7 +54,10 @@ const AiChatBox = () => {
                         </div>
                     </div>
 
-                    <div className="h-[420px] space-y-4 overflow-y-auto rounded-3xl bg-white p-5">
+                    <div
+                        className="h-[420px] space-y-4 overflow-y-auto rounded-3xl bg-white p-5"
+                        data-lenis-prevent
+                    >
                         {messages.map((item) => (
                             <div
                                 key={item.id}

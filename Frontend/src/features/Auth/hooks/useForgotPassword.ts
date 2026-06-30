@@ -7,11 +7,13 @@ export const useForgotPassword = (options: UseMutationOptions<ApiResponse, Error
     return useMutation({
         mutationFn: veriyUserEmail,
         ...options,
-        onSuccess: (data) => {
+        onSuccess: (data, variables, context) => {
             console.log("Forgot Password Successful ", data)
+            options.onSuccess?.(data, variables, context)
         },
-        onError: (error) => {
+        onError: (error, variables, context) => {
             console.log("Error is  Forgot Password ", error.message)
+            options.onError?.(error, variables, context)
         }
     })
 }

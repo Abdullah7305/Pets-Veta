@@ -5,6 +5,7 @@ import DashboardStats from "../components/DashboardStats";
 import MyPetsPreview from "../components/MyPetsPreview";
 import QuickActions from "../components/QuickActions";
 import UpcomingAppointments from "../components/UpcomingAppointments";
+import PageBackButton from "@/shared/components/BackButton/PageBackButton";
 
 import { dashboardData } from "../data/dashboard.data";
 
@@ -15,6 +16,10 @@ const PetOwnerDashboardPage = () => {
 
       <section className="min-h-screen px-4 py-6 sm:px-6 lg:ml-[260px] lg:px-8">
         <div className="mx-auto max-w-[1500px]">
+          <div className="mb-5">
+            <PageBackButton fallbackPath="/" />
+          </div>
+
           <DashboardHeader user={dashboardData.user} />
 
           <DashboardStats counts={dashboardData.counts} />
