@@ -60,7 +60,7 @@ const mapApiDoctorToProfile = (
     fees: apiDoctor.fees || 0,
     rating: 0,
     reviews: 0,
-    licenseNumber: "Not provided",
+    licenseNumber: apiDoctor.medicalLicenseNumber || "Not provided",
     languages: "English, Urdu",
     address: apiDoctor.address || "Not provided",
     about:

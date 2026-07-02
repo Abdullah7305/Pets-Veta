@@ -10,6 +10,7 @@ export type DoctorProfileData = {
   phone: string;
   profileImageUrl: string;
   specialization: string;
+  medicalLicenseNumber: string;
   education: string;
   address: string;
   experience: number;
@@ -28,6 +29,7 @@ type BackendDoctorProfileData = {
   doctors: {
     id: string;
     specialization: string;
+    medicalLicenseNumber: string;
     education: string;
     address: string;
     experience: number;
@@ -73,6 +75,7 @@ const mapDoctorProfile = (
       phone: user.phone || "",
       profileImageUrl: user.profileImageUrl || "",
       specialization: doctor.specialization || "",
+      medicalLicenseNumber: doctor.medicalLicenseNumber || "",
       education: doctor.education || "",
       address: doctor.address || "",
       experience: doctor.experience || 0,

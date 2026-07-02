@@ -145,6 +145,7 @@ model Doctor {
   isAvailable    Boolean            @default(false)
   education      String
   specialization String
+  medicalLicenseNumber String           @default("")
   address        String
   experience     Int
   fees           Int

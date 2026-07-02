@@ -16,6 +16,7 @@ export type Data = {
     name: string;
     image: string;
     specialization: string;
+    medicalLicenseNumber?: string;
     specialty?: string;
     education: string;
     experience: number;

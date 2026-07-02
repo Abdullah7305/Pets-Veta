@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import {
     ArrowLeft,
     CheckCheck,
@@ -33,6 +34,10 @@ import type {
     TypingSocketPayload,
 } from "../types/message.types";
 
+type MessagesLocationState = {
+    conversationId?: string;
+};
+
 const formatTime = (date: string) => {
     return new Date(date).toLocaleTimeString([], {
         hour: "2-digit",
@@ -54,9 +59,12 @@ const getInitial = (name: string) => {
 };
 
 const MessagesPage = () => {
+    const location = useLocation();
     const { user, isLoading } = useAuth();
 
     const currentUserId = user?.data?.id;
+    const targetConversationId = (location.state as MessagesLocationState | null)
+        ?.conversationId;
 
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [selectedConversation, setSelectedConversation] =
@@ -118,7 +126,13 @@ const MessagesPage = () => {
 
             setConversations(data);
 
-            if (!selectedConversation && data.length > 0) {
+            const targetConversation = targetConversationId
+                ? data.find((conversation) => conversation.id === targetConversationId)
+                : null;
+
+            if (targetConversation) {
+                setSelectedConversation(targetConversation);
+            } else if (!selectedConversation && data.length > 0) {
                 setSelectedConversation(data[0]);
             }
         } catch (error) {
@@ -146,8 +160,10 @@ const MessagesPage = () => {
 
     useEffect(() => {
         if (!isLoading && currentUserId) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             fetchConversations();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoading, currentUserId]);
 
     useEffect(() => {
@@ -242,6 +258,7 @@ const MessagesPage = () => {
         socket.on("typing:stop", handleTypingStop);
 
         if (socket.connected) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setSocketConnected(true);
         }
 
@@ -264,6 +281,7 @@ const MessagesPage = () => {
     useEffect(() => {
         if (!selectedConversationId) return;
 
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchMessages(selectedConversationId);
 
         const socket = getMessageSocket();

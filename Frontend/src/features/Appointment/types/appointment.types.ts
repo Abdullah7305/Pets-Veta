@@ -16,6 +16,7 @@ export type DoctorProfileViewData = {
   education: string;
   qualification: string;
   certification: string;
+  medicalLicenseNumber?: string;
   nextSlot: string;
   specialization: string;
   availableSlots: BookableSlot[];

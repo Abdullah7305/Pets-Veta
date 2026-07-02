@@ -19,6 +19,7 @@ const createDoctor = async (doctorData) => {
                 create: {
                     education: doctorData.education,
                     specialization: doctorData.specialization,
+                    medicalLicenseNumber: doctorData.medicalLicenseNumber,
                     address: doctorData.address,
                     experience: parseInt(doctorData.experience),
                     fees: parseInt(doctorData.fees)

@@ -180,6 +180,12 @@ const DoctorProfilePage = () => {
                                     <p className="text-sm font-bold text-slate-500">Qualification</p>
                                     <p className="mt-1 font-semibold text-[#07182c]">{doctor.specialization}</p>
                                 </div>
+                                <div>
+                                    <p className="text-sm font-bold text-slate-500">Medical License</p>
+                                    <p className="mt-1 font-semibold text-[#07182c]">
+                                        {doctor.medicalLicenseNumber || "Not provided"}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -65,9 +65,9 @@ const createDoctorAccount = catchAsync(async (req, res) => {
         throw new AppError("File is missing", 400);
     }
 
-    requireFields(["fullName", "username", "fees", "email", "password", "phone", "education", "specialization", "address", "experience"], req.body)
+    requireFields(["fullName", "username", "fees", "email", "password", "phone", "education", "specialization", "medicalLicenseNumber", "address", "experience"], req.body)
     const { fullName, username, email, password, fees, phone,
-        education, specialization, address, experience } = req.body;
+        education, specialization, medicalLicenseNumber, address, experience } = req.body;
     console.log("I run....")
     req.body.fees = Number(req.body.fees);
 
@@ -97,6 +97,7 @@ const createDoctorAccount = catchAsync(async (req, res) => {
         password: hashedPassword,
         education: education,
         specialization: specialization,
+        medicalLicenseNumber: medicalLicenseNumber,
         address: address,
         experience: experience,
         fees: fees,

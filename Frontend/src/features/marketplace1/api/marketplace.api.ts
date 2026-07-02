@@ -21,6 +21,7 @@ export type MarketplaceProduct = {
     businessName?: string | null;
     city?: string | null;
     user?: {
+      id?: string | null;
       fullName?: string | null;
       email?: string | null;
       profileImageUrl?: string | null;

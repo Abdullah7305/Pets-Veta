@@ -57,6 +57,7 @@ const getApprovedDoctorsForUsers = async ({ page = 1, limit = 5, search = "" }) 
       select: {
         id: true,
         specialization: true,
+        medicalLicenseNumber: true,
         education: true,
         experience: true,
         user: {
@@ -76,6 +77,7 @@ const getApprovedDoctorsForUsers = async ({ page = 1, limit = 5, search = "" }) 
     email: doctor.user.email,
     phone: doctor.user.phone,
     specialization: doctor.specialization,
+    medicalLicenseNumber: doctor.medicalLicenseNumber,
     education: doctor.education,
     experience: doctor.experience,
     profileImage: doctor.user.profileImageUrl,
@@ -99,6 +101,7 @@ const getSpecificDoctor = async (doctorId) => {
       education: true,
       fees: true,
       specialization: true,
+      medicalLicenseNumber: true,
       experience: true,
       isAvailable: true,
       isVerified: true,
@@ -119,6 +122,7 @@ const getSpecificDoctor = async (doctorId) => {
     name: doctor.user?.fullName || "Unknown Doctor",
     image: doctor.user?.profileImageUrl || null,
     specialization: doctor.specialization,
+    medicalLicenseNumber: doctor.medicalLicenseNumber,
     experience: doctor.experience,
     education: doctor.education,
     fees: doctor.fees,

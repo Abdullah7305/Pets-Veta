@@ -149,6 +149,7 @@ const getDoctorProfile = async (userId) => {
                 select: {
                     id: true,
                     specialization: true,
+                    medicalLicenseNumber: true,
                     education: true,
                     experience: true,
                     fees: true,
@@ -170,6 +171,7 @@ const updateDoctorProfile = async (userId, profileData) => {
         phone,
         profileImageUrl,
         specialization,
+        medicalLicenseNumber,
         education,
         experience,
         fees,
@@ -210,6 +212,7 @@ const updateDoctorProfile = async (userId, profileData) => {
             doctors: {
                 update: {
                     specialization,
+                    medicalLicenseNumber,
                     education,
                     experience: Number(experience),
                     fees: Number(fees),
@@ -230,6 +233,7 @@ const updateDoctorProfile = async (userId, profileData) => {
                 select: {
                     id: true,
                     specialization: true,
+                    medicalLicenseNumber: true,
                     education: true,
                     experience: true,
                     fees: true,

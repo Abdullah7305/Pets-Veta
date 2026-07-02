@@ -18,6 +18,7 @@ export type Doctor = {
   email: string;
   phone: string;
   specialization: string;
+  medicalLicenseNumber?: string;
   education: string;
   experience: number;
   profileImage?: string;

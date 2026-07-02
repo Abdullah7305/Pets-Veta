@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "@/features/Auth/hooks/authhook";
 import {
   FaArrowLeft,
+  FaComments,
   FaHeart,
   FaMapMarkerAlt,
   FaStar,
@@ -24,6 +25,7 @@ import {
   toDisplayCategory,
   type MarketplaceProduct,
 } from "../api/marketplace.api";
+import { createOrGetDirectConversationApi } from "@/features/messages/api/message.api";
 
 type BackToMarketplaceButtonProps = {
   onClick: () => void;
@@ -48,6 +50,8 @@ const MarketplaceProductDetailPage = () => {
   const [error, setError] = useState("");
   const [saveMessage, setSaveMessage] = useState("");
   const [cartError, setCartError] = useState("");
+  const [messageError, setMessageError] = useState("");
+  const [messageLoading, setMessageLoading] = useState(false);
   const { user } = useAuth();
 
   const handleBack = () => {
@@ -142,6 +146,48 @@ const MarketplaceProductDetailPage = () => {
       navigate("/login", {
         state: { redirectTo: `/marketplace/product/${product.id}` },
       });
+    }
+  };
+
+  const handleMessageSeller = async () => {
+    if (!product) return;
+
+    if (!user?.data?.id) {
+      navigate("/login", {
+        state: { redirectTo: `/marketplace/product/${product.id}` },
+      });
+      return;
+    }
+
+    const sellerUserId = product.seller?.user?.id;
+
+    if (!sellerUserId) {
+      setMessageError("Seller messaging profile is unavailable.");
+      return;
+    }
+
+    if (sellerUserId === user.data.id) {
+      setMessageError("You cannot message your own listing.");
+      return;
+    }
+
+    try {
+      setMessageError("");
+      setMessageLoading(true);
+
+      const conversation = await createOrGetDirectConversationApi(
+        sellerUserId,
+        "MARKETPLACE_PRODUCT",
+        product.id
+      );
+
+      navigate("/messages", {
+        state: { conversationId: conversation.id },
+      });
+    } catch {
+      setMessageError("Unable to open chat. Please try again.");
+    } finally {
+      setMessageLoading(false);
     }
   };
 
@@ -326,8 +372,20 @@ const MarketplaceProductDetailPage = () => {
             </p>
           )}
 
-          <Button variant="outline" className="mt-3 w-full">
-            Message Seller
+          {messageError && (
+            <p className="mt-3 rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-600">
+              {messageError}
+            </p>
+          )}
+
+          <Button
+            variant="outline"
+            className="mt-3 w-full gap-2"
+            onClick={handleMessageSeller}
+            disabled={messageLoading || isOwnListing}
+          >
+            <FaComments />
+            {messageLoading ? "Opening Chat..." : "Message Seller"}
           </Button>
         </Card>
       </div>

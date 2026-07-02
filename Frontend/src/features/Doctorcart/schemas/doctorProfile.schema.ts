@@ -13,6 +13,8 @@ export const doctorProfileSchema = z.object({
 
   specialization: z.string().min(2, "Specialization is required"),
 
+  medicalLicenseNumber: z.string().min(3, "License number is required"),
+
   education: z.string().min(2, "Education is required"),
 
   address: z.string().min(5, "Clinic address is required"),
