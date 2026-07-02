@@ -26,8 +26,8 @@ const PatientsPage = () => {
       setErrorMessage("");
 
       const data = await getDoctorAppointments();
-      console.log("Appointemnts are ",data);
-      
+      console.log("Appointemnts are ", data);
+
       setAppointments(data);
     } catch (error) {
       setErrorMessage(
@@ -60,7 +60,7 @@ const PatientsPage = () => {
         showToast.success("Appointment completed successfully!");
         setIsModalOpen(false);
         setSelectedAppointmentId(null);
-        await loadAppointments(); 
+        await loadAppointments();
       } else {
         showToast.error("Failed to complete appointment.");
       }
@@ -121,7 +121,7 @@ const PatientsPage = () => {
             <PatientCard
               key={appointment.id}
               appointment={appointment}
-              onMarkAsDone={handleOpenCompleteModal} 
+              onMarkAsDone={handleOpenCompleteModal}
             />
           ))}
         </div>
