@@ -25,6 +25,20 @@ import {
   type MarketplaceProduct,
 } from "../api/marketplace.api";
 
+type BackToMarketplaceButtonProps = {
+  onClick: () => void;
+};
+
+const BackToMarketplaceButton = ({ onClick }: BackToMarketplaceButtonProps) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:border-[#178f95] hover:text-[#178f95]"
+  >
+    <FaArrowLeft />
+    Back to Marketplace
+  </button>
+);
 
 const MarketplaceProductDetailPage = () => {
   const { id } = useParams();

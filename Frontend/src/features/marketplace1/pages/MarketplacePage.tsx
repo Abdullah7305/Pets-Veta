@@ -277,7 +277,7 @@ const MarketplacePage = () => {
                 product={product}
                 saved={savedIds.includes(product.id)}
                 onSave={() => toggleSave(product.id)}
-                onDetails={() => setSelectedProduct(product)}
+                onDetails={() => navigate(`/marketplace/product/${product.id}`)}
               />
             ))}
           </div>
