@@ -64,6 +64,7 @@ const stripeWebhook = async (req, res) => {
       sig,
       process.env.STRIPE_WEBHOOK_SECRET
     );
+    
   } catch (err) {
     console.error("Webhook signature verification failed:", err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
@@ -100,13 +101,12 @@ const stripeWebhook = async (req, res) => {
         },
       }));
 
-    // 💡 Added: If it's a marketplace order payment event, delegate to handleOrderWebhook immediately
     if (orderIdFromMetadata) {
       await handleOrderWebhook(event.type, paymentIntent, paymentEvent.id);
       return res.status(200).json({ received: true });
     }
 
-    // Standard appointments flow remains completely untouched
+
     switch (event.type) {
       case "payment_intent.processing": {
         await handlePaymentIntentProcessing(paymentIntent, paymentEvent.id);

@@ -21,6 +21,11 @@ const DoctorRequestCard = ({
   doctorRequestProceed,
 }: DoctorRequestCardProps) => {
   const isPending = doctor.isVerified === "PENDING";
+  const certificateUrl = doctor.degreeLicenseUrl;
+  const certificateButtonClass =
+    "items-center gap-2 rounded-xl border border-slate-300 bg-white text-sm font-black text-[#078b91] transition hover:border-[#078b91] hover:bg-[#eefaf8]";
+  const disabledCertificateButtonClass =
+    "items-center gap-2 rounded-xl border border-slate-200 bg-slate-100 text-sm font-black text-slate-400";
 
   return (
     <article className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_16px_40px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(15,23,42,0.12)]">
@@ -92,26 +97,46 @@ const DoctorRequestCard = ({
               </p>
             </div>
 
-            <a
-              href={doctor.degreeLicenseUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="hidden h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-sm font-black text-[#078b91] transition hover:border-[#078b91] hover:bg-[#eefaf8] sm:flex"
-            >
-              <Eye size={17} />
-              View
-            </a>
+            {certificateUrl ? (
+              <a
+                href={certificateUrl}
+                target="_blank"
+                rel="noreferrer"
+                className={`hidden h-10 px-4 sm:flex ${certificateButtonClass}`}
+              >
+                <Eye size={17} />
+                View
+              </a>
+            ) : (
+              <button
+                type="button"
+                disabled
+                className={`hidden h-10 cursor-not-allowed px-4 sm:flex ${disabledCertificateButtonClass}`}
+              >
+                No Certificate
+              </button>
+            )}
           </div>
 
-          <a
-            href={doctor.degreeLicenseUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-4 flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white text-sm font-black text-[#078b91] transition hover:border-[#078b91] hover:bg-[#eefaf8] sm:hidden"
-          >
-            <Eye size={17} />
-            View Certificate
-          </a>
+          {certificateUrl ? (
+            <a
+              href={certificateUrl}
+              target="_blank"
+              rel="noreferrer"
+              className={`mt-4 flex h-10 w-full justify-center sm:hidden ${certificateButtonClass}`}
+            >
+              <Eye size={17} />
+              View Certificate
+            </a>
+          ) : (
+            <button
+              type="button"
+              disabled
+              className={`mt-4 flex h-10 w-full cursor-not-allowed justify-center sm:hidden ${disabledCertificateButtonClass}`}
+            >
+              No Certificate
+            </button>
+          )}
         </div>
 
         {isPending ? (

@@ -1,6 +1,11 @@
-const prisma  = require('../config/prisma');
+const prisma = require('../config/prisma');
 const { VerificationStatus, Prisma } = require('@prisma/client');
 const AppError = require('../utils/AppError');
+
+const attachDegreeLicenseUrl = (doctor) => ({
+  ...doctor,
+  degreeLicenseUrl: doctor.user?.doctorCertificate?.publicUrl ?? null
+});
 
 const allDoctors = async (limit, page) => {
 
@@ -37,7 +42,7 @@ const allDoctors = async (limit, page) => {
     }),
     prisma.doctor.count()
   ])
-  return { doctors, totalCount };
+  return { doctors: doctors.map(attachDegreeLicenseUrl), totalCount };
 }
 
 const sendPendingDoctors = async (limit, page) => {
@@ -77,12 +82,12 @@ const sendPendingDoctors = async (limit, page) => {
       }
     })
   ])
-  return { doctors, totalCount };
+  return { doctors: doctors.map(attachDegreeLicenseUrl), totalCount };
 
 };
 
 const findDoctorById = async (doctorId) => {
-  return await prisma.doctor.findUnique({
+  const doctor = await prisma.doctor.findUnique({
     where: {
       id: doctorId,
     },
@@ -90,7 +95,6 @@ const findDoctorById = async (doctorId) => {
       id: true,
       specialization: true,
       education: true,
-      degreeLicenseUrl: true,
       experience: true,
       isVerified: true,
       user: {
@@ -98,11 +102,17 @@ const findDoctorById = async (doctorId) => {
           id: true,
           fullName: true,
           email: true,
-          phone: true
+          phone: true,
+          doctorCertificate: {
+            select: {
+              publicUrl: true
+            }
+          }
         }
       }
     },
   });
+  return doctor ? attachDegreeLicenseUrl(doctor) : null;
 };
 
 const rejectDoctor = async (doctorId) => {
@@ -171,7 +181,7 @@ const approvedDoctor = async (limit, page) => {
       }
     })
   ])
-  return { doctors, totalCount };
+  return { doctors: doctors.map(attachDegreeLicenseUrl), totalCount };
 };
 
 const approveupdateDoctor = async (doctorId) => {
@@ -240,7 +250,7 @@ const getDoctorWithCertificate = async (doctorId) => {
 const getAllOrders = async (limit, page, status) => {
   const skip = (page - 1) * limit;
   const where = {};
-  
+
   if (status && status !== 'ALL') {
     where.status = status;
   }

@@ -178,7 +178,7 @@ const MarketplaceProductDetailPage = () => {
 
   return (
     <main className="min-h-screen bg-[#f7fbfb] px-5 py-8 lg:px-12">
-      <p className="mb-5 text-sm text-gray-500">
+      {/* <p className="mb-5 text-sm text-gray-500">
         Marketplace / {displayCategory} / {product.title}
       </p>
       <div className="mt-6 space-y-3 text-sm text-gray-600">
@@ -201,9 +201,9 @@ const MarketplaceProductDetailPage = () => {
       <p className="mt-5 text-sm font-medium text-green-600">
         In Stock{" "}
         <span className="text-gray-500">{product.stock} available</span>
-      </p>
+      </p> */}
 
-      <div className="mt-7 grid grid-cols-2 gap-3">
+      {/* <div className="mt-7 grid grid-cols-2 gap-3">
         {/* 💡 Updated: If own listing, let them manage it directly. Otherwise, show cart/buy actions */}
         {isOwnListing ? (
           <Button
@@ -233,7 +233,7 @@ const MarketplaceProductDetailPage = () => {
             View All Listings
           </Button>
         )}
-      </div>
+      {/* </div> */} 
 
       <div className="grid gap-6 lg:grid-cols-[1fr_430px]">
         <Card className="overflow-hidden p-0">
