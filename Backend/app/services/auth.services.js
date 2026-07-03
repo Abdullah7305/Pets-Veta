@@ -170,11 +170,8 @@ const loginUser = async (userData) => {
     });
 
     if (user?.userRole.role.toLowerCase() === 'doctor') {
-        console.log("Hitting condition...");
         if (user.doctors.isVerified === VerificationStatus.PENDING) {
-            console.log("I Was Running ....")
-            throw new AppError("Unverified User is not allowed yet...", 403);
-            return;
+            throw new AppError("Your doctor account is pending admin approval.", 403);
         }
     }
 
@@ -233,11 +230,9 @@ const verifyEmail = async (email) => {
 
         }
     })
-    if (validUser.userRole === 'DOCTOR') {
-        if (validUser.doctors.isVerified === VerificationStatus.PENDING) {
-            throw new AppError("Doctor is Not Allowed Yet", 400);
-            return;
-        }
+
+    if (!validUser) {
+        return null;
     }
 
     return validUser;

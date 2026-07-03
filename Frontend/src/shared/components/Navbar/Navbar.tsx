@@ -6,11 +6,17 @@ import { useAuth } from "@/features/Auth/hooks/authhook";
 import Logo from "../Logo/Logo";
 
 const Navbar = () => {
-  // Assuming useAuth returns { user, isAuthenticated } or similar based on standard patterns
-  // and user object contains { name, role }
-  const { user } = useAuth();
+  const { user, isAuthenticatedUser } = useAuth();
 
-  const isPetOwner = user?.data.role === "PetOwner";
+  const role = user?.data.role;
+  const isLoggedIn = isAuthenticatedUser && Boolean(user?.data);
+  const dashboardPath =
+    role === "Doctor"
+      ? "/doctor-dashboard"
+      : role === "Seller"
+        ? "/seller/dashboard"
+        : "/pet-owner/dashboard";
+  const displayName = user?.data.name || user?.data.username || "Account";
   const profileImageUrl = user?.data.profileImageUrl;
   const hasProfileImage =
     profileImageUrl &&
@@ -75,15 +81,15 @@ const Navbar = () => {
 
         {/* Right Side Actions: Conditional Auth UI */}
         <div className="hidden items-center gap-3 lg:flex">
-          {isPetOwner ? (
-            /* Authenticated PetOwner View */
+          {isLoggedIn ? (
+            /* Authenticated View */
             <>
-              <NavLink to={'/pet-owner/profile'}
+              <NavLink to={dashboardPath}
                 className="flex cursor-pointer items-center gap-3 rounded-full bg-gray-50 border border-gray-100 py-1.5 pl-2 pr-4 transition hover:bg-gray-100">
                 {hasProfileImage ? (
                   <img
                     src={profileImageUrl}
-                    alt={user.data.username}
+                    alt={displayName}
                     className="h-8 w-8 rounded-full object-cover border border-[#178f95]/20"
                   />
                 ) : (
@@ -92,7 +98,7 @@ const Navbar = () => {
                   </div>
                 )}
                 <span className="text-sm font-semibold text-gray-700 select-none">
-                  {user.data.username}
+                  {displayName}
                 </span>
               </NavLink>
             </>

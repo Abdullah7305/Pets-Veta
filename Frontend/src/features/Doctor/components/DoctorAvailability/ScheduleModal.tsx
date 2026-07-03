@@ -1,4 +1,15 @@
-import React from 'react';
+import type { Dispatch, SetStateAction } from "react";
+import type { ScheduleFormData } from "../../doctor.types";
+
+type ScheduleModalProps = {
+    isOpen: boolean;
+    onClose: () => void;
+    schedule: ScheduleFormData;
+    setSchedule: Dispatch<SetStateAction<ScheduleFormData>>;
+    error: string;
+    setError: Dispatch<SetStateAction<string>>;
+    onConfirm: () => void | Promise<void>;
+};
 
 const ScheduleModal = ({
     isOpen,
@@ -8,11 +19,11 @@ const ScheduleModal = ({
     error,
     setError,
     onConfirm
-}) => {
+}: ScheduleModalProps) => {
 
     if (!isOpen) return null;
 
-    const defaultState = {
+    const defaultState: ScheduleFormData = {
         date: "",
         startTime: "",
         endTime: ""
@@ -22,7 +33,7 @@ const ScheduleModal = ({
 
         setSchedule(defaultState);
 
-        if (setError) setError("");
+        setError("");
 
         onClose();
     };
