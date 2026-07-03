@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import {
   FaBox,
   FaChartPie,
@@ -16,6 +16,7 @@ import {
 import { useAuth } from "@/features/Auth/hooks/authhook";
 import { getMyConversationsApi } from "@/features/messages/api/message.api";
 import type { Conversation } from "@/features/messages/types/message.types";
+import Logo from "@/shared/components/Logo/Logo";
 
 const links = [
   { label: "Dashboard", icon: FaChartPie, path: "/seller/dashboard" },
@@ -57,9 +58,7 @@ const isConversationUnread = (
 };
 
 const SellerSidebar = () => {
-  const navigate = useNavigate();
   const { user } = useAuth();
-
   const currentUserId = user?.data?.id;
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -102,14 +101,9 @@ const SellerSidebar = () => {
 
   return (
     <aside className="flex min-h-screen w-64 flex-col border-r border-gray-100 bg-white px-5 py-6">
-      <button
-        type="button"
-        onClick={() => navigate("/")}
-        className="mb-10 text-left"
-      >
-        <h2 className="text-xl font-bold text-[#178f95]">Pets Veta</h2>
-        <p className="text-xs text-gray-400">Care. Love. Trust.</p>
-      </button>
+      <div className="mb-10 min-w-0 [&_button]:max-w-full [&_button]:justify-start [&_h1]:text-xl [&_h1]:text-[#178f95] [&_p]:text-xs [&_p]:text-gray-400">
+        <Logo />
+      </div>
 
       <nav className="flex-1 space-y-2">
         {links.map(({ label, icon: Icon, path }) => {
@@ -121,10 +115,9 @@ const SellerSidebar = () => {
               key={label}
               to={path}
               className={({ isActive }) =>
-                `flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition ${
-                  isActive
-                    ? "bg-[#e8f7f7] text-[#178f95]"
-                    : "text-gray-600 hover:bg-gray-50"
+                `flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition ${isActive
+                  ? "bg-[#e8f7f7] text-[#178f95]"
+                  : "text-gray-600 hover:bg-gray-50"
                 }`
               }
             >
