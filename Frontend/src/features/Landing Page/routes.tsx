@@ -1,26 +1,15 @@
+import type { RouteObject } from "react-router-dom";
+
 import LandingPage from "./pages/LandingPage";
 import LandingLayout from "../../layout/landing.layout";
-import type { RouteObject } from "react-router-dom";
 
 import { contactRoutes } from "../Contact/contact.route";
 import { aboutRoutes } from "../About/about.route";
 import servicesRoutes from "../Services/service.route";
 import { marketplaceRoutes } from "../marketplace1/marketplace.routes";
 import { aiAssistantRoutes } from "../AiAssistance/aiAssistant.route";
-import DashboardHomeMenu from "./components/DashboardHomeMenu";
 
-const withDashboardMenu = (routes: RouteObject[]): RouteObject[] =>
-  routes.map((route) => ({
-    ...route,
-    element: (
-      <>
-        {route.element}
-        <DashboardHomeMenu />
-      </>
-    ),
-  }));
-
-const LandingPageRoutes = [
+const LandingPageRoutes: RouteObject[] = [
   {
     path: "/",
     element: <LandingLayout />,
@@ -33,7 +22,7 @@ const LandingPageRoutes = [
       ...aboutRoutes,
       ...contactRoutes,
       ...servicesRoutes,
-      ...withDashboardMenu(marketplaceRoutes),
+      ...marketplaceRoutes,
       ...aiAssistantRoutes,
     ],
   },

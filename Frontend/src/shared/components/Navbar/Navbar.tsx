@@ -1,24 +1,23 @@
 import { NavLink } from "react-router-dom";
-import { ChevronDown, User } from "lucide-react"; // Lightweight default user icon
+import { User } from "lucide-react";
 import NAVLINK from "./navbar.data";
 import Button from "../Button/Button";
 import { useAuth } from "@/features/Auth/hooks/authhook";
 import Logo from "../Logo/Logo";
 
 const Navbar = () => {
-  // Assuming useAuth returns { user, isAuthenticated } or similar based on standard patterns
-  // and user object contains { name, role }
   const { user } = useAuth();
 
-  const isPetOwner = user?.data.role === "PetOwner";
-  const profileImageUrl = user?.data.profileImageUrl;
+  const isAuthenticated = Boolean(user?.success && user?.data);
+  const profileImageUrl = user?.data?.profileImageUrl;
+  const username = user?.data?.username || user?.data?.name || "Profile";
+
   const hasProfileImage =
     profileImageUrl &&
     !profileImageUrl.toLowerCase().includes("enter your image");
 
   return (
-    /* Changed 'sticky top-0' to 'relative' to make it completely static */
-    <nav className="fixed top-0 left-0 w-full  z-50 border-b border-gray-100 bg-white">
+    <nav className="fixed left-0 top-0 z-50 w-full border-b border-gray-100 bg-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <Logo />
 
@@ -26,78 +25,45 @@ const Navbar = () => {
         <ul className="hidden items-center gap-7 lg:flex">
           {NAVLINK.map((link) => (
             <li key={link.id}>
-              {link.children ? (
-                <div className="group relative">
-                  <button
-                    type="button"
-                    className="flex items-center gap-1 text-sm font-medium text-gray-600 transition hover:text-[#178f95] group-focus-within:text-[#178f95] group-hover:text-[#178f95]"
-                  >
-                    {link.title}
-                    <ChevronDown
-                      size={15}
-                      className="transition group-hover:rotate-180 group-focus-within:rotate-180"
-                    />
-                  </button>
-
-                  <div className="invisible absolute left-1/2 top-full z-50 mt-3 w-44 -translate-x-1/2 rounded-lg border border-gray-100 bg-white py-2 opacity-0 shadow-lg shadow-gray-200/70 transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-                    {link.children.map((child) => (
-                      <NavLink
-                        key={child.id}
-                        to={child.path}
-                        className={({ isActive }) =>
-                          `block px-4 py-2 text-sm font-medium transition ${isActive
-                            ? "bg-[#178f95]/10 text-[#178f95]"
-                            : "text-gray-600 hover:bg-gray-50 hover:text-[#178f95]"
-                          }`
-                        }
-                      >
-                        {child.title}
-                      </NavLink>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <NavLink
-                  to={link.path ?? "/"}
-                  className={({ isActive }) =>
-                    `text-sm font-medium transition ${isActive
-                      ? "text-[#178f95]"
-                      : "text-gray-600 hover:text-[#178f95]"
-                    }`
-                  }
-                >
-                  {link.title}
-                </NavLink>
-              )}
+              <NavLink
+                to={link.path}
+                className={({ isActive }) =>
+                  `text-sm font-medium transition ${isActive
+                    ? "text-[#178f95]"
+                    : "text-gray-600 hover:text-[#178f95]"
+                  }`
+                }
+              >
+                {link.title}
+              </NavLink>
             </li>
           ))}
         </ul>
 
-        {/* Right Side Actions: Conditional Auth UI */}
+        {/* Right Side Actions */}
         <div className="hidden items-center gap-3 lg:flex">
-          {isPetOwner ? (
-            /* Authenticated PetOwner View */
-            <>
-              <NavLink to={'/pet-owner/profile'}
-                className="flex cursor-pointer items-center gap-3 rounded-full bg-gray-50 border border-gray-100 py-1.5 pl-2 pr-4 transition hover:bg-gray-100">
-                {hasProfileImage ? (
-                  <img
-                    src={profileImageUrl}
-                    alt={user.data.username}
-                    className="h-8 w-8 rounded-full object-cover border border-[#178f95]/20"
-                  />
-                ) : (
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#178f95]/10 text-[#178f95]">
-                    <User size={18} />
-                  </div>
-                )}
-                <span className="text-sm font-semibold text-gray-700 select-none">
-                  {user.data.username}
-                </span>
-              </NavLink>
-            </>
+          {isAuthenticated ? (
+            <NavLink
+              to="/seller/dashboard"
+              className="flex cursor-pointer items-center gap-3 rounded-full border border-gray-100 bg-gray-50 py-1.5 pl-2 pr-4 transition hover:bg-gray-100"
+            >
+              {hasProfileImage ? (
+                <img
+                  src={profileImageUrl}
+                  alt={username}
+                  className="h-8 w-8 rounded-full border border-[#178f95]/20 object-cover"
+                />
+              ) : (
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#178f95]/10 text-[#178f95]">
+                  <User size={18} />
+                </div>
+              )}
+
+              <span className="select-none text-sm font-semibold text-gray-700">
+                {username}
+              </span>
+            </NavLink>
           ) : (
-            /* Guest / Unauthenticated View */
             <>
               <Button href="/login" variant="outline" size="sm">
                 Login

@@ -1,15 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
 import { NavLink } from "react-router-dom";
 import {
-  FaBox,
+  FaCalendarAlt,
   FaChartPie,
   FaClipboardList,
+  FaCog,
   FaComments,
   FaHeart,
+  FaPaw,
   FaPlusCircle,
+  FaShoppingBag,
   FaShoppingCart,
   FaStore,
-  FaUserCircle,
   FaUser,
 } from "react-icons/fa";
 
@@ -20,19 +22,21 @@ import Logo from "@/shared/components/Logo/Logo";
 
 const links = [
   { label: "Dashboard", icon: FaChartPie, path: "/seller/dashboard" },
-  { label: "My Listings", icon: FaClipboardList, path: "/seller/listings" },
-  { label: "Add Product", icon: FaPlusCircle, path: "/seller/add-product" },
-  { label: "Orders", icon: FaShoppingCart, path: "/seller/orders" },
-  { label: "Messages", icon: FaComments, path: "/messages" },
-  { label: "Stock", icon: FaBox, path: "/seller/stock" },
-  { label: "Saved Listings", icon: FaHeart, path: "/seller/saved-listings" },
-  { label: "Marketplace", icon: FaStore, path: "/marketplace1" },
-  { label: "Profile", icon: FaUser, path: "/seller/profile" },
+  { label: "My Profile", icon: FaUser, path: "/pet-owner/profile" },
+  { label: "My Pets", icon: FaPaw, path: "/pet-owner/profile" },
   {
-    label: "Switch to Pet Owner",
-    icon: FaUserCircle,
-    path: "/pet-owner/dashboard",
+    label: "Appointments",
+    icon: FaCalendarAlt,
+    path: "/pet-owner/appointments",
   },
+  { label: "Marketplace", icon: FaStore, path: "/marketplace1" },
+  { label: "My Listings", icon: FaClipboardList, path: "/seller/listings" },
+  { label: "Add Listing", icon: FaPlusCircle, path: "/seller/add-product" },
+  { label: "Orders", icon: FaShoppingBag, path: "/seller/orders" },
+  { label: "Messages", icon: FaComments, path: "/messages" },
+  { label: "Saved Listings", icon: FaHeart, path: "/seller/saved-listings" },
+  { label: "Cart", icon: FaShoppingCart, path: "/cart" },
+  { label: "Settings", icon: FaCog, path: "/seller/settings" },
 ];
 
 const isConversationUnread = (

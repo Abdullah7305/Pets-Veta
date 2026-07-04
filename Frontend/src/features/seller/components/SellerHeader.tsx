@@ -1,11 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaBell, FaChevronDown, FaUser } from "react-icons/fa";
 
 import { useAuth } from "@/features/Auth/hooks/authhook";
 import Input from "@/shared/components/Input/Input";
-
-import { fetchMySellerProfileApi } from "../api/seller.api";
-import type { SellerProfile } from "../types/seller.types";
 
 const isValidImageUrl = (imageUrl?: string | null) => {
   if (!imageUrl) return false;
@@ -25,83 +23,46 @@ const getInitials = (name: string) => {
       .filter(Boolean)
       .slice(0, 2)
       .map((word) => word.charAt(0).toUpperCase())
-      .join("") || "S"
+      .join("") || "U"
   );
 };
 
 const SellerHeader = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
 
-  const [sellerProfile, setSellerProfile] = useState<SellerProfile | null>(
-    null
-  );
   const [imageFailed, setImageFailed] = useState(false);
 
-  useEffect(() => {
-    let ignore = false;
-
-    const loadSellerProfile = async () => {
-      try {
-        const response = await fetchMySellerProfileApi();
-
-        if (!ignore) {
-          setSellerProfile(response.data);
-        }
-      } catch (error) {
-        console.error("Failed to load seller profile:", error);
-      }
-    };
-
-    void loadSellerProfile();
-
-    return () => {
-      ignore = true;
-    };
-  }, []);
-
-  const sellerUser = sellerProfile?.user;
-
   const profileName = useMemo(() => {
-    return (
-      sellerUser?.username ||
-      user?.data?.username ||
-      sellerUser?.fullName ||
-      user?.data?.name ||
-      sellerProfile?.businessName ||
-      "Seller"
-    );
-  }, [sellerProfile?.businessName, sellerUser, user?.data]);
-
-  const welcomeName = useMemo(() => {
-    return sellerProfile?.businessName || profileName;
-  }, [profileName, sellerProfile?.businessName]);
+    return user?.data?.username || user?.data?.name || "User";
+  }, [user?.data?.name, user?.data?.username]);
 
   const profileImageUrl = useMemo(() => {
-    const sellerProfileImage = sellerUser?.profileImageUrl;
     const authProfileImage = user?.data?.profileImageUrl;
-
-    if (isValidImageUrl(sellerProfileImage)) {
-      return sellerProfileImage;
-    }
 
     if (isValidImageUrl(authProfileImage)) {
       return authProfileImage;
     }
 
     return "";
-  }, [sellerUser?.profileImageUrl, user?.data?.profileImageUrl]);
+  }, [user?.data?.profileImageUrl]);
 
   const showProfileImage = Boolean(profileImageUrl) && !imageFailed;
+
+  const handleProfileClick = () => {
+    navigate("/pet-owner/profile");
+  };
 
   return (
     <header className="flex items-center justify-between border-b border-gray-100 bg-white px-7 py-4">
       <div>
         <h1 className="text-lg font-semibold text-gray-900">
-          Welcome back, {welcomeName}
+          Welcome back, {profileName}
         </h1>
 
         <p className="text-sm text-gray-500">
-          Here's what's happening with your store today.
+          Manage your pets, listings, appointments, orders, and messages from one
+          dashboard.
         </p>
       </div>
 
@@ -117,7 +78,12 @@ const SellerHeader = () => {
           <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500" />
         </button>
 
-        <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={handleProfileClick}
+          className="flex items-center gap-3 rounded-xl px-2 py-1 transition hover:bg-gray-50"
+          aria-label="Open profile"
+        >
           {showProfileImage ? (
             <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full border border-[#178f95]/20 bg-[#178f95]/10">
               <img
@@ -135,15 +101,15 @@ const SellerHeader = () => {
             </div>
           )}
 
-          <div>
+          <div className="text-left">
             <p className="text-sm font-semibold text-gray-900">
               {profileName}
             </p>
-            <p className="text-xs text-gray-500">Seller</p>
+            <p className="text-xs text-gray-500">My Account</p>
           </div>
 
           <FaChevronDown className="text-xs text-gray-500" />
-        </div>
+        </button>
       </div>
     </header>
   );
