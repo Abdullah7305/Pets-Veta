@@ -23,7 +23,7 @@ import Logo from "@/shared/components/Logo/Logo";
 const links = [
   { label: "Dashboard", icon: FaChartPie, path: "/seller/dashboard" },
   { label: "My Profile", icon: FaUser, path: "/pet-owner/profile" },
-  { label: "My Pets", icon: FaPaw, path: "/pet-owner/profile" },
+  { label: "My Pets", icon: FaPaw, path: "/pet-owner/my-pets" },
   {
     label: "Appointments",
     icon: FaCalendarAlt,

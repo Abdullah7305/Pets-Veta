@@ -5,7 +5,11 @@ import EditPetPage from "./pages/EditPetPage";
 export const petProfileRoutes = [
   {
     path: "/pet-owner/profile",
-    element: <PetOwnerProfilePage />,
+    element: <PetOwnerProfilePage initialSection="profile" />,
+  },
+  {
+    path: "/pet-owner/my-pets",
+    element: <PetOwnerProfilePage initialSection="pets" />,
   },
   {
     path: "/pet-owner/pets/add",

@@ -1,149 +1,131 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  FaCheckCircle,
+  FaBookmark,
+  FaHeart,
   FaMapMarkerAlt,
-  FaPhoneAlt,
-  FaShoppingBag,
+  FaRegHeart,
+  FaShoppingCart,
   FaStore,
-  FaUsers,
-  FaPlusCircle,
-  FaPencilAlt,
 } from "react-icons/fa";
 
+import Button from "@/shared/components/Button/Button";
+import Card from "@/shared/components/Card/Card";
+import PageBackButton from "@/shared/components/BackButton/PageBackButton";
 import SellerHeader from "../components/SellerHeader";
 import SellerSidebar from "../components/SellerSidebar";
-import ProductCard from "../components/ProductCard";
-import EditSellerProfileModal from "../components/EditSellerProfileModal";
-import Card from "@/shared/components/Card/Card";
-import Button from "@/shared/components/Button/Button";
 
 import {
-  fetchMySellerProfileApi,
-  createOrUpdateSellerProfileApi,
-  deleteSellerProduct,
-} from "../api/seller.api";
-import type { SellerApiError, SellerProfile } from "../types/seller.types";
-import type { SellerProfileFormData } from "../schemas/sellerProfile.schema";
+  fetchSavedMarketplaceListings,
+  getProductImage,
+  getProductPrice,
+  getSellerName,
+  removeMarketplaceListing,
+  toDisplayCategory,
+  type MarketplaceProduct,
+} from "@/features/marketplace1/api/marketplace.api";
+import { addToCart } from "@/features/cart/utils/cartStorage";
 
-const SellerProfilePage = () => {
+type SavedListingItem = {
+  productId: string;
+  product: MarketplaceProduct;
+};
+
+type ApiError = {
+  response?: {
+    status?: number;
+    data?: {
+      message?: string;
+    };
+  };
+};
+
+const SellerSavedListingsPage = () => {
   const navigate = useNavigate();
 
-  const [profile, setProfile] = useState<SellerProfile | null>(null);
+  const [savedListings, setSavedListings] = useState<SavedListingItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [removingId, setRemovingId] = useState("");
   const [error, setError] = useState("");
-  const [profileError, setProfileError] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
+  const [cartMessage, setCartMessage] = useState("");
 
-  const loadSellerProfile = useCallback(async () => {
+  const loadSavedListings = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
-      const response = await fetchMySellerProfileApi();
-      if (response.success) {
-        setProfile(response.data);
-      }
+
+      const data = await fetchSavedMarketplaceListings();
+      setSavedListings(data);
     } catch (err) {
-      const apiError = err as SellerApiError;
-      console.error("Seller profile query failed:", err);
+      const apiError = err as ApiError;
+
       if (apiError.response?.status === 401) {
-        navigate("/login", { state: { redirectTo: "/seller/profile" } });
+        navigate("/login", {
+          state: { redirectTo: "/seller/saved-listings" },
+        });
         return;
       }
-      setError("Unable to load store profile details. Please try again.");
+
+      setError(
+        apiError.response?.data?.message ||
+        "Unable to load saved listings. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   }, [navigate]);
 
   useEffect(() => {
-    let ignore = false;
+    void loadSavedListings();
+  }, [loadSavedListings]);
 
-    const loadInitialSellerProfile = async () => {
-      try {
-        const response = await fetchMySellerProfileApi();
-        if (ignore) return;
-
-        if (response.success) {
-          setProfile(response.data);
-        }
-      } catch (err) {
-        if (ignore) return;
-
-        const apiError = err as SellerApiError;
-        console.error("Seller profile query failed:", err);
-        if (apiError.response?.status === 401) {
-          navigate("/login", { state: { redirectTo: "/seller/profile" } });
-          return;
-        }
-        setError("Unable to load store profile details. Please try again.");
-      } finally {
-        if (!ignore) {
-          setLoading(false);
-        }
-      }
-    };
-
-    void loadInitialSellerProfile();
-
-    return () => {
-      ignore = true;
-    };
-  }, [navigate]);
-
-  const handleProfileUpdate = async (data: SellerProfileFormData) => {
+  const handleRemoveSaved = async (productId: string) => {
     try {
-      setIsSaving(true);
-      setProfileError("");
+      setRemovingId(productId);
+      setError("");
+      setCartMessage("");
 
-      const formData = new FormData();
-      formData.append("businessName", data.businessName);
-      formData.append("phoneNumber", data.phoneNumber);
-      formData.append("city", data.city);
-      formData.append("businessAddress", data.businessAddress);
-      formData.append("storeDescription", data.storeDescription || "");
+      await removeMarketplaceListing(productId);
 
-      if (data.storeLogo instanceof File) {
-        formData.append("storeLogo", data.storeLogo);
-      }
-
-      const response = await createOrUpdateSellerProfileApi(formData);
-      if (response.success) {
-        setProfile(response.data);
-        setOpenModal(false);
-        // Refresh local dashboard bindings
-        await loadSellerProfile();
-      }
+      setSavedListings((currentListings) =>
+        currentListings.filter((item) => item.productId !== productId)
+      );
     } catch (err) {
-      const apiError = err as SellerApiError;
-      console.error("Store update failed:", err);
-      setProfileError(
-        apiError.response?.data?.message || "Failed to update your store identity."
+      const apiError = err as ApiError;
+      setError(
+        apiError.response?.data?.message ||
+        "Unable to remove this listing from saved."
       );
     } finally {
-      setIsSaving(false);
+      setRemovingId("");
     }
   };
 
-  const handleProductDelete = async (productId: string) => {
-    if (!window.confirm("Are you sure you want to delete this product?")) return;
-    try {
-      await deleteSellerProduct(productId);
-      // Remove deleted item from local state list
-      if (profile) {
-        setProfile({
-          ...profile,
-          products: profile.products?.filter((p) => p.id !== productId) || [],
-        });
-      }
-    } catch (err) {
-      console.error("Product deletion failed:", err);
-    }
-  };
+  const handleAddToCart = (product: MarketplaceProduct) => {
+    setError("");
+    setCartMessage("");
 
-  const fallbackLogo = "https://ui-avatars.com/api/?name=Seller+Store&background=E8F7F7&color=178f95";
-  const products = profile?.products || [];
+    if (product.status !== "ACTIVE" || product.stock <= 0) {
+      setError("This listing is not available right now.");
+      return;
+    }
+
+    const result = addToCart({
+      productId: product.id,
+      title: product.title,
+      price: getProductPrice(product),
+      image: getProductImage(product),
+      quantity: 1,
+      sellerId: product.sellerId,
+    });
+
+    if (!result.success) {
+      setError(result.message);
+      return;
+    }
+
+    setCartMessage(result.message);
+  };
 
   return (
     <div className="flex min-h-screen bg-[#f7fbfb] text-[#20263D]">
@@ -152,181 +134,182 @@ const SellerProfilePage = () => {
       <main className="flex-1">
         <SellerHeader />
 
-        <section className="p-7 max-w-[1600px] mx-auto">
-          {loading && !profile && (
-            <div className="flex justify-center items-center py-20 bg-white rounded-3xl shadow-sm border border-slate-100">
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#178f95] border-t-transparent" />
+        <section className="mx-auto max-w-[1600px] p-7">
+          <div className="mb-5">
+            <PageBackButton fallbackPath="/seller/dashboard" />
+          </div>
+
+          <div className="mb-7 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#178f95]">
+                Marketplace Wishlist
+              </p>
+
+              <h1 className="mt-2 text-3xl font-extrabold text-gray-900">
+                Saved Listings
+              </h1>
+
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-500">
+                These are the pets and products you saved from the marketplace
+                for later. Saved listings are not your own sale listings.
+              </p>
             </div>
-          )}
+
+            <Button onClick={() => navigate("/marketplace1")}>
+              Explore Marketplace
+            </Button>
+          </div>
 
           {error && (
-            <Card className="p-6 text-sm font-semibold text-red-600 bg-red-50 border border-red-100">
+            <p className="mb-5 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">
               {error}
+            </p>
+          )}
+
+          {cartMessage && (
+            <p className="mb-5 rounded-xl border border-green-100 bg-green-50 px-4 py-3 text-sm font-semibold text-green-700">
+              {cartMessage}
+            </p>
+          )}
+
+          {loading && (
+            <Card className="flex min-h-[260px] items-center justify-center">
+              <div className="h-9 w-9 animate-spin rounded-full border-2 border-[#178f95] border-t-transparent" />
             </Card>
           )}
 
-          {!loading && profile && (
-            <div className="space-y-6">
-              {/* Brand Header Identity Card */}
-              <Card className="relative overflow-hidden p-6 sm:p-8">
-                <div className="absolute right-0 top-0 h-32 w-32 bg-[#178f95]/5 rounded-bl-full" />
-
-                <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
-                  <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-full border-4 border-slate-50 bg-slate-50 shadow-md">
-                    <img
-                      src={profile.storeLogo || fallbackLogo}
-                      alt={profile.businessName || "Store storefront logo"}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-3">
-                      <h1 className="text-3xl font-extrabold text-gray-900 leading-tight">
-                        {profile.businessName || "Your Storefront"}
-                      </h1>
-
-                      <span className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-bold ${profile.isVerified
-                          ? "bg-green-50 text-green-700 border border-green-100"
-                          : "bg-amber-50 text-orange-600 border border-amber-100"
-                        }`}>
-                        <FaCheckCircle />
-                        {profile.isVerified ? "Verified Shop" : "Pending Verification"}
-                      </span>
-                    </div>
-
-                    <p className="mt-2 text-sm text-gray-500 font-medium">
-                      Store Username: @{profile.user?.username || "seller"}
-                    </p>
-
-                    <p className="mt-4 text-sm leading-6 text-gray-600 max-w-3xl">
-                      {profile.storeDescription || "No store description configured yet. Setup store profile details to build trust."}
-                    </p>
-
-                    <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-xs font-bold text-gray-500">
-                      <span className="flex items-center gap-2">
-                        <FaStore className="text-[#178f95] text-sm" />
-                        {profile.businessAddress || "Address unconfigured"}
-                      </span>
-                      <span className="flex items-center gap-2">
-                        <FaMapMarkerAlt className="text-[#178f95] text-sm" />
-                        {profile.city || "Pakistan"}
-                      </span>
-                      <span className="flex items-center gap-2">
-                        <FaPhoneAlt className="text-[#178f95] text-sm" />
-                        {profile.phoneNumber || "No contact digits"}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="shrink-0 pt-4 sm:pt-0">
-                    <Button
-                      variant="outline"
-                      className="flex h-11 w-full sm:w-auto items-center justify-center gap-2 border-slate-200 px-5 text-slate-700 hover:border-[#178f95] hover:text-[#178f95]"
-                      onClick={() => setOpenModal(true)}
-                    >
-                      <FaPencilAlt size={14} />
-                      Edit Brand Profile
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-
-              {/* Performance Metrics Cards */}
-              <div className="grid gap-5 grid-cols-1 sm:grid-cols-3">
-                <Card className="p-5 flex items-center gap-4">
-                  <div className="h-14 w-14 shrink-0 rounded-2xl bg-[#E8F7F7] text-[#178f95] flex items-center justify-center text-xl">
-                    <FaShoppingBag />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Total Products</p>
-                    <h3 className="mt-1 text-2xl font-black text-gray-900">{products.length}</h3>
-                  </div>
-                </Card>
-
-                <Card className="p-5 flex items-center gap-4">
-                  <div className="h-14 w-14 shrink-0 rounded-2xl bg-amber-50 text-orange-500 flex items-center justify-center text-xl">
-                    <FaStore />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Low Stock Listings</p>
-                    <h3 className="mt-1 text-2xl font-black text-orange-600">
-                      {products.filter((p) => p.stock > 0 && p.stock <= 3).length}
-                    </h3>
-                  </div>
-                </Card>
-
-                <Card className="p-5 flex items-center gap-4">
-                  <div className="h-14 w-14 shrink-0 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center text-xl">
-                    <FaUsers />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Account Type</p>
-                    <h3 className="mt-1 text-2xl font-black text-green-700">Verified Seller</h3>
-                  </div>
-                </Card>
+          {!loading && savedListings.length === 0 && (
+            <Card className="flex min-h-[360px] flex-col items-center justify-center text-center">
+              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#178f95]/10 text-3xl text-[#178f95]">
+                <FaRegHeart />
               </div>
 
-              {/* My Products Section Grid */}
-              <div className="space-y-4">
-                <div>
-                  <h2 className="text-xl font-extrabold text-gray-900">My Listings ({products.length})</h2>
-                  <p className="text-xs font-semibold text-gray-400 mt-1">Manage, update, or preview your dynamic product catalogs.</p>
-                </div>
+              <h2 className="mt-5 text-2xl font-bold text-gray-900">
+                No saved listings yet
+              </h2>
 
-                <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                  {/* Create New Shortcut Card */}
-                  <Card className="flex min-h-[300px] flex-col items-center justify-center border-dashed border-gray-300 text-center">
-                    <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gray-50 text-gray-600 shadow-xs">
-                      <FaPlusCircle className="text-2xl text-[#178f95]" />
+              <p className="mt-2 max-w-md text-sm leading-6 text-gray-500">
+                Browse the marketplace and click save on any pet or product you
+                want to revisit later.
+              </p>
+
+              <Button className="mt-6" onClick={() => navigate("/marketplace1")}>
+                Browse Marketplace
+              </Button>
+            </Card>
+          )}
+
+          {!loading && savedListings.length > 0 && (
+            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+              {savedListings.map(({ productId, product }) => {
+                const image = getProductImage(product);
+                const price = getProductPrice(product);
+                const sellerName = getSellerName(product);
+                const isUnavailable =
+                  product.status !== "ACTIVE" || product.stock <= 0;
+
+                return (
+                  <Card key={productId} className="overflow-hidden p-0">
+                    <div className="relative h-48 bg-gray-50">
+                      <img
+                        src={image}
+                        alt={product.title}
+                        className="h-full w-full object-cover"
+                      />
+
+                      <span className="absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-[#178f95] shadow-sm">
+                        {toDisplayCategory(product.category)}
+                      </span>
+
+                      <button
+                        type="button"
+                        onClick={() => void handleRemoveSaved(productId)}
+                        disabled={removingId === productId}
+                        className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white text-red-500 shadow-sm transition hover:bg-red-50 disabled:opacity-60"
+                        aria-label="Remove saved listing"
+                      >
+                        <FaHeart />
+                      </button>
+
+                      {isUnavailable && (
+                        <span className="absolute bottom-3 left-3 rounded-full bg-red-600 px-3 py-1 text-xs font-bold text-white">
+                          Not Available
+                        </span>
+                      )}
                     </div>
 
-                    <h3 className="text-base font-bold text-gray-900">Add New Product</h3>
-                    <p className="mt-2 max-w-[200px] text-xs font-semibold text-gray-400 leading-5">
-                      Create and post a new pet listing to the live marketplace catalog.
-                    </p>
+                    <div className="p-5">
+                      <div className="min-h-[52px]">
+                        <h3 className="line-clamp-2 text-base font-bold text-gray-900">
+                          {product.title}
+                        </h3>
 
-                    <Button
-                      className="mt-6 !bg-[#178f95] !border-[#178f95] !text-white hover:!bg-[#12757a]"
-                      size="sm"
-                      onClick={() => navigate("/seller/add-product")}
-                    >
-                      Create Listing
-                    </Button>
+                        <p className="mt-1 text-sm font-semibold text-[#178f95]">
+                          PKR {price.toLocaleString()}
+                        </p>
+                      </div>
+
+                      <div className="mt-4 space-y-2 text-xs font-medium text-gray-500">
+                        <p className="flex items-center gap-2">
+                          <FaStore className="text-[#178f95]" />
+                          {sellerName}
+                        </p>
+
+                        <p className="flex items-center gap-2">
+                          <FaMapMarkerAlt className="text-[#178f95]" />
+                          {product.location ||
+                            product.seller?.city ||
+                            "Location not added"}
+                        </p>
+
+                        <p className="flex items-center gap-2">
+                          <FaBookmark className="text-[#178f95]" />
+                          Stock: {product.stock}
+                        </p>
+                      </div>
+
+                      <div className="mt-5 grid grid-cols-2 gap-3">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            navigate(`/marketplace/product/${product.id}`)
+                          }
+                        >
+                          View
+                        </Button>
+
+                        <Button
+                          size="sm"
+                          disabled={isUnavailable}
+                          onClick={() => handleAddToCart(product)}
+                          className="gap-2"
+                        >
+                          <FaShoppingCart />
+                          Cart
+                        </Button>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => void handleRemoveSaved(productId)}
+                        disabled={removingId === productId}
+                        className="mt-4 w-full text-center text-xs font-bold text-red-500 transition hover:text-red-600 disabled:opacity-60"
+                      >
+                        {removingId === productId
+                          ? "Removing..."
+                          : "Remove from saved"}
+                      </button>
+                    </div>
                   </Card>
-
-                  {/* Render products */}
-                  {products.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      onEdit={() => navigate(`/seller/edit-product/${product.id}`)}
-                      onDelete={() => void handleProductDelete(product.id)}
-                      onView={() => navigate(`/marketplace/product/${product.id}`)}
-                    />
-                  ))}
-                </div>
-              </div>
+                );
+              })}
             </div>
           )}
         </section>
       </main>
-
-      {/* Edit Modal popup */}
-      {openModal && profile && (
-        <EditSellerProfileModal
-          profile={profile}
-          isSaving={isSaving}
-          error={profileError}
-          onCancel={() => {
-            setOpenModal(false);
-            setProfileError("");
-          }}
-          onSubmit={handleProfileUpdate}
-        />
-      )}
     </div>
   );
 };
 
-export default SellerProfilePage;
+export default SellerSavedListingsPage;
