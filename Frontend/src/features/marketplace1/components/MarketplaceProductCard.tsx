@@ -1,17 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
+  FaEdit,
   FaHeart,
-  FaRegHeart,
   FaMapMarkerAlt,
+  FaRegHeart,
   FaStar,
   FaStore,
-  FaEdit, // 💡 Added
 } from "react-icons/fa";
+
 import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
 import { addToCart } from "@/features/cart/utils/cartStorage";
-import { useAuth } from "@/features/Auth/hooks/authhook"; // 💡 Added
+import { useAuth } from "@/features/Auth/hooks/authhook";
 import {
   getProductImage,
   getProductPrice,
@@ -27,7 +28,8 @@ const MarketplaceProductCard = ({
   onDetails,
 }: MarketplaceProductCardProps) => {
   const navigate = useNavigate();
-  const { user } = useAuth(); // 💡 Added: Resolve authenticated user session
+  const { user } = useAuth();
+
   const [cartError, setCartError] = useState("");
 
   const image = getProductImage(product);
@@ -35,11 +37,17 @@ const MarketplaceProductCard = ({
   const seller = getSellerName(product);
 
   const isPet = product.category === "PETS";
-
-  // 💡 Added: Check if the logged-in user owns this listed product
   const isOwnListing = user?.data?.id === product.seller?.user?.id;
+  const isUnavailable = product.status !== "ACTIVE" || product.stock <= 0;
 
   const handleAddToCart = () => {
+    setCartError("");
+
+    if (isUnavailable) {
+      setCartError("This listing is not available right now.");
+      return;
+    }
+
     const result = addToCart({
       productId: product.id,
       title: product.title,
@@ -58,6 +66,13 @@ const MarketplaceProductCard = ({
   };
 
   const handleDirectBuy = () => {
+    setCartError("");
+
+    if (isUnavailable) {
+      setCartError("This listing is not available right now.");
+      return;
+    }
+
     localStorage.removeItem("pets-veta-direct-buy");
 
     const directBuyItem = {
@@ -93,12 +108,18 @@ const MarketplaceProductCard = ({
           {toDisplayCategory(product.category)}
         </span>
 
-        {/* Hide save button if it's the seller's own listing */}
+        {isUnavailable && (
+          <span className="absolute bottom-3 left-3 rounded-md bg-red-600 px-3 py-1 text-xs font-bold text-white">
+            Sold Out
+          </span>
+        )}
+
         {!isOwnListing && (
           <button
             type="button"
             onClick={onSave}
-            className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#07182c] shadow-sm"
+            className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#07182c] shadow-sm transition hover:text-red-500"
+            aria-label={saved ? "Remove saved listing" : "Save listing"}
           >
             {saved ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
           </button>
@@ -106,42 +127,55 @@ const MarketplaceProductCard = ({
       </div>
 
       <div className="p-4">
-        <h3 className="text-base font-bold text-[#07182c]">{product.title}</h3>
+        <h3 className="line-clamp-2 min-h-[48px] text-base font-bold text-[#07182c]">
+          {product.title}
+        </h3>
 
         <p className="mt-2 flex items-center gap-2 text-sm text-gray-500">
-          <FaStore className="text-[#178f95]" />
-          {seller} {isOwnListing && <span className="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-sm ml-1">Your Listing</span>}
+          <FaStore className="shrink-0 text-[#178f95]" />
+          <span className="truncate">{seller}</span>
+
+          {isOwnListing && (
+            <span className="ml-1 shrink-0 rounded-sm bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-400">
+              Your Listing
+            </span>
+          )}
         </p>
 
-        <div className="mt-3 flex items-center justify-between">
+        <div className="mt-3 flex items-center justify-between gap-3">
           <p className="text-lg font-bold text-[#178f95]">
             PKR {price.toLocaleString()}
           </p>
 
-          <div className="flex items-center gap-3 text-sm">
+          <div className="flex min-w-0 items-center gap-3 text-sm">
             <span className="flex items-center gap-1 text-gray-700">
               <FaStar className="text-yellow-400" />
               New
             </span>
 
-            <span className="flex items-center gap-1 text-gray-500">
-              <FaMapMarkerAlt />
-              {product.location || "Pakistan"}
+            <span className="flex min-w-0 items-center gap-1 text-gray-500">
+              <FaMapMarkerAlt className="shrink-0" />
+              <span className="truncate">
+                {product.location || product.seller?.city || "Pakistan"}
+              </span>
             </span>
           </div>
         </div>
+
+        <p className="mt-2 text-xs font-semibold text-gray-500">
+          Stock: {product.stock}
+        </p>
 
         <div className="mt-4 grid grid-cols-2 gap-3">
           <Button variant="outline" size="sm" onClick={onDetails}>
             Details
           </Button>
 
-          {/* 💡 Updated: If it's their own listing, show a manage shortcut. Otherwise, show transactional buttons */}
           {isOwnListing ? (
             <Button
               size="sm"
               onClick={() => navigate(`/seller/edit-product/${product.id}`)}
-              className="bg-gray-100 border border-slate-200 text-slate-700 hover:bg-slate-200 flex items-center justify-center gap-1"
+              className="gap-1 border-slate-200 bg-gray-100 text-slate-700 hover:bg-slate-200"
             >
               <FaEdit size={12} />
               Edit
@@ -150,6 +184,7 @@ const MarketplaceProductCard = ({
             <Button
               size="sm"
               onClick={handleDirectBuy}
+              disabled={isUnavailable}
               className="bg-[#178f95] text-white hover:bg-[#12757a]"
             >
               Buy Now
@@ -158,6 +193,7 @@ const MarketplaceProductCard = ({
             <Button
               size="sm"
               onClick={handleAddToCart}
+              disabled={isUnavailable}
               className="bg-[#F9C5A8] text-[#c94d00] hover:bg-[#f7b58f]"
             >
               Add to Cart

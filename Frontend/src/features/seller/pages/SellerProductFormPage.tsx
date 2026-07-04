@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useWatch } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
+
 import Button from "@/shared/components/Button/Button";
 import Input from "@/shared/components/Input/Input";
 import Card from "@/shared/components/Card/Card";
@@ -10,6 +11,7 @@ import SellerHeader from "../components/SellerHeader";
 import SellerSidebar from "../components/SellerSidebar";
 import ProductImageUpload from "../components/ProductImageUpload";
 import ProductPreviewCard from "../components/ProductPreviewCard";
+
 import {
   toBackendCategory,
   toDisplayCategory,
@@ -58,11 +60,13 @@ const productFormDefaultValues: SellerProductFormData = {
 const SellerProductFormPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [previews, setPreviews] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -73,8 +77,8 @@ const SellerProductFormPage = () => {
     resolver: zodResolver(sellerProductSchema),
     defaultValues: productFormDefaultValues,
   });
-  const form = useWatch({ control });
 
+  const form = useWatch({ control });
   const isEditMode = Boolean(id);
 
   useEffect(() => {
@@ -88,32 +92,39 @@ const SellerProductFormPage = () => {
         const product = products.find((item) => item.id === id);
 
         if (!product) {
-          setError("Product not found.");
+          setError("Listing not found.");
           return;
         }
 
         if (!ignore) {
           reset({
             title: product.title,
-            category: toDisplayCategory(product.category) as SellerProductFormData["category"],
+            category: toDisplayCategory(
+              product.category
+            ) as SellerProductFormData["category"],
             price: String(product.price),
             stock: String(product.stock),
             location: product.location || "",
             description: product.description || "",
-            status: toDisplayStatus(product.status) as SellerProductFormData["status"],
+            status: toDisplayStatus(
+              product.status
+            ) as SellerProductFormData["status"],
           });
+
           setPreviews(product.images?.map((image) => image.publicUrl) || []);
         }
       } catch (err) {
         const apiError = err as SellerApiError;
 
         if (apiError.response?.status === 401) {
-          navigate("/login", { state: { redirectTo: `/seller/edit-product/${id}` } });
+          navigate("/login", {
+            state: { redirectTo: `/seller/edit-product/${id}` },
+          });
           return;
         }
 
         if (!ignore) {
-          setError("Unable to load the product for editing. Please try again.");
+          setError("Unable to load the listing for editing. Please try again.");
         }
       }
     };
@@ -132,6 +143,7 @@ const SellerProductFormPage = () => {
       setMessage("");
 
       const payload = new FormData();
+
       payload.append("title", data.title);
       payload.append("description", data.description || "");
       payload.append("category", toBackendCategory(data.category));
@@ -150,7 +162,12 @@ const SellerProductFormPage = () => {
         await createSellerProduct(payload);
       }
 
-      setMessage(isEditMode ? "Product updated successfully." : "Product saved successfully.");
+      setMessage(
+        isEditMode
+          ? "Listing updated successfully."
+          : "Listing saved successfully."
+      );
+
       navigate("/seller/listings");
     } catch (err) {
       const apiError = err as SellerApiError;
@@ -160,7 +177,10 @@ const SellerProductFormPage = () => {
         return;
       }
 
-      setError(apiError.response?.data?.message || "Unable to save the product. Please try again.");
+      setError(
+        apiError.response?.data?.message ||
+        "Unable to save the listing. Please try again."
+      );
     } finally {
       setSaving(false);
     }
@@ -179,18 +199,23 @@ const SellerProductFormPage = () => {
           </div>
 
           <div className="mb-5">
-            <h1 className="text-2xl font-semibold text-gray-900">
-              {isEditMode ? "Edit Product Listing" : "Add Product Listing"}
+            <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#178f95]">
+              Marketplace Listing
+            </p>
+
+            <h1 className="mt-2 text-2xl font-semibold text-gray-900">
+              {isEditMode ? "Edit Listing" : "Add Listing"}
             </h1>
+
             <p className="mt-1 text-sm text-gray-500">
-              Dashboard / Add / Edit Product
+              Add pets, food, medicine, or accessories to the marketplace.
             </p>
           </div>
 
           <div className="grid gap-5 xl:grid-cols-[1fr_360px]">
             <Card>
               <h2 className="mb-5 text-lg font-semibold text-gray-900">
-                Product Information
+                Listing Information
               </h2>
 
               {message && (
@@ -206,101 +231,127 @@ const SellerProductFormPage = () => {
               )}
 
               <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="grid gap-4 md:grid-cols-2">
-                <Input
-                  label="Product Title"
-                  error={errors.title?.message}
-                  {...register("title")}
-                />
-
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-700">
-                    Category
-                  </label>
-                  <select
-                    {...register("category")}
-                    className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-[#178f95]"
-                  >
-                    <option>Food</option>
-                    <option>Pets</option>
-                    <option>Accessories</option>
-                  </select>
-                </div>
-
-                <Input
-                  label="Price (PKR)"
-                  type="number"
-                  min="1"
-                  error={errors.price?.message}
-                  {...register("price")}
-                />
-
-                <Input
-                  label="Stock Quantity"
-                  type="number"
-                  min="0"
-                  error={errors.stock?.message}
-                  {...register("stock")}
-                />
-
-                <div className="md:col-span-2">
+                <div className="grid gap-4 md:grid-cols-2">
                   <Input
-                    label="Location"
-                    error={errors.location?.message}
-                    {...register("location")}
+                    label="Listing Title"
+                    error={errors.title?.message}
+                    {...register("title")}
                   />
-                </div>
 
-                <div className="md:col-span-2">
-                  <label className="mb-2 block text-sm font-medium text-gray-700">
-                    Description
-                  </label>
-                  <textarea
-                    rows={4}
-                    {...register("description")}
-                    className="w-full resize-none rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#178f95]"
-                  />
-                  {errors.description && (
-                    <p className="mt-1 text-sm text-red-500">
-                      {errors.description.message}
-                    </p>
-                  )}
-                </div>
-
-                <ProductImageUpload
-                  previews={previews}
-                  onImageChange={(files) => {
-                    setImageFiles(files);
-                    setPreviews(files.map((file) => URL.createObjectURL(file)));
-                  }}
-                />
-
-                <div className="grid content-start gap-4">
                   <div>
                     <label className="mb-2 block text-sm font-medium text-gray-700">
-                      Status
+                      Category
                     </label>
+
                     <select
-                      {...register("status")}
+                      {...register("category")}
                       className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-[#178f95]"
                     >
-                      <option>Active</option>
-                      <option>Draft</option>
-                      <option>Sold Out</option>
+                      <option>Food</option>
+                      <option>Pets</option>
+                      <option>Medicine</option>
+                      <option>Accessories</option>
                     </select>
+
+                    {errors.category && (
+                      <p className="mt-1 text-sm text-red-500">
+                        {errors.category.message}
+                      </p>
+                    )}
                   </div>
 
-                </div>
-              </div>
+                  <Input
+                    label="Price (PKR)"
+                    type="number"
+                    min="1"
+                    error={errors.price?.message}
+                    {...register("price")}
+                  />
 
-              <div className="mt-6 flex justify-end gap-3">
-                <Button variant="outline" onClick={() => navigate("/seller/listings")}>
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={saving}>
-                  {saving ? "Saving..." : "Save Product"}
-                </Button>
-              </div>
+                  <Input
+                    label="Stock Quantity"
+                    type="number"
+                    min="0"
+                    error={errors.stock?.message}
+                    {...register("stock")}
+                  />
+
+                  <div className="md:col-span-2">
+                    <Input
+                      label="Location"
+                      error={errors.location?.message}
+                      {...register("location")}
+                    />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Description
+                    </label>
+
+                    <textarea
+                      rows={4}
+                      {...register("description")}
+                      className="w-full resize-none rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#178f95]"
+                    />
+
+                    {errors.description && (
+                      <p className="mt-1 text-sm text-red-500">
+                        {errors.description.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <ProductImageUpload
+                    previews={previews}
+                    onImageChange={(files) => {
+                      setImageFiles(files);
+                      setPreviews(
+                        files.map((file) => URL.createObjectURL(file))
+                      );
+                    }}
+                  />
+
+                  <div className="grid content-start gap-4">
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                        Status
+                      </label>
+
+                      <select
+                        {...register("status")}
+                        className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-[#178f95]"
+                      >
+                        <option>Active</option>
+                        <option>Draft</option>
+                        <option>Sold Out</option>
+                      </select>
+
+                      {errors.status && (
+                        <p className="mt-1 text-sm text-red-500">
+                          {errors.status.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 flex justify-end gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => navigate("/seller/listings")}
+                  >
+                    Cancel
+                  </Button>
+
+                  <Button type="submit" disabled={saving}>
+                    {saving
+                      ? "Saving..."
+                      : isEditMode
+                        ? "Update Listing"
+                        : "Save Listing"}
+                  </Button>
+                </div>
               </form>
             </Card>
 
