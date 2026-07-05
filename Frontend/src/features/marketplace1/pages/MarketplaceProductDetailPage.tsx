@@ -174,6 +174,8 @@ const MarketplaceProductDetailPage = () => {
     if (!product) return;
 
     setCartError("");
+    setSaveMessage("");
+    setMessageError("");
 
     if (product.status !== "ACTIVE" || product.stock <= 0) {
       setCartError("This listing is not available right now.");
@@ -197,35 +199,14 @@ const MarketplaceProductDetailPage = () => {
     navigate("/cart");
   };
 
-  const handleDirectBuy = () => {
-    if (!product) return;
-
-    setCartError("");
-
-    if (product.status !== "ACTIVE" || product.stock <= 0) {
-      setCartError("This listing is not available right now.");
-      return;
-    }
-
-    localStorage.removeItem("pets-veta-direct-buy");
-
-    const directBuyItem = {
-      productId: product.id,
-      title: product.title,
-      price: getProductPrice(product),
-      image: productImages[0] || getProductImage(product),
-      quantity: 1,
-      sellerId: product.sellerId,
-    };
-
-    localStorage.setItem("pets-veta-direct-buy", JSON.stringify(directBuyItem));
-    navigate("/checkout");
-  };
-
   const handleSave = async () => {
     if (!product) return;
 
     try {
+      setCartError("");
+      setSaveMessage("");
+      setMessageError("");
+
       await saveMarketplaceListing(product.id);
       setSaveMessage("Listing saved.");
     } catch {
@@ -241,6 +222,8 @@ const MarketplaceProductDetailPage = () => {
     const currentUserId = user?.data?.id;
     const sellerUserId = product.seller?.user?.id;
 
+    setCartError("");
+    setSaveMessage("");
     setMessageError("");
 
     if (!currentUserId) {
@@ -282,29 +265,33 @@ const MarketplaceProductDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="mt-20 min-h-screen bg-[#f7fbfb] p-10">
-        <div className="mb-5">
+      <main className="min-h-screen bg-[#f7fbfb] px-5 pb-8 pt-28 lg:px-12">
+        <div className="mb-6">
           <BackToMarketplaceButton onClick={handleBack} />
         </div>
 
-        <h1 className="text-2xl font-semibold text-gray-900">
-          Loading listing...
-        </h1>
-      </div>
+        <Card>
+          <h1 className="text-2xl font-semibold text-gray-900">
+            Loading listing...
+          </h1>
+        </Card>
+      </main>
     );
   }
 
   if (!product || error) {
     return (
-      <div className="mt-20 min-h-screen bg-[#f7fbfb] p-10">
-        <div className="mb-5">
+      <main className="min-h-screen bg-[#f7fbfb] px-5 pb-8 pt-28 lg:px-12">
+        <div className="mb-6">
           <BackToMarketplaceButton onClick={handleBack} />
         </div>
 
-        <h1 className="text-2xl font-semibold text-gray-900">
-          {error || "Listing not found"}
-        </h1>
-      </div>
+        <Card>
+          <h1 className="text-2xl font-semibold text-gray-900">
+            {error || "Listing not found"}
+          </h1>
+        </Card>
+      </main>
     );
   }
 
@@ -319,20 +306,25 @@ const MarketplaceProductDetailPage = () => {
   const price = getProductPrice(product);
   const seller = getSellerName(product);
   const displayCategory = toDisplayCategory(product.category);
-  const isPet = product.category === "PETS";
   const isOwnListing = user?.data?.id === product.seller?.user?.id;
   const isUnavailable = product.status !== "ACTIVE" || product.stock <= 0;
   const hasMultipleImages = productImages.length > 1;
 
   return (
-    <main className="min-h-screen bg-[#f7fbfb] px-5 py-8 lg:px-12">
-      <div className="mb-5">
-        <BackToMarketplaceButton onClick={handleBack} />
-      </div>
+    <main className="min-h-screen bg-[#f7fbfb] px-5 pb-8 pt-28 lg:px-12">
+      <div className="mb-6 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <BackToMarketplaceButton onClick={handleBack} />
 
-      <p className="mb-5 text-sm text-gray-500">
-        Marketplace / {displayCategory} / {product.title}
-      </p>
+          <p className="mt-4 text-sm text-gray-500">
+            Marketplace / {displayCategory} / {product.title}
+          </p>
+        </div>
+
+        <Button variant="outline" onClick={() => navigate("/marketplace1")}>
+          View Marketplace
+        </Button>
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_430px]">
         <Card className="overflow-hidden p-0">
@@ -474,17 +466,9 @@ const MarketplaceProductDetailPage = () => {
               >
                 Edit Listing
               </Button>
-            ) : isPet ? (
-              <Button
-                className="gap-2 !border-[#178f95] !bg-[#178f95] !text-white hover:!bg-[#12757a]"
-                onClick={handleDirectBuy}
-                disabled={isUnavailable}
-              >
-                Buy Now
-              </Button>
             ) : (
               <Button
-                className="gap-2"
+                className="gap-2 !border-[#178f95] !bg-[#178f95] !text-white hover:!bg-[#12757a]"
                 onClick={handleAddToCart}
                 disabled={isUnavailable}
               >
@@ -549,10 +533,10 @@ const BackToMarketplaceButton = ({ onClick }: { onClick: () => void }) => {
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-[#178f95] shadow-sm hover:bg-[#eefafa]"
+      className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-[#07182c] shadow-sm transition hover:border-[#178f95] hover:text-[#178f95]"
     >
       <FaArrowLeft />
-      Back to Marketplace
+      Back
     </button>
   );
 };

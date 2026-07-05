@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { FaBoxOpen, FaEye, FaPen, FaTrashAlt } from "react-icons/fa";
+import {
+  FaBoxOpen,
+  FaEdit,
+  FaEye,
+  FaTrashAlt,
+} from "react-icons/fa";
 
 import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
@@ -8,13 +13,17 @@ import {
   getProductPrice,
   toDisplayCategory,
 } from "@/features/marketplace1/api/marketplace.api";
+
 import type { ProductCardProps } from "../types/seller.types";
 
-const statusClass: Record<string, string> = {
+const statusClasses: Record<string, string> = {
   ACTIVE: "bg-green-100 text-green-700",
-  SOLD_OUT: "bg-red-100 text-red-700",
   DRAFT: "bg-gray-100 text-gray-600",
-  ARCHIVED: "bg-gray-100 text-gray-600",
+  SOLD_OUT: "bg-red-100 text-red-700",
+};
+
+const formatStatus = (status: string) => {
+  return status.replace(/_/g, " ");
 };
 
 const ProductCard = ({
@@ -26,142 +35,131 @@ const ProductCard = ({
   onStockChange,
   onMarkSoldOut,
 }: ProductCardProps) => {
+  const [stockValue, setStockValue] = useState(String(product.stock));
+  const [stockError, setStockError] = useState("");
+
   const image = getProductImage(product);
   const price = getProductPrice(product);
-
-  const [stockValue, setStockValue] = useState(String(product.stock ?? 0));
+  const displayCategory = toDisplayCategory(product.category);
 
   useEffect(() => {
-    setStockValue(String(product.stock ?? 0));
+    setStockValue(String(product.stock));
   }, [product.stock]);
 
-  const parsedStock = Number(stockValue);
-  const isInvalidStock =
-    stockValue.trim() === "" || Number.isNaN(parsedStock) || parsedStock < 0;
-
-  const isSoldOut = product.status === "SOLD_OUT" || product.stock <= 0;
-
   const handleStockUpdate = () => {
-    if (isInvalidStock) return;
+    const parsedStock = Number(stockValue);
 
-    onStockChange(product.id, Math.floor(parsedStock));
+    if (Number.isNaN(parsedStock) || parsedStock < 0) {
+      setStockError("Please enter a valid stock value.");
+      return;
+    }
+
+    setStockError("");
+    onStockChange(product.id, parsedStock);
   };
 
   return (
     <Card className="overflow-hidden p-0">
-      <div className="relative h-44 bg-gray-50">
+      <div className="relative flex h-64 w-full items-center justify-center bg-[#f8fbfb] p-4">
         <img
           src={image}
           alt={product.title}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-contain"
         />
 
         <span
-          className={`absolute right-3 top-3 rounded-full px-3 py-1 text-xs font-medium ${statusClass[product.status] || "bg-gray-100 text-gray-600"
+          className={`absolute right-4 top-4 rounded-full px-4 py-1 text-xs font-bold ${statusClasses[product.status] || "bg-gray-100 text-gray-600"
             }`}
         >
-          {product.status.replace("_", " ")}
+          {formatStatus(product.status)}
         </span>
       </div>
 
-      <div className="p-4">
-        <div className="min-h-[58px]">
-          <h3 className="line-clamp-2 text-sm font-semibold text-gray-900">
-            {product.title}
-          </h3>
+      <div className="p-5">
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <h3 className="line-clamp-1 text-lg font-bold text-[#07182c]">
+              {product.title}
+            </h3>
 
-          <p className="mt-1 text-xs text-gray-500">
-            {toDisplayCategory(product.category)}
-          </p>
+            <p className="mt-1 text-sm text-gray-500">{displayCategory}</p>
+          </div>
         </div>
 
-        <div className="mt-3 flex items-center justify-between gap-3">
-          <p className="text-sm font-semibold text-gray-900">
+        <div className="mt-6 flex items-center justify-between gap-4">
+          <p className="text-lg font-extrabold text-[#07182c]">
             PKR {price.toLocaleString()}
           </p>
 
-          <p
-            className={`rounded-full px-2.5 py-1 text-xs font-semibold ${isSoldOut
-                ? "bg-red-50 text-red-600"
-                : "bg-[#178f95]/10 text-[#178f95]"
-              }`}
-          >
+          <span className="rounded-full bg-[#178f95]/10 px-4 py-1 text-sm font-bold text-[#178f95]">
             Stock: {product.stock}
-          </p>
+          </span>
         </div>
 
-        <div className="mt-4 rounded-xl border border-gray-100 bg-gray-50 p-3">
-          <label
-            htmlFor={`stock-${product.id}`}
-            className="mb-2 block text-xs font-semibold text-gray-600"
-          >
+        <div className="mt-6 rounded-2xl border border-gray-100 bg-gray-50 p-4">
+          <p className="mb-3 text-sm font-semibold text-gray-700">
             Manage Stock
-          </label>
+          </p>
 
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <input
-              id={`stock-${product.id}`}
               type="number"
-              min={0}
+              min="0"
               value={stockValue}
               onChange={(event) => setStockValue(event.target.value)}
-              className="min-w-0 flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 outline-none transition focus:border-[#178f95]"
-              placeholder="Stock"
+              className="h-12 min-w-0 flex-1 rounded-xl border border-gray-200 bg-white px-4 text-sm font-semibold text-gray-800 outline-none transition focus:border-[#178f95] focus:ring-4 focus:ring-[#178f95]/10"
             />
 
             <Button
-              size="sm"
-              disabled={isInvalidStock || stockUpdating}
-              loading={stockUpdating}
-              loadingText="Updating..."
               onClick={handleStockUpdate}
+              disabled={stockUpdating}
+              className="h-12 px-5"
             >
-              Update
+              {stockUpdating ? "Updating..." : "Update"}
             </Button>
           </div>
 
-          {isInvalidStock && (
-            <p className="mt-2 text-xs font-medium text-red-500">
-              Stock must be 0 or greater.
+          {stockError && (
+            <p className="mt-2 text-xs font-medium text-red-600">
+              {stockError}
             </p>
           )}
 
-          <button
-            type="button"
-            disabled={stockUpdating || isSoldOut}
+          <Button
+            variant="outline"
+            className="mt-4 w-full gap-2 !border-red-100 !text-red-600 hover:!bg-red-50"
             onClick={() => onMarkSoldOut(product.id)}
-            className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-red-100 bg-white px-3 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={stockUpdating || product.stock === 0}
           >
             <FaBoxOpen />
             Mark Sold Out
-          </button>
+          </Button>
         </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-3">
-          <Button variant="outline" size="sm" onClick={onEdit} className="gap-2">
-            <FaPen />
+        <div className="mt-5 grid grid-cols-2 gap-3">
+          <Button variant="outline" className="gap-2" onClick={onEdit}>
+            <FaEdit />
             Edit
           </Button>
 
           <Button
             variant="outline"
-            size="sm"
+            className="gap-2 !border-red-200 !text-red-600 hover:!bg-red-50"
             onClick={onDelete}
-            className="gap-2 border-red-200 text-red-600 hover:border-red-600 hover:bg-red-600 hover:text-white"
           >
             <FaTrashAlt />
             Delete
           </Button>
         </div>
 
-        <button
-          type="button"
+        <Button
+          variant="outline"
+          className="mt-3 w-full gap-2 !border-transparent !text-[#178f95] hover:!bg-[#178f95]/10"
           onClick={onView}
-          className="mt-3 flex w-full items-center justify-center gap-2 text-center text-xs font-semibold text-[#178f95] transition hover:text-[#12757a]"
         >
           <FaEye />
           View in Marketplace
-        </button>
+        </Button>
       </div>
     </Card>
   );

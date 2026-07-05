@@ -111,6 +111,7 @@ model User {
   password        String?
   phone           String   @default("")
   profileImageUrl String   @default("Enter your Image")
+  bio             String   @default("Manage your pets, veterinary appointments, and health information from one place.")
   isActive        Boolean  @default(true)
   refreshToken    String?
   otp             String?
@@ -140,16 +141,16 @@ model User {
 }
 
 model Doctor {
-  id             String             @id @default(uuid())
-  userId         String             @unique
-  isAvailable    Boolean            @default(false)
-  education      String
-  specialization String
-  medicalLicenseNumber String           @default("")
-  address        String
-  experience     Int
-  fees           Int
-  isVerified     VerificationStatus @default(PENDING)
+  id                   String             @id @default(uuid())
+  userId               String             @unique
+  isAvailable          Boolean            @default(false)
+  education            String
+  specialization       String
+  medicalLicenseNumber String             @default("")
+  address              String
+  experience           Int
+  fees                 Int
+  isVerified           VerificationStatus @default(PENDING)
 
   user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   doctorSchedules DoctorSchedule[]

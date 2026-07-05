@@ -5,6 +5,7 @@ import {
   FaHeart,
   FaMapMarkerAlt,
   FaRegHeart,
+  FaShoppingCart,
   FaStar,
   FaStore,
 } from "react-icons/fa";
@@ -13,12 +14,14 @@ import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
 import { addToCart } from "@/features/cart/utils/cartStorage";
 import { useAuth } from "@/features/Auth/hooks/authhook";
+
 import {
   getProductImage,
   getProductPrice,
   getSellerName,
   toDisplayCategory,
 } from "../api/marketplace.api";
+
 import type { MarketplaceProductCardProps } from "../types/marketplace.types";
 
 const MarketplaceProductCard = ({
@@ -36,7 +39,6 @@ const MarketplaceProductCard = ({
   const price = getProductPrice(product);
   const seller = getSellerName(product);
 
-  const isPet = product.category === "PETS";
   const isOwnListing = user?.data?.id === product.seller?.user?.id;
   const isUnavailable = product.status !== "ACTIVE" || product.stock <= 0;
 
@@ -65,32 +67,9 @@ const MarketplaceProductCard = ({
     navigate("/cart");
   };
 
-  const handleDirectBuy = () => {
-    setCartError("");
-
-    if (isUnavailable) {
-      setCartError("This listing is not available right now.");
-      return;
-    }
-
-    localStorage.removeItem("pets-veta-direct-buy");
-
-    const directBuyItem = {
-      productId: product.id,
-      title: product.title,
-      price,
-      image,
-      quantity: 1,
-      sellerId: product.sellerId,
-    };
-
-    localStorage.setItem("pets-veta-direct-buy", JSON.stringify(directBuyItem));
-    navigate("/checkout");
-  };
-
   return (
     <Card className="overflow-hidden p-0">
-      <div className="relative h-44 bg-gray-50">
+      <div className="relative h-56 bg-gray-50">
         <button
           type="button"
           onClick={() => navigate(`/marketplace/product/${product.id}`)}
@@ -100,7 +79,7 @@ const MarketplaceProductCard = ({
           <img
             src={image}
             alt={product.title}
-            className="h-full w-full object-cover transition duration-300 hover:scale-105"
+            className="h-full w-full object-contain p-3 transition duration-300 hover:scale-105"
           />
         </button>
 
@@ -109,7 +88,7 @@ const MarketplaceProductCard = ({
         </span>
 
         {isUnavailable && (
-          <span className="absolute bottom-3 left-3 rounded-md bg-red-600 px-3 py-1 text-xs font-bold text-white">
+          <span className="absolute bottom-3 left-3 rounded-full bg-red-600 px-3 py-1 text-xs font-bold text-white">
             Sold Out
           </span>
         )}
@@ -119,7 +98,7 @@ const MarketplaceProductCard = ({
             type="button"
             onClick={onSave}
             className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#07182c] shadow-sm transition hover:text-red-500"
-            aria-label={saved ? "Remove saved listing" : "Save listing"}
+            aria-label={saved ? "Remove from saved listings" : "Save listing"}
           >
             {saved ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
           </button>
@@ -127,22 +106,22 @@ const MarketplaceProductCard = ({
       </div>
 
       <div className="p-4">
-        <h3 className="line-clamp-2 min-h-[48px] text-base font-bold text-[#07182c]">
+        <h3 className="line-clamp-1 text-base font-bold text-[#07182c]">
           {product.title}
         </h3>
 
-        <p className="mt-2 flex items-center gap-2 text-sm text-gray-500">
-          <FaStore className="shrink-0 text-[#178f95]" />
+        <p className="mt-3 flex items-center gap-2 text-sm text-gray-500">
+          <FaStore className="text-[#178f95]" />
           <span className="truncate">{seller}</span>
 
           {isOwnListing && (
-            <span className="ml-1 shrink-0 rounded-sm bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-400">
+            <span className="rounded-sm bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-400">
               Your Listing
             </span>
           )}
         </p>
 
-        <div className="mt-3 flex items-center justify-between gap-3">
+        <div className="mt-4 flex items-center justify-between gap-3">
           <p className="text-lg font-bold text-[#178f95]">
             PKR {price.toLocaleString()}
           </p>
@@ -162,11 +141,14 @@ const MarketplaceProductCard = ({
           </div>
         </div>
 
-        <p className="mt-2 text-xs font-semibold text-gray-500">
-          Stock: {product.stock}
+        <p
+          className={`mt-3 text-sm font-medium ${isUnavailable ? "text-red-600" : "text-gray-500"
+            }`}
+        >
+          {isUnavailable ? "Not Available" : `Stock: ${product.stock}`}
         </p>
 
-        <div className="mt-4 grid grid-cols-2 gap-3">
+        <div className="mt-5 grid grid-cols-2 gap-3">
           <Button variant="outline" size="sm" onClick={onDetails}>
             Details
           </Button>
@@ -175,28 +157,20 @@ const MarketplaceProductCard = ({
             <Button
               size="sm"
               onClick={() => navigate(`/seller/edit-product/${product.id}`)}
-              className="gap-1 border-slate-200 bg-gray-100 text-slate-700 hover:bg-slate-200"
+              className="flex items-center justify-center gap-1 !border-slate-200 !bg-gray-100 !text-slate-700 hover:!bg-slate-200"
             >
               <FaEdit size={12} />
               Edit
-            </Button>
-          ) : isPet ? (
-            <Button
-              size="sm"
-              onClick={handleDirectBuy}
-              disabled={isUnavailable}
-              className="bg-[#178f95] text-white hover:bg-[#12757a]"
-            >
-              Buy Now
             </Button>
           ) : (
             <Button
               size="sm"
               onClick={handleAddToCart}
               disabled={isUnavailable}
-              className="bg-[#F9C5A8] text-[#c94d00] hover:bg-[#f7b58f]"
+              className="flex items-center justify-center gap-2 !bg-[#178f95] !text-white hover:!bg-[#12757a]"
             >
-              Add to Cart
+              <FaShoppingCart size={13} />
+              Add Cart
             </Button>
           )}
         </div>
