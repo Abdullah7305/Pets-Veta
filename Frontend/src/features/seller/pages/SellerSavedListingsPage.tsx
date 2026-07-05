@@ -135,9 +135,6 @@ const SellerSavedListingsPage = () => {
         <SellerHeader />
 
         <section className="mx-auto max-w-[1600px] p-7">
-          <div className="mb-5">
-            <PageBackButton fallbackPath="/seller/dashboard" />
-          </div>
 
           <div className="mb-7 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>

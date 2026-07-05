@@ -194,9 +194,6 @@ const SellerProductFormPage = () => {
         <SellerHeader />
 
         <section className="p-6">
-          <div className="mb-5">
-            <PageBackButton fallbackPath="/seller/listings" />
-          </div>
 
           <div className="mb-5">
             <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#178f95]">

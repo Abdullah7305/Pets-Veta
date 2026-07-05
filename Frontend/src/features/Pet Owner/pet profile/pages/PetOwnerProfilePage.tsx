@@ -228,7 +228,6 @@ const PetOwnerProfilePage = ({
 
           <section className="p-7">
             <div className="mx-auto max-w-7xl space-y-5">
-              <PageBackButton fallbackPath="/seller/dashboard" />
 
               <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div>

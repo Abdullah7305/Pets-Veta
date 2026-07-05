@@ -13,7 +13,6 @@ import {
 
 import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
-import PageBackButton from "@/shared/components/BackButton/PageBackButton";
 import SellerHeader from "../components/SellerHeader";
 import SellerSidebar from "../components/SellerSidebar";
 import SellerStatCard from "../components/SellerStatCard";
@@ -152,10 +151,6 @@ const SellerDashboardPage = () => {
         <SellerHeader />
 
         <section className="p-7">
-          <div className="mb-5">
-            <PageBackButton fallbackPath="/" />
-          </div>
-
           <div className="mb-6">
             <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#178f95]">
               My Dashboard

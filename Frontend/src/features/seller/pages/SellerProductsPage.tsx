@@ -5,7 +5,6 @@ import { FaFilter, FaPlus } from "react-icons/fa";
 import Button from "@/shared/components/Button/Button";
 import Input from "@/shared/components/Input/Input";
 import Card from "@/shared/components/Card/Card";
-import PageBackButton from "@/shared/components/BackButton/PageBackButton";
 import SellerHeader from "../components/SellerHeader";
 import SellerSidebar from "../components/SellerSidebar";
 import ProductCard from "../components/ProductCard";
@@ -162,10 +161,6 @@ const SellerProductsPage = () => {
         <SellerHeader />
 
         <section className="p-7">
-          <div className="mb-5">
-            <PageBackButton fallbackPath="/seller/dashboard" />
-          </div>
-
           <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#178f95]">

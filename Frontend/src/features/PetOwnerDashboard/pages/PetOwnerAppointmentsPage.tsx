@@ -165,9 +165,6 @@ const PetOwnerAppointmentsPage = () => {
 
                 <section className="p-7">
                     <div className="mx-auto max-w-[1500px]">
-                        <div className="mb-5">
-                            <PageBackButton fallbackPath="/seller/dashboard" />
-                        </div>
 
                         <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                             <div>

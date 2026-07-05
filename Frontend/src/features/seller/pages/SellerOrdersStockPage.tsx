@@ -318,9 +318,6 @@ const SellerOrdersStockPage = () => {
         <SellerHeader />
 
         <section className="p-6">
-          <div className="mb-5">
-            <PageBackButton fallbackPath="/seller/dashboard" />
-          </div>
 
           <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>

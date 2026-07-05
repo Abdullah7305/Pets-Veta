@@ -50,9 +50,6 @@ const SellerSettingsPage = () => {
                 <SellerHeader />
 
                 <section className="p-7">
-                    <div className="mb-5">
-                        <PageBackButton fallbackPath="/seller/dashboard" />
-                    </div>
 
                     <div className="mb-6">
                         <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#178f95]">
