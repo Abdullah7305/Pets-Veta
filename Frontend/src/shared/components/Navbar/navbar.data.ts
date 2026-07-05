@@ -1,8 +1,15 @@
-interface NavData {
+export type NavChild = {
     id: number;
     title: string;
     path: string;
-}
+};
+
+export type NavData = {
+    id: number;
+    title: string;
+    path?: string;
+    children?: NavChild[];
+};
 
 const NAVLINK: NavData[] = [
     {

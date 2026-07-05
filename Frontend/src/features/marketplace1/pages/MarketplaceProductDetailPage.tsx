@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "@/features/Auth/hooks/authhook";
 import {
   FaArrowLeft,
+  FaCheckCircle,
   FaChevronLeft,
   FaChevronRight,
   FaComments,
@@ -75,7 +76,11 @@ const MarketplaceProductDetailPage = () => {
   const [error, setError] = useState("");
 
   const [saveMessage, setSaveMessage] = useState("");
-  const [cartError, setCartError] = useState("");
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [cartNotice, setCartNotice] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
 
   const [messageLoading, setMessageLoading] = useState(false);
   const [messageError, setMessageError] = useState("");
@@ -171,39 +176,56 @@ const MarketplaceProductDetailPage = () => {
   };
 
   const handleAddToCart = () => {
-    if (!product) return;
+    if (!product || isAddingToCart) return;
 
-    setCartError("");
+    setCartNotice(null);
     setSaveMessage("");
     setMessageError("");
 
     if (product.status !== "ACTIVE" || product.stock <= 0) {
-      setCartError("This listing is not available right now.");
+      setCartNotice({
+        type: "error",
+        message: "This listing is not available right now.",
+      });
       return;
     }
 
-    const result = addToCart({
-      productId: product.id,
-      title: product.title,
-      price: getProductPrice(product),
-      image: productImages[0] || getProductImage(product),
-      quantity: 1,
-      sellerId: product.sellerId,
-    });
+    setIsAddingToCart(true);
 
-    if (!result.success) {
-      setCartError(result.message);
-      return;
-    }
+    window.setTimeout(() => {
+      const result = addToCart({
+        productId: product.id,
+        title: product.title,
+        price: getProductPrice(product),
+        image: productImages[0] || getProductImage(product),
+        quantity: 1,
+        sellerId: product.sellerId,
+      });
 
-    navigate("/cart");
+      if (!result.success) {
+        setCartNotice({
+          type: "error",
+          message: result.message,
+        });
+
+        setIsAddingToCart(false);
+        return;
+      }
+
+      setCartNotice({
+        type: "success",
+        message: result.message || "Listing added to cart successfully.",
+      });
+
+      setIsAddingToCart(false);
+    }, 350);
   };
 
   const handleSave = async () => {
     if (!product) return;
 
     try {
-      setCartError("");
+      setCartNotice(null);
       setSaveMessage("");
       setMessageError("");
 
@@ -222,7 +244,7 @@ const MarketplaceProductDetailPage = () => {
     const currentUserId = user?.data?.id;
     const sellerUserId = product.seller?.user?.id;
 
-    setCartError("");
+    setCartNotice(null);
     setSaveMessage("");
     setMessageError("");
 
@@ -470,10 +492,14 @@ const MarketplaceProductDetailPage = () => {
               <Button
                 className="gap-2 !border-[#178f95] !bg-[#178f95] !text-white hover:!bg-[#12757a]"
                 onClick={handleAddToCart}
-                disabled={isUnavailable}
+                disabled={isUnavailable || isAddingToCart}
               >
                 <FaShoppingCart />
-                Add to Cart
+                {isAddingToCart
+                  ? "Adding..."
+                  : isUnavailable
+                    ? "Not Available"
+                    : "Add to Cart"}
               </Button>
             )}
 
@@ -493,10 +519,33 @@ const MarketplaceProductDetailPage = () => {
             )}
           </div>
 
-          {cartError && (
-            <p className="mt-3 rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-600">
-              {cartError}
-            </p>
+          {cartNotice && (
+            <div
+              className={`mt-3 rounded-lg px-4 py-3 text-sm font-semibold ${cartNotice.type === "success"
+                  ? "bg-emerald-50 text-emerald-700"
+                  : "bg-red-50 text-red-600"
+                }`}
+            >
+              <div className="flex items-start gap-2">
+                {cartNotice.type === "success" && (
+                  <FaCheckCircle className="mt-0.5 shrink-0" />
+                )}
+
+                <div className="min-w-0 flex-1">
+                  <p>{cartNotice.message}</p>
+
+                  {cartNotice.type === "success" && (
+                    <button
+                      type="button"
+                      onClick={() => navigate("/cart")}
+                      className="mt-1 font-black text-[#178f95] underline-offset-2 transition hover:underline"
+                    >
+                      View Cart
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
           )}
 
           {saveMessage && (

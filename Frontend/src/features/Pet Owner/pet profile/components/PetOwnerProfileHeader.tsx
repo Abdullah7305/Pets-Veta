@@ -281,10 +281,6 @@ const PetOwnerProfileHeader = ({
                 @{profile.username}
               </p>
 
-              <span className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#EAF7F5] px-4 py-2 text-xs font-black text-[#078b91]">
-                <PawPrint size={15} />
-                Pet Parent
-              </span>
             </div>
           </div>
 

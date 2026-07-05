@@ -1,9 +1,17 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaBell, FaChevronDown, FaUser } from "react-icons/fa";
+import { FaBell, FaUser } from "react-icons/fa";
 
 import { useAuth } from "@/features/Auth/hooks/authhook";
-import Input from "@/shared/components/Input/Input";
+
+type AuthUserData = {
+  id?: string;
+  name?: string;
+  fullName?: string;
+  username?: string;
+  email?: string;
+  profileImageUrl?: string;
+};
 
 const isValidImageUrl = (imageUrl?: string | null) => {
   if (!imageUrl) return false;
@@ -33,83 +41,82 @@ const SellerHeader = () => {
 
   const [imageFailed, setImageFailed] = useState(false);
 
+  const authData = user?.data as AuthUserData | undefined;
+
   const profileName = useMemo(() => {
-    return user?.data?.username || user?.data?.name || "User";
-  }, [user?.data?.name, user?.data?.username]);
+    return (
+      authData?.username ||
+      authData?.fullName ||
+      authData?.name ||
+      authData?.email?.split("@")[0] ||
+      "User"
+    );
+  }, [authData?.email, authData?.fullName, authData?.name, authData?.username]);
 
   const profileImageUrl = useMemo(() => {
-    const authProfileImage = user?.data?.profileImageUrl;
-
-    if (isValidImageUrl(authProfileImage)) {
-      return authProfileImage;
+    if (isValidImageUrl(authData?.profileImageUrl)) {
+      return authData?.profileImageUrl || "";
     }
 
     return "";
-  }, [user?.data?.profileImageUrl]);
+  }, [authData?.profileImageUrl]);
 
   const showProfileImage = Boolean(profileImageUrl) && !imageFailed;
 
-  const handleProfileClick = () => {
-    navigate("/pet-owner/profile");
-  };
-
   return (
-    <header className="flex items-center justify-between border-b border-gray-100 bg-white px-7 py-4">
-      <div>
-        <h1 className="text-lg font-semibold text-gray-900">
-          Welcome back, {profileName}
-        </h1>
+    <header className="sticky top-0 z-20 border-b border-gray-100 bg-white/95 px-7 py-4 backdrop-blur-xl">
+      <div className="flex items-center justify-between gap-6">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-black tracking-[-0.03em] text-[#07182c]">
+            Welcome back, {profileName}
+          </h1>
 
-        <p className="text-sm text-gray-500">
-          Manage your pets, listings, appointments, orders, and messages from one
-          dashboard.
-        </p>
-      </div>
+          <p className="mt-1 max-w-3xl text-sm leading-6 text-gray-500">
+            Manage your pets, listings, appointments, orders, and messages from
+            one dashboard.
+          </p>
+        </div>
 
-      <div className="flex items-center gap-4">
-        <Input placeholder="Search..." className="w-72" />
+        <div className="flex shrink-0 items-center gap-4">
+          <button
+            type="button"
+            className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-gray-100 bg-[#f8fbfb] text-gray-600 shadow-sm transition hover:border-[#178f95]/30 hover:bg-[#eefafa] hover:text-[#178f95]"
+            aria-label="Notifications"
+            title="Notifications"
+          >
+            <FaBell className="text-lg" />
 
-        <button
-          type="button"
-          className="relative rounded-full border border-gray-100 p-3 text-gray-600"
-          aria-label="Notifications"
-        >
-          <FaBell />
-          <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500" />
-        </button>
+            <span className="absolute right-3 top-3 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white" />
+          </button>
 
-        <button
-          type="button"
-          onClick={handleProfileClick}
-          className="flex items-center gap-3 rounded-xl px-2 py-1 transition hover:bg-gray-50"
-          aria-label="Open profile"
-        >
-          {showProfileImage ? (
-            <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full border border-[#178f95]/20 bg-[#178f95]/10">
-              <img
-                src={profileImageUrl}
-                alt={profileName}
-                className="block h-full w-full rounded-full object-cover object-center"
-                onError={() => {
-                  setImageFailed(true);
-                }}
-              />
-            </div>
-          ) : (
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#178f95]/20 bg-[#178f95]/10 text-sm font-bold text-[#178f95]">
-              {profileName ? getInitials(profileName) : <FaUser />}
-            </div>
-          )}
+          <button
+            type="button"
+            onClick={() => navigate("/pet-owner/profile")}
+            className="flex h-12 items-center gap-3 rounded-2xl border border-gray-100 bg-[#f8fbfb] px-3 pr-5 shadow-sm transition hover:border-[#178f95]/30 hover:bg-[#eefafa]"
+            aria-label="Open profile"
+          >
+            {showProfileImage ? (
+              <span className="h-10 w-10 shrink-0 overflow-hidden rounded-xl bg-[#178f95]/10">
+                <img
+                  src={profileImageUrl}
+                  alt={profileName}
+                  className="h-full w-full object-cover object-center"
+                  onError={() => {
+                    setImageFailed(true);
+                  }}
+                />
+              </span>
+            ) : (
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#178f95]/10 text-sm font-black text-[#178f95]">
+                {profileName ? getInitials(profileName) : <FaUser />}
+              </span>
+            )}
 
-          <div className="text-left">
-            <p className="text-sm font-semibold text-gray-900">
+            <span className="max-w-[160px] truncate text-sm font-black text-[#07182c]">
               {profileName}
-            </p>
-            <p className="text-xs text-gray-500">My Account</p>
-          </div>
-
-          <FaChevronDown className="text-xs text-gray-500" />
-        </button>
+            </span>
+          </button>
+        </div>
       </div>
     </header>
   );

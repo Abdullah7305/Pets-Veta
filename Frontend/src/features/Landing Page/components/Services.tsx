@@ -1,196 +1,130 @@
 import {
+  FaArrowRight,
   FaPaw,
+  FaRobot,
   FaShoppingBasket,
   FaStethoscope,
-  FaRobot,
-  FaCheck,
-  FaShieldAlt,
-  FaAward,
-  FaLock,
-  FaHeadset,
-  FaArrowRight,
 } from "react-icons/fa";
-
-import img from "@/assets/shared/images/bannerImage.png"
 import { NavLink } from "react-router-dom";
+
+import img from "@/assets/shared/images/bannerImage.png";
 
 const services = [
   {
     title: "Pet Marketplace",
-    desc: "Shop a wide range of trusted pet products delivered to your doorstep.",
+    label: "Shop Essentials",
+    description:
+      "Buy food, accessories, medicines, and pet-care products from trusted sellers.",
     icon: <FaShoppingBasket />,
-    color: "text-[#159f9b]",
-    checkBg: "bg-[#159f9b]",
-    iconBg: "bg-[#d8f4ef]",
-    bg: "from-[#eefbf7] to-[#f8fffd]",
-    btn: "!bg-[#119f98] !border-[#119f98]",
     image: img,
-    items: [
-      "Premium pet food",
-      "Toys & accessories",
-      "Medications & supplements",
-      "Grooming essentials",
-    ],
     button: "Explore Marketplace",
-    url:"/marketplace1"
+    url: "/marketplace1",
+    highlights: ["Verified sellers", "Fast shopping"],
   },
   {
     title: "Vet Consultation",
-    desc: "Connect with verified veterinarians and book appointments with ease.",
+    label: "Book Care",
+    description:
+      "Find verified veterinarians and book appointments for your pet easily.",
     icon: <FaStethoscope />,
-    color: "text-[#168dcc]",
-    checkBg: "bg-[#168dcc]",
-    iconBg: "bg-[#d9f0fb]",
-    bg: "from-[#eef8ff] to-[#f7fcff]",
-    btn: "!bg-[#168dcc] !border-[#168dcc]",
     image: img,
-    items: [
-      "Book online appointments",
-      "Verified & experienced vets",
-      "Video & in-clinic consultation",
-      "Health records & prescriptions",
-    ],
-    button: "Book a Consultation",
-    url:"/doctors"
+    button: "Book Consultation",
+    url: "/doctors",
+    highlights: ["Approved vets", "Easy booking"],
   },
   {
     title: "AI Assistant",
-    desc: "Get 24/7 AI support for your pet's health, nutrition and well-being.",
+    label: "Smart Help",
+    description:
+      "Get quick pet-care guidance for health, food, symptoms, and daily care.",
     icon: <FaRobot />,
-    color: "text-[#6e36b8]",
-    checkBg: "bg-[#6e36b8]",
-    iconBg: "bg-[#eadcf8]",
-    bg: "from-[#faf4ff] to-[#fff9ff]",
-    btn: "!bg-[#6e36b8] !border-[#6e36b8]",
     image: img,
-    items: [
-      "Instant answers to your questions",
-      "Health & symptom checker",
-      "Nutrition & diet guidance",
-      "Care tips & reminders",
-    ],
     button: "Ask AI Assistant",
-    url:"/ai-assistant"
-  },
-];
-
-const bottomFeatures = [
-  {
-    icon: <FaShieldAlt />,
-    title: "Trusted & Secure",
-    desc: "100% genuine products and reliable care",
-  },
-  {
-    icon: <FaAward />,
-    title: "Verified Experts",
-    desc: "Experienced vets & pet care professionals",
-  },
-  {
-    icon: <FaLock />,
-    title: "Safe & Private",
-    desc: "Your pet's data is protected with top security",
-  },
-  {
-    icon: <FaHeadset />,
-    title: "24/7 Support",
-    desc: "We're always here for you and your pets",
+    url: "/ai-assistant",
+    highlights: ["Instant answers", "24/7 guidance"],
   },
 ];
 
 const Services = () => {
   return (
-    <section className="bg-white px-6 py-12 lg:px-16">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-10 text-center">
-          <p className="mb-2 flex items-center justify-center gap-2 text-sm font-extrabold uppercase tracking-wider text-[#009f9d]">
-            Our Services <FaPaw />
+    <section className="relative overflow-hidden bg-[#fbfefe] px-5 py-16 lg:px-16">
+      <div className="pointer-events-none absolute left-[-120px] top-20 h-72 w-72 rounded-full bg-[#178f95]/10 blur-3xl" />
+      <div className="pointer-events-none absolute right-[-120px] bottom-10 h-80 w-80 rounded-full bg-[#f9c5a8]/25 blur-3xl" />
+
+      <div className="relative mx-auto max-w-7xl">
+        <div className="mx-auto mb-11 max-w-3xl text-center">
+          <p className="inline-flex items-center gap-2 rounded-full bg-[#e8f7f7] px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-[#178f95]">
+            <FaPaw />
+            Our Services
           </p>
 
-          <h2 className="text-[28px] font-extrabold leading-tight text-[#07182c] md:text-[36px]">
-            Everything your pet needs, in{" "}
-            <span className="text-[#009f9d]">one place</span>
+          <h2 className="mt-5 text-3xl font-black leading-tight tracking-[-0.04em] text-[#07182c] md:text-5xl">
+            Simple services for smarter pet care
           </h2>
 
-          <p className="mx-auto mt-4 max-w-3xl text-base leading-7 text-slate-600">
-            From shopping the best products to expert care and AI support,
-            <br className="hidden md:block" />
-            we make pet parenting easier, smarter and worry-free.
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-500">
+            Shop essentials, book trusted vets, and get instant AI-powered pet
+            care support.
           </p>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-3">
           {services.map((service) => (
-            <div
+            <article
               key={service.title}
-              className={`rounded-[24px] bg-gradient-to-br ${service.bg} p-6 shadow-[0_12px_35px_rgba(15,23,42,0.08)]`}
+              style={{
+                backgroundImage: `linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.9) 44%, rgba(232,247,247,0.36) 100%), url(${service.image})`,
+                backgroundSize: "cover, 58%",
+                backgroundPosition: "center, right 18px bottom 18px",
+                backgroundRepeat: "no-repeat",
+              }}
+              className="group relative min-h-[365px] overflow-hidden rounded-[34px] border border-slate-100 bg-white p-6 shadow-[0_18px_55px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1.5 hover:border-[#178f95]/25 hover:shadow-[0_28px_75px_rgba(15,23,42,0.13)]"
             >
-              <div className="mb-6 flex items-start gap-4">
-                <div
-                  className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-full ${service.iconBg} ${service.color} text-3xl`}
-                >
-                  {service.icon}
+              <div className="absolute inset-0 bg-gradient-to-t from-white/25 via-transparent to-transparent" />
+
+              <div className="relative z-10 flex min-h-[317px] flex-col">
+                <div className="mb-6 flex items-center justify-between gap-4">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#e8f7f7] text-2xl text-[#178f95] shadow-sm">
+                    {service.icon}
+                  </div>
+
+                  <span className="rounded-full bg-white/90 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.16em] text-[#178f95] shadow-sm ring-1 ring-[#178f95]/10 backdrop-blur">
+                    {service.label}
+                  </span>
                 </div>
 
-                <div>
-                  <h3 className="mb-2 text-[20px] font-extrabold text-[#07182c]">
+                <div className="max-w-[88%]">
+                  <h3 className="text-[26px] font-black leading-tight tracking-[-0.04em] text-[#07182c]">
                     {service.title}
                   </h3>
-                  <p className="text-sm leading-6 text-slate-600">
-                    {service.desc}
+
+                  <p className="mt-4 max-w-[270px] text-sm leading-6 text-slate-600">
+                    {service.description}
                   </p>
                 </div>
-              </div>
 
-              <div className="mb-6 space-y-3">
-                {service.items.map((item) => (
-                  <div
-                    key={item}
-                    className="flex items-center gap-3 text-sm font-medium text-[#07182c]"
-                  >
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {service.highlights.map((highlight) => (
                     <span
-                      className={`flex h-5 w-5 items-center justify-center rounded-full ${service.checkBg} text-white`}
+                      key={highlight}
+                      className="rounded-full bg-white/90 px-3 py-1.5 text-xs font-bold text-slate-600 shadow-sm ring-1 ring-slate-100 backdrop-blur"
                     >
-                      <FaCheck className="text-[10px]" />
+                      {highlight}
                     </span>
-                    {item}
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
 
-              <div className="mb-6 flex h-[230px] items-end justify-center overflow-hidden rounded-3xl">
-                <img
-                  src={service.image}
-                  alt={service.title}
-                  className="h-full w-full object-contain object-bottom"
-                />
+                <div className="mt-auto pt-8">
+                  <NavLink
+                    to={service.url}
+                    className="inline-flex w-full items-center justify-center gap-3 rounded-2xl bg-[#178f95] px-5 py-3.5 text-sm font-black text-white shadow-[0_14px_30px_rgba(23,143,149,0.22)] transition hover:bg-[#12757a]"
+                  >
+                    {service.button}
+                    <FaArrowRight className="text-xs transition group-hover:translate-x-1" />
+                  </NavLink>
+                </div>
               </div>
-
-              <NavLink
-                to={service.url}
-                className={`inline-flex items-center gap-3 p-3 !rounded-xl !text-white hover:!text-white ${service.btn}`}
-              >
-                {service.button}hh
-                <FaArrowRight />
-              </NavLink>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-8 grid gap-6 rounded-[22px] bg-white px-7 py-5 shadow-[0_10px_35px_rgba(15,23,42,0.08)] md:grid-cols-2 lg:grid-cols-4">
-          {bottomFeatures.map((feature) => (
-            <div key={feature.title} className="flex items-center gap-4">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#e0f7f5] text-2xl text-[#009f9d]">
-                {feature.icon}
-              </div>
-              <div>
-                <h4 className="text-base font-extrabold text-[#07182c]">
-                  {feature.title}
-                </h4>
-                <p className="text-sm leading-5 text-slate-600">
-                  {feature.desc}
-                </p>
-              </div>
-            </div>
+            </article>
           ))}
         </div>
       </div>

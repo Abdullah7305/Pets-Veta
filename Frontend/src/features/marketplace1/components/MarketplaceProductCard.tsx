@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
+  FaCheckCircle,
   FaEdit,
   FaHeart,
   FaMapMarkerAlt,
@@ -14,14 +15,12 @@ import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
 import { addToCart } from "@/features/cart/utils/cartStorage";
 import { useAuth } from "@/features/Auth/hooks/authhook";
-
 import {
   getProductImage,
   getProductPrice,
   getSellerName,
   toDisplayCategory,
 } from "../api/marketplace.api";
-
 import type { MarketplaceProductCardProps } from "../types/marketplace.types";
 
 const MarketplaceProductCard = ({
@@ -33,7 +32,11 @@ const MarketplaceProductCard = ({
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const [cartError, setCartError] = useState("");
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [cartNotice, setCartNotice] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
 
   const image = getProductImage(product);
   const price = getProductPrice(product);
@@ -43,33 +46,43 @@ const MarketplaceProductCard = ({
   const isUnavailable = product.status !== "ACTIVE" || product.stock <= 0;
 
   const handleAddToCart = () => {
-    setCartError("");
+    if (isUnavailable || isAddingToCart) return;
 
-    if (isUnavailable) {
-      setCartError("This listing is not available right now.");
-      return;
-    }
+    setCartNotice(null);
+    setIsAddingToCart(true);
 
-    const result = addToCart({
-      productId: product.id,
-      title: product.title,
-      price,
-      image,
-      quantity: 1,
-      sellerId: product.sellerId,
-    });
+    window.setTimeout(() => {
+      const result = addToCart({
+        productId: product.id,
+        title: product.title,
+        price,
+        image,
+        quantity: 1,
+        sellerId: product.sellerId,
+      });
 
-    if (!result.success) {
-      setCartError(result.message);
-      return;
-    }
+      if (!result.success) {
+        setCartNotice({
+          type: "error",
+          message: result.message,
+        });
 
-    navigate("/cart");
+        setIsAddingToCart(false);
+        return;
+      }
+
+      setCartNotice({
+        type: "success",
+        message: result.message || "Product added to cart successfully.",
+      });
+
+      setIsAddingToCart(false);
+    }, 350);
   };
 
   return (
     <Card className="overflow-hidden p-0">
-      <div className="relative h-56 bg-gray-50">
+      <div className="relative h-44 bg-gray-50">
         <button
           type="button"
           onClick={() => navigate(`/marketplace/product/${product.id}`)}
@@ -88,7 +101,7 @@ const MarketplaceProductCard = ({
         </span>
 
         {isUnavailable && (
-          <span className="absolute bottom-3 left-3 rounded-full bg-red-600 px-3 py-1 text-xs font-bold text-white">
+          <span className="absolute bottom-3 left-3 rounded-md bg-red-50 px-3 py-1 text-xs font-bold text-red-600">
             Sold Out
           </span>
         )}
@@ -110,19 +123,20 @@ const MarketplaceProductCard = ({
           {product.title}
         </h3>
 
-        <p className="mt-3 flex items-center gap-2 text-sm text-gray-500">
-          <FaStore className="text-[#178f95]" />
-          <span className="truncate">{seller}</span>
+        <p className="mt-2 flex items-center gap-2 text-sm text-gray-500">
+          <FaStore className="shrink-0 text-[#178f95]" />
+
+          <span className="min-w-0 truncate">{seller}</span>
 
           {isOwnListing && (
-            <span className="rounded-sm bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-400">
+            <span className="ml-1 shrink-0 rounded-sm bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-500">
               Your Listing
             </span>
           )}
         </p>
 
-        <div className="mt-4 flex items-center justify-between gap-3">
-          <p className="text-lg font-bold text-[#178f95]">
+        <div className="mt-3 flex items-center justify-between gap-3">
+          <p className="shrink-0 text-lg font-bold text-[#178f95]">
             PKR {price.toLocaleString()}
           </p>
 
@@ -134,21 +148,12 @@ const MarketplaceProductCard = ({
 
             <span className="flex min-w-0 items-center gap-1 text-gray-500">
               <FaMapMarkerAlt className="shrink-0" />
-              <span className="truncate">
-                {product.location || product.seller?.city || "Pakistan"}
-              </span>
+              <span className="truncate">{product.location || "Pakistan"}</span>
             </span>
           </div>
         </div>
 
-        <p
-          className={`mt-3 text-sm font-medium ${isUnavailable ? "text-red-600" : "text-gray-500"
-            }`}
-        >
-          {isUnavailable ? "Not Available" : `Stock: ${product.stock}`}
-        </p>
-
-        <div className="mt-5 grid grid-cols-2 gap-3">
+        <div className="mt-4 grid grid-cols-2 gap-3">
           <Button variant="outline" size="sm" onClick={onDetails}>
             Details
           </Button>
@@ -157,7 +162,7 @@ const MarketplaceProductCard = ({
             <Button
               size="sm"
               onClick={() => navigate(`/seller/edit-product/${product.id}`)}
-              className="flex items-center justify-center gap-1 !border-slate-200 !bg-gray-100 !text-slate-700 hover:!bg-slate-200"
+              className="flex items-center justify-center gap-1 border border-slate-200 bg-gray-100 text-slate-700 hover:bg-slate-200"
             >
               <FaEdit size={12} />
               Edit
@@ -166,19 +171,44 @@ const MarketplaceProductCard = ({
             <Button
               size="sm"
               onClick={handleAddToCart}
+              loading={isAddingToCart}
+              loadingText="Adding..."
               disabled={isUnavailable}
-              className="flex items-center justify-center gap-2 !bg-[#178f95] !text-white hover:!bg-[#12757a]"
+              className="flex items-center justify-center gap-2 bg-[#F9C5A8] text-[#c94d00] hover:bg-[#f7b58f]"
             >
               <FaShoppingCart size={13} />
-              Add Cart
+              {isUnavailable ? "Sold Out" : "Add Cart"}
             </Button>
           )}
         </div>
 
-        {cartError && (
-          <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-600">
-            {cartError}
-          </p>
+        {cartNotice && (
+          <div
+            className={`mt-3 rounded-xl px-3 py-2 text-xs font-semibold ${cartNotice.type === "success"
+                ? "bg-emerald-50 text-emerald-700"
+                : "bg-red-50 text-red-600"
+              }`}
+          >
+            <div className="flex items-start gap-2">
+              {cartNotice.type === "success" && (
+                <FaCheckCircle className="mt-0.5 shrink-0" />
+              )}
+
+              <div className="min-w-0 flex-1">
+                <p>{cartNotice.message}</p>
+
+                {cartNotice.type === "success" && (
+                  <button
+                    type="button"
+                    onClick={() => navigate("/cart")}
+                    className="mt-1 font-black text-[#178f95] underline-offset-2 hover:underline"
+                  >
+                    View Cart
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </Card>
