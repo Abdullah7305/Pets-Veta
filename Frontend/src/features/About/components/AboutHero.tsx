@@ -1,14 +1,10 @@
-import { FaPaw, FaShieldAlt, FaUserMd } from "react-icons/fa";
+import { FaShieldAlt, FaUserMd } from "react-icons/fa";
 
 const AboutHero = () => {
   return (
     <section className="mt-20 bg-gradient-to-br from-[#f5fbff] via-white to-[#d9f7f6] px-5 py-16 lg:px-16">
       <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-2">
         <div>
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-[#009f9d] shadow-sm">
-            <FaPaw />
-            About PetsVeta
-          </div>
 
           <h1 className="text-4xl font-extrabold leading-tight text-[#07182c] md:text-5xl">
             Trusted pet care, marketplace and veterinary support in one place.
