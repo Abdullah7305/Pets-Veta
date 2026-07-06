@@ -6,7 +6,7 @@ import {
     FaHeadset,
     FaShieldAlt,
 } from "react-icons/fa";
-import img from "@/assets/shared/images/bannerImage.png"
+import img from "@/assets/shared/images/whychooseus.png"
 
 const features = [
     { icon: <FaUserMd />, title: "Experienced\n& Verified Vets" },

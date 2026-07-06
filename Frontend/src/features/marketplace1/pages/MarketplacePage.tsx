@@ -1,17 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  FaPaw,
   FaShoppingBag,
   FaSlidersH,
   FaThLarge,
-  FaUndo,
 } from "react-icons/fa";
+
 import Button from "@/shared/components/Button/Button";
-import Input from "@/shared/components/Input/Input";
 import MarketplaceProductCard from "../components/MarketplaceProductCard";
 import MarketplaceDetailPanel from "../components/MarketplaceDetailPanel";
 import MarketplacePagination from "../components/MarketplacePagination";
+import MarketplaceFilters from "../components/MarketplaceFilters";
 import {
   fetchMarketplaceProducts,
   fetchSavedMarketplaceListings,
@@ -38,8 +37,6 @@ const MarketplacePage = () => {
 
   const [selectedProduct, setSelectedProduct] =
     useState<MarketplaceProduct | null>(null);
-
-  const categories = ["All", "Pets", "Food", "Medicine", "Accessories"];
 
   const queryCategory = useMemo(
     () => (category === "All" ? "" : toBackendCategory(category)),
@@ -135,6 +132,21 @@ const MarketplacePage = () => {
     }
   };
 
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    setPage(1);
+  };
+
+  const handleCategoryChange = (value: string) => {
+    setCategory(value);
+    setPage(1);
+  };
+
+  const handleLocationChange = (value: string) => {
+    setLocation(value);
+    setPage(1);
+  };
+
   const clearFilters = () => {
     setSearch("");
     setCategory("All");
@@ -165,77 +177,20 @@ const MarketplacePage = () => {
         </Button>
       </section>
 
-      <section className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-        <div className="grid gap-4 lg:grid-cols-[1.4fr_0.9fr_0.9fr_auto]">
-          <Input
-            placeholder="Search pets, food, medicine, accessories..."
-            value={search}
-            onChange={(event) => {
-              setSearch(event.target.value);
-              setPage(1);
-            }}
-          />
-
-          <select
-            value={category}
-            onChange={(event) => {
-              setCategory(event.target.value);
-              setPage(1);
-            }}
-            className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-[#178f95]"
-          >
-            <option>All</option>
-            <option>Pets</option>
-            <option>Food</option>
-            <option>Medicine</option>
-            <option>Accessories</option>
-          </select>
-
-          <select
-            value={location}
-            onChange={(event) => {
-              setLocation(event.target.value);
-              setPage(1);
-            }}
-            className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-[#178f95]"
-          >
-            <option>All</option>
-            <option>Lahore</option>
-            <option>Karachi</option>
-            <option>Islamabad</option>
-            <option>Multan</option>
-          </select>
-
-          <Button variant="outline" className="gap-2" onClick={clearFilters}>
-            <FaUndo />
-            Clear Filters
-          </Button>
-        </div>
-
-        <div className="mt-4 flex flex-wrap gap-3">
-          {categories.map((item) => (
-            <button
-              key={item}
-              type="button"
-              onClick={() => {
-                setCategory(item);
-                setPage(1);
-              }}
-              className={`flex items-center gap-2 rounded-full border px-5 py-2 text-sm font-semibold transition ${category === item
-                  ? "border-[#178f95] bg-[#178f95] text-white"
-                  : "border-gray-200 bg-white text-gray-600 hover:border-[#178f95] hover:text-[#178f95]"
-                }`}
-            >
-              <FaPaw />
-              {item}
-            </button>
-          ))}
-        </div>
-      </section>
+      <MarketplaceFilters
+        search={search}
+        category={category}
+        location={location}
+        onSearch={handleSearchChange}
+        onCategory={handleCategoryChange}
+        onLocation={handleLocationChange}
+        onClear={clearFilters}
+      />
 
       <section
-        className={`mt-6 grid gap-6 ${selectedProduct ? "xl:grid-cols-[1fr_330px]" : "grid-cols-1"
-          }`}
+        className={`mt-6 grid gap-6 ${
+          selectedProduct ? "xl:grid-cols-[1fr_330px]" : "grid-cols-1"
+        }`}
       >
         <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
           <div className="mb-5 flex items-center justify-between">
@@ -262,10 +217,11 @@ const MarketplacePage = () => {
           </div>
 
           <div
-            className={`grid gap-5 ${selectedProduct
+            className={`grid gap-5 ${
+              selectedProduct
                 ? "lg:grid-cols-2 2xl:grid-cols-3"
                 : "md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
-              }`}
+            }`}
           >
             {loading && (
               <p className="col-span-full rounded-lg bg-gray-50 p-5 text-sm text-gray-500">
