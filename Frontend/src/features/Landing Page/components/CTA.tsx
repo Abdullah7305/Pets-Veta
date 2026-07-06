@@ -1,5 +1,6 @@
 import Button from "@/shared/components/Button/Button";
 import img from "@/assets/shared/images/whychooseus.png";
+import cat from "@/assets/shared/images/cat.png";
 
 const CTA = () => {
     return (
@@ -8,7 +9,7 @@ const CTA = () => {
                 <img
                     src={img}
                     alt="Happy pets"
-                    className="absolute bottom-0 left-6 z-10 hidden h-[300px] -translate-y-6 object-contain drop-shadow-[0_22px_30px_rgba(15,23,42,0.2)] md:block"
+                    className="absolute bottom-0 left-6 z-10 hidden h-[300px] object-contain drop-shadow-[0_22px_30px_rgba(15,23,42,0.2)] md:block"
                 />
 
                 <div className="relative z-20 mx-auto max-w-2xl text-center">
@@ -38,9 +39,9 @@ const CTA = () => {
                 </div>
 
                 <img
-                    src={img}
-                    alt="Happy pets"
-                    className="absolute bottom-0 right-8 z-10 hidden h-[315px] -translate-y-6 object-contain drop-shadow-[0_22px_30px_rgba(15,23,42,0.2)] md:block"
+                    src={cat}
+                    alt="Happy cat"
+                    className="absolute bottom-0 right-4 z-10 hidden h-[400px] -translate-y-10 object-contain drop-shadow-[0_22px_30px_rgba(15,23,42,0.22)] md:block"
                 />
             </div>
         </section>
