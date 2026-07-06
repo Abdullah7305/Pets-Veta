@@ -11,18 +11,27 @@ const FindDoctor = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
 
-  const { data, isLoading } = useApprovedDoctors({ page, limit: LIMIT, search });
+  const { data, isLoading } = useApprovedDoctors({
+    page,
+    limit: LIMIT,
+    search,
+  });
 
   const doctors = data?.data?.data ?? [];
   const totalPages = data?.data?.meta?.totalPages ?? 1;
-  console.log("Doctors ========>>>", doctors)
+
   const handleBookAppointment = (doctorId: string, checkupTime?: string) => {
-    console.log("Book appointment doctor id:", doctorId, "checkup time:", checkupTime);
+    console.log(
+      "Book appointment doctor id:",
+      doctorId,
+      "checkup time:",
+      checkupTime,
+    );
   };
 
   return (
-    <main className="min-h-screen bg-[#F8FAFA] px-4 py-6 text-[#20263D] sm:px-6 lg:px-8">
-      <section className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[270px_1fr]">
+    <main className="min-h-screen bg-[#F8FAFA] px-4 pb-10 pt-28 text-[#20263D] sm:px-6 lg:px-8">
+      <section className="mx-auto grid max-w-7xl gap-7 lg:grid-cols-[300px_1fr]">
         <FilterSidebar
           search={search}
           onSearchChange={(value) => {
@@ -35,7 +44,7 @@ const FindDoctor = () => {
           }}
         />
 
-        <section>
+        <section className="min-w-0">
           <PageHeader />
 
           <DoctorsList
@@ -44,15 +53,14 @@ const FindDoctor = () => {
             onBookAppointment={handleBookAppointment}
           />
 
-          {
-            doctors.length>0 &&
+          {doctors.length > 0 && (
             <Pagination
               page={page}
               totalPages={totalPages}
               onPrevious={() => setPage((prev) => prev - 1)}
               onNext={() => setPage((prev) => prev + 1)}
             />
-          }
+          )}
         </section>
       </section>
     </main>
