@@ -7,7 +7,9 @@ import {
 } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 
-import img from "@/assets/shared/images/bannerImage.png";
+import dogMarket from "@/assets/shared/images/dogMarket.jpg";
+import vet from "@/assets/shared/images/vet.jpg"
+import AiImg from "@/assets/shared/images/ai.jpg";
 
 const services = [
   {
@@ -16,7 +18,7 @@ const services = [
     description:
       "Buy food, accessories, medicines, and pet-care products from trusted sellers.",
     icon: <FaShoppingBasket />,
-    image: img,
+    image: dogMarket,
     button: "Explore Marketplace",
     url: "/marketplace1",
     highlights: ["Verified sellers", "Fast shopping"],
@@ -27,7 +29,7 @@ const services = [
     description:
       "Find verified veterinarians and book appointments for your pet easily.",
     icon: <FaStethoscope />,
-    image: img,
+    image: vet,
     button: "Book Consultation",
     url: "/doctors",
     highlights: ["Approved vets", "Easy booking"],
@@ -38,7 +40,7 @@ const services = [
     description:
       "Get quick pet-care guidance for health, food, symptoms, and daily care.",
     icon: <FaRobot />,
-    image: img,
+    image: AiImg,
     button: "Ask AI Assistant",
     url: "/ai-assistant",
     highlights: ["Instant answers", "24/7 guidance"],
