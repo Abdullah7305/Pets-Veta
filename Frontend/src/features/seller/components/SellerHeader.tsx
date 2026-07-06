@@ -1,44 +1,121 @@
-import { FaBell, FaChevronDown } from "react-icons/fa";
-import Input from "@/shared/components/Input/Input";
-import Logo from "@/shared/components/Logo/Logo";
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { FaBell, FaUser } from "react-icons/fa";
+
+import { useAuth } from "@/features/Auth/hooks/authhook";
+
+type AuthUserData = {
+  id?: string;
+  name?: string;
+  fullName?: string;
+  username?: string;
+  email?: string;
+  profileImageUrl?: string;
+};
+
+const isValidImageUrl = (imageUrl?: string | null) => {
+  if (!imageUrl) return false;
+
+  const cleanUrl = imageUrl.trim();
+
+  if (!cleanUrl) return false;
+
+  return !cleanUrl.toLowerCase().includes("enter your image");
+};
+
+const getInitials = (name: string) => {
+  return (
+    name
+      .trim()
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((word) => word.charAt(0).toUpperCase())
+      .join("") || "U"
+  );
+};
 
 const SellerHeader = () => {
-  return (
-    <header className="flex items-center justify-between border-b border-gray-100 bg-white px-7 py-4">
-      <div className="flex items-center gap-4">
-        <Logo />
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
-        <div>
-          <h1 className="text-lg font-semibold text-gray-900">
-            Welcome back, Furries Store
+  const [imageFailed, setImageFailed] = useState(false);
+
+  const authData = user?.data as AuthUserData | undefined;
+
+  const profileName = useMemo(() => {
+    return (
+      authData?.username ||
+      authData?.fullName ||
+      authData?.name ||
+      authData?.email?.split("@")[0] ||
+      "User"
+    );
+  }, [authData?.email, authData?.fullName, authData?.name, authData?.username]);
+
+  const profileImageUrl = useMemo(() => {
+    if (isValidImageUrl(authData?.profileImageUrl)) {
+      return authData?.profileImageUrl || "";
+    }
+
+    return "";
+  }, [authData?.profileImageUrl]);
+
+  const showProfileImage = Boolean(profileImageUrl) && !imageFailed;
+
+  return (
+    <header className="sticky top-0 z-20 border-b border-gray-100 bg-white/95 px-7 py-4 backdrop-blur-xl">
+      <div className="flex items-center justify-between gap-6">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-black tracking-[-0.03em] text-[#07182c]">
+            Welcome back, {profileName}
           </h1>
-          <p className="text-sm text-gray-500">
-            Here's what's happening with your store today.
+
+          <p className="mt-1 max-w-3xl text-sm leading-6 text-gray-500">
+            Manage your pets, listings, appointments, orders, and messages from
+            one dashboard.
           </p>
         </div>
-      </div>
 
-      <div className="flex items-center gap-4">
-        <Input placeholder="Search..." className="w-72" />
+        <div className="flex shrink-0 items-center gap-4">
+          <button
+            type="button"
+            className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-gray-100 bg-[#f8fbfb] text-gray-600 shadow-sm transition hover:border-[#178f95]/30 hover:bg-[#eefafa] hover:text-[#178f95]"
+            aria-label="Notifications"
+            title="Notifications"
+          >
+            <FaBell className="text-lg" />
 
-        <button className="relative rounded-full border border-gray-100 p-3 text-gray-600">
-          <FaBell />
-          <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500" />
-        </button>
+            <span className="absolute right-3 top-3 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white" />
+          </button>
 
-        <div className="flex items-center gap-3">
-          <img
-            src="https://i.pravatar.cc/80?img=12"
-            alt="seller"
-            className="h-10 w-10 rounded-full object-cover"
-          />
+          <button
+            type="button"
+            onClick={() => navigate("/pet-owner/profile")}
+            className="flex h-12 items-center gap-3 rounded-2xl border border-gray-100 bg-[#f8fbfb] px-3 pr-5 shadow-sm transition hover:border-[#178f95]/30 hover:bg-[#eefafa]"
+            aria-label="Open profile"
+          >
+            {showProfileImage ? (
+              <span className="h-10 w-10 shrink-0 overflow-hidden rounded-xl bg-[#178f95]/10">
+                <img
+                  src={profileImageUrl}
+                  alt={profileName}
+                  className="h-full w-full object-cover object-center"
+                  onError={() => {
+                    setImageFailed(true);
+                  }}
+                />
+              </span>
+            ) : (
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#178f95]/10 text-sm font-black text-[#178f95]">
+                {profileName ? getInitials(profileName) : <FaUser />}
+              </span>
+            )}
 
-          <div>
-            <p className="text-sm font-semibold text-gray-900">Furries Store</p>
-            <p className="text-xs text-gray-500">Seller</p>
-          </div>
-
-          <FaChevronDown className="text-xs text-gray-500" />
+            <span className="max-w-[160px] truncate text-sm font-black text-[#07182c]">
+              {profileName}
+            </span>
+          </button>
         </div>
       </div>
     </header>

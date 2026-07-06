@@ -7,6 +7,7 @@ import {
   FaStar,
   FaTimes,
 } from "react-icons/fa";
+
 import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
 import { addToCart } from "@/features/cart/utils/cartStorage";
@@ -24,32 +25,58 @@ const MarketplaceDetailPanel = ({
   onClose,
 }: MarketplaceDetailPanelProps) => {
   const navigate = useNavigate();
-  const [cartError, setCartError] = useState("");
 
-  const handleBuyNow = () => {
-    const image = getProductImage(product);
-    const price = getProductPrice(product);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [cartNotice, setCartNotice] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
+  const [saveMessage, setSaveMessage] = useState("");
 
-    const result = addToCart({
-      productId: product.id,
-      title: product.title,
-      price,
-      image,
-      quantity: 1,
-      sellerId: product.sellerId,
-    });
+  const image = getProductImage(product);
+  const price = getProductPrice(product);
+  const seller = getSellerName(product);
+  const isUnavailable = product.status !== "ACTIVE" || product.stock <= 0;
 
-    if (!result.success) {
-      setCartError(result.message);
-      return;
-    }
+  const handleAddToCart = () => {
+    if (isUnavailable || isAddingToCart) return;
 
-    navigate("/cart");
+    setCartNotice(null);
+    setIsAddingToCart(true);
+
+    window.setTimeout(() => {
+      const result = addToCart({
+        productId: product.id,
+        title: product.title,
+        price,
+        image,
+        quantity: 1,
+        sellerId: product.sellerId,
+      });
+
+      if (!result.success) {
+        setCartNotice({
+          type: "error",
+          message: result.message,
+        });
+
+        setIsAddingToCart(false);
+        return;
+      }
+
+      setCartNotice({
+        type: "success",
+        message: result.message || "Product added to cart successfully.",
+      });
+
+      setIsAddingToCart(false);
+    }, 350);
   };
 
   const handleSave = async () => {
     try {
       await saveMarketplaceListing(product.id);
+      setSaveMessage("Listing saved successfully.");
     } catch {
       navigate("/login", {
         state: {
@@ -58,10 +85,6 @@ const MarketplaceDetailPanel = ({
       });
     }
   };
-
-  const image = getProductImage(product);
-  const price = getProductPrice(product);
-  const seller = getSellerName(product);
 
   return (
     <Card
@@ -75,17 +98,20 @@ const MarketplaceDetailPanel = ({
           type="button"
           onClick={onClose}
           className="flex h-9 w-9 items-center justify-center rounded-full text-gray-400 transition hover:bg-red-50 hover:text-red-500"
+          aria-label="Close product detail"
         >
           <FaTimes />
         </button>
       </div>
 
       <div className="flex gap-4">
-        <img
-          src={image}
-          alt={product.title}
-          className="h-32 w-32 shrink-0 rounded-lg object-cover"
-        />
+        <div className="h-32 w-32 shrink-0 overflow-hidden rounded-lg bg-gray-50">
+          <img
+            src={image}
+            alt={product.title}
+            className="h-full w-full object-contain p-2"
+          />
+        </div>
 
         <div className="min-w-0 flex-1">
           <span className="inline-flex rounded-md bg-[#e8f7f7] px-3 py-1 text-xs font-semibold text-[#178f95]">
@@ -114,34 +140,76 @@ const MarketplaceDetailPanel = ({
         New listing
       </p>
 
-      <p className="mt-3 text-sm text-green-600">
-        In Stock{" "}
+      <p
+        className={`mt-3 text-sm font-medium ${isUnavailable ? "text-red-600" : "text-green-600"
+          }`}
+      >
+        {isUnavailable ? "Sold Out" : "In Stock"}{" "}
         <span className="ml-2 text-gray-500">{product.stock} available</span>
       </p>
 
       <div className="my-5 border-t border-gray-100" />
 
-      <h3 className="text-sm font-bold text-[#07182c]">About this pet</h3>
+      <h3 className="text-sm font-bold text-[#07182c]">About this product</h3>
 
       <p className="mt-3 text-sm leading-6 text-gray-600">
         {product.description || "No description provided."}
       </p>
 
-      <Button className="mt-6 w-full gap-2" onClick={handleBuyNow}>
+      <Button
+        className="mt-6 w-full gap-2"
+        onClick={handleAddToCart}
+        loading={isAddingToCart}
+        loadingText="Adding..."
+        disabled={isUnavailable}
+      >
         <FaShoppingCart />
-        Add to Cart
+        {isUnavailable ? "Sold Out" : "Add to Cart"}
       </Button>
 
-      {cartError && (
-        <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-600">
-          {cartError}
-        </p>
+      {cartNotice && (
+        <div
+          className={`mt-3 rounded-lg px-3 py-2 text-xs font-semibold ${cartNotice.type === "success"
+              ? "bg-emerald-50 text-emerald-700"
+              : "bg-red-50 text-red-600"
+            }`}
+        >
+          <div className="flex items-start gap-2">
+            {cartNotice.type === "success" && (
+              <FaCheckCircle className="mt-0.5 shrink-0" />
+            )}
+
+            <div className="min-w-0 flex-1">
+              <p>{cartNotice.message}</p>
+
+              {cartNotice.type === "success" && (
+                <button
+                  type="button"
+                  onClick={() => navigate("/cart")}
+                  className="mt-1 font-black text-[#178f95] underline-offset-2 hover:underline"
+                >
+                  View Cart
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
       )}
 
-      <Button variant="outline" className="mt-3 w-full gap-2" onClick={handleSave}>
+      <Button
+        variant="outline"
+        className="mt-3 w-full gap-2"
+        onClick={handleSave}
+      >
         <FaHeart />
         Save Listing
       </Button>
+
+      {saveMessage && (
+        <p className="mt-3 rounded-lg bg-green-50 px-3 py-2 text-xs font-medium text-green-700">
+          {saveMessage}
+        </p>
+      )}
 
       <div className="mt-6 grid grid-cols-3 gap-3 text-center text-xs text-gray-500">
         <div>

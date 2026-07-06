@@ -2,6 +2,7 @@ export const productTabs = [
   "All",
   "Pets",
   "Food",
+  "Medicine",
   "Accessories",
   "Active",
   "Sold Out",
@@ -51,6 +52,16 @@ export const sellerProducts = [
   },
   {
     id: 5,
+    name: "Pet Medicine Pack",
+    category: "Medicine",
+    price: "PKR 2,500",
+    stock: 6,
+    status: "Active",
+    image:
+      "https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=500",
+  },
+  {
+    id: 6,
     name: "Pet Collar - Blue (M)",
     category: "Accessories",
     price: "PKR 1,250",
@@ -60,7 +71,7 @@ export const sellerProducts = [
       "https://images.unsplash.com/photo-1601758124510-52d02ddb7cbd?w=500",
   },
   {
-    id: 6,
+    id: 7,
     name: "Dog Leash - Red (L)",
     category: "Accessories",
     price: "PKR 950",

@@ -9887,10 +9887,6 @@ const SelectPetPage = () => {
               <p className="text-sm font-black text-[#101b3d]">
                 Ayesha Khan
               </p>
-
-              <p className="text-xs font-semibold text-slate-500">
-                Pet Parent
-              </p>
             </div>
           </div>
         </div>

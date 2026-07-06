@@ -21,9 +21,12 @@ export type MarketplaceProduct = {
     businessName?: string | null;
     city?: string | null;
     user?: {
-      id?: string | null;
+      id?: string;
       fullName?: string | null;
+      name?: string | null;
+      username?: string | null;
       email?: string | null;
+      phone?: string | null;
       profileImageUrl?: string | null;
     };
   };
@@ -44,6 +47,7 @@ export const toBackendCategory = (category: string) => {
   const map: Record<string, string> = {
     Pets: "PETS",
     Food: "FOOD",
+    Medicine: "MEDICINE",
     Accessories: "ACCESSORIES",
   };
 
@@ -54,8 +58,8 @@ export const toDisplayCategory = (category: string) => {
   const map: Record<string, string> = {
     PETS: "Pets",
     FOOD: "Food",
-    ACCESSORIES: "Accessories",
     MEDICINE: "Medicine",
+    ACCESSORIES: "Accessories",
   };
 
   return map[category] || category;
@@ -74,10 +78,16 @@ export const getProductPrice = (product: MarketplaceProduct) => {
 
 export const getSellerName = (product: MarketplaceProduct) => {
   return (
-    product.seller?.businessName ||
+    product.seller?.user?.username ||
     product.seller?.user?.fullName ||
-    "Pets Veta Seller"
+    product.seller?.user?.name ||
+    product.seller?.businessName ||
+    "Pets Veta User"
   );
+};
+
+export const getSellerImage = (product: MarketplaceProduct) => {
+  return product.seller?.user?.profileImageUrl || "";
 };
 
 export const fetchMarketplaceProducts = async (params: {
@@ -87,10 +97,10 @@ export const fetchMarketplaceProducts = async (params: {
   category?: string;
   location?: string;
 }) => {
-  const response = await api.get<{ success: boolean; data: MarketplaceProductsResponse }>(
-    "marketplace/products",
-    { params }
-  );
+  const response = await api.get<{
+    success: boolean;
+    data: MarketplaceProductsResponse;
+  }>("marketplace/products", { params });
 
   return response.data.data;
 };
@@ -105,11 +115,13 @@ export const fetchMarketplaceProductById = async (productId: string) => {
 
 export const saveMarketplaceListing = async (productId: string) => {
   const response = await api.post(`marketplace/save/${productId}`);
+
   return response.data;
 };
 
 export const removeMarketplaceListing = async (productId: string) => {
   const response = await api.delete(`marketplace/save/${productId}`);
+
   return response.data;
 };
 

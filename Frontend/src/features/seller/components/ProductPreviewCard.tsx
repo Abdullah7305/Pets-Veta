@@ -1,4 +1,5 @@
 import { FaMapMarkerAlt, FaShoppingBag } from "react-icons/fa";
+
 import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
 import type { ProductPreviewCardProps } from "../types/seller.types";
@@ -13,6 +14,16 @@ const ProductPreviewCard = ({
   description,
   status,
 }: ProductPreviewCardProps) => {
+  const displayStatus = status || "Draft";
+  const displayTitle = title || "Listing title";
+  const displayCategory = category || "Category";
+  const displayPrice = price || "0";
+  const displayStock = stock || "0";
+  const displayLocation = location || "Location not added";
+  const displayDescription =
+    description ||
+    "Your listing description will appear here. Add clear details to help buyers understand the pet or product.";
+
   return (
     <Card>
       <div className="mb-5 flex items-center justify-between">
@@ -21,7 +32,7 @@ const ProductPreviewCard = ({
         </h2>
 
         <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
-          {status}
+          {displayStatus}
         </span>
       </div>
 
@@ -29,31 +40,38 @@ const ProductPreviewCard = ({
         {image ? (
           <img
             src={image}
-            alt={title}
+            alt={displayTitle}
             className="h-full max-h-56 rounded-xl object-contain"
           />
         ) : (
-          <p className="text-sm text-gray-400">Product image preview</p>
+          <p className="text-sm text-gray-400">Listing image preview</p>
         )}
       </div>
 
       <div className="mt-5">
-        <h3 className="text-base font-semibold text-gray-900">{title}</h3>
-        <p className="mt-1 text-sm text-gray-500">{category}</p>
+        <h3 className="text-base font-semibold text-gray-900">
+          {displayTitle}
+        </h3>
 
-        <p className="mt-3 text-lg font-bold text-gray-900">PKR {price}</p>
+        <p className="mt-1 text-sm text-gray-500">{displayCategory}</p>
 
-        <p className="mt-3 text-sm leading-6 text-gray-600">{description}</p>
+        <p className="mt-3 text-lg font-bold text-gray-900">
+          PKR {displayPrice}
+        </p>
+
+        <p className="mt-3 text-sm leading-6 text-gray-600">
+          {displayDescription}
+        </p>
 
         <div className="mt-5 space-y-3 text-sm text-gray-600">
           <p className="flex items-center gap-2">
             <FaShoppingBag className="text-gray-400" />
-            Stock: {stock}
+            Stock: {displayStock}
           </p>
 
           <p className="flex items-center gap-2">
             <FaMapMarkerAlt className="text-gray-400" />
-            {location}
+            {displayLocation}
           </p>
         </div>
 

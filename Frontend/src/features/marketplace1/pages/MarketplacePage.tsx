@@ -25,6 +25,7 @@ const ITEMS_PER_PAGE = 12;
 
 const MarketplacePage = () => {
   const navigate = useNavigate();
+
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [location, setLocation] = useState("All");
@@ -38,7 +39,7 @@ const MarketplacePage = () => {
   const [selectedProduct, setSelectedProduct] =
     useState<MarketplaceProduct | null>(null);
 
-  const categories = ["All", "Pets", "Food", "Accessories"];
+  const categories = ["All", "Pets", "Food", "Medicine", "Accessories"];
 
   const queryCategory = useMemo(
     () => (category === "All" ? "" : toBackendCategory(category)),
@@ -65,16 +66,22 @@ const MarketplacePage = () => {
 
         setProducts(data.products);
         setTotalPages(data.pagination.totalPages || 1);
-        setSelectedProduct((current) => {
-          if (current && data.products.some((product) => product.id === current.id)) {
-            return current;
+
+        setSelectedProduct((currentProduct) => {
+          if (
+            currentProduct &&
+            data.products.some((product) => product.id === currentProduct.id)
+          ) {
+            return currentProduct;
           }
 
           return data.products[0] || null;
         });
       } catch {
         if (!ignore) {
-          setError("Unable to load marketplace products. Please check your connection and try again.");
+          setError(
+            "Unable to load marketplace products. Please check your connection and try again."
+          );
         }
       } finally {
         if (!ignore) {
@@ -109,12 +116,16 @@ const MarketplacePage = () => {
     try {
       if (isSaved) {
         await removeMarketplaceListing(id);
-        setSavedIds((prev) => prev.filter((savedId) => savedId !== id));
+
+        setSavedIds((previousSavedIds) =>
+          previousSavedIds.filter((savedId) => savedId !== id)
+        );
+
         return;
       }
 
       await saveMarketplaceListing(id);
-      setSavedIds((prev) => [...prev, id]);
+      setSavedIds((previousSavedIds) => [...previousSavedIds, id]);
     } catch {
       navigate("/login", {
         state: {
@@ -140,31 +151,35 @@ const MarketplacePage = () => {
           </h1>
 
           <p className="mt-2 text-gray-500">
-            Buy pets, food, and accessories from verified sellers.
+            Buy and sell pets, food, medicine, and accessories from trusted
+            Pets-Veta users.
           </p>
         </div>
 
-        <Button className="gap-2" onClick={() => navigate("/seller/add-product")}>
+        <Button
+          className="gap-2"
+          onClick={() => navigate("/seller/add-product")}
+        >
           <FaShoppingBag />
-          Sell Your Product
+          Add Listing
         </Button>
       </section>
 
       <section className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
         <div className="grid gap-4 lg:grid-cols-[1.4fr_0.9fr_0.9fr_auto]">
           <Input
-            placeholder="Search pets, food, accessories..."
+            placeholder="Search pets, food, medicine, accessories..."
             value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
+            onChange={(event) => {
+              setSearch(event.target.value);
               setPage(1);
             }}
           />
 
           <select
             value={category}
-            onChange={(e) => {
-              setCategory(e.target.value);
+            onChange={(event) => {
+              setCategory(event.target.value);
               setPage(1);
             }}
             className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-[#178f95]"
@@ -172,13 +187,14 @@ const MarketplacePage = () => {
             <option>All</option>
             <option>Pets</option>
             <option>Food</option>
+            <option>Medicine</option>
             <option>Accessories</option>
           </select>
 
           <select
             value={location}
-            onChange={(e) => {
-              setLocation(e.target.value);
+            onChange={(event) => {
+              setLocation(event.target.value);
               setPage(1);
             }}
             className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-[#178f95]"
@@ -200,15 +216,15 @@ const MarketplacePage = () => {
           {categories.map((item) => (
             <button
               key={item}
+              type="button"
               onClick={() => {
                 setCategory(item);
                 setPage(1);
               }}
-              className={`flex items-center gap-2 rounded-full border px-5 py-2 text-sm font-semibold transition ${
-                category === item
+              className={`flex items-center gap-2 rounded-full border px-5 py-2 text-sm font-semibold transition ${category === item
                   ? "border-[#178f95] bg-[#178f95] text-white"
                   : "border-gray-200 bg-white text-gray-600 hover:border-[#178f95] hover:text-[#178f95]"
-              }`}
+                }`}
             >
               <FaPaw />
               {item}
@@ -218,15 +234,14 @@ const MarketplacePage = () => {
       </section>
 
       <section
-        className={`mt-6 grid gap-6 ${
-          selectedProduct ? "xl:grid-cols-[1fr_330px]" : "grid-cols-1"
-        }`}
+        className={`mt-6 grid gap-6 ${selectedProduct ? "xl:grid-cols-[1fr_330px]" : "grid-cols-1"
+          }`}
       >
         <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
           <div className="mb-5 flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold text-[#07182c]">
-                Latest Pet Listings
+                Latest Marketplace Listings
               </h2>
 
               <p className="text-sm text-gray-500">
@@ -247,11 +262,10 @@ const MarketplacePage = () => {
           </div>
 
           <div
-            className={`grid gap-5 ${
-              selectedProduct
+            className={`grid gap-5 ${selectedProduct
                 ? "lg:grid-cols-2 2xl:grid-cols-3"
                 : "md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
-            }`}
+              }`}
           >
             {loading && (
               <p className="col-span-full rounded-lg bg-gray-50 p-5 text-sm text-gray-500">
