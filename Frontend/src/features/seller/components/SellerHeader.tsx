@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaBell, FaUser } from "react-icons/fa";
+import { FaUser } from "react-icons/fa";
 
 import { useAuth } from "@/features/Auth/hooks/authhook";
+import NotificationBell from "@/shared/components/NotificationBell/NotificationBell";
 
 type AuthUserData = {
   id?: string;
@@ -78,16 +79,7 @@ const SellerHeader = () => {
         </div>
 
         <div className="flex shrink-0 items-center gap-4">
-          <button
-            type="button"
-            className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-gray-100 bg-[#f8fbfb] text-gray-600 shadow-sm transition hover:border-[#178f95]/30 hover:bg-[#eefafa] hover:text-[#178f95]"
-            aria-label="Notifications"
-            title="Notifications"
-          >
-            <FaBell className="text-lg" />
-
-            <span className="absolute right-3 top-3 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white" />
-          </button>
+          <NotificationBell />
 
           <button
             type="button"

@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { Bell, ChevronDown, ShoppingCart, User } from "lucide-react";
+import { ChevronDown, ShoppingCart, User } from "lucide-react";
 
 import NAVLINK from "./navbar.data";
 import Button from "../Button/Button";
 import { useAuth } from "@/features/Auth/hooks/authhook";
 import Logo from "../Logo/Logo";
 import { getCartItems } from "@/features/cart/utils/cartStorage";
+import NotificationBell from "../NotificationBell/NotificationBell";
 
 const Navbar = () => {
   const { user, isAuthenticatedUser } = useAuth();
@@ -109,16 +110,7 @@ const Navbar = () => {
         <div className="hidden items-center gap-3 lg:flex">
           {isAuthenticated ? (
             <>
-              <button
-                type="button"
-                className="relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-100 bg-gray-50 text-gray-600 shadow-sm transition hover:border-[#178f95]/30 hover:bg-[#eefafa] hover:text-[#178f95]"
-                aria-label="Notifications"
-                title="Notifications"
-              >
-                <Bell size={19} />
-
-                <span className="absolute right-2.5 top-2.5 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white" />
-              </button>
+              <NotificationBell />
 
               <NavLink
                 to="/cart"
