@@ -1,4 +1,5 @@
 const prisma = require("../config/prisma");
+const notificationService = require("./notification.service");
 
 const userSelect = {
     id: true,
@@ -43,6 +44,18 @@ const getDirectKey = (userOneId, userTwoId) => {
     return [userOneId, userTwoId].sort().join("__");
 };
 
+const getMessagePreview = (body) => {
+    if (!body) return "You received a new message.";
+
+    const cleanBody = body.trim();
+
+    if (cleanBody.length <= 80) {
+        return cleanBody;
+    }
+
+    return `${cleanBody.slice(0, 80)}...`;
+};
+
 const checkConversationParticipant = async (userId, conversationId) => {
     const participant = await prisma.conversationParticipant.findUnique({
         where: {
@@ -58,6 +71,43 @@ const checkConversationParticipant = async (userId, conversationId) => {
     }
 
     return participant;
+};
+
+const createMessageNotifications = async ({
+    conversationId,
+    senderId,
+    message,
+    receivers,
+}) => {
+    if (!message || !Array.isArray(receivers) || receivers.length === 0) {
+        return;
+    }
+
+    const senderName =
+        message.sender?.fullName ||
+        message.sender?.username ||
+        message.sender?.email ||
+        "Someone";
+
+    try {
+        await notificationService.createManyNotifications({
+            notifications: receivers.map((receiver) => ({
+                userId: receiver.userId,
+                type: "MESSAGE",
+                title: `New message from ${senderName}`,
+                message: getMessagePreview(message.body),
+                link: `/messages?conversationId=${conversationId}`,
+                metadata: {
+                    conversationId,
+                    messageId: message.id,
+                    senderId,
+                    senderName,
+                },
+            })),
+        });
+    } catch (error) {
+        console.log("[Message Notification Error]", error.message);
+    }
 };
 
 const createOrGetDirectConversation = async ({
@@ -257,10 +307,36 @@ const sendTextMessage = async ({ senderId, conversationId, body, replyToId }) =>
             },
         });
 
-        return message;
+        const receivers = await tx.conversationParticipant.findMany({
+            where: {
+                conversationId,
+                userId: {
+                    not: senderId,
+                },
+                leftAt: null,
+            },
+            select: {
+                userId: true,
+                user: {
+                    select: userSelect,
+                },
+            },
+        });
+
+        return {
+            message,
+            receivers,
+        };
     });
 
-    return result;
+    await createMessageNotifications({
+        conversationId,
+        senderId,
+        message: result.message,
+        receivers: result.receivers,
+    });
+
+    return result.message;
 };
 
 const markConversationAsRead = async ({ userId, conversationId }) => {

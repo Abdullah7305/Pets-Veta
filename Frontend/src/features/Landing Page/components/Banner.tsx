@@ -7,7 +7,6 @@ import {
   FaUsers,
   FaCalendarAlt,
   FaShoppingBag,
-  FaPaw,
 } from "react-icons/fa";
 
 import img from "@/assets/shared/images/bannerImage.png";
@@ -18,10 +17,6 @@ export const Banner = () => {
   return (
     <section className="relative mt-20 overflow-hidden bg-gradient-to-br from-[#f4fbff] via-white to-[#e8fbfa] px-6 py-16 lg:px-16 lg:py-20 flex flex-col lg:flex-row items-center justify-between gap-10">
       <div className="w-full lg:w-1/2 z-10">
-        <div className="inline-flex items-center gap-2 bg-white text-[#07182c] font-semibold px-5 py-3 rounded-full shadow-lg mb-7">
-          <FaPaw className="text-[#009f9d]" />
-          <span>Trusted by 10,000+ pet parents</span>
-        </div>
 
         <h1 className="text-[40px] md:text-[56px] lg:text-[64px] leading-tight font-extrabold text-[#07182c] mb-6">
           Better care for <br />

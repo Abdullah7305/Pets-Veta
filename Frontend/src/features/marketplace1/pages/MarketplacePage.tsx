@@ -1,83 +1,103 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  FaShoppingBag,
-  FaSlidersH,
-  FaThLarge,
-} from "react-icons/fa";
+import { FaShoppingBag } from "react-icons/fa";
 
 import Button from "@/shared/components/Button/Button";
-import MarketplaceProductCard from "../components/MarketplaceProductCard";
-import MarketplaceDetailPanel from "../components/MarketplaceDetailPanel";
-import MarketplacePagination from "../components/MarketplacePagination";
-import MarketplaceFilters from "../components/MarketplaceFilters";
+import MarketplaceCategoryNav from "../components/MarketplaceCategoryNav";
+import MarketplaceCategorySection from "../components/MarketplaceCategorySection";
 import {
   fetchMarketplaceProducts,
   fetchSavedMarketplaceListings,
   removeMarketplaceListing,
   saveMarketplaceListing,
-  toBackendCategory,
   type MarketplaceProduct,
 } from "../api/marketplace.api";
+import type {
+  MarketplaceCategoryConfig,
+  MarketplaceCategorySlug,
+} from "../types/marketplace.types";
 
-const ITEMS_PER_PAGE = 12;
+const SECTION_LIMIT = 4;
+
+const marketplaceCategories: MarketplaceCategoryConfig[] = [
+  {
+    slug: "pets",
+    title: "Pets",
+    subtitle: "Find pets listed by trusted Pets-Veta users.",
+    backendCategory: "PETS",
+    viewAllLabel: "View All Pets",
+  },
+  {
+    slug: "food",
+    title: "Food",
+    subtitle: "Shop food and nutrition products for your pets.",
+    backendCategory: "FOOD",
+    viewAllLabel: "View All Food",
+  },
+  {
+    slug: "accessories",
+    title: "Accessories",
+    subtitle: "Explore collars, toys, grooming tools, and pet essentials.",
+    backendCategory: "ACCESSORIES",
+    viewAllLabel: "View All Accessories",
+  },
+];
+
+type CategoryProducts = Record<MarketplaceCategorySlug, MarketplaceProduct[]>;
+
+const initialCategoryProducts: CategoryProducts = {
+  pets: [],
+  food: [],
+  accessories: [],
+};
 
 const MarketplacePage = () => {
   const navigate = useNavigate();
 
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("All");
-  const [location, setLocation] = useState("All");
-  const [page, setPage] = useState(1);
+  const [categoryProducts, setCategoryProducts] =
+    useState<CategoryProducts>(initialCategoryProducts);
+
   const [savedIds, setSavedIds] = useState<string[]>([]);
-  const [products, setProducts] = useState<MarketplaceProduct[]>([]);
-  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-  const [selectedProduct, setSelectedProduct] =
-    useState<MarketplaceProduct | null>(null);
-
-  const queryCategory = useMemo(
-    () => (category === "All" ? "" : toBackendCategory(category)),
-    [category]
-  );
 
   useEffect(() => {
     let ignore = false;
 
-    const loadProducts = async () => {
+    const loadMarketplaceSections = async () => {
       try {
         setLoading(true);
         setError("");
 
-        const data = await fetchMarketplaceProducts({
-          page,
-          limit: ITEMS_PER_PAGE,
-          search,
-          category: queryCategory,
-          location: location === "All" ? "" : location,
-        });
+        const results = await Promise.all(
+          marketplaceCategories.map(async (category) => {
+            const data = await fetchMarketplaceProducts({
+              page: 1,
+              limit: SECTION_LIMIT,
+              category: category.backendCategory,
+            });
+
+            return [category.slug, data.products] as const;
+          }),
+        );
 
         if (ignore) return;
 
-        setProducts(data.products);
-        setTotalPages(data.pagination.totalPages || 1);
+        const nextProducts: CategoryProducts = {
+          pets: [],
+          food: [],
+          accessories: [],
+        };
 
-        setSelectedProduct((currentProduct) => {
-          if (
-            currentProduct &&
-            data.products.some((product) => product.id === currentProduct.id)
-          ) {
-            return currentProduct;
-          }
-
-          return data.products[0] || null;
+        results.forEach(([slug, products]) => {
+          nextProducts[slug] = products;
         });
+
+        setCategoryProducts(nextProducts);
       } catch {
         if (!ignore) {
           setError(
-            "Unable to load marketplace products. Please check your connection and try again."
+            "Unable to load marketplace sections. Please check your connection and try again.",
           );
         }
       } finally {
@@ -87,15 +107,15 @@ const MarketplacePage = () => {
       }
     };
 
-    void loadProducts();
+    void loadMarketplaceSections();
 
     return () => {
       ignore = true;
     };
-  }, [page, search, queryCategory, location]);
+  }, []);
 
   useEffect(() => {
-    const loadSaved = async () => {
+    const loadSavedListings = async () => {
       try {
         const saved = await fetchSavedMarketplaceListings();
         setSavedIds(saved.map((item) => item.productId));
@@ -104,7 +124,7 @@ const MarketplacePage = () => {
       }
     };
 
-    void loadSaved();
+    void loadSavedListings();
   }, []);
 
   const toggleSave = async (id: string) => {
@@ -115,14 +135,19 @@ const MarketplacePage = () => {
         await removeMarketplaceListing(id);
 
         setSavedIds((previousSavedIds) =>
-          previousSavedIds.filter((savedId) => savedId !== id)
+          previousSavedIds.filter((savedId) => savedId !== id),
         );
 
         return;
       }
 
       await saveMarketplaceListing(id);
-      setSavedIds((previousSavedIds) => [...previousSavedIds, id]);
+
+      setSavedIds((previousSavedIds) =>
+        previousSavedIds.includes(id)
+          ? previousSavedIds
+          : [...previousSavedIds, id],
+      );
     } catch {
       navigate("/login", {
         state: {
@@ -132,145 +157,70 @@ const MarketplacePage = () => {
     }
   };
 
-  const handleSearchChange = (value: string) => {
-    setSearch(value);
-    setPage(1);
-  };
-
-  const handleCategoryChange = (value: string) => {
-    setCategory(value);
-    setPage(1);
-  };
-
-  const handleLocationChange = (value: string) => {
-    setLocation(value);
-    setPage(1);
-  };
-
-  const clearFilters = () => {
-    setSearch("");
-    setCategory("All");
-    setLocation("All");
-    setPage(1);
+  const openProductDetails = (productId: string) => {
+    navigate(`/marketplace/product/${productId}`);
   };
 
   return (
-    <main className="min-h-screen bg-[#f7fbfb] px-6 py-8 lg:px-12">
-      <section className="mb-6 mt-20 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div>
-          <h1 className="text-4xl font-bold text-[#07182c]">
-            Pet Marketplace
-          </h1>
+    <main className="relative min-h-screen overflow-hidden bg-gradient-to-r from-[#e7fbfa] via-[#f6ffff] to-[#fff6f1] px-6 py-8 lg:px-12">
+      <div className="pointer-events-none absolute -left-28 top-20 h-96 w-96 rounded-full bg-white/75 blur-3xl" />
+      <div className="pointer-events-none absolute -right-32 top-[520px] h-96 w-96 rounded-full bg-[#f9c5a8]/35 blur-3xl" />
+      <div className="pointer-events-none absolute left-[40%] top-[260px] h-72 w-72 rounded-full bg-[#178f95]/10 blur-3xl" />
 
-          <p className="mt-2 text-gray-500">
-            Buy and sell pets, food, medicine, and accessories from trusted
-            Pets-Veta users.
-          </p>
-        </div>
+      <div className="relative z-10">
+        <section className="relative mb-8 mt-20 overflow-hidden rounded-[34px] bg-gradient-to-r from-[#12aaa5] via-[#178f95] to-[#079895] p-6 shadow-[0_24px_70px_rgba(23,143,149,0.22)] lg:p-10">
+          <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-white/15 blur-3xl" />
+          <div className="pointer-events-none absolute -right-24 bottom-[-80px] h-80 w-80 rounded-full bg-[#f9c5a8]/25 blur-3xl" />
+          <div className="pointer-events-none absolute right-12 top-10 hidden h-24 w-24 rounded-full border-[10px] border-white/15 lg:block" />
 
-        <Button
-          className="gap-2"
-          onClick={() => navigate("/seller/add-product")}
-        >
-          <FaShoppingBag />
-          Add Listing
-        </Button>
-      </section>
+          <div className="relative z-10 flex flex-col gap-7 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-3xl">
+              <h1 className="text-[34px] font-black leading-tight tracking-[-0.05em] text-white md:text-[52px]">
+                Shop and explore trusted{" "}
+                <span className="text-[#fff1ea]">pet listings</span>
+              </h1>
 
-      <MarketplaceFilters
-        search={search}
-        category={category}
-        location={location}
-        onSearch={handleSearchChange}
-        onCategory={handleCategoryChange}
-        onLocation={handleLocationChange}
-        onClear={clearFilters}
-      />
-
-      <section
-        className={`mt-6 grid gap-6 ${
-          selectedProduct ? "xl:grid-cols-[1fr_330px]" : "grid-cols-1"
-        }`}
-      >
-        <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-          <div className="mb-5 flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-[#07182c]">
-                Latest Marketplace Listings
-              </h2>
-
-              <p className="text-sm text-gray-500">
-                Showing {products.length} available listings
+              <p className="mt-5 max-w-2xl text-base leading-8 text-white/82">
+                Browse pets, food, and accessories from trusted Pets-Veta users.
+                Select a category to open full listings with search, location
+                filters, and pagination.
               </p>
+
+              <MarketplaceCategoryNav categories={marketplaceCategories} />
             </div>
 
-            <div className="hidden items-center gap-3 lg:flex">
-              <Button variant="outline" size="sm" className="gap-2">
-                <FaSlidersH />
-                Sort by: Newest First
-              </Button>
-
-              <Button variant="outline" size="sm">
-                <FaThLarge />
-              </Button>
-            </div>
+            <Button
+              className="w-fit gap-2 self-start !border-white !bg-white !text-[#178f95] hover:!bg-[#07182c] hover:!text-white lg:self-center"
+              onClick={() => navigate("/seller/add-product")}
+            >
+              <FaShoppingBag />
+              Add Listing
+            </Button>
           </div>
+        </section>
 
-          <div
-            className={`grid gap-5 ${
-              selectedProduct
-                ? "lg:grid-cols-2 2xl:grid-cols-3"
-                : "md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
-            }`}
-          >
-            {loading && (
-              <p className="col-span-full rounded-lg bg-gray-50 p-5 text-sm text-gray-500">
-                Loading marketplace products...
-              </p>
-            )}
+        <section className="rounded-[34px] border border-white/70 bg-white/65 p-6 shadow-[0_18px_55px_rgba(15,23,42,0.07)] backdrop-blur lg:p-8">
+          <div className="space-y-10">
+            {marketplaceCategories.map((category, index) => (
+              <div key={category.slug}>
+                <MarketplaceCategorySection
+                  category={category}
+                  products={categoryProducts[category.slug]}
+                  loading={loading}
+                  error={error}
+                  savedIds={savedIds}
+                  onSave={toggleSave}
+                  onDetails={openProductDetails}
+                />
 
-            {error && (
-              <p className="col-span-full rounded-lg bg-red-50 p-5 text-sm font-medium text-red-600">
-                {error}
-              </p>
-            )}
-
-            {!loading && !error && products.length === 0 && (
-              <p className="col-span-full rounded-lg bg-gray-50 p-5 text-sm text-gray-500">
-                No active listings found.
-              </p>
-            )}
-
-            {products.map((product) => (
-              <MarketplaceProductCard
-                key={product.id}
-                product={product}
-                saved={savedIds.includes(product.id)}
-                onSave={() => toggleSave(product.id)}
-                onDetails={() => navigate(`/marketplace/product/${product.id}`)}
-              />
+                {index !== marketplaceCategories.length - 1 && (
+                  <div className="mt-10 h-px w-full bg-[#178f95]/10" />
+                )}
+              </div>
             ))}
           </div>
-
-          {totalPages > 1 && (
-            <MarketplacePagination
-              page={page}
-              totalPages={totalPages}
-              onPageChange={(nextPage) => {
-                setPage(nextPage);
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-            />
-          )}
-        </div>
-
-        {selectedProduct && (
-          <MarketplaceDetailPanel
-            product={selectedProduct}
-            onClose={() => setSelectedProduct(null)}
-          />
-        )}
-      </section>
+        </section>
+      </div>
     </main>
   );
 };
