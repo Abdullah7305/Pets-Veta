@@ -19,6 +19,7 @@ const createDoctor = async (doctorData) => {
                 create: {
                     education: doctorData.education,
                     specialization: doctorData.specialization,
+                    medicalLicenseNumber: doctorData.medicalLicenseNumber,
                     address: doctorData.address,
                     experience: parseInt(doctorData.experience),
                     fees: parseInt(doctorData.fees)
@@ -232,7 +233,7 @@ const verifyEmail = async (email) => {
 
         }
     })
-    if (validUser.userRole === 'DOCTOR') {
+    if (validUser && validUser.userRole === 'DOCTOR') {
         if (validUser.doctors.isVerified === VerificationStatus.PENDING) {
             throw new AppError("Doctor is Not Allowed Yet", 400);
             return;

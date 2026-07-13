@@ -5,6 +5,7 @@ const requireFields = require('../utils/validateRequest');
 const authServices = require('../services/auth.services');
 const doctorServices = require('../services/doctor.services');
 const { uploadToCloudinary } = require('../utils/cloudinary.utils');
+const prisma=require('../config/prisma')
 
 const fetchDoctorServices = catchAsync(async (req, res) => {
     const email = req.user.email;
@@ -99,7 +100,7 @@ const updateDoctorService = catchAsync(async (req, res) => {
 
 const fetchDoctorAppointments = catchAsync(async (req, res) => {
     const appointments = await doctorServices.getDoctorAppointments(req.user.id);
-    console.log("Doctor Appointemns are ",appointments);
+    console.log("Doctor Appointemns are ", appointments);
     return sendResponse(
         res,
         200,
@@ -141,6 +142,7 @@ const updateDoctorProfile = catchAsync(async (req, res) => {
         username,
         phone,
         specialization,
+        medicalLicenseNumber,
         education,
         experience,
         fees,
@@ -154,6 +156,7 @@ const updateDoctorProfile = catchAsync(async (req, res) => {
             "username",
             "phone",
             "specialization",
+            "medicalLicenseNumber",
             "education",
             "experience",
             "fees",
@@ -182,6 +185,7 @@ const updateDoctorProfile = catchAsync(async (req, res) => {
             phone,
             profileImageUrl,
             specialization,
+            medicalLicenseNumber,
             education,
             experience,
             fees,
@@ -204,10 +208,34 @@ const completeAppointment = catchAsync(async (req, res) => {
     const userId = req.user.id;
 
     const updated = await doctorServices.completeAppointment(appointmentId, userId);
-    console.log("Appointemnt ",updated);
+    console.log("Appointemnt ", updated);
 
     return sendResponse(res, 200, "Appointment marked as completed successfully", updated);
 });
+
+const initiateStripeOnboarding = catchAsync(async (req, res) => {
+    const userId = req.user.id;
+    const result = await doctorServices.setupStripeConnect(userId);
+    return sendResponse(res, 200, "Stripe Connect onboarding URL generated", result);
+});
+
+const checkStripeConnectStatus = catchAsync(async (req, res) => {
+    const userId = req.user.id;
+    const result = await doctorServices.getStripeConnectStatus(userId);
+    return sendResponse(res, 200, "Stripe Connect onboarding status synchronized", result);
+});
+
+const verifyAppointmentCode = catchAsync(async (req, res) => {
+    const { appointmentCode } = req.body;
+    const doctor = await prisma.doctor.findUnique({ where: { userId: req.user.id } });
+
+    if (!doctor) throw new AppError("Doctor not found", 404);
+
+    const result = await doctorServices.verifyAppointmentCode(doctor.id, appointmentCode);
+    return sendResponse(res, 200, "Payment released to doctor successfully", result);
+});
+
+
 
 module.exports = {
     createDoctorServicePricing,
@@ -217,5 +245,8 @@ module.exports = {
     fetchDoctorAppointments,
     getDoctorProfile,
     updateDoctorProfile,
-    completeAppointment
+    completeAppointment,
+    initiateStripeOnboarding,
+    checkStripeConnectStatus,
+    verifyAppointmentCode
 };

@@ -22,6 +22,7 @@ exports.createOrGetDirectConversation = async (req, res) => {
             data: conversation,
         });
     } catch (error) {
+        console.log("Error is ",error)
         return res.status(400).json({
             success: false,
             message: error.message,

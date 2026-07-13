@@ -4,7 +4,7 @@ export type DoctorAppointment = {
   id: string;
   fees: number;
   checkupTime: string;
-  status: "PENDING" | "COMPLETED";
+  status: "PENDING" | "COMPLETED" | "CONFIRMED"; // 💡 Added CONFIRMED status
   petIssueReport: {
     id: string;
     issue: string;
@@ -36,6 +36,16 @@ export const getDoctorAppointments = async () => {
       await api.get<ApiResponse<DoctorAppointment[]>>("doctor/appointments");
 
     return response.data?.data || [];
+  } catch (error) {
+    handleAxiosError(error);
+    throw error;
+  }
+};
+
+export const verifyAppointmentCodeApi = async (appointmentCode: string): Promise<ApiResponse<any>> => {
+  try {
+    const response = await api.post("doctor/appointments/verify-code", { appointmentCode });
+    return response.data;
   } catch (error) {
     handleAxiosError(error);
     throw error;

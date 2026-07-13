@@ -10,12 +10,15 @@ export type DoctorProfileData = {
   phone: string;
   profileImageUrl: string;
   specialization: string;
+  medicalLicenseNumber: string;
   education: string;
   address: string;
   experience: number;
   fees: number;
   isAvailable: boolean;
   isVerified: "PENDING" | "APPROVED" | "REJECTED";
+  stripeOnboardingCompleted?: boolean;
+  stripeConnectedAccountId?: string | null;
 };
 
 type BackendDoctorProfileData = {
@@ -28,12 +31,15 @@ type BackendDoctorProfileData = {
   doctors: {
     id: string;
     specialization: string;
+    medicalLicenseNumber: string;
     education: string;
     address: string;
     experience: number;
     fees: number;
     isAvailable: boolean;
     isVerified: "PENDING" | "APPROVED" | "REJECTED";
+     stripeOnboardingCompleted?: boolean;
+    stripeConnectedAccountId?: string | null;
   } | null;
 };
 
@@ -73,12 +79,16 @@ const mapDoctorProfile = (
       phone: user.phone || "",
       profileImageUrl: user.profileImageUrl || "",
       specialization: doctor.specialization || "",
+      medicalLicenseNumber: doctor.medicalLicenseNumber || "",
       education: doctor.education || "",
       address: doctor.address || "",
       experience: doctor.experience || 0,
       fees: doctor.fees || 0,
       isAvailable: doctor.isAvailable ?? false,
       isVerified: doctor.isVerified,
+      stripeOnboardingCompleted: doctor.stripeOnboardingCompleted ?? false,
+      stripeConnectedAccountId: doctor.stripeConnectedAccountId || null,
+    
     },
   };
 };
@@ -118,5 +128,32 @@ export const updateDoctorProfileApi = async (
   } catch (error) {
     handleAxiosError(error);
     throw error;
+  }
+};
+
+
+export const getStripeOnboardingLinkApi = async () => {
+  try {
+    const response = await api.get<{
+      success: boolean;
+      message: string;
+      data: { onboardingUrl: string; stripeConnectedAccountId: string };
+    }>("/doctor/connect/onboarding");
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error);
+  }
+};
+
+export const getStripeStatusApi = async () => {
+  try {
+    const response = await api.get<{
+      success: boolean;
+      message: string;
+      data: { stripeOnboardingCompleted: boolean; stripeConnectedAccountId: string };
+    }>("/doctor/connect/status");
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error);
   }
 };

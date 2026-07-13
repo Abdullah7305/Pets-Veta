@@ -1,6 +1,7 @@
 import PetOwnerDashboardPage from "./pages/PetOwnerDashboardPage";
 import PetOwnerAppointmentsPage from "./pages/PetOwnerAppointmentsPage";
-import { PetOwnerProtectedRoutes } from "@/ProtectedRoutes/PetOwnerProtectedRoutes"; 
+import { PetOwnerProtectedRoutes } from "@/ProtectedRoutes/PetOwnerProtectedRoutes";
+import PetOwnerOrdersPage from "./pages/PetOwnerOrdersPage";
 
 export const petOwnerDashboardRoutes = [
   {
@@ -16,6 +17,14 @@ export const petOwnerDashboardRoutes = [
     element: (
       <PetOwnerProtectedRoutes>
         <PetOwnerAppointmentsPage />
+      </PetOwnerProtectedRoutes>
+    ),
+  },
+  {
+    path: "/pet-owner/orders",
+    element: (
+      <PetOwnerProtectedRoutes>
+        <PetOwnerOrdersPage />
       </PetOwnerProtectedRoutes>
     ),
   },

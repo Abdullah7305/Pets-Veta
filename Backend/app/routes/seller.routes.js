@@ -10,6 +10,8 @@ const {
   deleteProduct,
   updateProductStock,
   getSellerOrders,
+  initiateSellerStripeOnboarding,
+  checkSellerStripeConnectStatus,
 } = require("../controllers/seller.controller");
 
 const { protect } = require("../middleware/auth.middleware");
@@ -29,5 +31,8 @@ router.patch("/product/:id/stock", protect, updateProductStock);
 
 
 router.get("/orders", protect, getSellerOrders);
+
+router.get("/connect/onboarding", protect, initiateSellerStripeOnboarding);
+router.get("/connect/status", protect, checkSellerStripeConnectStatus);
 
 module.exports = router;

@@ -1,5 +1,101 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const { stripe } = require('../config/stripe');
+
+
+
+exports.setupSellerStripeConnect = async (userId) => {
+  const sellerProfile = await prisma.sellerProfile.findUnique({
+    where: { userId }
+  });
+
+  if (!sellerProfile) {
+    throw new Error("Seller profile not found");
+  }
+
+  let stripeAccountId = sellerProfile.stripeConnectedAccountId;
+
+  if (!stripeAccountId) {
+
+    // Create an Express Stripe account using correct controller parameters
+    const account = await stripe.accounts.create({
+      controller: {
+        stripe_dashboard: {
+          type: 'express',
+        },
+        fees: {
+          payer: 'application',
+        },
+        losses: {
+          payments: 'application', // 💡 Fixed: Changed 'payer' to 'payments'
+        },
+      },
+      metadata: {
+        sellerProfileId: sellerProfile.id,
+        userId: userId,
+      }
+    });
+
+    stripeAccountId = account.id;
+
+
+    await prisma.sellerProfile.update({
+      where: { id: sellerProfile.id },
+      data: {
+        stripeConnectedAccountId: stripeAccountId
+      }
+    });
+  }
+
+  const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+  const accountLink = await stripe.accountLinks.create({
+    account: stripeAccountId,
+    refresh_url: `${clientUrl}/seller/profile?stripe=refresh`,
+    return_url: `${clientUrl}/seller/profile?stripe=success`,
+    type: 'account_onboarding',
+  });
+
+  return {
+    onboardingUrl: accountLink.url,
+    stripeConnectedAccountId: stripeAccountId
+  };
+};
+
+
+exports.getSellerStripeConnectStatus = async (userId) => {
+  const sellerProfile = await prisma.sellerProfile.findUnique({
+    where: { userId }
+  });
+
+  if (!sellerProfile) {
+    throw new Error("Seller profile not found");
+  }
+
+  if (!sellerProfile.stripeConnectedAccountId) {
+    return {
+      stripeOnboardingCompleted: false,
+      stripeConnectedAccountId: null
+    };
+  }
+
+  const account = await stripe.accounts.retrieve(sellerProfile.stripeConnectedAccountId);
+  const completed = account.charges_enabled && account.details_submitted;
+
+  if (completed !== sellerProfile.stripeOnboardingCompleted) {
+    await prisma.sellerProfile.update({
+      where: { id: sellerProfile.id },
+
+      data: {
+        stripeOnboardingCompleted: completed
+      }
+    });
+  }
+
+  return {
+    stripeOnboardingCompleted: completed,
+    stripeConnectedAccountId: sellerProfile.stripeConnectedAccountId
+  };
+};
 
 const parseRequiredPrice = (price) => {
   const finalPrice = Number(price);
@@ -156,6 +252,11 @@ exports.createProduct = async (userId, payload = {}) => {
   if (!title || !category || price === undefined || price === "") {
     throw new Error("Title, category and price are required");
   }
+  if (category !== "PETS") {
+    if (!sellerProfile.stripeOnboardingCompleted) {
+      throw new Error("You must connect your Stripe payout account before listing non-pet products like food or accessories.");
+    }
+  }
 
   const finalPrice = parseRequiredPrice(price);
   const finalStock = stock === undefined || stock === "" ? 0 : parseStock(stock);
@@ -186,9 +287,9 @@ exports.createProduct = async (userId, payload = {}) => {
         create:
           Array.isArray(images) && images.length > 0
             ? images.map((img) => ({
-                publicUrl: img.publicUrl,
-                publicId: img.publicId,
-              }))
+              publicUrl: img.publicUrl,
+              publicId: img.publicId,
+            }))
             : [],
       },
     },
@@ -243,6 +344,12 @@ exports.updateProduct = async (userId, productId, payload = {}) => {
 
   if (!product) {
     throw new Error("Product not found or not allowed");
+  }
+
+  if (payload.category && payload.category !== "PETS") {
+    if (!sellerProfile.stripeOnboardingCompleted) {
+      throw new Error("You must connect your Stripe payout account before listing non-pet products like food or accessories.");
+    }
   }
 
   const data = {
@@ -344,6 +451,10 @@ exports.getSellerOrders = async (userId) => {
   return prisma.marketplaceOrder.findMany({
     where: {
       sellerId: sellerProfile.id,
+
+      status: {
+        not: "PENDING"
+      }
     },
     include: {
       buyer: {

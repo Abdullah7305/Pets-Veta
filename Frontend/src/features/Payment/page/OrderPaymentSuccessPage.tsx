@@ -159,7 +159,13 @@ const OrderPaymentSuccessPage = () => {
 
                 <div className="mt-6 flex flex-col gap-3">
                     <button
-                        onClick={() => navigate("/marketplace1")}
+                        onClick={() => {
+                            // 💡 Clean up session processing flags upon success screen unload navigation
+                            if (orderId) {
+                                sessionStorage.removeItem(`payment-processing-${orderId}`);
+                            }
+                            navigate("/marketplace1");
+                        }}
                         className="w-full rounded-xl bg-[#178f95] py-3 text-sm font-bold text-white hover:bg-[#12757a] transition flex items-center justify-center gap-2"
                     >
                         <ShoppingBag size={16} />

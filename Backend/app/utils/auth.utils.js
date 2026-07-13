@@ -13,6 +13,100 @@ const otpGenerator = () => {
 
   return otp.toString();
 }
+const sendAppointmentConfirmationEmail = async (email, appointmentDetails) => {
+  const { doctorName, checkupTime, appointmentCode } = appointmentDetails;
+
+  const formattedTime = new Date(checkupTime).toLocaleString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+  try {
+    const info = await transporter.sendMail({
+      from: 'abdullahsuleman755@gmail.com',
+      to: email,
+      subject: "🐾 Pets Veta Appointment Confirmation!",
+      text: `Your appointment with Dr. ${doctorName} on ${formattedTime} is confirmed. Present Verification Code: ${appointmentCode} during your visit.`,
+      html: `
+      <body style="margin: 0; padding: 0; background-color: #eaf1ed; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #eaf1ed; padding: 40px 20px;">
+          <tr>
+            <td align="center">
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #fdfbf7; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
+                
+                <!-- Brand Title -->
+                <tr>
+                  <td style="padding: 40px 40px 20px 40px;">
+                    <table width="100%">
+                      <tr>
+                        <td width="50%">
+                          <h2 style="color: #078b91; margin: 0; font-family: 'Helvetica Neue', Arial, sans-serif;">Pets Veta</h2>
+                          <p style="color: #553e2a; font-size: 13px; margin: 5px 0 0 0;">Compassion. Care. Trust.</p>
+                        </td>
+                        <td width="50%" style="text-align: right;">
+                          <span style="font-size: 13px; font-weight: bold; color: #a58e7c; background-color: #faeadd; padding: 5px 12px; border-radius: 8px;">CONFIRMED</span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Intro -->
+                <tr>
+                  <td style="padding: 20px 40px; text-align: center;">
+                    <h1 style="color: #4a3320; font-size: 26px; margin-bottom: 10px;">Booking Confirmed!</h1>
+                    <p style="color: #5a4b3e; font-size: 15px; line-height: 1.6; margin: 0;">
+                      Your medical checkup session with <strong>Dr. ${doctorName}</strong> has been scheduled and funded successfully.
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- Details Card -->
+                <tr>
+                  <td style="padding: 10px 40px;">
+                    <div style="background-color: #f7fbfb; border: 1px solid #d4e2e0; border-radius: 16px; padding: 20px; text-align: left;">
+                      <p style="margin: 0 0 10px 0; color: #334155; font-size: 14px; font-family: sans-serif;"><strong>Consultation Date & Time:</strong></p>
+                      <p style="margin: 0; color: #078b91; font-size: 16px; font-weight: bold;">${formattedTime}</p>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Verification Box -->
+                <tr>
+                  <td align="center" style="padding: 30px 40px 40px 40px; text-align: center;">
+                    <p style="color: #4a3320; font-size: 13px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px;">
+                      Present this verification code to the doctor during your visit:
+                    </p>
+                    <div style="background: #faeadd; padding: 20px; font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #5a3f28; border-radius: 12px; display: inline-block; min-width: 220px; border: 2px dashed #e5ccbe;">
+                      ${appointmentCode}
+                    </div>
+                    <p style="color: #8c7b70; font-size: 12px; margin-top: 20px; line-height: 1.6; max-width: 440px;">
+                      Please keep this code secure. The doctor will verify this code during the checkup to securely authorize and release the consult payment from the platform.
+                    </p>
+                  </td>
+                </tr>
+
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+      `,
+    });
+
+    console.log("Appointment confirmation email sent: %s", info.messageId);
+    return info;
+  } catch (err) {
+    console.error("Failed to send appointment confirmation email:", err);
+    throw err;
+  }
+};
+
 
 const sendOtp = async (email, otpCode) => {
   try {
@@ -169,5 +263,6 @@ const sendStatusEmail = async (email, status) => {
 module.exports = {
   otpGenerator,
   sendOtp,
-  sendStatusEmail
+  sendStatusEmail,
+  sendAppointmentConfirmationEmail
 }

@@ -39,6 +39,7 @@ export type DoctorProfileData = {
   rating: number;
   reviews: number;
   licenseNumber: string;
+  medicalLicenseNumber?: string;
   languages: string;
   address: string;
   about: string;

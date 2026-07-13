@@ -3,12 +3,12 @@ import { useEffect, useState } from "react";
 
 import {
   getDoctorAppointments,
-  completeAppointmentApi, // 👈 Imported API function
+  verifyAppointmentCodeApi, // 💡 Phase 5: Import new code verification API
   type DoctorAppointment,
 } from "../api/doctorAppointments.api";
 import PatientCard from "../components/PatientCard";
 import Button from "../../../shared/components/Button/Button";
-import CompleteAppointmentModal from "../components/CompleteAppointmentModal"; // 👈 Imported modal
+import CompleteAppointmentModal from "../components/CompleteAppointmentModal";
 import { showToast } from "@/shared/utils/toast";
 
 const PatientsPage = () => {
@@ -26,8 +26,6 @@ const PatientsPage = () => {
       setErrorMessage("");
 
       const data = await getDoctorAppointments();
-      console.log("Appointemnts are ", data);
-
       setAppointments(data);
     } catch (error) {
       setErrorMessage(
@@ -49,15 +47,16 @@ const PatientsPage = () => {
     setIsModalOpen(true);
   };
 
-  const handleConfirmComplete = async () => {
+  // 💡 Phase 5: Confirms the modal code input, release payout & refreshes page
+  const handleConfirmComplete = async (code: string) => {
     if (!selectedAppointmentId) return;
 
     try {
       setIsCompleting(true);
-      const response = await completeAppointmentApi(selectedAppointmentId);
+      const response = await verifyAppointmentCodeApi(code);
 
       if (response?.success) {
-        showToast.success("Appointment completed successfully!");
+        showToast.success(response.message || "Code verified. Payout initialized!");
         setIsModalOpen(false);
         setSelectedAppointmentId(null);
         await loadAppointments();
@@ -65,7 +64,8 @@ const PatientsPage = () => {
         showToast.error("Failed to complete appointment.");
       }
     } catch (err: any) {
-      showToast.error(err?.message || "An error occurred.");
+      const apiErrorMessage = err?.response?.data?.message || err?.message || "An error occurred.";
+      showToast.error(apiErrorMessage);
     } finally {
       setIsCompleting(false);
     }
@@ -78,11 +78,9 @@ const PatientsPage = () => {
           <p className="text-xs font-black uppercase tracking-[0.25em] text-[#078b91]">
             Doctor Panel
           </p>
-
           <h1 className="mt-2 text-3xl font-black text-[#101b3d]">
             Patients
           </h1>
-
           <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-slate-500">
             View pet owners who booked appointments with you and review their
             pet issue details.
@@ -130,18 +128,16 @@ const PatientsPage = () => {
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#F0FAF7] text-[#078b91]">
             <Users size={26} />
           </div>
-
           <h2 className="mt-4 text-xl font-black text-[#101b3d]">
             No booked patients yet
           </h2>
-
           <p className="mt-2 text-sm font-medium text-slate-500">
             New appointment bookings will appear here.
           </p>
         </div>
       )}
 
-      {/* 💡 Confirmation Modal integration */}
+      {/* Verification Code Confirmation Modal */}
       <CompleteAppointmentModal
         isOpen={isModalOpen}
         onClose={() => {

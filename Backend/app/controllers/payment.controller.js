@@ -1,7 +1,7 @@
 const catchAsync = require("../utils/CatchAsync");
 const sendResponse = require("../utils/SendResponse");
 const stripeService = require("../services/stripe.service");
-
+const authUtils = require('../utils/auth.utils')
 const { stripe } = require("../config/stripe");
 const prisma = require("../config/prisma");
 
@@ -64,7 +64,7 @@ const stripeWebhook = async (req, res) => {
       sig,
       process.env.STRIPE_WEBHOOK_SECRET
     );
-    
+
   } catch (err) {
     console.error("Webhook signature verification failed:", err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
@@ -86,7 +86,7 @@ const stripeWebhook = async (req, res) => {
 
     const paymentIntent = event.data.object;
     const appointmentIdFromMetadata = paymentIntent.metadata?.appointmentId;
-    const orderIdFromMetadata = paymentIntent.metadata?.orderId; // 💡 Added: extract order identity from Stripe metadata
+    const orderIdFromMetadata = paymentIntent.metadata?.orderId;
 
     const paymentEvent =
       existingEvent ||
@@ -309,6 +309,30 @@ const handlePaymentIntentSucceeded = async (paymentIntent, paymentEventId) => {
       },
     });
   });
+
+  try {
+    const fullDetails = await prisma.appointment.findUnique({
+      where: { id: appointment.id },
+      include: {
+        petOwner: { select: { email: true } },
+        doctor: { include: { user: { select: { fullName: true } } } }
+      }
+    });
+
+    if (fullDetails && fullDetails.petOwner?.email) {
+
+      authUtils.sendAppointmentConfirmationEmail(
+        fullDetails.petOwner.email,
+        {
+          doctorName: fullDetails.doctor.user.fullName,
+          checkupTime: fullDetails.checkupTime,
+          appointmentCode: fullDetails.appointmentCode,
+        }
+      ).catch(err => console.error("[Webhook Email Dispatch Error]:", err));
+    }
+  } catch (error) {
+    console.error("[Webhook Post-processing Error]:", error);
+  }
 };
 
 const handlePaymentIntentFailed = async (paymentIntent, paymentEventId) => {
@@ -466,7 +490,7 @@ const getOrderPaymentStatus = catchAsync(async (req, res) => {
   return sendResponse(res, 200, "Order payment status fetched successfully", result);
 });
 
-// 💡 Added: Dedicated e-commerce webhook handler with built-in real-time stock recovery
+
 const handleOrderWebhook = async (eventType, paymentIntent, paymentEventId) => {
   const orderId = paymentIntent.metadata?.orderId;
 
@@ -484,7 +508,7 @@ const handleOrderWebhook = async (eventType, paymentIntent, paymentEventId) => {
       throw new Error(`Order not found for PaymentIntent metadata ID: ${orderId}`);
     }
 
-    // Skip processing if order has already been paid/confirmed
+
     if (order.paymentStatus === "SUCCEEDED" && eventType === "payment_intent.succeeded") {
       await tx.paymentEvent.update({
         where: { id: paymentEventId },
@@ -513,7 +537,7 @@ const handleOrderWebhook = async (eventType, paymentIntent, paymentEventId) => {
           where: { id: orderId },
           data: {
             paymentStatus: "SUCCEEDED",
-            status: "CONFIRMED", // Transition fulfillment status
+            status: "CONFIRMED",
           },
         });
         break;
@@ -538,7 +562,7 @@ const handleOrderWebhook = async (eventType, paymentIntent, paymentEventId) => {
           },
         });
 
-        // 🐾 Inventory Protection: Restore product stock if checkout was aborted
+
         for (const item of order.items) {
           await tx.marketplaceProduct.update({
             where: { id: item.productId },
@@ -546,7 +570,7 @@ const handleOrderWebhook = async (eventType, paymentIntent, paymentEventId) => {
               stock: {
                 increment: item.quantity,
               },
-              status: "ACTIVE", // Revive listing state
+              status: "ACTIVE",
             },
           });
         }
@@ -554,7 +578,6 @@ const handleOrderWebhook = async (eventType, paymentIntent, paymentEventId) => {
       }
     }
 
-    // Log the transaction event to the database audit log
     await tx.paymentEvent.update({
       where: { id: paymentEventId },
       data: {

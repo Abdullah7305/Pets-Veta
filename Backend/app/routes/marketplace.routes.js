@@ -7,6 +7,7 @@ const {
   saveListing,
   getSavedListings,
   removeSavedListing,
+   checkProductStock
 } = require("../controllers/marketplace.controller");
 
 const { protect } = require("../middleware/auth.middleware");
@@ -14,6 +15,7 @@ const { protect } = require("../middleware/auth.middleware");
 // Public Routes
 router.get("/products", getMarketplaceProducts);
 router.get("/product/:id", getMarketplaceProductById);
+router.get("/product/:id/check-stock", checkProductStock); 
 
 // Protected Routes
 router.post("/save/:productId", protect, saveListing);

@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
 import PageBackButton from "@/shared/components/BackButton/PageBackButton";
+import { showToast } from "@/shared/utils/toast"; // 💡 Step 4: Import Toast notifications
+import { checkProductStockApi } from "@/features/marketplace1/api/marketplace.api"; // 💡 Step 4: Import API caller
 import {
   clearCart,
   getCartItems,
@@ -20,8 +22,30 @@ const CartPage = () => {
     0
   );
 
-  const handleQuantity = (productId: string | number, quantity: number) => {
-    updateCartQuantity(productId, quantity);
+  // 💡 Step 4: Refactored asynchronous quantity checker
+  const handleQuantity = async (productId: string | number, currentQty: number, targetQuantity: number) => {
+    if (targetQuantity <= 0) {
+      handleRemove(productId);
+      return;
+    }
+
+    // Only verify stock if we are attempting to increment the quantity
+    if (targetQuantity > currentQty) {
+      try {
+        const response = await checkProductStockApi(String(productId), targetQuantity);
+        if (!response.success) {
+          showToast.error(response.message || "Requested quantity exceeds available stock limits.");
+          return;
+        }
+      } catch (err: any) {
+        // Intercept standard API 400 validation error (Max quantity can only be n)
+        const apiErrorMessage = err?.response?.data?.message || "Requested quantity exceeds available stock limits.";
+        showToast.error(apiErrorMessage);
+        return; // Prevent update
+      }
+    }
+
+    updateCartQuantity(productId, targetQuantity);
     setCart(getCartItems());
   };
 
@@ -41,7 +65,7 @@ const CartPage = () => {
 
   return (
     <main className="min-h-screen bg-[#f7fbfb] px-6 py-8 lg:px-12">
-      <div className="mb-5">
+      <div className="mb-5 mt-20">
         <PageBackButton fallbackPath="/marketplace1" />
       </div>
 
@@ -79,7 +103,10 @@ const CartPage = () => {
                   <h3 className="font-semibold text-gray-900">
                     {item.title}
                   </h3>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-xs font-semibold text-[#178f95] uppercase tracking-wide mt-1">
+                    {item.category ? item.category.toLowerCase() : "Product"}
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">
                     PKR {item.price.toLocaleString()}
                   </p>
                 </div>
@@ -90,7 +117,7 @@ const CartPage = () => {
                   variant="outline"
                   size="sm"
                   onClick={() =>
-                    handleQuantity(item.productId, item.quantity - 1)
+                    handleQuantity(item.productId, item.quantity, item.quantity - 1)
                   }
                 >
                   -
@@ -102,7 +129,7 @@ const CartPage = () => {
                   variant="outline"
                   size="sm"
                   onClick={() =>
-                    handleQuantity(item.productId, item.quantity + 1)
+                    handleQuantity(item.productId, item.quantity, item.quantity + 1)
                   }
                 >
                   +
@@ -128,7 +155,7 @@ const CartPage = () => {
             <span className="font-bold">PKR {total.toLocaleString()}</span>
           </div>
 
-          <Button className="mt-6 w-full" onClick={handleCheckout}>
+          <Button className="mt-6 w-full" disabled={cart.length === 0} onClick={handleCheckout}>
             Checkout
           </Button>
 

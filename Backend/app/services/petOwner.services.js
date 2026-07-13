@@ -5,7 +5,11 @@ const {
     AppointmentStatus,
     PaymentStatus
 } = require('@prisma/client');
+const crypto = require('crypto');
 
+const generateAppointmentCode = () => {
+    return `PV-${crypto.randomBytes(3).toString('hex').toUpperCase()}`; // e.g. PV-D93B2F
+};
 
 
 const saveUserPet = async (pet) => {
@@ -303,6 +307,7 @@ const lockUserSlot = async ({ scheduleId, doctorId, petOwnerId }) => {
         }
 
         const expiresAt = new Date(Date.now() + holdMinutes * 60 * 1000);
+        const appointmentCode = generateAppointmentCode(); // 💡 Phase 4: Generate unique code
 
         const appointment = await tx.appointment.create({
             data: {
@@ -314,7 +319,8 @@ const lockUserSlot = async ({ scheduleId, doctorId, petOwnerId }) => {
                 checkupTime: schedule.startTime,
                 expiresAt,
                 status: AppointmentStatus.PENDING_DETAILS,
-                paymentStatus: PaymentStatus.PENDING
+                paymentStatus: PaymentStatus.PENDING,
+                appointmentCode
             }
         });
 
@@ -335,7 +341,8 @@ const lockUserSlot = async ({ scheduleId, doctorId, petOwnerId }) => {
             scheduleStatus: ScheduleStatus.HELD,
             expiresAt: appointment.expiresAt,
             fees: appointment.fees,
-            currency: appointment.currency
+            currency: appointment.currency,
+            appointmentCode
         };
     });
 
@@ -405,6 +412,7 @@ const getPetOwnerAppointments = async (petOwnerId) => {
 
     return appointments;
 };
+
 const getPetById = async (petId, petOwnerId) => {
     if (!petId || !petOwnerId) {
         throw new AppError("Identity validation parameter missing.", 400);
@@ -486,7 +494,7 @@ const deletePet = async (petId, petOwnerId) => {
             }
         });
 
-   
+
         return await tx.pet.delete({
             where: {
                 id: petId
@@ -494,7 +502,59 @@ const deletePet = async (petId, petOwnerId) => {
         });
     });
 };
+
+
+const releaseAppointmentHold = async (appointmentId, petOwnerId) => {
+    if (!appointmentId || !petOwnerId) {
+        throw new AppError("Appointment or Owner ID is missing", 400);
+    }
+
+    return await prisma.$transaction(async (tx) => {
+        const appointment = await tx.appointment.findFirst({
+            where: {
+                id: appointmentId,
+                petOwnerId,
+                status: {
+                    in: [
+                        AppointmentStatus.PENDING_DETAILS,
+                        AppointmentStatus.PENDING_REPORT,
+                        AppointmentStatus.PENDING_PAYMENT
+                    ]
+                }
+            }
+        });
+
+        if (!appointment) {
+            throw new AppError("No active pending appointment hold found to release.", 404);
+        }
+
+        
+        await tx.appointment.update({
+            where: { id: appointment.id },
+            data: {
+                status: AppointmentStatus.CANCELLED,
+                paymentStatus: PaymentStatus.CANCELLED
+            }
+        });
+
+     
+        await tx.doctorSchedule.update({
+            where: { id: appointment.scheduleId },
+            data: {
+                status: ScheduleStatus.AVAILABLE,
+                lockedByUserId: null,
+                lockedByAppointmentId: null,
+                lockedAt: null
+            }
+        });
+
+        return { success: true };
+    });
+};
+
+
 module.exports = {
+    releaseAppointmentHold,
     saveUserPet,
     registerPetIssue,
     getUserPets,

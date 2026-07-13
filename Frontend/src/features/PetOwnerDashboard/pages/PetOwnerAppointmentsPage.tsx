@@ -71,9 +71,6 @@ const PetOwnerAppointmentsPage = () => {
             if (activeTab === "ALL") return true;
             if (activeTab === "UPCOMING") {
                 return [
-                    "PENDING_DETAILS",
-                    "PENDING_REPORT",
-                    "PENDING_PAYMENT",
                     "PAYMENT_PROCESSING",
                     "CONFIRMED",
                 ].includes(app.status);
@@ -85,9 +82,7 @@ const PetOwnerAppointmentsPage = () => {
                 return [
                     "CANCELLED",
                     "EXPIRED",
-                    "PAYMENT_FAILED",
-                    "REFUNDED",
-                    "NO_SHOW",
+                    "PAYMENT_FAILED"
                 ].includes(app.status);
             }
             return true;
@@ -235,6 +230,7 @@ const PetOwnerAppointmentsPage = () => {
                                 <Card
                                     key={app.id}
                                     className="overflow-visible border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md hover:border-[#078b91]/30"
+                                // Note: Restored missing closing tag for Card opening line syntax layout
                                 >
                                     <div className="flex flex-col gap-5 justify-between h-full">
                                         {/* Top Row: Doctor Info and Status Badge */}

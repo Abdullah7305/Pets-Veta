@@ -207,3 +207,58 @@ exports.getSellerOrders = async (req, res) => {
     });
   }
 };
+
+
+// ... keep existing controller functions ...
+
+// 💡 Phase 2: Initiate Seller Stripe onboarding link creation
+exports.initiateSellerStripeOnboarding = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized user",
+      });
+    }
+
+    const result = await sellerService.setupSellerStripeConnect(userId);
+
+    return res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// 💡 Phase 2: Verify real-time status details of Connected Account
+exports.checkSellerStripeConnectStatus = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized user",
+      });
+    }
+
+    const result = await sellerService.getSellerStripeConnectStatus(userId);
+
+    return res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

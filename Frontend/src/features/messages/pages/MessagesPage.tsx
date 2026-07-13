@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { ReactNode } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
     ArrowLeft,
     CheckCheck,
@@ -6,11 +8,10 @@ import {
     MessageCircle,
     Search,
     Send,
-    Wifi,
-    WifiOff,
 } from "lucide-react";
 
 import { useAuth } from "@/features/Auth/hooks/authhook";
+import Logo from "@/shared/components/Logo/Logo";
 
 import {
     getConversationMessagesApi,
@@ -27,6 +28,7 @@ import {
 import type {
     ChatMessage,
     Conversation,
+    MessageUser,
     NewMessageSocketPayload,
     OnlineUsersPayload,
     PresenceUserPayload,
@@ -53,10 +55,100 @@ const getInitial = (name: string) => {
     return name.charAt(0).toUpperCase();
 };
 
+const getProfileImageUrl = (user?: MessageUser | null) => {
+    const imageUrl = user?.profileImageUrl?.trim();
+
+    if (!imageUrl) return "";
+    if (imageUrl === "Enter your Image") return "";
+
+    return imageUrl;
+};
+
+const UserAvatar = ({
+    user,
+    name,
+    className,
+    children,
+}: {
+    user?: MessageUser | null;
+    name: string;
+    className: string;
+    children?: ReactNode;
+}) => {
+    const profileImageUrl = getProfileImageUrl(user);
+
+    return (
+        <div
+            className={`relative flex shrink-0 items-center justify-center overflow-visible rounded-full bg-[#dff3f2] text-sm font-bold text-[#178f95] ${className}`}
+        >
+            <span>{getInitial(name)}</span>
+
+            {profileImageUrl && (
+                <img
+                    src={profileImageUrl}
+                    alt={name}
+                    className="absolute inset-0 h-full w-full rounded-full object-cover"
+                    onError={(event) => {
+                        event.currentTarget.remove();
+                    }}
+                />
+            )}
+
+            {children}
+        </div>
+    );
+};
+
+const isConversationUnread = (
+    conversation: Conversation,
+    currentUserId?: string
+) => {
+    if (!currentUserId || !conversation.lastMessage) return false;
+
+    const lastMessage = conversation.lastMessage;
+
+    if (lastMessage.senderId === currentUserId) return false;
+
+    const currentParticipant = conversation.participants.find(
+        (participant) => participant.userId === currentUserId
+    );
+
+    if (!currentParticipant?.lastReadAt) return true;
+
+    return (
+        new Date(lastMessage.createdAt).getTime() >
+        new Date(currentParticipant.lastReadAt).getTime()
+    );
+};
+
+const isMessageSeenByReceiver = (
+    message: ChatMessage,
+    conversation: Conversation | null,
+    currentUserId?: string
+) => {
+    if (!currentUserId || !conversation) return false;
+
+    if (message.senderId !== currentUserId) return false;
+
+    const receiverParticipant = conversation.participants.find(
+        (participant) => participant.userId !== currentUserId
+    );
+
+    if (!receiverParticipant?.lastReadAt) return false;
+
+    return (
+        new Date(receiverParticipant.lastReadAt).getTime() >=
+        new Date(message.createdAt).getTime()
+    );
+};
+
 const MessagesPage = () => {
+    const navigate = useNavigate();
     const { user, isLoading } = useAuth();
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const currentUserId = user?.data?.id;
+    const requestedConversationId = searchParams.get("conversationId");
 
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [selectedConversation, setSelectedConversation] =
@@ -76,22 +168,69 @@ const MessagesPage = () => {
     const selectedConversationIdRef = useRef<string | null>(null);
     const typingTimerRef = useRef<number | null>(null);
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
+    const messageListRef = useRef<HTMLDivElement | null>(null);
 
     const selectedConversationId = selectedConversation?.id || null;
+
+    const activeConversation = useMemo(() => {
+        if (!selectedConversation) return null;
+
+        return (
+            conversations.find(
+                (conversation) => conversation.id === selectedConversation.id
+            ) || selectedConversation
+        );
+    }, [conversations, selectedConversation]);
+
+    const handlePageBack = () => {
+        if (window.history.length > 1) {
+            navigate(-1);
+            return;
+        }
+
+        navigate("/");
+    };
+
+    const handleCloseConversation = () => {
+        setSelectedConversation(null);
+        setTypingUserId(null);
+        setSearchParams({});
+    };
+
+    const scrollToBottom = (behavior: ScrollBehavior = "auto") => {
+        window.requestAnimationFrame(() => {
+            const messageList = messageListRef.current;
+
+            if (messageList) {
+                messageList.scrollTop = messageList.scrollHeight;
+            }
+
+            messagesEndRef.current?.scrollIntoView({
+                behavior,
+                block: "end",
+            });
+        });
+    };
 
     useEffect(() => {
         selectedConversationIdRef.current = selectedConversationId;
     }, [selectedConversationId]);
 
+    const unreadChatsCount = useMemo(() => {
+        return conversations.filter((conversation) =>
+            isConversationUnread(conversation, currentUserId)
+        ).length;
+    }, [conversations, currentUserId]);
+
     const selectedOtherUser = useMemo(() => {
-        if (!selectedConversation || !currentUserId) return null;
+        if (!activeConversation || !currentUserId) return null;
 
         return (
-            selectedConversation.participants.find(
+            activeConversation.participants.find(
                 (participant) => participant.userId !== currentUserId
-            )?.user || selectedConversation.participants[0]?.user
+            )?.user || activeConversation.participants[0]?.user
         );
-    }, [selectedConversation, currentUserId]);
+    }, [activeConversation, currentUserId]);
 
     const selectedUserName = getUserName(selectedOtherUser || undefined);
 
@@ -110,6 +249,34 @@ const MessagesPage = () => {
         });
     }, [conversations, conversationSearch, currentUserId]);
 
+    const markConversationReadInState = (conversationId: string) => {
+        const readAt = new Date().toISOString();
+
+        setConversations((prev) =>
+            prev.map((conversation) => {
+                if (conversation.id !== conversationId) return conversation;
+
+                return {
+                    ...conversation,
+                    participants: conversation.participants.map((participant) =>
+                        participant.userId === currentUserId
+                            ? { ...participant, lastReadAt: readAt }
+                            : participant
+                    ),
+                };
+            })
+        );
+    };
+
+    const refreshConversationsSilently = async () => {
+        try {
+            const data = await getMyConversationsApi();
+            setConversations(data);
+        } catch (error) {
+            console.error("Failed to refresh conversations:", error);
+        }
+    };
+
     const fetchConversations = async () => {
         try {
             setLoadingConversations(true);
@@ -117,6 +284,15 @@ const MessagesPage = () => {
             const data = await getMyConversationsApi();
 
             setConversations(data);
+
+            const requestedConversation = requestedConversationId
+                ? data.find((conversation) => conversation.id === requestedConversationId)
+                : null;
+
+            if (requestedConversation) {
+                setSelectedConversation(requestedConversation);
+                return;
+            }
 
             if (!selectedConversation && data.length > 0) {
                 setSelectedConversation(data[0]);
@@ -137,6 +313,9 @@ const MessagesPage = () => {
             setMessages(data.messages);
 
             await markConversationAsReadApi(conversationId);
+            markConversationReadInState(conversationId);
+
+            scrollToBottom("auto");
         } catch (error) {
             console.error("Failed to fetch messages:", error);
         } finally {
@@ -148,7 +327,19 @@ const MessagesPage = () => {
         if (!isLoading && currentUserId) {
             fetchConversations();
         }
-    }, [isLoading, currentUserId]);
+    }, [isLoading, currentUserId, requestedConversationId]);
+
+    useEffect(() => {
+        if (!currentUserId) return;
+
+        const intervalId = window.setInterval(() => {
+            void refreshConversationsSilently();
+        }, 10000);
+
+        return () => {
+            window.clearInterval(intervalId);
+        };
+    }, [currentUserId]);
 
     useEffect(() => {
         if (!currentUserId) return;
@@ -180,6 +371,15 @@ const MessagesPage = () => {
 
         const handleNewMessage = (payload: NewMessageSocketPayload) => {
             setConversations((prev) => {
+                const conversationExists = prev.some(
+                    (conversation) => conversation.id === payload.conversationId
+                );
+
+                if (!conversationExists) {
+                    void fetchConversations();
+                    return prev;
+                }
+
                 const updated = prev.map((conversation) =>
                     conversation.id === payload.conversationId
                         ? {
@@ -206,9 +406,16 @@ const MessagesPage = () => {
                     return [...prev, payload.message];
                 });
 
-                markConversationAsReadApi(payload.conversationId).catch((error) => {
-                    console.error("Failed to mark read:", error);
-                });
+                scrollToBottom("smooth");
+
+                markConversationAsReadApi(payload.conversationId)
+                    .then(() => {
+                        markConversationReadInState(payload.conversationId);
+                        void refreshConversationsSilently();
+                    })
+                    .catch((error) => {
+                        console.error("Failed to mark read:", error);
+                    });
             }
         };
 
@@ -218,6 +425,7 @@ const MessagesPage = () => {
                 payload.userId !== currentUserId
             ) {
                 setTypingUserId(payload.userId);
+                scrollToBottom("smooth");
             }
         };
 
@@ -288,14 +496,21 @@ const MessagesPage = () => {
     }, [selectedConversationId]);
 
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({
-            behavior: "smooth",
-        });
-    }, [messages, typingUserId]);
+        if (!selectedConversationId) return;
+
+        scrollToBottom("auto");
+    }, [selectedConversationId, messages.length]);
+
+    useEffect(() => {
+        if (!typingUserId) return;
+
+        scrollToBottom("smooth");
+    }, [typingUserId]);
 
     const handleSelectConversation = (conversation: Conversation) => {
         setSelectedConversation(conversation);
         setTypingUserId(null);
+        setSearchParams({ conversationId: conversation.id });
     };
 
     const handleTypingChange = (value: string) => {
@@ -346,6 +561,7 @@ const MessagesPage = () => {
 
         setMessageText("");
         setTypingUserId(null);
+        scrollToBottom("smooth");
     };
 
     if (isLoading) {
@@ -387,32 +603,36 @@ const MessagesPage = () => {
         <main className="h-screen overflow-hidden bg-[#FFF8F4] p-4">
             <div className="mx-auto flex h-full max-w-6xl overflow-hidden rounded-3xl border border-teal-100 bg-white shadow-xl shadow-teal-100/50">
                 <aside
-                    className={`h-full w-full shrink-0 border-r border-slate-100 bg-white lg:block lg:w-[340px] ${selectedConversation ? "hidden" : "block"
+                    className={`flex h-full w-full shrink-0 flex-col border-r border-slate-100 bg-white lg:flex lg:w-[340px] ${selectedConversation ? "hidden" : "flex"
                         }`}
                 >
-                    <div className="h-[130px] border-b border-slate-100 px-5 py-4">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#178f95]">
-                                    Pets Veta
-                                </p>
-                                <h1 className="mt-1 text-2xl font-bold text-slate-950">
-                                    Messages
-                                </h1>
-                            </div>
+                    <div className="shrink-0 border-b border-slate-100 px-5 py-4">
+                        <button
+                            type="button"
+                            onClick={handlePageBack}
+                            className="mb-4 inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-2 text-xs font-bold text-slate-700 transition hover:bg-slate-200"
+                        >
+                            <ArrowLeft size={15} />
+                            Back
+                        </button>
 
-                            <div
-                                className={`flex h-10 w-10 items-center justify-center rounded-full ${socketConnected
-                                        ? "bg-emerald-50 text-emerald-600"
-                                        : "bg-red-50 text-red-500"
-                                    }`}
-                            >
-                                {socketConnected ? <Wifi size={18} /> : <WifiOff size={18} />}
-                            </div>
+                        <div className="min-w-0 [&_button]:max-w-full [&_h1]:text-lg [&_p]:text-xs [&_p]:text-slate-500">
+                            <Logo />
+                        </div>
+
+                        <div className="mt-4 flex items-center gap-2">
+                            <h1 className="text-2xl font-bold text-slate-950">Messages</h1>
+
+                            {unreadChatsCount > 0 && (
+                                <span className="inline-flex min-w-[24px] items-center justify-center rounded-full bg-red-500 px-2 py-0.5 text-xs font-bold text-white shadow-sm">
+                                    {unreadChatsCount > 99 ? "99+" : unreadChatsCount}
+                                </span>
+                            )}
                         </div>
 
                         <div className="mt-4 flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3">
-                            <Search size={17} className="text-slate-400" />
+                            <Search size={17} className="shrink-0 text-slate-400" />
+
                             <input
                                 value={conversationSearch}
                                 onChange={(event) => setConversationSearch(event.target.value)}
@@ -422,7 +642,7 @@ const MessagesPage = () => {
                         </div>
                     </div>
 
-                    <div className="h-[calc(100%-130px)] overflow-y-auto">
+                    <div className="min-h-0 flex-1 overflow-y-auto">
                         {loadingConversations ? (
                             <div className="p-5 text-sm text-slate-500">
                                 Loading conversations...
@@ -432,62 +652,97 @@ const MessagesPage = () => {
                                 <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-50 text-[#178f95]">
                                     <MessageCircle size={30} />
                                 </div>
+
                                 <h2 className="mt-4 text-lg font-bold text-slate-900">
                                     No conversation
                                 </h2>
+
                                 <p className="mt-2 text-sm leading-6 text-slate-500">
                                     Start chat from marketplace, seller, doctor, or Postman API.
                                 </p>
                             </div>
                         ) : (
-                            filteredConversations.map((conversation) => {
-                                const otherUser =
-                                    conversation.participants.find(
-                                        (participant) => participant.userId !== currentUserId
-                                    )?.user || conversation.participants[0]?.user;
+                            <div className="divide-y divide-slate-100">
+                                {filteredConversations.map((conversation) => {
+                                    const otherUser =
+                                        conversation.participants.find(
+                                            (participant) => participant.userId !== currentUserId
+                                        )?.user || conversation.participants[0]?.user;
 
-                                const name = getUserName(otherUser);
-                                const online = otherUser
-                                    ? onlineUserIds.includes(otherUser.id)
-                                    : false;
-                                const active = selectedConversation?.id === conversation.id;
+                                    const name = getUserName(otherUser);
+                                    const online = otherUser
+                                        ? onlineUserIds.includes(otherUser.id)
+                                        : false;
+                                    const active = selectedConversation?.id === conversation.id;
+                                    const unread = isConversationUnread(conversation, currentUserId);
 
-                                return (
-                                    <button
-                                        key={conversation.id}
-                                        type="button"
-                                        onClick={() => handleSelectConversation(conversation)}
-                                        className={`flex w-full gap-3 border-b border-slate-100 px-4 py-3 text-left transition ${active ? "bg-[#e8f7f6]" : "bg-white hover:bg-slate-50"
-                                            }`}
-                                    >
-                                        <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#dff3f2] text-sm font-bold text-[#178f95]">
-                                            {getInitial(name)}
-                                            <span
-                                                className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white ${online ? "bg-emerald-500" : "bg-slate-300"
-                                                    }`}
-                                            />
-                                        </div>
+                                    return (
+                                        <button
+                                            key={conversation.id}
+                                            type="button"
+                                            onClick={() => handleSelectConversation(conversation)}
+                                            className={`flex w-full gap-3 px-4 py-3 text-left transition ${active ? "bg-[#e8f7f6]" : "bg-white hover:bg-slate-50"
+                                                }`}
+                                        >
+                                            <UserAvatar
+                                                user={otherUser}
+                                                name={name}
+                                                className="h-12 w-12"
+                                            >
+                                                <span
+                                                    className={`absolute bottom-0 right-0 z-10 h-3 w-3 rounded-full border-2 border-white ${online ? "bg-emerald-500" : "bg-slate-300"
+                                                        }`}
+                                                />
 
-                                        <div className="min-w-0 flex-1">
-                                            <div className="flex items-center justify-between gap-2">
-                                                <h3 className="truncate text-sm font-bold text-slate-900">
-                                                    {name}
-                                                </h3>
-
-                                                {conversation.lastMessage?.createdAt && (
-                                                    <span className="shrink-0 text-[11px] text-slate-400">
-                                                        {formatTime(conversation.lastMessage.createdAt)}
-                                                    </span>
+                                                {unread && (
+                                                    <span className="absolute -right-1 -top-1 z-10 h-3.5 w-3.5 rounded-full bg-red-500 ring-2 ring-white" />
                                                 )}
-                                            </div>
+                                            </UserAvatar>
 
-                                            <p className="mt-1 truncate text-sm text-slate-500">
-                                                {conversation.lastMessage?.body || "No messages yet"}
-                                            </p>
-                                        </div>
-                                    </button>
-                                );
-                            })
+                                            <div className="min-w-0 flex-1">
+                                                <div className="flex items-center justify-between gap-2">
+                                                    <h3
+                                                        className={`truncate text-sm ${unread
+                                                                ? "font-extrabold text-slate-950"
+                                                                : "font-bold text-slate-900"
+                                                            }`}
+                                                    >
+                                                        {name}
+                                                    </h3>
+
+                                                    <div className="flex shrink-0 items-center gap-2">
+                                                        {conversation.lastMessage?.createdAt && (
+                                                            <span
+                                                                className={`text-[11px] ${unread
+                                                                        ? "font-bold text-red-500"
+                                                                        : "text-slate-400"
+                                                                    }`}
+                                                            >
+                                                                {formatTime(conversation.lastMessage.createdAt)}
+                                                            </span>
+                                                        )}
+
+                                                        {unread && (
+                                                            <span className="inline-flex min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">
+                                                                1
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                <p
+                                                    className={`mt-1 truncate text-sm ${unread
+                                                            ? "font-semibold text-slate-800"
+                                                            : "text-slate-500"
+                                                        }`}
+                                                >
+                                                    {conversation.lastMessage?.body || "No messages yet"}
+                                                </p>
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         )}
                     </div>
                 </aside>
@@ -502,15 +757,18 @@ const MessagesPage = () => {
                                 <div className="flex min-w-0 items-center gap-3">
                                     <button
                                         type="button"
-                                        onClick={() => setSelectedConversation(null)}
+                                        onClick={handleCloseConversation}
                                         className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-700 lg:hidden"
+                                        aria-label="Back to conversations"
                                     >
                                         <ArrowLeft size={17} />
                                     </button>
 
-                                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#dff3f2] text-sm font-bold text-[#178f95]">
-                                        {getInitial(selectedUserName)}
-                                    </div>
+                                    <UserAvatar
+                                        user={selectedOtherUser}
+                                        name={selectedUserName}
+                                        className="h-11 w-11"
+                                    />
 
                                     <div className="min-w-0">
                                         <h2 className="truncate text-base font-bold text-slate-950">
@@ -527,6 +785,7 @@ const MessagesPage = () => {
                                                         : "fill-slate-300 text-slate-300"
                                                 }
                                             />
+
                                             {selectedOtherUser &&
                                                 onlineUserIds.includes(selectedOtherUser.id)
                                                 ? "Online"
@@ -536,7 +795,10 @@ const MessagesPage = () => {
                                 </div>
                             </header>
 
-                            <div className="flex-1 overflow-y-auto bg-[#f8fbfb] px-4 py-5">
+                            <div
+                                ref={messageListRef}
+                                className="flex-1 overflow-y-auto bg-[#f8fbfb] px-4 py-5"
+                            >
                                 {loadingMessages ? (
                                     <div className="flex h-full items-center justify-center text-sm text-slate-500">
                                         Loading messages...
@@ -559,6 +821,11 @@ const MessagesPage = () => {
                                     <div className="mx-auto flex max-w-3xl flex-col gap-3">
                                         {messages.map((message) => {
                                             const isMine = message.senderId === currentUserId;
+                                            const seen = isMessageSeenByReceiver(
+                                                message,
+                                                activeConversation,
+                                                currentUserId
+                                            );
 
                                             return (
                                                 <div
@@ -581,7 +848,16 @@ const MessagesPage = () => {
                                                                 }`}
                                                         >
                                                             <span>{formatTime(message.createdAt)}</span>
-                                                            {isMine && <CheckCheck size={13} />}
+
+                                                            {isMine && (
+                                                                <CheckCheck
+                                                                    size={14}
+                                                                    strokeWidth={2.6}
+                                                                    className={
+                                                                        seen ? "text-sky-300" : "text-white/70"
+                                                                    }
+                                                                />
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </div>

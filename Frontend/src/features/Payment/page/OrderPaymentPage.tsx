@@ -1,10 +1,11 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 
 import { createOrderPaymentIntentApi } from "../api/payment.api";
 import OrderPaymentForm from "../components/OrderPaymentForm";
+import { api } from "@/features/api interface/axios.interface";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
@@ -31,6 +32,51 @@ const OrderPaymentPage = () => {
         []
     );
 
+    // 💡 Auto-Cleanup on Unmount / Tab Close / Page Navigation
+    useEffect(() => {
+        if (!orderId) return;
+
+        const checkCleanupNeeded = () => {
+            const isProcessing = sessionStorage.getItem(`payment-processing-${orderId}`) === "true";
+            return !isProcessing;
+        };
+
+        const performCleanupSync = () => {
+            if (checkCleanupNeeded()) {
+                // Use keepalive to ensure the backend receives this request even if the tab is closing
+                const url = `http://localhost:8000/api/v1/orders/${orderId}/cancel-hold`;
+                fetch(url, {
+                    method: "DELETE",
+                    keepalive: true,
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+            }
+        };
+
+        const handleBeforeUnload = () => {
+            if (showStripeRestrictionWarning) return; // Skip if warning is shown
+            void performCancelHold();
+        };
+
+        // Tab Close / Browser Exit Event Listener
+        window.addEventListener("beforeunload", handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener("beforeunload", handleBack);
+
+            // Trigger cleanup if navigating away within the single-page application context
+            const isLeavingPendingCheckout = !window.location.pathname.startsWith("/order-payment");
+            if (isLeavingHorizontalHold && isPendingState && !isProcessing) {
+                // Safely cancel hold via silent async call
+                api.delete(`/orders/${orderId}/cancel-hold`).catch((err) =>
+                    console.error("Cleanup hold error during unmount:", err)
+                );
+            }
+        };
+    }, [orderId]);
+
     const handleContinuePayment = async () => {
         if (!orderId) {
             setError("Order ID is missing.");
@@ -56,6 +102,17 @@ const OrderPaymentPage = () => {
         } finally {
             setIsCreatingIntent(false);
         }
+    };
+
+    const handleCancelPayment = async () => {
+        if (orderId) {
+            try {
+                await api.delete(`/orders/${orderId}/cancel-hold`);
+            } catch (err) {
+                console.error("Failed to cancel pending checkout session:", err);
+            }
+        }
+        navigate("/cart");
     };
 
     const formattedAmount =
@@ -102,8 +159,8 @@ const OrderPaymentPage = () => {
                     <div className="mt-6 grid grid-cols-2 gap-3">
                         <button
                             type="button"
-                            onClick={() => navigate("/cart")}
-                            className="rounded-xl border border-slate-200 px-4 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50"
+                            onClick={handleCancelPayment}
+                            className="rounded-xl border border-slate-200 px-4 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50 cursor-pointer"
                         >
                             Cancel
                         </button>
@@ -112,7 +169,7 @@ const OrderPaymentPage = () => {
                             type="button"
                             disabled={!orderId || isCreatingIntent}
                             onClick={handleContinuePayment}
-                            className="rounded-xl bg-[#178f95] px-4 py-3 text-sm font-bold text-white hover:bg-[#12757a] disabled:cursor-not-allowed disabled:opacity-50"
+                            className="rounded-xl bg-[#178f95] px-4 py-3 text-sm font-bold text-white hover:bg-[#12757a] disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
                         >
                             {isCreatingIntent ? "Connecting..." : "Pay Now"}
                         </button>

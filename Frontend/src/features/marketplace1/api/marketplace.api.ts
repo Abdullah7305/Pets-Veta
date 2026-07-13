@@ -21,6 +21,7 @@ export type MarketplaceProduct = {
     businessName?: string | null;
     city?: string | null;
     user?: {
+      id?: string;
       fullName?: string | null;
       email?: string | null;
       profileImageUrl?: string | null;
@@ -43,6 +44,7 @@ export const toBackendCategory = (category: string) => {
   const map: Record<string, string> = {
     Pets: "PETS",
     Food: "FOOD",
+    Medicine: "MEDICINE",
     Accessories: "ACCESSORIES",
   };
 
@@ -53,8 +55,8 @@ export const toDisplayCategory = (category: string) => {
   const map: Record<string, string> = {
     PETS: "Pets",
     FOOD: "Food",
-    ACCESSORIES: "Accessories",
     MEDICINE: "Medicine",
+    ACCESSORIES: "Accessories",
   };
 
   return map[category] || category;
@@ -86,10 +88,10 @@ export const fetchMarketplaceProducts = async (params: {
   category?: string;
   location?: string;
 }) => {
-  const response = await api.get<{ success: boolean; data: MarketplaceProductsResponse }>(
-    "marketplace/products",
-    { params }
-  );
+  const response = await api.get<{
+    success: boolean;
+    data: MarketplaceProductsResponse;
+  }>("marketplace/products", { params });
 
   return response.data.data;
 };
@@ -119,4 +121,15 @@ export const fetchSavedMarketplaceListings = async () => {
   }>("marketplace/saved");
 
   return response.data.data;
+};
+
+
+export const checkProductStockApi = async (productId: string, quantity: number) => {
+  const response = await api.get<{
+    success: boolean;
+    message: string;
+    availableStock?: number;
+  }>(`marketplace/product/${productId}/check-stock?quantity=${quantity}`);
+  
+  return response.data;
 };

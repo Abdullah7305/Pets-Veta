@@ -106,3 +106,22 @@ export const createOrUpdateSellerProfileApi = async (payload: FormData) => {
   );
   return response.data;
 };
+
+// ... keep existing functions ...
+
+// 💡 Phase 2: Connect API wrappers for Seller onboarding
+export const getSellerStripeOnboardingLinkApi = async () => {
+  const response = await api.get<{
+    success: boolean;
+    data: { onboardingUrl: string; stripeConnectedAccountId: string };
+  }>("seller/connect/onboarding");
+  return response.data;
+};
+
+export const getSellerStripeStatusApi = async () => {
+  const response = await api.get<{
+    success: boolean;
+    data: { stripeOnboardingCompleted: boolean; stripeConnectedAccountId: string };
+  }>("seller/connect/status");
+  return response.data;
+};

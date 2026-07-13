@@ -1,4 +1,4 @@
-const   prisma  = require("../config/prisma");
+const prisma = require("../config/prisma");
 const requireFields = require('../utils/validateRequest')
 const AppError = require('../utils/AppError')
 
@@ -13,6 +13,9 @@ const createDoctorScheduleService = async (req) => {
 
     if (!doctor) {
         throw new AppError("Doctor is Not Valid", 400);
+    }
+    if (!doctor.stripeOnboardingCompleted) {
+        throw new AppError("Please complete your Stripe Connect setup in your profile before configuring scheduling availability.", 400);
     }
     const doctorId = doctor.id;
 
@@ -44,7 +47,7 @@ const createDoctorScheduleService = async (req) => {
             date: new Date(`${date}T00:00:00Z`),
             startTime: slotStart,
             endTime: slotEnd,
-    
+
         };
     });
 
@@ -62,17 +65,34 @@ const getDoctorScheduleService = async (req) => {
             userId: req.user.id
         }
     });
-    const doctorId = doctor.id
+
+    if (!doctor) {
+        throw new AppError("Doctor profile not found", 404);
+    }
+
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0); // Normalize time to midnight
+
+    // 1. Query slots starting from today onwards to eliminate past clutter
     const schedules = await prisma.doctorSchedule.findMany({
         where: {
             doctorId: doctor.id,
+            startTime: {
+                gte: startOfToday
+            }
         },
         orderBy: {
             startTime: "asc",
         },
     });
-    console.log('Schedule is ', schedules);
-    return schedules;
+
+    // 2. Map database schema fields cleanly to the boolean properties expected by the frontend
+    const mappedSchedules = schedules.map(item => ({
+        ...item,
+        isBooked: item.status === "BOOKED"
+    }));
+
+    return mappedSchedules;
 };
 
 
@@ -85,16 +105,27 @@ const getDoctorSchedulesByDoctorIdService = async (doctorId) => {
         throw new AppError("Doctor not found", 400);
     }
 
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
     const schedules = await prisma.doctorSchedule.findMany({
         where: {
             doctorId: doctor.id,
+            startTime: {
+                gte: startOfToday
+            }
         },
         orderBy: {
             startTime: "asc",
         },
     });
 
-    return schedules;
+    const mappedSchedules = schedules.map(item => ({
+        ...item,
+        isBooked: item.status === "BOOKED"
+    }));
+
+    return mappedSchedules;
 };
 
 module.exports = {

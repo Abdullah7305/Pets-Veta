@@ -3,16 +3,20 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "@/features/Auth/hooks/authhook";
 import {
   FaArrowLeft,
+  FaComments,
   FaHeart,
   FaMapMarkerAlt,
+  FaShieldAlt,
+  FaShoppingCart,
   FaStar,
   FaStore,
-  FaShoppingCart,
-  FaShieldAlt,
 } from "react-icons/fa";
+
 import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
 import { addToCart } from "@/features/cart/utils/cartStorage";
+import { createOrGetDirectConversationApi } from "@/features/messages/api/message.api";
+
 import {
   fetchMarketplaceProductById,
   getProductImage,
@@ -23,30 +27,20 @@ import {
   type MarketplaceProduct,
 } from "../api/marketplace.api";
 
-type BackToMarketplaceButtonProps = {
-  onClick: () => void;
-};
-
-const BackToMarketplaceButton = ({ onClick }: BackToMarketplaceButtonProps) => (
-  <button
-    type="button"
-    onClick={onClick}
-    className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:border-[#178f95] hover:text-[#178f95]"
-  >
-    <FaArrowLeft />
-    Back to Marketplace
-  </button>
-);
-
 const MarketplaceProductDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
+
   const [product, setProduct] = useState<MarketplaceProduct | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
   const [saveMessage, setSaveMessage] = useState("");
   const [cartError, setCartError] = useState("");
-  const { user } = useAuth();
+
+  const [messageLoading, setMessageLoading] = useState(false);
+  const [messageError, setMessageError] = useState("");
 
   const handleBack = () => {
     if (window.history.length > 1) {
@@ -91,9 +85,10 @@ const MarketplaceProductDetailPage = () => {
     };
   }, [id]);
 
-
   const handleBuyNow = () => {
     if (!product) return;
+
+    setCartError("");
 
     const result = addToCart({
       productId: product.id,
@@ -112,10 +107,10 @@ const MarketplaceProductDetailPage = () => {
     navigate("/cart");
   };
 
-  // 💡 Added: Direct adoption/purchase bypass logic
   const handleDirectBuy = () => {
     if (!product) return;
-    localStorage.removeItem("pets-veta-direct-buy"); // Clear old sessions
+
+    localStorage.removeItem("pets-veta-direct-buy");
 
     const directBuyItem = {
       productId: product.id,
@@ -127,7 +122,7 @@ const MarketplaceProductDetailPage = () => {
     };
 
     localStorage.setItem("pets-veta-direct-buy", JSON.stringify(directBuyItem));
-    navigate("/checkout"); // Forward straight to direct payment form
+    navigate("/checkout");
   };
 
   const handleSave = async () => {
@@ -143,12 +138,56 @@ const MarketplaceProductDetailPage = () => {
     }
   };
 
+  const handleMessageSeller = async () => {
+    if (!product) return;
+
+    const currentUserId = user?.data?.id;
+    const sellerUserId = product.seller?.user?.id;
+
+    setMessageError("");
+
+    if (!currentUserId) {
+      navigate("/login", {
+        state: { redirectTo: `/marketplace/product/${product.id}` },
+      });
+      return;
+    }
+
+    if (!sellerUserId) {
+      setMessageError("Seller account not found for this product.");
+      return;
+    }
+
+    if (sellerUserId === currentUserId) {
+      setMessageError("You cannot message your own listing.");
+      return;
+    }
+
+    try {
+      setMessageLoading(true);
+
+      const conversation = await createOrGetDirectConversationApi(
+        sellerUserId,
+        "MARKETPLACE_PRODUCT",
+        product.id
+      );
+
+      navigate(`/messages?conversationId=${conversation.id}`);
+    } catch (error) {
+      console.error("Message seller failed:", error);
+      setMessageError("Unable to open chat. Please check backend and login session.");
+    } finally {
+      setMessageLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="mt-20 min-h-screen bg-[#f7fbfb] p-10">
         <div className="mb-5">
           <BackToMarketplaceButton onClick={handleBack} />
         </div>
+
         <h1 className="text-2xl font-semibold text-gray-900">
           Loading product...
         </h1>
@@ -162,6 +201,7 @@ const MarketplaceProductDetailPage = () => {
         <div className="mb-5">
           <BackToMarketplaceButton onClick={handleBack} />
         </div>
+
         <h1 className="text-2xl font-semibold text-gray-900">
           {error || "Product not found"}
         </h1>
@@ -174,66 +214,17 @@ const MarketplaceProductDetailPage = () => {
   const seller = getSellerName(product);
   const displayCategory = toDisplayCategory(product.category);
   const isPet = product.category === "PETS";
-  const isOwnListing = user?.data?.id === product?.seller?.user?.id;
+  const isOwnListing = user?.data?.id === product.seller?.user?.id;
 
   return (
     <main className="min-h-screen bg-[#f7fbfb] px-5 py-8 lg:px-12">
-      {/* <p className="mb-5 text-sm text-gray-500">
-        Marketplace / {displayCategory} / {product.title}
-      </p>
-      <div className="mt-6 space-y-3 text-sm text-gray-600">
-        <p className="flex items-center gap-2">
-          <FaStore className="text-[#178f95]" />
-          Seller: {seller} {isOwnListing && <span className="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-sm ml-1 font-bold">Your Store Listing</span>}
-        </p>
-
-        <p className="flex items-center gap-2">
-          <FaMapMarkerAlt className="text-[#178f95]" />
-          Location: {product.location || product.seller?.city || "Pakistan"}
-        </p>
-
-        <p className="flex items-center gap-2">
-          <FaShieldAlt className="text-[#178f95]" />
-          Verified seller product
-        </p>
+      <div className="mb-5">
+        <BackToMarketplaceButton onClick={handleBack} />
       </div>
 
-      <p className="mt-5 text-sm font-medium text-green-600">
-        In Stock{" "}
-        <span className="text-gray-500">{product.stock} available</span>
-      </p> */}
-
-      {/* <div className="mt-7 grid grid-cols-2 gap-3">
-        {/* 💡 Updated: If own listing, let them manage it directly. Otherwise, show cart/buy actions */}
-        {isOwnListing ? (
-          <Button
-            className="gap-2 !bg-gray-100 !border-slate-200 !text-slate-700 hover:!bg-slate-200"
-            onClick={() => navigate(`/seller/edit-product/${product.id}`)}
-          >
-            Edit Listing
-          </Button>
-        ) : isPet ? (
-          <Button className="gap-2 !bg-[#178f95] !border-[#178f95] !text-white hover:!bg-[#12757a]" onClick={handleDirectBuy}>
-            Buy Now
-          </Button>
-        ) : (
-          <Button className="gap-2" onClick={handleBuyNow}>
-            <FaShoppingCart />
-            Add to Cart
-          </Button>
-        )}
-
-        {!isOwnListing ? (
-          <Button variant="outline" className="gap-2" onClick={handleSave}>
-            <FaHeart />
-            Save Listing
-          </Button>
-        ) : (
-          <Button variant="outline" className="gap-2" onClick={() => navigate("/seller/listings")}>
-            View All Listings
-          </Button>
-        )}
-      {/* </div> */} 
+      <p className="mb-5 text-sm text-gray-500">
+        Marketplace / {displayCategory} / {product.title}
+      </p>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_430px]">
         <Card className="overflow-hidden p-0">
@@ -257,9 +248,7 @@ const MarketplaceProductDetailPage = () => {
 
           <div className="mt-4 flex items-center gap-2">
             <FaStar className="text-yellow-400" />
-            <span className="font-semibold text-gray-700">
-              New
-            </span>
+            <span className="font-semibold text-gray-700">New</span>
             <span className="text-gray-500">Active marketplace listing</span>
           </div>
 
@@ -275,6 +264,11 @@ const MarketplaceProductDetailPage = () => {
             <p className="flex items-center gap-2">
               <FaStore className="text-[#178f95]" />
               Seller: {seller}
+              {isOwnListing && (
+                <span className="ml-1 rounded-sm bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-400">
+                  Your Store Listing
+                </span>
+              )}
             </p>
 
             <p className="flex items-center gap-2">
@@ -294,9 +288,18 @@ const MarketplaceProductDetailPage = () => {
           </p>
 
           <div className="mt-7 grid grid-cols-2 gap-3">
-            {/* 💡 Updated: Shows "Buy Now" for live pets, and "Add to Cart" for consumables */}
-            {isPet ? (
-              <Button className="gap-2 !bg-[#178f95] !border-[#178f95] !text-white hover:!bg-[#12757a]" onClick={handleDirectBuy}>
+            {isOwnListing ? (
+              <Button
+                className="gap-2 !border-slate-200 !bg-gray-100 !text-slate-700 hover:!bg-slate-200"
+                onClick={() => navigate(`/seller/edit-product/${product.id}`)}
+              >
+                Edit Listing
+              </Button>
+            ) : isPet ? (
+              <Button
+                className="gap-2 !border-[#178f95] !bg-[#178f95] !text-white hover:!bg-[#12757a]"
+                onClick={handleDirectBuy}
+              >
                 Buy Now
               </Button>
             ) : (
@@ -306,10 +309,20 @@ const MarketplaceProductDetailPage = () => {
               </Button>
             )}
 
-            <Button variant="outline" className="gap-2" onClick={handleSave}>
-              <FaHeart />
-              Save Listing
-            </Button>
+            {isOwnListing ? (
+              <Button
+                variant="outline"
+                className="gap-2"
+                onClick={() => navigate("/seller/listings")}
+              >
+                View All Listings
+              </Button>
+            ) : (
+              <Button variant="outline" className="gap-2" onClick={handleSave}>
+                <FaHeart />
+                Save Listing
+              </Button>
+            )}
           </div>
 
           {cartError && (
@@ -324,12 +337,39 @@ const MarketplaceProductDetailPage = () => {
             </p>
           )}
 
-          <Button variant="outline" className="mt-3 w-full">
-            Message Seller
-          </Button>
+          {!isOwnListing && (
+            <Button
+              variant="outline"
+              className="mt-3 w-full gap-2"
+              onClick={handleMessageSeller}
+              disabled={messageLoading}
+            >
+              <FaComments />
+              {messageLoading ? "Opening Chat..." : "Message Seller"}
+            </Button>
+          )}
+
+          {messageError && (
+            <p className="mt-3 rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-600">
+              {messageError}
+            </p>
+          )}
         </Card>
       </div>
     </main>
+  );
+};
+
+const BackToMarketplaceButton = ({ onClick }: { onClick: () => void }) => {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-[#178f95] shadow-sm hover:bg-[#eefafa]"
+    >
+      <FaArrowLeft />
+      Back to Marketplace
+    </button>
   );
 };
 

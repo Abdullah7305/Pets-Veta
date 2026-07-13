@@ -97,6 +97,7 @@ const createAppointmentPaymentIntent = async ({ appointmentId, petOwnerId }) => 
 
   const metadata = {
     appointmentId: appointment.id,
+    appointmentCode: appointment.appointmentCode || "", 
     doctorId: appointment.doctorId,
     petOwnerId: appointment.petOwnerId,
     petId: appointment.petId,
@@ -402,6 +403,6 @@ const getOrderPaymentStatus = async ({ orderId, buyerId }) => {
 module.exports = {
   createAppointmentPaymentIntent,
   getAppointmentPaymentStatus,
-  createOrderPaymentIntent, 
-  getOrderPaymentStatus,    
+  createOrderPaymentIntent,
+  getOrderPaymentStatus,
 };

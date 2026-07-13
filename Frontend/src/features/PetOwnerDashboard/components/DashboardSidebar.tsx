@@ -9,12 +9,13 @@ import {
   Store,
   UserRound,
   FileText,
+  ShoppingBag, 
 } from "lucide-react";
 
 import { NavLink, useNavigate } from "react-router-dom";
 import type { DashboardSidebarItem } from "../types/petOwnerDashboard.types";
-import { useAuth } from "@/features/Auth/hooks/authhook"; 
-import { logoutUserApi } from "@/features/Auth/api/loginuser.api"; 
+import { useAuth } from "@/features/Auth/hooks/authhook";
+import { logoutUserApi } from "@/features/Auth/api/loginuser.api";
 
 const sidebarItems: DashboardSidebarItem[] = [
   {
@@ -26,6 +27,12 @@ const sidebarItems: DashboardSidebarItem[] = [
     label: "Appointments",
     path: "/pet-owner/appointments",
     icon: <CalendarDays size={20} />,
+  },
+  // 💡 Phase 4: Registered E-commerce Orders link
+  {
+    label: "My Purchases",
+    path: "/pet-owner/orders",
+    icon: <ShoppingBag size={20} />,
   },
   {
     label: "Find Doctor",
@@ -51,15 +58,15 @@ const sidebarItems: DashboardSidebarItem[] = [
 
 const DashboardSidebar = () => {
   const navigate = useNavigate();
-  const { setUser, setIsAuthenticateUser } = useAuth(); 
+  const { setUser, setIsAuthenticateUser } = useAuth();
 
   const handleLogout = async () => {
     try {
-      await logoutUserApi(); 
+      await logoutUserApi();
     } catch (error) {
       console.error("User logout failed:", error);
     } finally {
-      
+
       setUser(undefined);
       setIsAuthenticateUser(false);
       navigate("/login");
@@ -111,7 +118,7 @@ const DashboardSidebar = () => {
       {/* Logout */}
       <button
         type="button"
-        onClick={handleLogout} 
+        onClick={handleLogout}
         className="mx-5 mb-6 flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-red-500 transition hover:bg-red-50 cursor-pointer"
       >
         <LogOut size={20} />

@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
+import { useSearchParams } from "react-router-dom"; // 💡 Phase 3: Manage Stripe redirects
 import {
   BadgeCheck,
   BriefcaseBusiness,
@@ -15,12 +16,15 @@ import {
   Wallet,
   IdCard,
   Pencil,
+  CreditCard, // 💡 Phase 3: Add card icon
 } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
 import Button from "../../../shared/components/Button/Button";
 import {
   getDoctorProfileApi,
+  getStripeOnboardingLinkApi, // 💡 Phase 3: Added
+  getStripeStatusApi,          // 💡 Phase 3: Added
   type DoctorProfileData as ApiDoctorProfileData,
 } from "../apis/doctorProfile.api";
 
@@ -41,6 +45,9 @@ type DoctorProfileData = {
   about: string;
   isVerified: boolean;
   isAvailable: boolean;
+  // 💡 Phase 3 UI State additions
+  stripeOnboardingCompleted: boolean;
+  stripeConnectedAccountId: string | null;
 };
 
 const DEFAULT_DOCTOR_IMAGE =
@@ -60,44 +67,77 @@ const mapApiDoctorToProfile = (
     fees: apiDoctor.fees || 0,
     rating: 0,
     reviews: 0,
-    licenseNumber: "Not provided",
+    licenseNumber: apiDoctor.medicalLicenseNumber || "Not provided",
     languages: "English, Urdu",
     address: apiDoctor.address || "Not provided",
     about:
       "Passionate about animal care and dedicated to providing the best medical services to pets.",
     isVerified: apiDoctor.isVerified === "APPROVED",
     isAvailable: apiDoctor.isAvailable,
+    // 💡 Phase 3 Mapping additions
+    stripeOnboardingCompleted: apiDoctor.stripeOnboardingCompleted ?? false,
+    stripeConnectedAccountId: apiDoctor.stripeConnectedAccountId || null,
   };
 };
 
 const DoctorProfile = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams(); // 💡 Phase 3: Track Stripe return query string
 
   const [doctor, setDoctor] = useState<DoctorProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [stripeLoading, setStripeLoading] = useState(false); // 💡 Phase 3 state
+
+  const fetchDoctorProfile = async () => {
+    try {
+      setLoading(true);
+      setErrorMessage("");
+
+      const response = await getDoctorProfileApi();
+      const mappedDoctor = mapApiDoctorToProfile(response.data);
+
+      setDoctor(mappedDoctor);
+
+      // 💡 Phase 3: If returning from Stripe successfully, let's sync up their onboarding details live
+      const stripeParam = searchParams.get("stripe");
+      if (stripeParam === "success" && mappedDoctor.stripeConnectedAccountId) {
+        setStripeLoading(true);
+        const syncResponse = await getStripeStatusApi();
+        if (syncResponse?.success) {
+          setDoctor(prev => prev ? { ...prev, stripeOnboardingCompleted: syncResponse.data.stripeOnboardingCompleted } : null);
+        }
+        setStripeLoading(false);
+        // Clear search parameters to avoid re-triggering calls on refresh
+        setSearchParams({});
+      }
+
+    } catch (error) {
+      console.log("Doctor profile fetch error:", error);
+      setErrorMessage("Failed to load doctor profile");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchDoctorProfile = async () => {
-      try {
-        setLoading(true);
-        setErrorMessage("");
-
-        const response = await getDoctorProfileApi();
-
-        const mappedDoctor = mapApiDoctorToProfile(response.data);
-
-        setDoctor(mappedDoctor);
-      } catch (error) {
-        console.log("Doctor profile fetch error:", error);
-        setErrorMessage("Failed to load doctor profile");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchDoctorProfile();
   }, []);
+
+  // 💡 Phase 3: Action to request and route doctor to secure Stripe Express onboarding URL
+  const handleStripeOnboarding = async () => {
+    try {
+      setStripeLoading(true);
+      const response = await getStripeOnboardingLinkApi();
+      if (response?.success && response.data.onboardingUrl) {
+        window.location.href = response.data.onboardingUrl;
+      }
+    } catch (err) {
+      console.error("Stripe redirection failed:", err);
+    } finally {
+      setStripeLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -118,11 +158,9 @@ const DoctorProfile = () => {
           <h2 className="text-2xl font-black text-[#101b3d]">
             {errorMessage || "Doctor profile not found"}
           </h2>
-
           <p className="mt-3 text-sm font-medium text-slate-500">
             Please login as doctor and try again.
           </p>
-
           <div className="mt-6">
             <Button type="button" onClick={() => navigate("/login")}>
               Go to Login
@@ -140,70 +178,116 @@ const DoctorProfile = () => {
           <p className="text-xs font-black uppercase tracking-[0.25em] text-[#078b91]">
             Doctor Panel
           </p>
-
           <h1 className="mt-2 text-3xl font-black tracking-[-0.03em] text-[#101b3d]">
             Doctor Profile
           </h1>
-
           <p className="mt-2 text-sm font-medium text-slate-500">
             Manage your professional information and public doctor details.
           </p>
         </div>
 
         <section className="grid gap-5 xl:grid-cols-[330px_1fr]">
-          <aside className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm">
-            <div className="relative h-32 bg-gradient-to-br from-[#D4E2E0] via-[#EAF7F5] to-white">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(23,143,149,0.12),transparent_35%),radial-gradient(circle_at_80%_20%,rgba(249,197,168,0.18),transparent_38%)]" />
+          <aside className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm flex flex-col justify-between">
+            <div>
+              <div className="relative h-32 bg-gradient-to-br from-[#D4E2E0] via-[#EAF7F5] to-white">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(23,143,149,0.12),transparent_35%),radial-gradient(circle_at_80%_20%,rgba(249,197,168,0.18),transparent_38%)]" />
+              </div>
+
+              <div className="-mt-16 flex flex-col items-center px-6 pb-4">
+                <div className="relative h-32 w-32 overflow-hidden rounded-full border-4 border-white bg-slate-100 shadow-xl">
+                  <img
+                    src={doctor.profileImageUrl}
+                    alt={doctor.fullName}
+                    className="h-full w-full object-cover"
+                  />
+                  <span
+                    className={`absolute bottom-3 right-3 h-5 w-5 rounded-full border-2 border-white ${doctor.isAvailable ? "bg-green-500" : "bg-red-500"
+                      }`}
+                  />
+                </div>
+
+                <h2 className="mt-5 text-center text-2xl font-black text-[#101b3d]">
+                  {doctor.fullName}
+                </h2>
+                <p className="mt-1 text-sm font-bold text-[#078b91]">
+                  {doctor.specialization}
+                </p>
+
+                <div className="mt-5 flex flex-wrap justify-center gap-3">
+                  {doctor.isVerified && (
+                    <span className="inline-flex items-center gap-2 rounded-lg bg-[#EAF7F5] px-4 py-2 text-sm font-black text-[#078b91]">
+                      <BadgeCheck size={17} />
+                      Verified
+                    </span>
+                  )}
+                  {doctor.isAvailable && (
+                    <span className="inline-flex items-center gap-2 rounded-lg bg-green-50 px-4 py-2 text-sm font-black text-green-700">
+                      <CircleCheck size={17} />
+                      Available
+                    </span>
+                  )}
+                </div>
+
+                <div className="mt-6 h-px w-full bg-slate-200" />
+
+                <div className="mt-6 w-full space-y-5">
+                  <ContactRow icon={<Mail size={20} />} value={doctor.email} />
+                  <ContactRow icon={<Phone size={20} />} value={doctor.phone} />
+                  <ContactRow icon={<MapPin size={20} />} value={doctor.address} />
+                </div>
+              </div>
             </div>
 
-            <div className="-mt-16 flex flex-col items-center px-6 pb-6">
-              <div className="relative h-32 w-32 overflow-hidden rounded-full border-4 border-white bg-slate-100 shadow-xl">
-                <img
-                  src={doctor.profileImageUrl}
-                  alt={doctor.fullName}
-                  className="h-full w-full object-cover"
-                />
+            {/* 💡 Phase 3: Stripe Connect Onboarding & Billing Card Inside Sidebar */}
+            <div className="p-5 pt-0 border-t border-slate-100/80 mt-2">
+              <div className="rounded-2xl border border-slate-150 bg-slate-50/50 p-4 mt-3">
+                <div className="flex items-center gap-3 mb-2.5">
+                  <div className="h-9 w-9 rounded-xl bg-teal-50 text-[#078b91] flex items-center justify-center">
+                    <CreditCard size={18} />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-black text-slate-800">Payout Wallet</h3>
+                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Stripe Connect</p>
+                  </div>
+                </div>
 
-                <span
-                  className={`absolute bottom-3 right-3 h-5 w-5 rounded-full border-2 border-white ${
-                    doctor.isAvailable ? "bg-green-500" : "bg-red-500"
-                  }`}
-                />
-              </div>
-
-              <h2 className="mt-5 text-center text-2xl font-black text-[#101b3d]">
-                {doctor.fullName} 
-              </h2>
-
-              <p className="mt-1 text-sm font-bold text-[#078b91]">
-                {doctor.specialization}
-              </p>
-
-              <div className="mt-5 flex flex-wrap justify-center gap-3">
-                {doctor.isVerified && (
-                  <span className="inline-flex items-center gap-2 rounded-lg bg-[#EAF7F5] px-4 py-2 text-sm font-black text-[#078b91]">
-                    <BadgeCheck size={17} />
-                    Verified
-                  </span>
+                {doctor.stripeOnboardingCompleted ? (
+                  <div className="text-left space-y-2">
+                    <div className="rounded-lg bg-emerald-50 border border-emerald-100 p-2.5 text-center text-xs font-black text-emerald-800 flex items-center justify-center gap-1.5">
+                      <CircleCheck size={15} />
+                      Stripe Connected
+                    </div>
+                    <p className="text-[10px] text-slate-400 font-semibold leading-relaxed text-center">
+                      Your payouts are enabled. Verification code validation will transfer your funds immediately to Stripe.
+                    </p>
+                    <button
+                      type="button"
+                      disabled={stripeLoading}
+                      onClick={handleStripeOnboarding}
+                      className="w-full text-center text-xs font-extrabold text-[#078b91] hover:underline"
+                    >
+                      {stripeLoading ? "Loading..." : "Manage Stripe Account"}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="text-center space-y-3">
+                    <p className="text-[11px] text-slate-500 font-semibold leading-relaxed">
+                      Link your bank account to enable checkup validation transfers.
+                    </p>
+                    <Button
+                      type="button"
+                      variant="primary"
+                      disabled={stripeLoading}
+                      onClick={handleStripeOnboarding}
+                      className="flex h-10 w-full items-center justify-center text-xs font-black !bg-[#15265d] !border-[#15265d]"
+                    >
+                      {stripeLoading ? "Redirecting..." : "Connect Stripe Wallet"}
+                    </Button>
+                  </div>
                 )}
-
-                {doctor.isAvailable && (
-                  <span className="inline-flex items-center gap-2 rounded-lg bg-green-50 px-4 py-2 text-sm font-black text-green-700">
-                    <CircleCheck size={17} />
-                    Available
-                  </span>
-                )}
               </div>
 
-              <div className="mt-6 h-px w-full bg-slate-200" />
-
-              <div className="mt-6 w-full space-y-5">
-                <ContactRow icon={<Mail size={20} />} value={doctor.email} />
-                <ContactRow icon={<Phone size={20} />} value={doctor.phone} />
-                <ContactRow icon={<MapPin size={20} />} value={doctor.address} />
-              </div>
-
-              <div className="mt-7 w-full">
+              <div className="mt-5 w-full">
                 <Button
                   type="button"
                   className="flex h-10 w-full items-center justify-center gap-1.5 rounded-xl px-3 py-0 text-xs font-black"
@@ -216,6 +300,7 @@ const DoctorProfile = () => {
             </div>
           </aside>
 
+          {/* Right main panel */}
           <div className="space-y-5">
             <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
               <MetricCard
@@ -225,7 +310,6 @@ const DoctorProfile = () => {
                 value={`${doctor.experience}+ Years`}
                 description="Professional work"
               />
-
               <MetricCard
                 icon={<GraduationCap size={30} />}
                 iconClass="bg-purple-100 text-purple-600"
@@ -233,7 +317,6 @@ const DoctorProfile = () => {
                 value={doctor.education}
                 description="Doctor of Veterinary Medicine"
               />
-
               <MetricCard
                 icon={<Wallet size={30} />}
                 iconClass="bg-orange-100 text-orange-500"
@@ -241,7 +324,6 @@ const DoctorProfile = () => {
                 value={`Rs. ${doctor.fees.toLocaleString()}`}
                 description="Per Consultation"
               />
-
               <MetricCard
                 icon={<Star size={30} />}
                 iconClass="bg-blue-100 text-blue-500"
@@ -255,38 +337,32 @@ const DoctorProfile = () => {
               <h2 className="text-xl font-black text-[#101b3d]">
                 Professional Information
               </h2>
-
               <div className="mt-6 grid gap-x-8 gap-y-0 lg:grid-cols-2">
                 <InfoRow
                   icon={<Stethoscope size={23} />}
                   label="Specialization"
                   value={doctor.specialization}
                 />
-
                 <InfoRow
                   icon={<CalendarDays size={23} />}
                   label="Experience"
                   value={`${doctor.experience}+ Years`}
                 />
-
                 <InfoRow
                   icon={<IdCard size={23} />}
                   label="License Number"
                   value={doctor.licenseNumber}
                 />
-
                 <InfoRow
                   icon={<MapPin size={23} />}
                   label="Clinic Address"
                   value={doctor.address}
                 />
-
                 <InfoRow
                   icon={<Languages size={23} />}
                   label="Languages"
                   value={doctor.languages}
                 />
-
                 <InfoRow
                   icon={<UserRound size={23} />}
                   label="About Me"
@@ -332,12 +408,9 @@ const MetricCard = ({
         >
           {icon}
         </div>
-
         <div>
           <p className="text-sm font-semibold text-slate-500">{label}</p>
-
           <h3 className="mt-1 text-2xl font-black text-[#101b3d]">{value}</h3>
-
           <p className="mt-1 text-sm font-medium leading-5 text-slate-500">
             {description}
           </p>
@@ -360,17 +433,14 @@ const InfoRow = ({
 }) => {
   return (
     <div
-      className={`flex gap-4 py-4 ${
-        noBorder ? "" : "border-b border-dashed border-slate-200"
-      }`}
+      className={`flex gap-4 py-4 ${noBorder ? "" : "border-b border-dashed border-slate-200"
+        }`}
     >
       <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#EAF7F5] text-[#078b91]">
         {icon}
       </div>
-
       <div>
         <p className="text-sm font-semibold text-slate-500">{label}</p>
-
         <h3 className="mt-1 text-sm font-black leading-6 text-[#101b3d]">
           {value}
         </h3>
