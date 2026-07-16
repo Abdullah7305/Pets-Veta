@@ -27,7 +27,7 @@ const getGoogleProfileToken = async (code) => {
 
     const ticket = await client.verifyIdToken({
         idToken: tokens.id_token,
-        audience: process.env.Client_ID
+        audience: process.env.CLIENT_ID 
     });
 
     return ticket.getPayload();
