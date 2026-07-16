@@ -9,6 +9,11 @@ export type CartItem = {
 };
 
 const CART_KEY = "pets-veta-cart";
+const CART_UPDATED_EVENT = "cart-updated";
+
+const emitCartUpdated = () => {
+  window.dispatchEvent(new Event(CART_UPDATED_EVENT));
+};
 
 export const getCartItems = (): CartItem[] => {
   try {
@@ -21,6 +26,7 @@ export const getCartItems = (): CartItem[] => {
 
 export const saveCartItems = (items: CartItem[]) => {
   localStorage.setItem(CART_KEY, JSON.stringify(items));
+  emitCartUpdated();
 };
 
 export const addToCart = (item: CartItem) => {
@@ -44,39 +50,41 @@ export const addToCart = (item: CartItem) => {
     };
   }
 
-  const existing = cart.find((cartItem) => cartItem.productId === item.productId);
+  const existing = cart.find(
+    (cartItem) => cartItem.productId === item.productId,
+  );
 
   if (existing) {
     const updatedCart = cart.map((cartItem) =>
       cartItem.productId === item.productId
         ? { ...cartItem, quantity: cartItem.quantity + item.quantity }
-        : cartItem
+        : cartItem,
     );
 
     saveCartItems(updatedCart);
+
     return {
       success: true,
-      message: "Cart updated.",
+      message: "Cart updated successfully.",
     };
   }
 
   saveCartItems([...cart, item]);
+
   return {
     success: true,
-    message: "Product added to cart.",
+    message: "Product added to cart successfully.",
   };
 };
 
 export const updateCartQuantity = (
   productId: string | number,
-  quantity: number
+  quantity: number,
 ) => {
   const cart = getCartItems();
 
   const updatedCart = cart
-    .map((item) =>
-      item.productId === productId ? { ...item, quantity } : item
-    )
+    .map((item) => (item.productId === productId ? { ...item, quantity } : item))
     .filter((item) => item.quantity > 0);
 
   saveCartItems(updatedCart);
@@ -84,9 +92,11 @@ export const updateCartQuantity = (
 
 export const removeFromCart = (productId: string | number) => {
   const cart = getCartItems();
+
   saveCartItems(cart.filter((item) => item.productId !== productId));
 };
 
 export const clearCart = () => {
   localStorage.removeItem(CART_KEY);
+  emitCartUpdated();
 };

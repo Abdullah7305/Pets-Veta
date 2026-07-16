@@ -1,4 +1,5 @@
-import PetOwnerDashboardPage from "./pages/PetOwnerDashboardPage";
+import { Navigate } from "react-router-dom";
+
 import PetOwnerAppointmentsPage from "./pages/PetOwnerAppointmentsPage";
 import { PetOwnerProtectedRoutes } from "@/ProtectedRoutes/PetOwnerProtectedRoutes";
 import PetOwnerOrdersPage from "./pages/PetOwnerOrdersPage";
@@ -8,7 +9,7 @@ export const petOwnerDashboardRoutes = [
     path: "/pet-owner/dashboard",
     element: (
       <PetOwnerProtectedRoutes>
-        <PetOwnerDashboardPage />
+        <Navigate to="/seller/dashboard" replace />
       </PetOwnerProtectedRoutes>
     ),
   },

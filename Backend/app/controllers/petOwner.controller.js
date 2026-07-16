@@ -4,14 +4,10 @@ const requireFields = require('../utils/validateRequest');
 const petOwnerServices = require('../services/petOwner.services');
 const sendResponse = require('../utils/SendResponse');
 const authServices = require('../services/auth.services');
-const { stripe } = require('../config/stripe');
-const prisma = require('../config/prisma');
 const cloudinary = require('../utils/cloudinary.utils');
-const streamifier = require('streamifier');
 
-
-
-
+const DEFAULT_USER_BIO =
+    "Manage your pets, veterinary appointments, and health information from one place.";
 
 const registerPet = catchAsync(async (req, res) => {
     const petOwnerId = req.user?.id;
@@ -30,7 +26,7 @@ const registerPet = catchAsync(async (req, res) => {
     }
 
     const petOwner = await authServices.getUserById(petOwnerId);
-    console.log("Pet Owner is ", petOwner);
+
     if (!petOwner || petOwner.userRole.role !== 'PetOwner') {
         return sendResponse(res, 403, 'Only pet owner can register pet', {});
     }
@@ -49,23 +45,19 @@ const registerPet = catchAsync(async (req, res) => {
         return sendResponse(res, 400, 'Failed to create Pet', {});
     }
 
-
-    const uploadPromises = files.map(file =>
+    const uploadPromises = files.map((file) =>
         cloudinary.uploadToCloudinary(file.buffer, "pets")
     );
-    console.log("Cloudinary Promises are ", uploadPromises);
+
     const uploadResults = await Promise.all(uploadPromises);
-    console.log("Upload Results is ", uploadResults);
-    const uploadedPictures = uploadResults.map(result => ({
+
+    const uploadedPictures = uploadResults.map((result) => ({
         petId: newPet.id,
         publicUrl: result.secure_url,
         publicId: result.public_id
     }));
-    console.log("Uploaded Picture data is ", uploadedPictures);
 
     await petOwnerServices.createPetPictures(uploadedPictures);
-
-    console.log("Error hitting ===>")
 
     return sendResponse(res, 201, 'Successfully created Pet', uploadedPictures);
 });
@@ -112,6 +104,7 @@ const getPetOwnerById = catchAsync(async (req, res) => {
         email: getPetOwner.email,
         phone: getPetOwner.phone || '',
         profileImageUrl: getPetOwner.profileImageUrl,
+        bio: getPetOwner.bio || DEFAULT_USER_BIO,
     };
 
     return sendResponse(res, 200, 'Successfully Send User', user);
@@ -119,7 +112,7 @@ const getPetOwnerById = catchAsync(async (req, res) => {
 
 const updatePetOwnerProfile = catchAsync(async (req, res) => {
     const { id } = req.user;
-    const { fullName, username, phone } = req.body || {};
+    const { fullName, username, phone, bio } = req.body || {};
 
     requireFields(['fullName', 'username'], req.body);
 
@@ -139,6 +132,7 @@ const updatePetOwnerProfile = catchAsync(async (req, res) => {
         username,
         phone: phone || '',
         profileImageUrl,
+        bio: bio || DEFAULT_USER_BIO,
     });
 
     return sendResponse(
@@ -157,7 +151,7 @@ const getPetsData = catchAsync(async (req, res) => {
     if (!petsData) {
         return sendResponse(res, 400, 'Not Pets Data Found', petsData);
     }
-    console.log("======>>> ", petsData)
+
     return sendResponse(res, 200, 'Successfully Send Data', petsData);
 });
 
@@ -197,6 +191,7 @@ const getPetOwnerAppointments = catchAsync(async (req, res) => {
         appointments
     );
 });
+
 const getPetById = catchAsync(async (req, res) => {
     const petOwnerId = req.user?.id;
     const { petId } = req.params;
@@ -206,6 +201,7 @@ const getPetById = catchAsync(async (req, res) => {
     }
 
     const pet = await petOwnerServices.getPetById(petId, petOwnerId);
+
     if (!pet) {
         throw new AppError("Pet profile not found", 404);
     }
@@ -224,6 +220,7 @@ const updatePet = catchAsync(async (req, res) => {
     requireFields(['name', 'age', 'breed', 'category'], req.body);
 
     const updated = await petOwnerServices.updatePet(petId, petOwnerId, req.body);
+
     return sendResponse(res, 200, 'Pet profile updated successfully', updated);
 });
 
@@ -236,6 +233,7 @@ const deletePet = catchAsync(async (req, res) => {
     }
 
     await petOwnerServices.deletePet(petId, petOwnerId);
+
     return sendResponse(res, 200, 'Pet profile deleted successfully', {});
 });
 
@@ -262,7 +260,7 @@ module.exports = {
     getPetsData,
     lockDoctorSlot,
     getPetOwnerAppointments,
-    getPetById,    
-    updatePet,    
-    deletePet     
+    getPetById,
+    updatePet,
+    deletePet
 };

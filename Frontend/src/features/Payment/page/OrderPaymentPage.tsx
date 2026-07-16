@@ -32,17 +32,13 @@ const OrderPaymentPage = () => {
         []
     );
 
-    // 💡 Auto-Cleanup on Unmount / Tab Close / Page Navigation
+  
     useEffect(() => {
         if (!orderId) return;
 
-        const checkCleanupNeeded = () => {
+        const handleBeforeUnload = () => {
             const isProcessing = sessionStorage.getItem(`payment-processing-${orderId}`) === "true";
-            return !isProcessing;
-        };
-
-        const performCleanupSync = () => {
-            if (checkCleanupNeeded()) {
+            if (!isProcessing) {
                 // Use keepalive to ensure the backend receives this request even if the tab is closing
                 const url = `http://localhost:8000/api/v1/orders/${orderId}/cancel-hold`;
                 fetch(url, {
@@ -55,20 +51,17 @@ const OrderPaymentPage = () => {
             }
         };
 
-        const handleBeforeUnload = () => {
-            if (showStripeRestrictionWarning) return; // Skip if warning is shown
-            void performCancelHold();
-        };
-
         // Tab Close / Browser Exit Event Listener
         window.addEventListener("beforeunload", handleBeforeUnload);
 
         return () => {
-            window.removeEventListener("beforeunload", handleBack);
+            window.removeEventListener("beforeunload", handleBeforeUnload);
 
             // Trigger cleanup if navigating away within the single-page application context
             const isLeavingPendingCheckout = !window.location.pathname.startsWith("/order-payment");
-            if (isLeavingHorizontalHold && isPendingState && !isProcessing) {
+            const isProcessing = sessionStorage.getItem(`payment-processing-${orderId}`) === "true";
+
+            if (isLeavingPendingCheckout && !isProcessing) {
                 // Safely cancel hold via silent async call
                 api.delete(`/orders/${orderId}/cancel-hold`).catch((err) =>
                     console.error("Cleanup hold error during unmount:", err)

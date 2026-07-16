@@ -1,6 +1,10 @@
-const { PrismaClient } = require("@prisma/client");
+const prisma = require("../config/prisma");
+const notificationService = require("./notification.service");
+
 const prisma = new PrismaClient();
 const { stripe } = require("../config/stripe");
+
+const LOW_STOCK_LIMIT = 5;
 
 const generateOrderNumber = () => {
   return `PV-${Date.now()}`;
@@ -141,7 +145,7 @@ exports.createMarketplaceOrder = async (buyerId, payload) => {
     throw new Error("Order items are required");
   }
 
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const productIds = items.map((item) => item.productId);
 
     const products = await tx.marketplaceProduct.findMany({
@@ -152,7 +156,7 @@ exports.createMarketplaceOrder = async (buyerId, payload) => {
         status: "ACTIVE",
       },
       include: {
-        seller: true, // 💡 Already includes SellerProfile (which contains userId)
+        seller: true,
       },
     });
 
@@ -215,11 +219,23 @@ exports.createMarketplaceOrder = async (buyerId, payload) => {
           select: {
             id: true,
             fullName: true,
+            username: true,
             email: true,
             phone: true,
           },
         },
-        seller: true,
+        seller: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                fullName: true,
+                username: true,
+                email: true,
+              },
+            },
+          },
+        },
         items: {
           include: {
             product: {
@@ -232,12 +248,19 @@ exports.createMarketplaceOrder = async (buyerId, payload) => {
       },
     });
 
+    const stockAlerts = [];
+
     for (const item of items) {
       const quantity = Number(item.quantity) || 1;
 
       const product = products.find((p) => p.id === item.productId);
 
-      const newStock = product.stock - quantity;
+      if (!product) {
+        continue;
+      }
+
+      const previousStock = product.stock;
+      const newStock = previousStock - quantity;
 
       await tx.marketplaceProduct.update({
         where: {
@@ -248,10 +271,36 @@ exports.createMarketplaceOrder = async (buyerId, payload) => {
           status: newStock <= 0 ? "SOLD_OUT" : "ACTIVE",
         },
       });
+
+      const crossedLowStockLimit =
+        previousStock > LOW_STOCK_LIMIT &&
+        newStock > 0 &&
+        newStock <= LOW_STOCK_LIMIT;
+
+      const becameSoldOut = previousStock > 0 && newStock <= 0;
+
+      if (crossedLowStockLimit || becameSoldOut) {
+        stockAlerts.push({
+          productId: product.id,
+          productTitle: product.title,
+          sellerUserId: product.seller.userId,
+          previousStock,
+          newStock,
+          orderId: order.id,
+        });
+      }
     }
 
-    return order;
+    return {
+      order,
+      stockAlerts,
+    };
   });
+
+  await createOrderNotifications(result.order);
+  await createStockNotifications(result.stockAlerts);
+
+  return result.order;
 };
 
 exports.getMyMarketplaceOrders = async (buyerId) => {

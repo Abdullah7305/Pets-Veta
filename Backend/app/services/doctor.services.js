@@ -374,7 +374,7 @@ const getStripeConnectStatus = async (userId) => {
         };
     }
 
-    const account = await stripe.account.retrieve(doctor.stripeConnectedAccountId);
+   const account = await stripe.accounts.retrieve(doctor.stripeConnectedAccountId);
 
     const completed = account.charges_enabled && account.details_submitted;
 

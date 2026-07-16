@@ -6,6 +6,7 @@ export const petOwnerProfileSchema = z.object({
     .trim()
     .min(2, "Full name must be at least 2 characters")
     .max(50, "Full name cannot exceed 50 characters"),
+
   username: z
     .string()
     .trim()
@@ -14,11 +15,19 @@ export const petOwnerProfileSchema = z.object({
       /^[a-zA-Z0-9_]+$/,
       "Username can only contain letters, numbers, and underscores",
     ),
+
   phone: z
     .string()
     .trim()
     .max(20, "Phone number cannot exceed 20 characters")
     .optional(),
+
+  bio: z
+    .string()
+    .trim()
+    .max(220, "Description cannot exceed 220 characters")
+    .optional(),
+
   profileImage: z
     .instanceof(File)
     .optional()
@@ -34,6 +43,4 @@ export const petOwnerProfileSchema = z.object({
     ),
 });
 
-export type PetOwnerProfileFormData = z.infer<
-  typeof petOwnerProfileSchema
->;
+export type PetOwnerProfileFormData = z.infer<typeof petOwnerProfileSchema>;

@@ -14,13 +14,18 @@ interface PetCardProps {
 
 const PetCard = ({ id, name, breed, category, age, photos, onSelect }: PetCardProps) => {
 
-   
+
     const resolvePhotoUrl = (): string | undefined => {
         if (!photos || photos.length === 0) return undefined;
         const firstPhoto = photos[0];
         if (typeof firstPhoto === "string") return firstPhoto;
-        if (typeof firstPhoto === "object" && firstPhoto !== null && "url" in firstPhoto) {
-            return (firstPhoto as { url: string }).url;
+        if (typeof firstPhoto === "object" && firstPhoto !== null) {
+            if ("url" in firstPhoto) {
+                return (firstPhoto as { url: string }).url;
+            }
+            if ("publicUrl" in firstPhoto) {
+                return (firstPhoto as { publicUrl: string }).publicUrl; // Resolve DB publicUrl
+            }
         }
         return undefined;
     };

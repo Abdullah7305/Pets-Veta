@@ -20,6 +20,7 @@ const DoctorDashboard = () => {
   const [dashboard] = useState<DashboardData>(defaultDashboard);
   const loading = false;
   const { user } = useAuth();
+  const doctorName = user?.data.name || user?.data.username || "Doctor";
 
   const statsCards = [
     {
@@ -52,7 +53,7 @@ const DoctorDashboard = () => {
     <main className="min-h-screen bg-slate-50 text-slate-900">
       <section className="mb-6 sm:mb-8 lg:mb-10">
         <h1 className="text-2xl font-bold leading-tight text-slate-900 sm:text-3xl lg:text-4xl">
-          Welcome back, {user?.data.username || "Doctor"}!
+          Welcome back, {doctorName}!
         </h1>
         <p className="mt-2 text-sm text-slate-600 sm:text-base">
           Here's your dashboard overview

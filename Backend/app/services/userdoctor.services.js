@@ -1,5 +1,5 @@
-const { PrismaClient, VerificationStatus, ScheduleStatus } = require("@prisma/client");
-const prisma = new PrismaClient();
+const { VerificationStatus, ScheduleStatus } = require("@prisma/client");
+const prisma = require("../config/prisma");
 
 const getUpcomingSlotsFilter = (currentDate) => ({
   status: ScheduleStatus.AVAILABLE,

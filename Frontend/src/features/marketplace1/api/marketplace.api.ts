@@ -23,7 +23,10 @@ export type MarketplaceProduct = {
     user?: {
       id?: string;
       fullName?: string | null;
+      name?: string | null;
+      username?: string | null;
       email?: string | null;
+      phone?: string | null;
       profileImageUrl?: string | null;
     };
   };
@@ -75,10 +78,16 @@ export const getProductPrice = (product: MarketplaceProduct) => {
 
 export const getSellerName = (product: MarketplaceProduct) => {
   return (
-    product.seller?.businessName ||
+    product.seller?.user?.username ||
     product.seller?.user?.fullName ||
-    "Pets Veta Seller"
+    product.seller?.user?.name ||
+    product.seller?.businessName ||
+    "Pets Veta User"
   );
+};
+
+export const getSellerImage = (product: MarketplaceProduct) => {
+  return product.seller?.user?.profileImageUrl || "";
 };
 
 export const fetchMarketplaceProducts = async (params: {
@@ -106,11 +115,13 @@ export const fetchMarketplaceProductById = async (productId: string) => {
 
 export const saveMarketplaceListing = async (productId: string) => {
   const response = await api.post(`marketplace/save/${productId}`);
+
   return response.data;
 };
 
 export const removeMarketplaceListing = async (productId: string) => {
   const response = await api.delete(`marketplace/save/${productId}`);
+
   return response.data;
 };
 

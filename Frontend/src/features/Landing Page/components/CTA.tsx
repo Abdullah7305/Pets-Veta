@@ -1,17 +1,18 @@
 import Button from "@/shared/components/Button/Button";
-import img from "@/assets/shared/images/bannerImage.png"
+import img from "@/assets/shared/images/whychooseus.png";
+import cat from "@/assets/shared/images/cat.png";
 
 const CTA = () => {
     return (
-        <section className="bg-[#f5fbff] px-6 py-10 lg:px-16">
-            <div className="relative mx-auto flex max-w-7xl items-center justify-between overflow-hidden rounded-[34px] bg-gradient-to-r from-[#12aaa5] to-[#079895] px-8 py-10 shadow-xl md:px-14">
+        <section className="bg-[#f5fbff] px-6 py-16 lg:px-16">
+            <div className="relative mx-auto flex max-w-7xl items-center justify-between overflow-visible rounded-[34px] bg-gradient-to-r from-[#12aaa5] to-[#079895] px-8 py-10 shadow-xl md:px-14">
                 <img
                     src={img}
-                    alt="Dog"
-                    className="absolute bottom-0 left-6 hidden h-[260px] object-contain md:block"
+                    alt="Happy pets"
+                    className="absolute bottom-0 left-6 z-10 hidden h-[300px] object-contain drop-shadow-[0_22px_30px_rgba(15,23,42,0.2)] md:block"
                 />
 
-                <div className="relative z-10 mx-auto max-w-2xl text-center">
+                <div className="relative z-20 mx-auto max-w-2xl text-center">
                     <h2 className="text-[30px] font-extrabold leading-tight text-white md:text-[42px]">
                         Your pet’s health is our priority
                         <br />
@@ -38,9 +39,9 @@ const CTA = () => {
                 </div>
 
                 <img
-                    src={img}
-                    alt="Cat"
-                    className="absolute bottom-0 right-8 hidden h-[275px] object-contain md:block"
+                    src={cat}
+                    alt="Happy cat"
+                    className="absolute bottom-0 right-4 z-10 hidden h-[400px] -translate-y-10 object-contain drop-shadow-[0_22px_30px_rgba(15,23,42,0.22)] md:block"
                 />
             </div>
         </section>

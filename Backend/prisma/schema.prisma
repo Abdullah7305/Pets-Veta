@@ -102,6 +102,15 @@ enum MessageType {
   SYSTEM
 }
 
+enum NotificationType {
+  MESSAGE
+  ORDER
+  LOW_STOCK
+  APPOINTMENT
+  PAYMENT
+  SYSTEM
+}
+
 model User {
   id              String   @id @default(uuid())
   fullName        String
@@ -111,6 +120,7 @@ model User {
   password        String?
   phone           String   @default("")
   profileImageUrl String   @default("Enter your Image")
+  bio             String   @default("Manage your pets, veterinary appointments, and health information from one place.")
   isActive        Boolean  @default(true)
   refreshToken    String?
   otp             String?
@@ -135,6 +145,8 @@ model User {
   conversationParticipants ConversationParticipant[]
   sentMessages             Message[]                 @relation("UserSentMessages")
   messageReadReceipts      MessageReadReceipt[]
+
+  notifications Notification[]
 
   @@index([fullName])
 }
@@ -663,4 +675,30 @@ model MessageReadReceipt {
   @@unique([messageId, userId])
   @@index([messageId])
   @@index([userId])
+}
+
+model Notification {
+  id String @id @default(uuid())
+
+  userId String
+
+  type    NotificationType @default(SYSTEM)
+  title   String
+  message String
+  link    String?
+
+  isRead Boolean @default(false)
+
+  metadata Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([isRead])
+  @@index([createdAt])
+  @@index([userId, isRead])
 }

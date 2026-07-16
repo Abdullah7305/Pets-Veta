@@ -1,13 +1,10 @@
 const prisma = require('../config/prisma');
-const { VerificationStatus } = require('@prisma/client')
+const { VerificationStatus } = require('@prisma/client');
 const { getGoogleProfileToken } = require('../utils/googleAuth');
-const { createAuthTokens } = require('../services/authToken.services')
-const jwt = require('jsonwebtoken');
+const { createAuthTokens } = require('../services/authToken.services');
 const AppError = require('../utils/AppError');
 
-
 const createDoctor = async (doctorData) => {
-
     return await prisma.user.create({
         data: {
             fullName: doctorData.fullName,
@@ -31,7 +28,6 @@ const createDoctor = async (doctorData) => {
                     publicUrl: doctorData.publicUrl
                 }
             },
-
             userRole: {
                 create: { role: "Doctor" }
             }
@@ -44,10 +40,9 @@ const createDoctor = async (doctorData) => {
     });
 };
 
-
 const createPetOwner = async (petOwnerData) => {
     if (!petOwnerData) {
-        throw new AppError("Data is Invalid ", 400)
+        throw new AppError("Data is Invalid ", 400);
     }
 
     const isCreated = await prisma.user.findFirst({
@@ -57,18 +52,18 @@ const createPetOwner = async (petOwnerData) => {
                 { username: petOwnerData.username }
             ]
         }
-    })
+    });
+
     if (isCreated) {
         return false;
     }
+
     const newPetOwner = await prisma.user.create({
         data: {
             fullName: petOwnerData.fullName,
             username: petOwnerData.username,
             email: petOwnerData.email,
             password: petOwnerData.hashedPassword,
-
-
             userRole: {
                 create: {
                     role: 'PetOwner'
@@ -76,12 +71,12 @@ const createPetOwner = async (petOwnerData) => {
             }
         },
         include: {
-            userRole: true,
-
+            userRole: true
         }
     });
+
     return newPetOwner;
-}
+};
 
 const createAccountByGoogleService = async (code) => {
     const profile = await getGoogleProfileToken(code);
@@ -90,20 +85,20 @@ const createAccountByGoogleService = async (code) => {
         where: { email: profile.email },
         include: { userRole: true }
     });
+
     if (!user) {
         const baseUsername = profile.email.split('@')[0];
-        const uniqueUsername = `${baseUsername}_${Math.floor(1000 + Math.random() * 9000)}`
+        const uniqueUsername = `${baseUsername}_${Math.floor(1000 + Math.random() * 9000)}`;
 
         user = await createPetOwner({
             fullName: profile.name,
             username: uniqueUsername,
             email: profile.email,
             hashedPassword: null
-
-        })
+        });
     }
-    const userRole = user.userRole?.role || 'Pet Owner';
 
+    const userRole = user.userRole?.role || 'PetOwner';
 
     const payload = {
         id: user.id,
@@ -113,10 +108,8 @@ const createAccountByGoogleService = async (code) => {
 
     const { accessToken, refreshToken } = createAuthTokens(payload);
 
-    return { user, accessToken: accessToken, refreshToken: refreshToken };
-
-}
-
+    return { user, accessToken, refreshToken };
+};
 
 const createAdmin = async (adminData) => {
     const isCreated = await prisma.user.findUnique({
@@ -140,11 +133,8 @@ const createAdmin = async (adminData) => {
                 create: {
                     role: 'Admin'
                 }
-            },
-
-
+            }
         },
-
         include: {
             userRole: true,
             admin: true
@@ -155,8 +145,6 @@ const createAdmin = async (adminData) => {
 };
 
 const loginUser = async (userData) => {
-
-
     const user = await prisma.user.findFirst({
         where: {
             email: userData.email,
@@ -169,55 +157,47 @@ const loginUser = async (userData) => {
         }
     });
 
-    if (user?.userRole.role.toLowerCase() === 'doctor') {
-        console.log("Hitting condition...");
-        if (user.doctors.isVerified === VerificationStatus.PENDING) {
-            console.log("I Was Running ....")
+    if (user?.userRole?.role?.toLowerCase() === 'doctor') {
+        if (user.doctors?.isVerified === VerificationStatus.PENDING) {
             throw new AppError("Unverified User is not allowed yet...", 403);
-            return;
         }
     }
 
     return user;
 };
 
-
-
-
-
-
 const refreshUserToken = async (email, refreshToken) => {
-    console.log("email and token is ", email, refreshToken);
-    const updatedUser = await prisma.user.update({
+    await prisma.user.update({
         where: {
             email: email
         },
         data: {
             refreshToken: refreshToken
         }
-    })
+    });
 
     return refreshToken;
-}
-
+};
 
 const verifyUsername = async (username) => {
     if (!username) {
         return false;
     }
+
     const validUser = await prisma.user.findFirst({
         where: {
             username: username
         }
-    })
-    return validUser;
-}
+    });
 
+    return validUser;
+};
 
 const verifyEmail = async (email) => {
     if (!email) {
         return false;
     }
+
     const validUser = await prisma.user.findUnique({
         where: {
             email: email
@@ -238,15 +218,29 @@ const verifyEmail = async (email) => {
             throw new AppError("Doctor is Not Allowed Yet", 400);
             return;
         }
+    };
+
+    if (!validUser) {
+        return false;
+    }
+
+    const userRole = validUser.userRole?.role?.toLowerCase();
+
+    if (
+        userRole === 'doctor' &&
+        validUser.doctors?.isVerified === VerificationStatus.PENDING
+    ) {
+        throw new AppError("Doctor is Not Allowed Yet", 400);
     }
 
     return validUser;
-}
+};
 
 const getUserById = async (id) => {
     if (!id) {
         return false;
     }
+
     const user = await prisma.user.findUnique({
         where: {
             id: id
@@ -254,11 +248,10 @@ const getUserById = async (id) => {
         include: {
             userRole: true
         }
-    })
+    });
+
     return user;
-
-}
-
+};
 
 const getUserWithRole = async (email) => {
     return await prisma.user.findUnique({
@@ -273,7 +266,6 @@ const getUserWithRole = async (email) => {
     });
 };
 
-
 const saveUserOtp = async (email, userOtp) => {
     const user = await prisma.user.update({
         where: {
@@ -282,11 +274,10 @@ const saveUserOtp = async (email, userOtp) => {
         data: {
             otp: userOtp
         }
-    })
+    });
+
     return user;
-
-}
-
+};
 
 const updateOtpField = async (email) => {
     const user = await prisma.user.update({
@@ -297,10 +288,10 @@ const updateOtpField = async (email) => {
             otp: "",
             isEmailVerified: true
         }
-    })
-    return user;
-}
+    });
 
+    return user;
+};
 
 const updateUserPassword = async (id, password) => {
     const user = await prisma.user.update({
@@ -310,11 +301,10 @@ const updateUserPassword = async (id, password) => {
         data: {
             password: password
         }
-    })
+    });
+
     return user;
-}
-
-
+};
 
 module.exports = {
     createDoctor,

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { useLogin } from "../hooks/useLogin";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -70,7 +71,11 @@ export default function LoginComponent() {
 
     },
     onError: (error) => {
-      setForbiddenError("Login Failed.Please check you email and password");
+      const message =
+        axios.isAxiosError(error) && typeof error.response?.data?.message === "string"
+          ? error.response.data.message
+          : "Login failed. Please check your email and password.";
+      setForbiddenError(message);
       console.log("Login Error", error)
     }
   })
@@ -308,7 +313,7 @@ export default function LoginComponent() {
         <p className="pt-1 text-center text-[13px] font-medium text-[#7b8497]">
           Don&apos;t have an account?{" "}
           <a
-            href="/doctor-signup"
+            href="/continue-as"
             className="font-extrabold text-[#178f95] transition hover:text-[#0f7075]"
           >
             Sign up

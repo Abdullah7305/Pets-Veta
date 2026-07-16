@@ -9,6 +9,7 @@ export type SellerApiError = {
     };
   };
 };
+
 export type SellerProfile = {
   id: string;
   userId: string;
@@ -24,11 +25,12 @@ export type SellerProfile = {
   updatedAt: string;
   user?: {
     id: string;
-    fullName: string;
-    username: string;
+    fullName?: string | null;
+    name?: string | null;
+    username?: string | null;
     email: string;
-    phone: string | null;
-    profileImageUrl: string | null;
+    phone?: string | null;
+    profileImageUrl?: string | null;
   };
   products?: MarketplaceProduct[];
 };
@@ -37,6 +39,7 @@ export type SellerProfileResponse = {
   success: boolean;
   data: SellerProfile;
 };
+
 export type ProductPreviewCardProps = {
   image: string;
   title: string;
@@ -55,9 +58,12 @@ export type ProductImageUploadProps = {
 
 export type ProductCardProps = {
   product: MarketplaceProduct;
+  stockUpdating: boolean;
   onEdit: () => void;
   onDelete: () => void;
   onView: () => void;
+  onStockChange: (productId: string, stock: number) => void;
+  onMarkSoldOut: (productId: string) => void;
 };
 
 export type OrdersTableProps = {

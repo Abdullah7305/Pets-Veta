@@ -22,8 +22,9 @@ const saveUserPet = async (pet) => {
             category: pet.category
         }
     });
+
     return newPet;
-}
+};
 
 const registerPetIssue = async (petIssue) => {
     if (!petIssue) {
@@ -102,6 +103,7 @@ const registerPetIssue = async (petIssue) => {
         if (!registerIssue) {
             throw new AppError("Issue in creating pet report", 400);
         }
+
         const holdMinutes = Number(process.env.APPOINTMENT_HOLD_MINUTES || 15);
         const newExpiresAt = new Date(Date.now() + holdMinutes * 60 * 1000);
 
@@ -139,12 +141,11 @@ const registerPetIssue = async (petIssue) => {
     return result;
 };
 
-
-
 const getUserPets = async (userId) => {
     if (!userId) {
         return false;
     }
+
     const pets = await prisma.pet.findMany({
         where: {
             petOwnerId: userId
@@ -161,28 +162,38 @@ const getUserPets = async (userId) => {
                 }
             }
         }
-
     });
 
     return pets;
-}
+};
 
 const createPetPictures = async (pet) => {
     const pictures = await prisma.petPicture.createMany({
         data: pet
-    })
-}
+    });
+
+    return pictures;
+};
 
 const updatePetOwnerProfile = async (userId, profileData) => {
     if (!userId) {
         return false;
     }
 
-    const { fullName, username, phone, profileImageUrl } = profileData;
+    const { fullName, username, phone, profileImageUrl, bio } = profileData;
+
+    const cleanFullName = fullName?.trim();
+    const cleanUsername = username?.trim();
+    const cleanPhone = phone?.trim() || "";
+    const cleanBio = bio?.trim() || DEFAULT_USER_BIO;
+
+    if (!cleanFullName || !cleanUsername) {
+        throw new AppError("Full name and username are required", 400);
+    }
 
     const existingUsername = await prisma.user.findFirst({
         where: {
-            username,
+            username: cleanUsername,
             NOT: {
                 id: userId,
             },
@@ -193,37 +204,56 @@ const updatePetOwnerProfile = async (userId, profileData) => {
         throw new AppError("Username is already taken", 400);
     }
 
-    const updatedProfile = await prisma.user.update({
-        where: {
-            id: userId,
-        },
-        data: {
-            fullName,
-            username,
-            phone,
-            ...(profileImageUrl ? { profileImageUrl } : {}),
-        },
-        select: {
-            id: true,
-            fullName: true,
-            username: true,
-            email: true,
-            phone: true,
-            profileImageUrl: true,
-        },
+    const updatedProfile = await prisma.$transaction(async (tx) => {
+        const updatedUser = await tx.user.update({
+            where: {
+                id: userId,
+            },
+            data: {
+                fullName: cleanFullName,
+                username: cleanUsername,
+                phone: cleanPhone,
+                bio: cleanBio,
+                ...(profileImageUrl ? { profileImageUrl } : {}),
+            },
+            select: {
+                id: true,
+                fullName: true,
+                username: true,
+                email: true,
+                phone: true,
+                profileImageUrl: true,
+                bio: true,
+            },
+        });
+
+        await tx.sellerProfile.updateMany({
+            where: {
+                userId,
+            },
+            data: {
+                businessName: cleanUsername,
+                phoneNumber: cleanPhone,
+                storeDescription: cleanBio,
+                ...(profileImageUrl ? { storeLogo: profileImageUrl } : {}),
+            },
+        });
+
+        return updatedUser;
     });
 
     return updatedProfile;
-}
+};
 
 const updateAppointmentStripeId = async (appointmentId, sessionId) => {
     if (!appointmentId || !sessionId) {
         throw new AppError("Appointment or Session Id is Invalid", 400);
     }
-}
+
+    return true;
+};
 
 const lockUserSlot = async ({ scheduleId, doctorId, petOwnerId }) => {
-
     if (!scheduleId || !doctorId || !petOwnerId) {
         throw new AppError("Schedule, doctor, or user id is missing", 400);
     }
@@ -417,7 +447,8 @@ const getPetById = async (petId, petOwnerId) => {
     if (!petId || !petOwnerId) {
         throw new AppError("Identity validation parameter missing.", 400);
     }
-    return await prisma.pet.findFirst({
+
+    const pet = await prisma.pet.findFirst({
         where: {
             id: petId,
             petOwnerId
@@ -430,6 +461,8 @@ const getPetById = async (petId, petOwnerId) => {
             }
         }
     });
+
+    return pet;
 };
 
 const updatePet = async (petId, petOwnerId, petData) => {
@@ -437,7 +470,6 @@ const updatePet = async (petId, petOwnerId, petData) => {
         throw new AppError("Identity validation parameter missing.", 400);
     }
 
-    // 1. Verify that this pet exists and belongs to the logged-in user
     const existingPet = await prisma.pet.findFirst({
         where: {
             id: petId,
@@ -449,8 +481,7 @@ const updatePet = async (petId, petOwnerId, petData) => {
         throw new AppError("You do not have permission to modify this pet, or it does not exist.", 403);
     }
 
-    // 2. Perform the update strictly on the unique primary key 'id'
-    return await prisma.pet.update({
+    const updatedPet = await prisma.pet.update({
         where: {
             id: petId
         },
@@ -461,6 +492,8 @@ const updatePet = async (petId, petOwnerId, petData) => {
             category: petData.category
         }
     });
+
+    return updatedPet;
 };
 
 const deletePet = async (petId, petOwnerId) => {
@@ -468,7 +501,6 @@ const deletePet = async (petId, petOwnerId) => {
         throw new AppError("Identity validation parameter missing.", 400);
     }
 
-    // 1. Verify that this pet exists and belongs to the logged-in user
     const existingPet = await prisma.pet.findFirst({
         where: {
             id: petId,
@@ -480,8 +512,7 @@ const deletePet = async (petId, petOwnerId) => {
         throw new AppError("You do not have permission to delete this pet, or it does not exist.", 403);
     }
 
-    return await prisma.$transaction(async (tx) => {
-        // 2. Clear out pictures & linked issue reports
+    const deletedPet = await prisma.$transaction(async (tx) => {
         await tx.petPicture.deleteMany({
             where: {
                 petId
@@ -494,13 +525,14 @@ const deletePet = async (petId, petOwnerId) => {
             }
         });
 
-
         return await tx.pet.delete({
             where: {
                 id: petId
             }
         });
     });
+
+    return deletedPet;
 };
 
 
@@ -563,8 +595,7 @@ module.exports = {
     updatePetOwnerProfile,
     updateAppointmentStripeId,
     getPetOwnerAppointments,
-    getPetOwnerAppointments,
     getPetById,
     updatePet,
     deletePet
-}
+};

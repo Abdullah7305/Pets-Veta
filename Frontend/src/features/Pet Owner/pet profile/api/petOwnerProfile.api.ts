@@ -22,6 +22,7 @@ export const updatePetOwnerProfileApi = async (
   formData.append("fullName", payload.fullName);
   formData.append("username", payload.username);
   formData.append("phone", payload.phone || "");
+  formData.append("bio", payload.bio || "");
 
   if (payload.profileImage) {
     formData.append("profileImage", payload.profileImage);

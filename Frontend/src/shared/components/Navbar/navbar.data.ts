@@ -1,66 +1,52 @@
-interface NavData {
+export type NavChild = {
+    id: number;
+    title: string;
+    path: string;
+};
+
+export type NavData = {
     id: number;
     title: string;
     path?: string;
-    children?: {
-        id: number;
-        title: string;
-        path: string;
-    }[];
-}
+    children?: NavChild[];
+};
 
 const NAVLINK: NavData[] = [
     {
         id: 1,
         title: "Home",
-        path: "/"
+        path: "/",
     },
     {
         id: 2,
         title: "Marketplace",
-        path: "/marketplace1"
+        path: "/marketplace1",
     },
     {
         id: 3,
         title: "Services",
-        path: "/services"
+        path: "/services",
     },
     {
         id: 4,
         title: "Doctors",
-        path: "/doctors"
+        path: "/doctors",
     },
     {
         id: 5,
         title: "AI Assistant",
-        path: "/ai-assistant"
+        path: "/ai-assistant",
     },
     {
         id: 6,
         title: "About",
-        path: "/about"
+        path: "/about",
     },
     {
         id: 7,
         title: "Contact",
-        path: "/contact"
+        path: "/contact",
     },
-    {
-        id: 8,
-        title: "Dashboards",
-        children: [
-            {
-                id: 1,
-                title: "Pet Owner",
-                path: "/pet-owner/dashboard"
-            },
-            {
-                id: 2,
-                title: "Seller",
-                path: "/seller/dashboard"
-            }
-        ]
-    }
 ];
 
 export default NAVLINK;
