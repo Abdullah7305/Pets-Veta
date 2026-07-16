@@ -23,8 +23,9 @@ const createDoctorScheduleService = async (req) => {
     const { date, startTime, endTime } = req.body;
 
 
-    const startDateTime = new Date(`${date}T${startTime}:00`);
-    const endDateTime = new Date(`${date}T${endTime}:00`);
+
+    const startDateTime = new Date(`${date}T${startTime}:00Z`);
+    const endDateTime = new Date(`${date}T${endTime}:00Z`);
 
 
 
