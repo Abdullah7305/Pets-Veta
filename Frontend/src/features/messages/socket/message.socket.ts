@@ -9,6 +9,10 @@ export const getMessageSocket = () => {
             autoConnect: false,
             transports: ["websocket", "polling"],
         });
+
+        socket.on("connect_error", (error) => {
+            console.log("Socket connection failed:", error.message);
+        });
     }
 
     return socket;

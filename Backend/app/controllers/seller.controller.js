@@ -5,6 +5,18 @@ const getUserId = (req) => {
   return req.user?.id || req.user?.userId;
 };
 
+const sendSellerError = (res, error) => {
+  const message =
+    error.code === "P2002" || error.message?.includes("Invalid `prisma")
+      ? "Unable to save seller information. Please try again."
+      : error.message || "Something went wrong";
+
+  return res.status(500).json({
+    success: false,
+    message,
+  });
+};
+
 const uploadProductImages = async (files = []) => {
   const uploadedImages = [];
 
@@ -58,10 +70,7 @@ exports.createOrUpdateSellerProfile = async (req, res) => {
       data: profile,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendSellerError(res, error);
   }
 };
 
@@ -76,10 +85,7 @@ exports.getMySellerProfile = async (req, res) => {
       data: profile,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendSellerError(res, error);
   }
 };
 
@@ -100,10 +106,7 @@ exports.createProduct = async (req, res) => {
       data: product,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendSellerError(res, error);
   }
 };
 
@@ -118,10 +121,7 @@ exports.getMyProducts = async (req, res) => {
       data: products,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendSellerError(res, error);
   }
 };
 
@@ -143,10 +143,7 @@ exports.updateProduct = async (req, res) => {
       data: product,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendSellerError(res, error);
   }
 };
 
@@ -162,10 +159,7 @@ exports.deleteProduct = async (req, res) => {
       message: "Product deleted successfully",
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendSellerError(res, error);
   }
 };
 
@@ -183,10 +177,7 @@ exports.updateProductStock = async (req, res) => {
       data: product,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendSellerError(res, error);
   }
 };
 
@@ -201,9 +192,6 @@ exports.getSellerOrders = async (req, res) => {
       data: orders,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendSellerError(res, error);
   }
 };

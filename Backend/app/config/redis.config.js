@@ -32,4 +32,8 @@ if (redisUrl) {
 }
 
 
+// The TypeScript RAG cache reuses this process-wide connection instead of
+// opening a second Redis socket pool.
+globalThis.__petsVetaRedisClient = redisClient;
+
 module.exports = redisClient;

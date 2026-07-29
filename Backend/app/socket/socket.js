@@ -10,6 +10,20 @@ const socketToUser = new Map();
 
 let ioInstance = null;
 
+const defaultClientUrls = [
+    process.env.CLIENT_URL,
+    process.env.FRONTEND_URL,
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+].filter(Boolean);
+
+const isAllowedLocalOrigin = (origin) => {
+    if (!origin) return true;
+    if (defaultClientUrls.includes(origin)) return true;
+
+    return /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin);
+};
+
 const parseCookie = (cookieHeader = "") => {
     return cookieHeader.split(";").reduce((cookies, cookie) => {
         const [key, ...valueParts] = cookie.trim().split("=");
@@ -103,7 +117,13 @@ const isConversationParticipant = async ({ userId, conversationId }) => {
 const initSocket = async (httpServer) => {
     const io = new Server(httpServer, {
         cors: {
-            origin: process.env.CLIENT_URL || "http://localhost:5173",
+            origin(origin, callback) {
+                if (isAllowedLocalOrigin(origin)) {
+                    return callback(null, true);
+                }
+
+                return callback(new Error("Not allowed by CORS"));
+            },
             credentials: true,
             methods: ["GET", "POST", "PATCH"],
         },

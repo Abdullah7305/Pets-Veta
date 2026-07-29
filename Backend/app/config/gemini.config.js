@@ -1,5 +1,5 @@
 const GEMINI_CONFIG = {
-  model: 'gemini-2.5-flash',
+  model: 'gemini-3.5-flash',
   config: {
     // Raising temperature to 0.6 introduces lexical variety and prevents repetitive phrases.
     temperature: 0.6,

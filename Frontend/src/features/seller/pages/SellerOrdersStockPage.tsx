@@ -11,7 +11,6 @@ import {
 import Button from "@/shared/components/Button/Button";
 import Input from "@/shared/components/Input/Input";
 import Card from "@/shared/components/Card/Card";
-import PageBackButton from "@/shared/components/BackButton/PageBackButton";
 import SellerHeader from "../components/SellerHeader";
 import SellerSidebar from "../components/SellerSidebar";
 

@@ -111,6 +111,34 @@ enum NotificationType {
   SYSTEM
 }
 
+/// Supported knowledge-base audiences. GENERAL is used for content that applies
+/// to multiple species. The database mapping preserves compatibility with the
+/// existing PostgreSQL enum name and deployed migrations.
+enum AnimalType {
+  DOG
+  CAT
+  BIRD
+  RABBIT
+  GENERAL
+
+  @@map("Animal")
+}
+
+/// Controls whether a knowledge document is editable, searchable, or retained
+/// only for audit/history purposes. Retrieval should normally target ACTIVE rows.
+enum DocumentStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+/// Identifies the source format independently from the ingestion implementation,
+/// allowing PDF support to be added without changing the document/chunk schema.
+enum FileType {
+  MARKDOWN
+  PDF
+}
+
 model User {
   id              String   @id @default(uuid())
   fullName        String
@@ -685,4 +713,102 @@ model Notification {
   @@index([isRead])
   @@index([createdAt])
   @@index([userId, isRead])
+}
+
+/// Canonical record for one source knowledge asset.
+///
+/// A document owns its ordered chunks and carries fields used for lifecycle
+/// management, metadata filtering, change detection, and re-indexing. Deleting
+/// this row cascades to all associated chunks so stale vectors cannot remain.
+model KnowledgeDocument {
+  /// Stable database identifier; UUIDs are suitable for distributed ingestion.
+  id String @id @default(uuid()) @db.Uuid
+
+  /// Human-readable title and URL-safe public/admin identifier.
+  title String @db.VarChar(255)
+  slug  String @unique @db.VarChar(255)
+
+  /// Normalized filtering dimensions used before vector similarity search.
+  animal      AnimalType
+  category    String     @db.VarChar(100)
+  subCategory String?    @db.VarChar(100)
+  language    String     @default("en") @db.VarChar(16)
+
+  /// Monotonic content revision. Historical snapshots can later move to a
+  /// dedicated version model without changing chunk ownership semantics.
+  version Int @default(1)
+
+  /// Optional source label/URI and the unique ingestion path for idempotent
+  /// upserts. filePath remains format-agnostic for future admin uploads.
+  source   String?  @db.VarChar(255)
+  filePath String   @unique @db.VarChar(1024)
+  fileType FileType @default(MARKDOWN)
+
+  /// Optional SHA-256 digest used to skip unchanged files during re-indexing.
+  checksum String? @db.VarChar(64)
+
+  /// DRAFT content can be reviewed before activation; ARCHIVED content is
+  /// retained without being eligible for normal retrieval.
+  status DocumentStatus @default(DRAFT)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  chunks KnowledgeChunk[]
+
+  @@index([animal])
+  @@index([category])
+  @@index([subCategory])
+  @@index([source])
+  @@index([checksum])
+  @@index([status])
+  // slug and filePath already receive indexes through their unique constraints.
+  @@index([language, status])
+  @@index([animal, category, subCategory, status])
+  @@index([status, updatedAt])
+}
+
+/// Ordered, citation-ready segment of a KnowledgeDocument.
+///
+/// Chunk rows keep the original text, flexible metadata, and a native pgvector
+/// embedding together. The composite unique constraint makes chunk writes
+/// idempotent during incremental and full-document re-indexing.
+model KnowledgeChunk {
+  id String @id @default(uuid()) @db.Uuid
+
+  /// Required parent key. The relation uses database-level cascading so both
+  /// Prisma and direct SQL deletions clean up chunk/vector data consistently.
+  knowledgeDocumentId String            @db.Uuid
+  knowledgeDocument   KnowledgeDocument @relation(fields: [knowledgeDocumentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  /// Zero-based stable position within the parent document.
+  chunkIndex Int
+
+  /// Optional nearest Markdown/PDF heading retained for citations and display.
+  heading String? @db.VarChar(500)
+  content String  @db.Text
+
+  /// Token estimate recorded at ingestion for prompt-budget planning.
+  tokenCount Int
+
+  /// Native PostgreSQL pgvector value. BGE Small produces 384 dimensions;
+  /// changing dimensionality requires a deliberate migration and re-index.
+  embedding Unsupported("vector(384)")?
+
+  /// Records which model generated the vector, enabling controlled future
+  /// migrations between embedding models without storing vectors as JSON.
+  embeddingModel String? @db.VarChar(255)
+
+  /// Flexible source/chunk attributes used for citations and future filters.
+  /// JSONB is selected for PostgreSQL indexing and containment operations.
+  metadata Json @default("{}") @db.JsonB
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([knowledgeDocumentId, chunkIndex])
+  @@index([knowledgeDocumentId])
+  @@index([chunkIndex])
+  @@index([embeddingModel])
+  @@index([metadata(ops: JsonbPathOps)], type: Gin)
 }

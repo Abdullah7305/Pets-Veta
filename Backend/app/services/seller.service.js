@@ -26,37 +26,47 @@ const getOrCreateSellerProfile = async (userId) => {
     where: { userId },
   });
 
-  if (!sellerProfile) {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        fullName: true,
-        email: true,
-        phone: true,
-      },
-    });
+  if (sellerProfile) {
+    return sellerProfile;
+  }
 
-    if (!user) {
-      throw new Error("User not found");
-    }
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      fullName: true,
+      email: true,
+      phone: true,
+    },
+  });
 
-    sellerProfile = await prisma.sellerProfile.create({
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  try {
+    return await prisma.sellerProfile.create({
       data: {
         userId,
         businessName: user.fullName,
         phoneNumber: user.phone || "",
       },
     });
-  }
+  } catch (error) {
+    if (error.code === "P2002") {
+      sellerProfile = await prisma.sellerProfile.findUnique({
+        where: { userId },
+      });
 
-  return sellerProfile;
+      if (sellerProfile) {
+        return sellerProfile;
+      }
+    }
+
+    throw error;
+  }
 };
 
 exports.createOrUpdateSellerProfile = async (userId, payload) => {
-  const existingProfile = await prisma.sellerProfile.findUnique({
-    where: { userId },
-  });
-
   const data = {
     businessName: payload.businessName,
     businessAddress: payload.businessAddress,
@@ -66,28 +76,16 @@ exports.createOrUpdateSellerProfile = async (userId, payload) => {
     storeLogo: payload.storeLogo,
   };
 
-  if (existingProfile) {
-    return prisma.sellerProfile.update({
-      where: { userId },
-      data,
-      include: {
-        user: {
-          select: {
-            id: true,
-            fullName: true,
-            username: true,
-            email: true,
-            profileImageUrl: true,
-          },
+  return prisma.sellerProfile.upsert({
+    where: { userId },
+    update: data,
+    create: {
+      ...data,
+      user: {
+        connect: {
+          id: userId,
         },
       },
-    });
-  }
-
-  return prisma.sellerProfile.create({
-    data: {
-      userId,
-      ...data,
     },
     include: {
       user: {
