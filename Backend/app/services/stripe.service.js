@@ -97,6 +97,7 @@ const createAppointmentPaymentIntent = async ({ appointmentId, petOwnerId }) => 
 
   const metadata = {
     appointmentId: appointment.id,
+    appointmentCode: appointment.appointmentCode || "", 
     doctorId: appointment.doctorId,
     petOwnerId: appointment.petOwnerId,
     petId: appointment.petId,
@@ -261,7 +262,7 @@ const getAppointmentPaymentStatus = async ({ appointmentId, petOwnerId }) => {
 };
 
 
-// 💡 Added: Creates a Stripe PaymentIntent specifically for Marketplace Orders
+
 const createOrderPaymentIntent = async ({ orderId, buyerId }) => {
   if (!orderId || !buyerId) {
     throw new AppError("Order ID or user ID is missing", 400);
@@ -360,7 +361,7 @@ const createOrderPaymentIntent = async ({ orderId, buyerId }) => {
   };
 };
 
-// 💡 Added: Fetches the dynamic transaction status of a marketplace order
+
 const getOrderPaymentStatus = async ({ orderId, buyerId }) => {
   if (!orderId || !buyerId) {
     throw new AppError("Order ID or user ID is missing", 400);
@@ -402,6 +403,6 @@ const getOrderPaymentStatus = async ({ orderId, buyerId }) => {
 module.exports = {
   createAppointmentPaymentIntent,
   getAppointmentPaymentStatus,
-  createOrderPaymentIntent, 
-  getOrderPaymentStatus,    
+  createOrderPaymentIntent,
+  getOrderPaymentStatus,
 };

@@ -76,5 +76,30 @@ Router
         doctorController.completeAppointment
     );
 
+Router
+    .route('/connect/onboarding')
+    .get(
+        authMiddlware.protect,
+        authenticateRole.authenticateUserRole('Doctor'),
+        doctorController.initiateStripeOnboarding
+    );
+
+Router
+    .route('/connect/status')
+    .get(
+        authMiddlware.protect,
+        authenticateRole.authenticateUserRole('Doctor'),
+        doctorController.checkStripeConnectStatus
+    );
+
+Router
+    .route('/appointments/verify-code')
+    .post(
+        doctorLimiter,
+        authMiddlware.protect,
+        authenticateRole.authenticateUserRole('Doctor'),
+        doctorController.verifyAppointmentCode
+    );
+
 
 module.exports = Router;

@@ -2,21 +2,21 @@ import type { ScheduleTableProps } from "../../doctor.types";
 
 const ScheduleTable = ({ schedules }: ScheduleTableProps) => {
 
-    // 1. Helper to format dates cleanly (e.g., "Jun 12, 2026")
     const formatDate = (dateStr: string) => {
         return new Date(dateStr).toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
             year: "numeric",
+            timeZone: "UTC" 
         });
     };
 
-    // 2. Helper to format times cleanly (e.g., "07:30 PM")
     const formatTime = (timeStr: string) => {
         return new Date(timeStr).toLocaleTimeString("en-US", {
             hour: "2-digit",
             minute: "2-digit",
             hour12: true,
+            timeZone: "UTC"
         });
     };
 
@@ -61,8 +61,8 @@ const ScheduleTable = ({ schedules }: ScheduleTableProps) => {
                             <td className="px-6 py-4">
                                 <span
                                     className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold ${item.isBooked
-                                            ? "bg-red-50 text-red-700 border border-red-100"
-                                            : "bg-emerald-50 text-emerald-700 border border-emerald-100"
+                                        ? "bg-red-50 text-red-700 border border-red-100"
+                                        : "bg-emerald-50 text-emerald-700 border border-emerald-100"
                                         }`}
                                 >
                                     <span className={`h-1.5 w-1.5 rounded-full ${item.isBooked ? "bg-red-500" : "bg-emerald-500"}`} />

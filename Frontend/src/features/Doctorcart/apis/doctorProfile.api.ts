@@ -17,6 +17,8 @@ export type DoctorProfileData = {
   fees: number;
   isAvailable: boolean;
   isVerified: "PENDING" | "APPROVED" | "REJECTED";
+  stripeOnboardingCompleted?: boolean;
+  stripeConnectedAccountId?: string | null;
 };
 
 type BackendDoctorProfileData = {
@@ -36,6 +38,8 @@ type BackendDoctorProfileData = {
     fees: number;
     isAvailable: boolean;
     isVerified: "PENDING" | "APPROVED" | "REJECTED";
+     stripeOnboardingCompleted?: boolean;
+    stripeConnectedAccountId?: string | null;
   } | null;
 };
 
@@ -82,6 +86,9 @@ const mapDoctorProfile = (
       fees: doctor.fees || 0,
       isAvailable: doctor.isAvailable ?? false,
       isVerified: doctor.isVerified,
+      stripeOnboardingCompleted: doctor.stripeOnboardingCompleted ?? false,
+      stripeConnectedAccountId: doctor.stripeConnectedAccountId || null,
+    
     },
   };
 };
@@ -121,5 +128,32 @@ export const updateDoctorProfileApi = async (
   } catch (error) {
     handleAxiosError(error);
     throw error;
+  }
+};
+
+
+export const getStripeOnboardingLinkApi = async () => {
+  try {
+    const response = await api.get<{
+      success: boolean;
+      message: string;
+      data: { onboardingUrl: string; stripeConnectedAccountId: string };
+    }>("/doctor/connect/onboarding");
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error);
+  }
+};
+
+export const getStripeStatusApi = async () => {
+  try {
+    const response = await api.get<{
+      success: boolean;
+      message: string;
+      data: { stripeOnboardingCompleted: boolean; stripeConnectedAccountId: string };
+    }>("/doctor/connect/status");
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error);
   }
 };

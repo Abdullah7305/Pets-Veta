@@ -46,6 +46,14 @@ Router
     );
 
 Router
+    .route('/appointments/:appointmentId/release-hold')
+    .post(
+        authMiddleware.protect,
+        authenticateRole.authenticateUserRole('PetOwner'),
+        petOwnerController.cancelAppointmentHold
+    );
+
+Router
     .route('/pet/:petId')
     .get(
         authMiddleware.protect,

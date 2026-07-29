@@ -5,6 +5,7 @@ const { initSocket } = require("./socket/socket");
 
 const { startAppointmentCleanupJob } = require("./jobs/appointmentCleanup.job");
 const { startScheduleCleanupJob } = require("./jobs/scheduleCleanup");
+const { startOrderCleanupJob } = require("./jobs/orderCleanup.job"); 
 
 const port = process.env.PORT || 8000;
 
@@ -19,11 +20,13 @@ const startServer = async () => {
 
       startAppointmentCleanupJob();
       startScheduleCleanupJob();
+      startOrderCleanupJob();
     });
   } catch (error) {
     console.error("Failed to start server:", error.message);
     process.exit(1);
   }
 };
+
 
 startServer();

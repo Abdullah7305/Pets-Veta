@@ -4,6 +4,7 @@ import DoctorsList from "./DoctorsList";
 import FilterSidebar from "./FilterSidebar";
 import PageHeader from "./PageHeader";
 import Pagination from "./Pagination";
+import { useDebounce } from "@/shared/hooks/useDebounce"; // Import our hook
 
 const LIMIT = 5;
 
@@ -11,10 +12,14 @@ const FindDoctor = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
 
+  
+  const debouncedSearch = useDebounce(search, 400);
+
+  
   const { data, isLoading } = useApprovedDoctors({
     page,
     limit: LIMIT,
-    search,
+    search: debouncedSearch,
   });
 
   const doctors = data?.data?.data ?? [];

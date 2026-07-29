@@ -1,5 +1,5 @@
-const { PrismaClient, VerificationStatus, ScheduleStatus } = require("@prisma/client");
-const prisma = new PrismaClient();
+const { VerificationStatus, ScheduleStatus } = require("@prisma/client");
+const prisma = require("../config/prisma");
 
 const getUpcomingSlotsFilter = (currentDate) => ({
   status: ScheduleStatus.AVAILABLE,
@@ -10,9 +10,9 @@ const getUpcomingSlotsFilter = (currentDate) => ({
 const formatSingleSlot = (slot) => ({
   scheduleId: slot.id,
   date: slot.date,
-  day: slot.date.toLocaleDateString("en-US", { weekday: "long" }).toUpperCase(),
-  startTime: slot.startTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }),
-  endTime: slot.endTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }),
+  day: slot.date.toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" }).toUpperCase(),
+  startTime: slot.startTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true, timeZone: "UTC" }),
+  endTime: slot.endTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true, timeZone: "UTC" }),
   startDateTime: slot.startTime.toISOString(),
   endDateTime: slot.endTime.toISOString(),
 });

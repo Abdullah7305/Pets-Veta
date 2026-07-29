@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams, useNavigation } from "react-router-dom";
+
 import {
   FaBookmark,
   FaHeart,
@@ -7,6 +8,10 @@ import {
   FaRegHeart,
   FaShoppingCart,
   FaStore,
+  FaUsers,
+  FaPlusCircle,
+  FaPencilAlt,
+  FaCreditCard, 
 } from "react-icons/fa";
 
 import Button from "@/shared/components/Button/Button";
@@ -42,6 +47,7 @@ type ApiError = {
 
 const SellerSavedListingsPage = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams(); // 💡 Add Search Param hook
 
   const [savedListings, setSavedListings] = useState<SavedListingItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -73,7 +79,7 @@ const SellerSavedListingsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [navigate]);
+  }, [navigate, searchParams, setSearchParams]);
 
   useEffect(() => {
     void loadSavedListings();

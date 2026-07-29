@@ -12,7 +12,7 @@ export type DoctorData = {
     id: string;
     education: string;
     specialization: string;
-    degreeLicenseUrl: string;
+    degreeLicenseUrl: string | null;
     experience: number;
     isVerified: 'PENDING' | 'APPROVED' | 'REJECTED';
     user: UserData;
@@ -65,7 +65,7 @@ export const AllDoctors = async (page: number, limit: number): Promise<ApiRespon
     }
 };
 
-export const approveDoctorRequest = async (doctorId: string): Promise<ApiResponse<any>> => {
+export const approveDoctorRequest = async (doctorId: string): Promise<ApiResponse<unknown>> => {
     try {
         const response = await api.post('http://localhost:8000/api/v1/admin/approve-pending/doctor', { doctorId });
         return response.data;
@@ -75,7 +75,7 @@ export const approveDoctorRequest = async (doctorId: string): Promise<ApiRespons
     }
 };
 
-export const rejectDoctorRequest = async (doctorId: string): Promise<ApiResponse<any>> => {
+export const rejectDoctorRequest = async (doctorId: string): Promise<ApiResponse<unknown>> => {
     try {
         const response = await api.post("http://localhost:8000/api/v1/admin/reject/doctor", { doctorId });
         return response.data;
@@ -96,7 +96,7 @@ export const fetchDoctorStats = async (): Promise<ApiResponse<DoctorStats>> => {
 };
 
 
-const handleAxiosError = (error: any) => {
+const handleAxiosError = (error: unknown) => {
     if (axios.isAxiosError(error)) {
         if (error.response) {
             console.log("Status Code", error.response?.status);

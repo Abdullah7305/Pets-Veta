@@ -209,8 +209,16 @@ const verifyEmail = async (email) => {
                     isVerified: true
                 }
             }
+
+
         }
-    });
+    })
+    if (validUser && validUser.userRole === 'DOCTOR') {
+        if (validUser.doctors.isVerified === VerificationStatus.PENDING) {
+            throw new AppError("Doctor is Not Allowed Yet", 400);
+            return;
+        }
+    };
 
     if (!validUser) {
         return false;

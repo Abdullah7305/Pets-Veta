@@ -1,6 +1,8 @@
 const prisma = require('../config/prisma')
 const { PaymentStatus } = require('@prisma/client')
 
+const { stripe } = require('../config/stripe')
+
 
 const addDoctorService = async (skills, userId) => {
     console.log("Skills are ", skills, userId);
@@ -75,7 +77,7 @@ const updateDoctorServices = async (serviceId, skill, price) => {
 
 
 const getDoctorAppointments = async (userId) => {
-    console.log("User id is ",userId)
+    console.log("User id is ", userId)
     const doctor = await prisma.doctor.findUnique({
         where: {
             userId,
@@ -156,6 +158,9 @@ const getDoctorProfile = async (userId) => {
                     address: true,
                     isAvailable: true,
                     isVerified: true,
+                    stripeOnboardingCompleted: true,
+                    stripeConnectedAccountId: true,
+
                 },
             },
         },
@@ -240,6 +245,9 @@ const updateDoctorProfile = async (userId, profileData) => {
                     address: true,
                     isAvailable: true,
                     isVerified: true,
+                    stripeOnboardingCompleted: true,
+                    stripeConnectedAccountId: true,
+
                 },
             },
         },
@@ -290,6 +298,150 @@ const completeAppointment = async (appointmentId, userId) => {
     return updatedAppointment;
 };
 
+const setupStripeConnect = async (userId) => {
+    const doctor = await prisma.doctor.findUnique({
+        where: {
+            userId
+        }
+    })
+    if (!doctor) {
+        throw new AppError("Doctor Profile not found", 400);
+    }
+
+    let stripeAccountId = doctor.stripeConnectedAccountId;
+
+    // Fix: Keep account-specific logic inside the block
+    if (!stripeAccountId) {
+        const account = await stripe.accounts.create({
+            controller: {
+                stripe_dashboard: {
+                    type: 'express',
+                },
+                fees: {
+                    payer: 'application',
+                },
+                losses: {
+                    payments: 'application',
+                },
+            },
+            metadata: {
+                doctorId: doctor.id,
+                userId: userId,
+            }
+        });
+
+        // Assign the ID here, only if a new account was actually generated
+        stripeAccountId = account.id;
+    }
+
+    // This will now update cleanly without throwing a ReferenceError
+    await prisma.doctor.update({
+        where: {
+            id: doctor.id
+        },
+        data: {
+            stripeConnectedAccountId: stripeAccountId
+        }
+    })
+
+    const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+    const accountLink = await stripe.accountLinks.create({
+        account: stripeAccountId,
+        refresh_url: `${clientUrl}/doctor-profile?stripe=refresh`,
+        return_url: `${clientUrl}/doctor-profile?stripe=success`,
+        type: 'account_onboarding',
+    });
+
+    return {
+        onboardingUrl: accountLink.url,
+        stripeConnectedAccountId: stripeAccountId
+    }
+}
+
+const getStripeConnectStatus = async (userId) => {
+    const doctor = await prisma.doctor.findUnique({
+        where: {
+            userId
+        }
+    });
+    if (!doctor) {
+        throw new AppError("Doctor Profile not found", 400);
+    }
+    if (!doctor.stripeConnectedAccountId) {
+        return {
+            stripeOnboardingCompleted: false,
+            stripeConnectedAccountId: null
+        };
+    }
+
+   const account = await stripe.accounts.retrieve(doctor.stripeConnectedAccountId);
+
+    const completed = account.charges_enabled && account.details_submitted;
+
+    if (completed !== doctor.stripeOnboardingCompleted) {
+    
+        await prisma.doctor.update({
+            where: {
+                id: doctor.id
+            },
+            data: {
+                stripeOnboardingCompleted: completed
+            }
+        });
+    }
+    return {
+        stripeOnboardingCompleted: completed,
+        stripeConnectedAccountId: doctor.stripeConnectedAccountId
+    };
+}
+
+const verifyAppointmentCode = async (doctorId, appointmentCode) => {
+
+    const appointment = await prisma.appointment.findFirst({
+        where: { doctorId, appointmentCode, status: 'CONFIRMED' },
+        include: { payment: true }
+    });
+
+    if (!appointment) throw new AppError("Invalid code or appointment already completed.", 404);
+    if (appointment.isCodeVerified) throw new AppError("Code already redeemed.", 400);
+
+
+    const totalAmount = appointment.fees;
+    const platformCommission = Math.round(totalAmount * 0.15);
+    const doctorPayout = totalAmount - platformCommission;
+
+    const doctor = await prisma.doctor.findUnique({
+        where: { id: doctorId },
+        select: { stripeConnectedAccountId: true }
+    });
+
+    if (!doctor.stripeConnectedAccountId) {
+        throw new AppError("Doctor has not linked a Stripe account.", 400);
+    }
+
+
+    const transfer = await stripe.transfers.create({
+        amount: doctorPayout * 100,
+        currency: 'pkr',
+        destination: doctor.stripeConnectedAccountId,
+        transfer_group: `APPT_${appointment.id}`,
+    });
+
+
+    await prisma.appointment.update({
+        where: { id: appointment.id },
+        data: {
+            isCodeVerified: true,
+            codeVerifiedAt: new Date(),
+            status: 'COMPLETED',
+            completedAt: new Date()
+        }
+    });
+
+    return { payout: doctorPayout, status: "Transferred" };
+};
+
+
 module.exports = {
     addDoctorService,
     deleteDoctorService,
@@ -298,5 +450,8 @@ module.exports = {
     getDoctorAppointments,
     getDoctorProfile,
     updateDoctorProfile,
-    completeAppointment
+    completeAppointment,
+    setupStripeConnect,
+    getStripeConnectStatus,
+    verifyAppointmentCode
 };

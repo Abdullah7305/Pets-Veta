@@ -237,7 +237,22 @@ const deletePet = catchAsync(async (req, res) => {
     return sendResponse(res, 200, 'Pet profile deleted successfully', {});
 });
 
+
+const cancelAppointmentHold = catchAsync(async (req, res) => {
+    const petOwnerId = req.user?.id;
+    const { appointmentId } = req.params;
+
+    if (!petOwnerId) {
+        return sendResponse(res, 401, "Please login first", {});
+    }
+
+    const result = await petOwnerServices.releaseAppointmentHold(appointmentId, petOwnerId);
+    return sendResponse(res, 200, "Appointment hold released successfully", result);
+});
+
+
 module.exports = {
+    cancelAppointmentHold,
     registerPetIssue,
     getPetOwnerById,
     updatePetOwnerProfile,

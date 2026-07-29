@@ -5,6 +5,7 @@ export type CartItem = {
   image: string;
   quantity: number;
   sellerId?: string;
+   category?: string;
 };
 
 const CART_KEY = "pets-veta-cart";
@@ -29,6 +30,12 @@ export const saveCartItems = (items: CartItem[]) => {
 };
 
 export const addToCart = (item: CartItem) => {
+  if (item.category === "PETS" || item.category === "Pets") {
+    return {
+      success: false,
+      message: "Pets cannot be added to the cart. Please purchase directly using the 'Buy Now' flow.",
+    };
+  }
   const cart = getCartItems();
   const existingSellerId = cart.find((cartItem) => cartItem.sellerId)?.sellerId;
 

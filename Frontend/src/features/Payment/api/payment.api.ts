@@ -11,6 +11,15 @@ export const createAppointmentPaymentIntent = async (appointmentId: string) => {
     }
 };
 
+export const releaseAppointmentHoldApi = async (appointmentId: string) => {
+    try {
+        const response = await api.post(`/petOwner/appointments/${appointmentId}/release-hold`);
+        return response.data;
+    } catch (error) {
+        handleAxiosError(error);
+    }
+};
+
 export const getAppointmentPaymentStatus = async (appointmentId: string) => {
     try {
         const response = await api.get(

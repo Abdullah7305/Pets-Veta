@@ -1,5 +1,4 @@
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const prisma = require("../config/prisma");
 
 exports.getMarketplaceProducts = async (query) => {
   const page = Number(query.page) || 1;

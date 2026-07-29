@@ -74,9 +74,6 @@ const PetOwnerAppointmentsPage = () => {
 
             if (activeTab === "UPCOMING") {
                 return [
-                    "PENDING_DETAILS",
-                    "PENDING_REPORT",
-                    "PENDING_PAYMENT",
                     "PAYMENT_PROCESSING",
                     "CONFIRMED",
                 ].includes(appointment.status);

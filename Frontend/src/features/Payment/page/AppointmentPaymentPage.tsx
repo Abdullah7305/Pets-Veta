@@ -2,8 +2,7 @@ import { useMemo, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-
-import { createAppointmentPaymentIntent } from "../api/payment.api";
+import { createAppointmentPaymentIntent, releaseAppointmentHoldApi } from "../api/payment.api";
 import AppointmentPaymentForm from "../components/AppointmentPayment";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
@@ -64,6 +63,18 @@ const AppointmentPaymentPage = () => {
     }
   };
 
+
+  const handleBack = async () => {
+    if (appointmentId) {
+      try {
+        await releaseAppointmentHoldApi(appointmentId);
+      } catch (err) {
+        console.error("Failed to release appointment slot hold on back navigation:", err);
+      }
+    }
+    navigate("/doctors");
+  };
+
   const formattedAmount =
     amount !== null ? `${(amount / 100).toFixed(2)} ${currency.toUpperCase()}` : null;
 
@@ -116,8 +127,8 @@ const AppointmentPaymentPage = () => {
           <div className="mt-6 grid grid-cols-2 gap-3">
             <button
               type="button"
-              onClick={() => navigate("/doctors")}
-              className="rounded-xl border border-slate-200 px-4 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50"
+              onClick={handleBack} // 💡 Updated trigger handler to release slot instantly
+              className="rounded-xl border border-slate-200 px-4 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50 cursor-pointer"
             >
               Back
             </button>
@@ -126,7 +137,7 @@ const AppointmentPaymentPage = () => {
               type="button"
               disabled={!appointmentId || isCreatingIntent}
               onClick={handleContinuePayment}
-              className="rounded-xl bg-[#0B8F5A] px-4 py-3 text-sm font-bold text-white hover:bg-[#097b4d] disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-xl bg-[#0B8F5A] px-4 py-3 text-sm font-bold text-white hover:bg-[#097b4d] disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
             >
               {isCreatingIntent ? "Starting..." : "Continue Payment"}
             </button>

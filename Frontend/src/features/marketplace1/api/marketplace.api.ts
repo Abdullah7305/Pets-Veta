@@ -133,3 +133,14 @@ export const fetchSavedMarketplaceListings = async () => {
 
   return response.data.data;
 };
+
+
+export const checkProductStockApi = async (productId: string, quantity: number) => {
+  const response = await api.get<{
+    success: boolean;
+    message: string;
+    availableStock?: number;
+  }>(`marketplace/product/${productId}/check-stock?quantity=${quantity}`);
+  
+  return response.data;
+};

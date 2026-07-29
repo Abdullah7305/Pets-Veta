@@ -1,7 +1,8 @@
-const { PrismaClient } = require("@prisma/client");
+const prisma = require("../config/prisma");
 const notificationService = require("./notification.service");
 
 const prisma = new PrismaClient();
+const { stripe } = require("../config/stripe");
 
 const LOW_STOCK_LIMIT = 5;
 
@@ -9,125 +10,132 @@ const generateOrderNumber = () => {
   return `PV-${Date.now()}`;
 };
 
-const getBuyerName = (buyer) => {
-  return buyer?.fullName || buyer?.username || buyer?.email || "Buyer";
-};
-
-const formatPrice = (amount) => {
-  return Number(amount || 0).toLocaleString("en-PK");
-};
-
-const getOrderItemsPreview = (items) => {
-  if (!Array.isArray(items) || items.length === 0) {
-    return "New marketplace order";
-  }
-
-  const productNames = items
-    .map((item) => item.product?.title)
-    .filter(Boolean)
-    .slice(0, 2);
-
-  if (productNames.length === 0) {
-    return "New marketplace order";
-  }
-
-  if (items.length > 2) {
-    return `${productNames.join(", ")} and ${items.length - 2} more item(s)`;
-  }
-
-  return productNames.join(", ");
-};
-
-const createOrderNotifications = async (order) => {
-  if (!order) return;
-
-  const buyerName = getBuyerName(order.buyer);
-  const orderPreview = getOrderItemsPreview(order.items);
-  const totalAmount = formatPrice(order.totalAmount);
-
-  const notifications = [];
-
-  if (order.seller?.userId) {
-    notifications.push({
-      userId: order.seller.userId,
-      type: "ORDER",
-      title: "New order received",
-      message: `${buyerName} placed order ${order.orderNumber} for ${orderPreview}. Total: PKR ${totalAmount}.`,
-      link: "/seller/orders",
-      metadata: {
-        orderId: order.id,
-        orderNumber: order.orderNumber,
-        buyerId: order.buyerId,
-        sellerId: order.sellerId,
-        totalAmount: Number(order.totalAmount),
+exports.completeOrder = async (buyerId, orderId) => {
+  return prisma.$transaction(async (tx) => {
+    // Locate the paid order belonging to this buyer
+    const order = await tx.marketplaceOrder.findFirst({
+      where: {
+        id: orderId,
+        buyerId,
+        status: "CONFIRMED", // Order must have been paid for
+      },
+      include: {
+        seller: true,
       },
     });
-  }
 
-  if (order.buyerId) {
-    notifications.push({
-      userId: order.buyerId,
-      type: "ORDER",
-      title: "Order placed successfully",
-      message: `Your order ${order.orderNumber} has been placed successfully. Total: PKR ${totalAmount}.`,
-      link: "/seller/orders",
-      metadata: {
-        orderId: order.id,
-        orderNumber: order.orderNumber,
-        sellerId: order.sellerId,
-        totalAmount: Number(order.totalAmount),
-      },
-    });
-  }
-
-  if (notifications.length > 0) {
-    try {
-      await notificationService.createManyNotifications({
-        notifications,
-      });
-    } catch (error) {
-      console.log("[Order Notification Error]", error.message);
+    if (!order) {
+      throw new Error("Order not found or is not currently in a deliverable state.");
     }
-  }
+
+    if (order.isPayoutReleased) {
+      throw new Error("Payout has already been released for this transaction.");
+    }
+
+    // Guard: Ensure the seller has completed their Stripe onboarding credentials
+    if (!order.seller.stripeConnectedAccountId || !order.seller.stripeOnboardingCompleted) {
+      throw new Error("The merchant has not completed Stripe Connect setup. Cannot release payout.");
+    }
+
+    // Process the 15% / 85% Split
+    const totalAmount = Number(order.totalAmount);
+    const platformCommission = Math.round(totalAmount * 0.15); // Platform keeps 15%
+    const sellerPayout = totalAmount - platformCommission;     // Seller receives 85%
+
+    // Execute Stripe Connect Transfer to route money directly to Seller's connected wallet
+    const transfer = await stripe.transfers.create({
+      amount: Math.round(sellerPayout * 100), // Convert to cents/paisa
+      currency: "pkr",
+      destination: order.seller.stripeConnectedAccountId,
+      transfer_group: `ORDER_${order.id}`,
+      description: `Release payout for e-commerce purchase Order #${order.orderNumber}. 15% Platform Commission retained.`,
+    });
+
+    // Update order status, payment status, and lock payout variables
+    const updatedOrder = await tx.marketplaceOrder.update({
+      where: { id: order.id },
+      data: {
+        status: "COMPLETED",
+        isPayoutReleased: true,
+        payoutReleasedAt: new Date(),
+        paymentStatus: "SUCCEEDED", // Mark payment fully completed
+      },
+    });
+
+    return updatedOrder;
+  });
 };
 
-const createStockNotifications = async (stockAlerts) => {
-  if (!Array.isArray(stockAlerts) || stockAlerts.length === 0) {
-    return;
-  }
-
-  const notifications = stockAlerts
-    .filter((alert) => alert.sellerUserId)
-    .map((alert) => {
-      const isSoldOut = alert.newStock <= 0;
-
-      return {
-        userId: alert.sellerUserId,
-        type: "LOW_STOCK",
-        title: isSoldOut ? "Product sold out" : "Low stock alert",
-        message: isSoldOut
-          ? `${alert.productTitle} is now sold out.`
-          : `${alert.productTitle} has only ${alert.newStock} item(s) left in stock.`,
-        link: "/seller/listings",
-        metadata: {
-          productId: alert.productId,
-          productTitle: alert.productTitle,
-          previousStock: alert.previousStock,
-          newStock: alert.newStock,
-          orderId: alert.orderId,
+exports.refundOrder = async (buyerId, orderId) => {
+  return prisma.$transaction(async (tx) => {
+    // Locate the paid order belonging to this buyer
+    const order = await tx.marketplaceOrder.findFirst({
+      where: {
+        id: orderId,
+        buyerId,
+        status: "CONFIRMED", // Can only refund if paid
+      },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
         },
-      };
+      },
     });
 
-  if (notifications.length > 0) {
-    try {
-      await notificationService.createManyNotifications({
-        notifications,
-      });
-    } catch (error) {
-      console.log("[Stock Notification Error]", error.message);
+    if (!order) {
+      throw new Error("Order not found or is ineligible for a refund.");
     }
-  }
+
+    if (order.isPayoutReleased) {
+      throw new Error("Cannot process a refund once payouts are released to the seller.");
+    }
+
+    if (!order.stripePaymentIntentId) {
+      throw new Error("No Stripe Transaction reference found to execute refund.");
+    }
+
+    // 1. Issue full reverse charge directly via Stripe API back to buyer's card
+    const refund = await stripe.refunds.create({
+      payment_intent: order.stripePaymentIntentId,
+      reason: "customer_requested",
+      metadata: {
+        orderId: order.id,
+        orderNumber: order.orderNumber,
+      },
+    });
+
+    // 2. Safely restore listing stock counts in database
+    for (const item of order.items) {
+      const currentProduct = await tx.marketplaceProduct.findUnique({
+        where: { id: item.productId },
+      });
+
+      if (currentProduct) {
+        const restoredStock = currentProduct.stock + item.quantity;
+        await tx.marketplaceProduct.update({
+          where: { id: item.productId },
+          data: {
+            stock: restoredStock,
+            // Re-activate status in case product was marked as SOLD_OUT
+            status: restoredStock > 0 ? "ACTIVE" : "SOLD_OUT",
+          },
+        });
+      }
+    }
+
+    // 3. Mark database order status as CANCELLED and paymentStatus as REFUNDED
+    const updatedOrder = await tx.marketplaceOrder.update({
+      where: { id: order.id },
+      data: {
+        status: "CANCELLED",
+        paymentStatus: "REFUNDED",
+      },
+    });
+
+    return updatedOrder;
+  });
 };
 
 exports.createMarketplaceOrder = async (buyerId, payload) => {
@@ -299,6 +307,10 @@ exports.getMyMarketplaceOrders = async (buyerId) => {
   return prisma.marketplaceOrder.findMany({
     where: {
       buyerId,
+      status: {
+        // Exclude unpaid checkouts; only show paid, transit, completed, or formally cancelled orders
+        not: "PENDING"
+      }
     },
     include: {
       seller: {
@@ -326,5 +338,54 @@ exports.getMyMarketplaceOrders = async (buyerId) => {
     orderBy: {
       createdAt: "desc",
     },
+  });
+};
+
+
+exports.cancelPendingOrder = async (buyerId, orderId) => {
+  return prisma.$transaction(async (tx) => {
+    const order = await tx.marketplaceOrder.findFirst({
+      where: {
+        id: orderId,
+        buyerId,
+        status: "PENDING", // Only allow cancellation of unpaid pending checkouts
+      },
+      include: {
+        items: true,
+      },
+    });
+
+    if (!order) {
+      throw new Error("Checkout session not found or already processed.");
+    }
+
+    // Restore stock inventory for each product
+    for (const item of order.items) {
+      const product = await tx.marketplaceProduct.findUnique({
+        where: { id: item.productId },
+      });
+
+      if (product) {
+        const restoredStock = product.stock + item.quantity;
+        await tx.marketplaceProduct.update({
+          where: { id: item.productId },
+          data: {
+            stock: restoredStock,
+            status: restoredStock > 0 ? "ACTIVE" : "SOLD_OUT",
+          },
+        });
+      }
+    }
+
+    // Remove the uncompleted transaction components entirely
+    await tx.marketplaceOrderItem.deleteMany({
+      where: { orderId: order.id },
+    });
+
+    await tx.marketplaceOrder.delete({
+      where: { id: order.id },
+    });
+
+    return { success: true };
   });
 };

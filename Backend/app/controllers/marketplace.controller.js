@@ -94,3 +94,41 @@ exports.getSavedListings = async (req, res) => {
     });
   }
 };
+
+// ... keep existing controller functions ...
+
+// 💡 Step 2: Validate real-time stock levels against the requested quantities
+exports.checkProductStock = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const quantity = Number(req.query.quantity) || 1;
+
+    const product = await marketplaceService.getMarketplaceProductById(id);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    if (product.stock < quantity) {
+      return res.status(400).json({
+        success: false,
+        message: `Max quantity can only be ${product.stock}`,
+        availableStock: product.stock,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Stock is available",
+      availableStock: product.stock,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

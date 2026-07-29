@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 
 import Button from "@/shared/components/Button/Button";
 import Card from "@/shared/components/Card/Card";
+import PageBackButton from "@/shared/components/BackButton/PageBackButton";
+import { showToast } from "@/shared/utils/toast"; 
+import { checkProductStockApi } from "@/features/marketplace1/api/marketplace.api"; 
 import SellerHeader from "@/features/seller/components/SellerHeader";
 import SellerSidebar from "@/features/seller/components/SellerSidebar";
 
@@ -20,8 +23,30 @@ const CartPage = () => {
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  const handleQuantity = (productId: string | number, quantity: number) => {
-    updateCartQuantity(productId, quantity);
+  // 💡 Step 4: Refactored asynchronous quantity checker
+  const handleQuantity = async (productId: string | number, currentQty: number, targetQuantity: number) => {
+    if (targetQuantity <= 0) {
+      handleRemove(productId);
+      return;
+    }
+
+    // Only verify stock if we are attempting to increment the quantity
+    if (targetQuantity > currentQty) {
+      try {
+        const response = await checkProductStockApi(String(productId), targetQuantity);
+        if (!response.success) {
+          showToast.error(response.message || "Requested quantity exceeds available stock limits.");
+          return;
+        }
+      } catch (err: any) {
+        // Intercept standard API 400 validation error (Max quantity can only be n)
+        const apiErrorMessage = err?.response?.data?.message || "Requested quantity exceeds available stock limits.";
+        showToast.error(apiErrorMessage);
+        return; // Prevent update
+      }
+    }
+
+    updateCartQuantity(productId, targetQuantity);
     setCart(getCartItems());
   };
 
@@ -49,6 +74,11 @@ const CartPage = () => {
         <SellerHeader />
 
         <section className="p-7">
+          {/* Page Back Button */}
+          <div className="mb-5">
+            <PageBackButton fallbackPath="/marketplace1" />
+          </div>
+
           <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#178f95]">
@@ -114,6 +144,10 @@ const CartPage = () => {
                         {item.title}
                       </h3>
 
+                      <p className="text-xs font-semibold text-[#178f95] uppercase tracking-wide mt-1">
+                        {item.category ? item.category.toLowerCase() : "Product"}
+                      </p>
+
                       <p className="mt-1 text-sm text-gray-500">
                         PKR {item.price.toLocaleString()}
                       </p>
@@ -129,7 +163,7 @@ const CartPage = () => {
                       <button
                         type="button"
                         onClick={() =>
-                          handleQuantity(item.productId, item.quantity - 1)
+                          handleQuantity(item.productId, item.quantity, item.quantity - 1)
                         }
                         className="flex h-10 w-10 items-center justify-center rounded-l-xl text-lg font-bold text-gray-600 transition hover:bg-gray-50"
                       >
@@ -143,7 +177,7 @@ const CartPage = () => {
                       <button
                         type="button"
                         onClick={() =>
-                          handleQuantity(item.productId, item.quantity + 1)
+                          handleQuantity(item.productId, item.quantity, item.quantity + 1)
                         }
                         className="flex h-10 w-10 items-center justify-center rounded-r-xl text-lg font-bold text-gray-600 transition hover:bg-gray-50"
                       >

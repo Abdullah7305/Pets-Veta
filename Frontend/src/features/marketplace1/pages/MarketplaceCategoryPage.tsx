@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { FaBoxOpen } from "react-icons/fa";
+import { useDebounce } from "@/shared/hooks/useDebounce"; // Import our hook
 
 import MarketplaceCategoryFilters from "../components/MarketplaceCategoryFilters";
 import MarketplacePagination from "../components/MarketplacePagination";
@@ -66,6 +67,9 @@ const MarketplaceCategoryPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
+    
+    const debouncedSearch = useDebounce(search, 400);
+
     useEffect(() => {
         setSearch("");
         setLocation("All");
@@ -85,7 +89,7 @@ const MarketplaceCategoryPage = () => {
                 const data = await fetchMarketplaceProducts({
                     page,
                     limit: ITEMS_PER_PAGE,
-                    search,
+                    search: debouncedSearch, // Use the debounced value here
                     category: category.backendCategory,
                     location: location === "All" ? "" : location,
                 });
@@ -112,7 +116,7 @@ const MarketplaceCategoryPage = () => {
         return () => {
             ignore = true;
         };
-    }, [category, page, search, location]);
+    }, [category, page, debouncedSearch, location]); 
 
     useEffect(() => {
         const loadSavedListings = async () => {

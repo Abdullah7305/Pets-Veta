@@ -28,6 +28,9 @@ const OrderPaymentForm = ({ orderId }: OrderPaymentFormProps) => {
             setIsPaying(true);
             setError("");
 
+            // 💡 Mark payment as actively processing to prevent auto-cleanup on redirect/unload
+            sessionStorage.setItem(`payment-processing-${orderId}`, "true");
+
             const result = await stripe.confirmPayment({
                 elements,
                 confirmParams: {
@@ -36,10 +39,13 @@ const OrderPaymentForm = ({ orderId }: OrderPaymentFormProps) => {
             });
 
             if (result.error) {
+                // If payment failed immediately before redirecting, clear the flag
+                sessionStorage.removeItem(`payment-processing-${orderId}`);
                 setError(result.error.message || "Payment session failed.");
                 setIsPaying(false);
             }
         } catch (err) {
+            sessionStorage.removeItem(`payment-processing-${orderId}`);
             setError(err instanceof Error ? err.message : "Payment request failed.");
             setIsPaying(false);
         }
