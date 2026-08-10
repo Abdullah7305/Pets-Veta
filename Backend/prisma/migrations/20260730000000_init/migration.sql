@@ -1,3 +1,8 @@
+-- Enable pgvector before creating vector-typed columns.
+CREATE EXTENSION IF NOT EXISTS vector;
+-- CreateSchema
+CREATE SCHEMA IF NOT EXISTS "public";
+
 -- CreateEnum
 CREATE TYPE "VerificationStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
 
@@ -34,6 +39,18 @@ CREATE TYPE "ConversationType" AS ENUM ('DIRECT', 'GROUP');
 -- CreateEnum
 CREATE TYPE "MessageType" AS ENUM ('TEXT', 'IMAGE', 'FILE', 'SYSTEM');
 
+-- CreateEnum
+CREATE TYPE "NotificationType" AS ENUM ('MESSAGE', 'ORDER', 'LOW_STOCK', 'APPOINTMENT', 'PAYMENT', 'SYSTEM');
+
+-- CreateEnum
+CREATE TYPE "Animal" AS ENUM ('DOG', 'CAT', 'BIRD', 'RABBIT', 'GENERAL');
+
+-- CreateEnum
+CREATE TYPE "DocumentStatus" AS ENUM ('DRAFT', 'ACTIVE', 'ARCHIVED');
+
+-- CreateEnum
+CREATE TYPE "FileType" AS ENUM ('MARKDOWN', 'PDF');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
@@ -44,6 +61,7 @@ CREATE TABLE "User" (
     "password" TEXT,
     "phone" TEXT NOT NULL DEFAULT '',
     "profileImageUrl" TEXT NOT NULL DEFAULT 'Enter your Image',
+    "bio" TEXT NOT NULL DEFAULT 'Manage your pets, veterinary appointments, and health information from one place.',
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "refreshToken" TEXT,
     "otp" TEXT,
@@ -253,6 +271,8 @@ CREATE TABLE "SellerProfile" (
     "storeLogo" TEXT,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "isVerified" BOOLEAN NOT NULL DEFAULT false,
+    "stripeConnectedAccountId" TEXT,
+    "stripeOnboardingCompleted" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -320,6 +340,8 @@ CREATE TABLE "MarketplaceOrder" (
     "phoneNumber" TEXT,
     "stripePaymentIntentId" TEXT,
     "stripeClientSecret" TEXT,
+    "isPayoutReleased" BOOLEAN NOT NULL DEFAULT false,
+    "payoutReleasedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -405,6 +427,60 @@ CREATE TABLE "MessageReadReceipt" (
     "readAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "MessageReadReceipt_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Notification" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "type" "NotificationType" NOT NULL DEFAULT 'SYSTEM',
+    "title" TEXT NOT NULL,
+    "message" TEXT NOT NULL,
+    "link" TEXT,
+    "isRead" BOOLEAN NOT NULL DEFAULT false,
+    "metadata" JSONB,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Notification_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "KnowledgeDocument" (
+    "id" UUID NOT NULL,
+    "title" VARCHAR(255) NOT NULL,
+    "slug" VARCHAR(255) NOT NULL,
+    "animal" "Animal" NOT NULL,
+    "category" VARCHAR(100) NOT NULL,
+    "subCategory" VARCHAR(100),
+    "language" VARCHAR(16) NOT NULL DEFAULT 'en',
+    "version" INTEGER NOT NULL DEFAULT 1,
+    "source" VARCHAR(255),
+    "filePath" VARCHAR(1024) NOT NULL,
+    "fileType" "FileType" NOT NULL DEFAULT 'MARKDOWN',
+    "checksum" VARCHAR(64),
+    "status" "DocumentStatus" NOT NULL DEFAULT 'DRAFT',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "KnowledgeDocument_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "KnowledgeChunk" (
+    "id" UUID NOT NULL,
+    "knowledgeDocumentId" UUID NOT NULL,
+    "chunkIndex" INTEGER NOT NULL,
+    "heading" VARCHAR(500),
+    "content" TEXT NOT NULL,
+    "tokenCount" INTEGER NOT NULL,
+    "embedding" vector(384),
+    "embeddingModel" VARCHAR(255),
+    "metadata" JSONB NOT NULL DEFAULT '{}',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "KnowledgeChunk_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -543,6 +619,9 @@ CREATE INDEX "Refund_stripeRefundId_idx" ON "Refund"("stripeRefundId");
 CREATE UNIQUE INDEX "SellerProfile_userId_key" ON "SellerProfile"("userId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "SellerProfile_stripeConnectedAccountId_key" ON "SellerProfile"("stripeConnectedAccountId");
+
+-- CreateIndex
 CREATE INDEX "SellerProfile_userId_idx" ON "SellerProfile"("userId");
 
 -- CreateIndex
@@ -646,6 +725,69 @@ CREATE INDEX "MessageReadReceipt_userId_idx" ON "MessageReadReceipt"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "MessageReadReceipt_messageId_userId_key" ON "MessageReadReceipt"("messageId", "userId");
+
+-- CreateIndex
+CREATE INDEX "Notification_userId_idx" ON "Notification"("userId");
+
+-- CreateIndex
+CREATE INDEX "Notification_type_idx" ON "Notification"("type");
+
+-- CreateIndex
+CREATE INDEX "Notification_isRead_idx" ON "Notification"("isRead");
+
+-- CreateIndex
+CREATE INDEX "Notification_createdAt_idx" ON "Notification"("createdAt");
+
+-- CreateIndex
+CREATE INDEX "Notification_userId_isRead_idx" ON "Notification"("userId", "isRead");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "KnowledgeDocument_slug_key" ON "KnowledgeDocument"("slug");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "KnowledgeDocument_filePath_key" ON "KnowledgeDocument"("filePath");
+
+-- CreateIndex
+CREATE INDEX "KnowledgeDocument_animal_idx" ON "KnowledgeDocument"("animal");
+
+-- CreateIndex
+CREATE INDEX "KnowledgeDocument_category_idx" ON "KnowledgeDocument"("category");
+
+-- CreateIndex
+CREATE INDEX "KnowledgeDocument_subCategory_idx" ON "KnowledgeDocument"("subCategory");
+
+-- CreateIndex
+CREATE INDEX "KnowledgeDocument_source_idx" ON "KnowledgeDocument"("source");
+
+-- CreateIndex
+CREATE INDEX "KnowledgeDocument_checksum_idx" ON "KnowledgeDocument"("checksum");
+
+-- CreateIndex
+CREATE INDEX "KnowledgeDocument_status_idx" ON "KnowledgeDocument"("status");
+
+-- CreateIndex
+CREATE INDEX "KnowledgeDocument_language_status_idx" ON "KnowledgeDocument"("language", "status");
+
+-- CreateIndex
+CREATE INDEX "KnowledgeDocument_animal_category_subCategory_status_idx" ON "KnowledgeDocument"("animal", "category", "subCategory", "status");
+
+-- CreateIndex
+CREATE INDEX "KnowledgeDocument_status_updatedAt_idx" ON "KnowledgeDocument"("status", "updatedAt");
+
+-- CreateIndex
+CREATE INDEX "KnowledgeChunk_knowledgeDocumentId_idx" ON "KnowledgeChunk"("knowledgeDocumentId");
+
+-- CreateIndex
+CREATE INDEX "KnowledgeChunk_chunkIndex_idx" ON "KnowledgeChunk"("chunkIndex");
+
+-- CreateIndex
+CREATE INDEX "KnowledgeChunk_embeddingModel_idx" ON "KnowledgeChunk"("embeddingModel");
+
+-- CreateIndex
+CREATE INDEX "KnowledgeChunk_metadata_idx" ON "KnowledgeChunk" USING GIN ("metadata" jsonb_path_ops);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "KnowledgeChunk_knowledgeDocumentId_chunkIndex_key" ON "KnowledgeChunk"("knowledgeDocumentId", "chunkIndex");
 
 -- AddForeignKey
 ALTER TABLE "Doctor" ADD CONSTRAINT "Doctor_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -760,3 +902,19 @@ ALTER TABLE "MessageReadReceipt" ADD CONSTRAINT "MessageReadReceipt_messageId_fk
 
 -- AddForeignKey
 ALTER TABLE "MessageReadReceipt" ADD CONSTRAINT "MessageReadReceipt_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Notification" ADD CONSTRAINT "Notification_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "KnowledgeChunk" ADD CONSTRAINT "KnowledgeChunk_knowledgeDocumentId_fkey" FOREIGN KEY ("knowledgeDocumentId") REFERENCES "KnowledgeDocument"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+-- Prisma cannot currently represent pgvector HNSW indexes or expression FTS indexes
+-- in schema.prisma, so keep them as explicit SQL in the migration history.
+CREATE INDEX "KnowledgeChunk_embedding_hnsw_idx"
+ON "KnowledgeChunk"
+USING hnsw ("embedding" vector_cosine_ops)
+WHERE "embedding" IS NOT NULL;
+
+CREATE INDEX "KnowledgeChunk_content_fts_idx"
+ON "KnowledgeChunk"
+USING GIN (to_tsvector('simple'::regconfig, COALESCE("heading", '') || ' ' || "content"));

@@ -15,11 +15,12 @@ const generatePetAssistantResponse = async (prompt) => {
         return response.text;
     } catch (error) {
         console.error("Error in aiService:", error);
-        if (error.status === 429) {
-            throw new AppError("The AI assistant is currently busy. Please try again in a moment.", 429);
+        if (error.status === 429 || error.status === 503) {
+            throw new AppError("The AI assistant is currently busy. Please try again in a moment.", error.status);
         }
         throw new AppError("Failed to communicate with the AI assistant service.", 500);
     }
 };
 
 module.exports = { generatePetAssistantResponse };
+

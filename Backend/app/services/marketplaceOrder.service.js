@@ -1,7 +1,6 @@
 const prisma = require("../config/prisma");
 const notificationService = require("./notification.service");
 
-const prisma = new PrismaClient();
 const { stripe } = require("../config/stripe");
 
 const LOW_STOCK_LIMIT = 5;

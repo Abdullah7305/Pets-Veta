@@ -1,6 +1,6 @@
 const path = require("path");
 
-require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
+require("dotenv").config({ path: path.resolve(__dirname, "../.env"), quiet: true });
 require("./config/redis.config");
 
 const cors = require("cors");
@@ -79,3 +79,4 @@ app.use("/api/v1/notifications", notificationRouter);
 app.use(globalErrorHandler);
 
 module.exports = app;
+

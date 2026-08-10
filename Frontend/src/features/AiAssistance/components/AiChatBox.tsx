@@ -5,6 +5,7 @@ import {
     type KeyboardEvent,
     type ReactNode,
 } from "react";
+import axios from "axios";
 import { FaPaperPlane, FaPaw } from "react-icons/fa";
 
 import Button from "../../../shared/components/Button";
@@ -222,11 +223,21 @@ const AiChatBox = () => {
             };
 
             setMessages((prev) => [...prev, aiReply]);
-        } catch {
+        } catch (error) {
+            const responseMessage = axios.isAxiosError(error)
+                ? error.response?.data?.message
+                : undefined;
+            const isUnauthorized =
+                axios.isAxiosError(error) && error.response?.status === 401;
+
             const errorReply: AiMessage = {
                 id: Date.now() + 1,
                 sender: "ai",
-                text: "Something went wrong. Please login first or try again later.",
+                text: isUnauthorized
+                    ? "Your session expired. Please login again and try once more."
+                    : typeof responseMessage === "string"
+                        ? responseMessage
+                        : "Something went wrong while contacting the AI assistant. Please try again later.",
             };
 
             setMessages((prev) => [...prev, errorReply]);
@@ -380,3 +391,5 @@ const AiChatBox = () => {
 };
 
 export default AiChatBox;
+
+
