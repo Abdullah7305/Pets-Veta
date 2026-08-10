@@ -47,9 +47,9 @@ HuggingFace model. Both are now separately visible in request logs.
   actionable and adds only small in-process timing/JSON overhead.
 - **Trade-off:** More log volume. CPU values are process deltas during the
   request, so concurrent work can contribute to them.
-- **Files:** `src/observability/rag-performance.ts`,
-  `src/api/middlewares/rag-performance.middleware.ts`,
-  `src/api/utils/measured-json-response.ts`, chat route/controller/error
+- **Files:** `src/observability/rag-performance.js`,
+  `src/api/middlewares/rag-performance.middleware.js`,
+  `src/api/utils/measured-json-response.js`, chat route/controller/error
   middleware.
 
 Example final event:
@@ -96,8 +96,8 @@ Example final event:
   The existing project already selected HNSW; the migration guarantees rather
   than changes that choice. `CREATE INDEX CONCURRENTLY` takes longer than a
   blocking build but permits production writes.
-- **Files:** `src/rag/retrieval/retriever.utils.ts`,
-  `src/rag/database/*`, `src/rag/vector-store/repository.ts`,
+- **Files:** `src/rag/retrieval/retriever.utils.js`,
+  `src/rag/database/*`, `src/rag/vector-store/repository.js`,
   `app/config/prisma.js`, and
   `prisma/migrations/20260723000000_optimize_rag_vector_search/migration.sql`.
 
@@ -119,8 +119,8 @@ out non-concurrent index creation as a risky deployment pattern:
   importantly, lower-quality chunks no longer consume Gemini input.
 - **Trade-off:** A threshold that is too high can reduce recall. It remains
   configurable globally and per request through the existing API.
-- **Files:** `src/rag/retrieval/retriever.service.ts`,
-  `retriever.utils.ts`, `retriever.interface.ts`, and `retriever.types.ts`.
+- **Files:** `src/rag/retrieval/retriever.service.js`,
+  `retriever.utils.js`, `retriever.interface.js`, and `retriever.types.js`.
 
 ### Prompt reduction
 
@@ -137,8 +137,8 @@ out non-concurrent index creation as a risky deployment pattern:
   token cost should fall correspondingly where input processing is material.
 - **Trade-off:** Gemini no longer sees path and raw similarity values; callers
   still receive them unchanged in `sources`.
-- **Files:** `src/rag/prompt/prompt.utils.ts`,
-  `prompt.service.ts`, and `prompt.templates.ts`.
+- **Files:** `src/rag/prompt/prompt.utils.js`,
+  `prompt.service.js`, and `prompt.templates.js`.
 
 ### Embedding cache
 
@@ -152,7 +152,7 @@ out non-concurrent index creation as a risky deployment pattern:
 - **Trade-off:** Up to 1,000 entries are retained per cache instance by default.
   Model name is part of the key; TTL/versioning bounds stale data.
 - **Files:** `src/rag/cache/*` and
-  `src/rag/retrieval/retriever.service.ts`.
+  `src/rag/retrieval/retriever.service.js`.
 
 ### Exact response cache
 
@@ -167,8 +167,8 @@ out non-concurrent index creation as a risky deployment pattern:
 - **Trade-off:** A cached answer can remain until its short TTL after knowledge
   ingestion. Retrieval options are deliberately part of the key, which avoids
   incorrect reuse but reduces hit rate.
-- **Files:** `src/api/services/ai.service.ts`,
-  `src/api/types/chat.types.ts`, and `src/rag/cache/*`.
+- **Files:** `src/api/services/ai.service.js`,
+  `src/api/types/chat.types.js`, and `src/rag/cache/*`.
 
 ### Redis fallback and bounded memory
 
@@ -181,7 +181,7 @@ out non-concurrent index creation as a risky deployment pattern:
 - **Trade-off:** Without Redis, entries are not shared across replicas. Redis
   outages reduce hit rate but not correctness.
 - **Files:** `app/config/redis.config.js`, `src/rag/cache/*`,
-  `src/config/env.ts`, and `.env.example`.
+  `src/config/env.js`, and `.env.example`.
 
 ### Gemini timeout and retry handling
 
@@ -196,8 +196,8 @@ out non-concurrent index creation as a risky deployment pattern:
 - **Trade-off:** A transient failure can take longer and may incur an additional
   upstream attempt. Retries are capped at five even under direct
   misconfiguration (default two).
-- **Files:** `src/rag/gemini/gemini.service.ts`,
-  `gemini.interface.ts`, `gemini.types.ts`, and `gemini.constants.ts`.
+- **Files:** `src/rag/gemini/gemini.service.js`,
+  `gemini.interface.js`, `gemini.types.js`, and `gemini.constants.js`.
 
 ## Configuration defaults
 

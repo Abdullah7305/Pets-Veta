@@ -1,2 +1,0 @@
-export const VECTOR_DIMENSIONS = 384;
-export const DEFAULT_VECTOR_STORE_BATCH_SIZE = 100;
