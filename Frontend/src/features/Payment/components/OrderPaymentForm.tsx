@@ -1,75 +1,100 @@
 import { useState } from "react";
 import {
-    PaymentElement,
-    useElements,
-    useStripe,
+  PaymentElement,
+  useElements,
+  useStripe,
 } from "@stripe/react-stripe-js";
+import { Loader2 } from "lucide-react";
 
 type OrderPaymentFormProps = {
-    orderId: string;
+  orderId: string;
 };
 
 const OrderPaymentForm = ({ orderId }: OrderPaymentFormProps) => {
-    const stripe = useStripe();
-    const elements = useElements();
+  const stripe = useStripe();
+  const elements = useElements();
 
-    const [isPaying, setIsPaying] = useState(false);
-    const [error, setError] = useState("");
+  const [isElementReady, setIsElementReady] = useState(false);
+  const [isPaying, setIsPaying] = useState(false);
+  const [error, setError] = useState("");
 
-    const handlePayNow = async (event: React.FormEvent) => {
-        event.preventDefault();
+  const handlePayNow = async (event: React.FormEvent) => {
+    event.preventDefault();
 
-        if (!stripe || !elements) {
-            setError("Stripe element loader uninitialized.");
-            return;
-        }
+    if (!stripe || !elements) {
+      setError("Stripe element loader uninitialized.");
+      return;
+    }
 
-        try {
-            setIsPaying(true);
-            setError("");
+    if (!isElementReady) {
+      setError("Payment element is still loading. Please wait.");
+      return;
+    }
 
-            // 💡 Mark payment as actively processing to prevent auto-cleanup on redirect/unload
-            sessionStorage.setItem(`payment-processing-${orderId}`, "true");
+    try {
+      setIsPaying(true);
+      setError("");
 
-            const result = await stripe.confirmPayment({
-                elements,
-                confirmParams: {
-                    return_url: `${window.location.origin}/order-payment-success?orderId=${orderId}`,
-                },
-            });
+      sessionStorage.setItem(`payment-processing-${orderId}`, "true");
 
-            if (result.error) {
-                // If payment failed immediately before redirecting, clear the flag
-                sessionStorage.removeItem(`payment-processing-${orderId}`);
-                setError(result.error.message || "Payment session failed.");
-                setIsPaying(false);
-            }
-        } catch (err) {
-            sessionStorage.removeItem(`payment-processing-${orderId}`);
-            setError(err instanceof Error ? err.message : "Payment request failed.");
-            setIsPaying(false);
-        }
-    };
+      const { error: submitError } = await elements.submit();
+      if (submitError) {
+        sessionStorage.removeItem(`payment-processing-${orderId}`);
+        setError(submitError.message || "Please complete all payment fields.");
+        setIsPaying(false);
+        return;
+      }
 
-    return (
-        <form onSubmit={handlePayNow} className="mt-6 space-y-5 text-left">
-            <PaymentElement />
+      const result = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/order-payment-success?orderId=${orderId}`,
+        },
+      });
 
-            {error && (
-                <div className="rounded-xl border border-red-100 bg-red-50 p-3 text-sm font-semibold text-red-600">
-                    {error}
-                </div>
-            )}
+      if (result.error) {
+        sessionStorage.removeItem(`payment-processing-${orderId}`);
+        setError(result.error.message || "Payment session failed.");
+        setIsPaying(false);
+      }
+    } catch (err) {
+      sessionStorage.removeItem(`payment-processing-${orderId}`);
+      setError(err instanceof Error ? err.message : "Payment request failed.");
+      setIsPaying(false);
+    }
+  };
 
-            <button
-                type="submit"
-                disabled={!stripe || !elements || isPaying}
-                className="w-full rounded-xl bg-[#178f95] px-4 py-3 text-sm font-bold text-white hover:bg-[#12757a] disabled:cursor-not-allowed disabled:opacity-50"
-            >
-                {isPaying ? "Processing payment..." : "Confirm & Pay"}
-            </button>
-        </form>
-    );
+  return (
+    <form onSubmit={handlePayNow} className="mt-6 space-y-5 text-left">
+      <PaymentElement
+        onReady={() => setIsElementReady(true)}
+        options={{ layout: "tabs" }}
+      />
+
+      {error && (
+        <div className="rounded-xl border border-red-100 bg-red-50 p-3 text-sm font-semibold text-red-600">
+          {error}
+        </div>
+      )}
+
+      <button
+        type="submit"
+        disabled={!stripe || !elements || !isElementReady || isPaying}
+        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#178f95] px-4 py-3 text-sm font-bold text-white hover:bg-[#12757a] disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {isPaying ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span>Processing payment...</span>
+          </>
+        ) : !isElementReady ? (
+          "Loading payment options..."
+        ) : (
+          "Confirm & Pay"
+        )}
+      </button>
+    </form>
+  );
 };
 
 export default OrderPaymentForm;

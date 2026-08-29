@@ -167,16 +167,24 @@ const loginUser = async (userData) => {
 };
 
 const refreshUserToken = async (email, refreshToken) => {
-    await prisma.user.update({
-        where: {
-            email: email
-        },
-        data: {
-            refreshToken: refreshToken
-        }
+    // 1. Check if user exists first
+    const existingUser = await prisma.user.findUnique({
+        where: { email },
     });
 
-    return refreshToken;
+    if (!existingUser) {
+        const error = new Error('User not found or invalid token');
+        error.statusCode = 401; // Unauthorized
+        throw error;
+    }
+
+    // 2. Perform the update
+    return await prisma.user.update({
+        where: { email },
+        data: {
+            refreshToken,
+        },
+    });
 };
 
 const verifyUsername = async (username) => {
@@ -193,15 +201,14 @@ const verifyUsername = async (username) => {
     return validUser;
 };
 
+// Backend/app/services/auth.services.js
 const verifyEmail = async (email) => {
     if (!email) {
         return false;
     }
 
     const validUser = await prisma.user.findUnique({
-        where: {
-            email: email
-        },
+        where: { email },
         include: {
             userRole: true,
             doctors: {
@@ -209,31 +216,10 @@ const verifyEmail = async (email) => {
                     isVerified: true
                 }
             }
-
-
         }
-    })
-    if (validUser && validUser.userRole === 'DOCTOR') {
-        if (validUser.doctors.isVerified === VerificationStatus.PENDING) {
-            throw new AppError("Doctor is Not Allowed Yet", 400);
-            return;
-        }
-    };
+    });
 
-    if (!validUser) {
-        return false;
-    }
-
-    const userRole = validUser.userRole?.role?.toLowerCase();
-
-    if (
-        userRole === 'doctor' &&
-        validUser.doctors?.isVerified === VerificationStatus.PENDING
-    ) {
-        throw new AppError("Doctor is Not Allowed Yet", 400);
-    }
-
-    return validUser;
+    return validUser; // 👈 Do NOT throw "Doctor is Not Allowed Yet" here so OTP can verify email
 };
 
 const getUserById = async (id) => {

@@ -8,6 +8,7 @@ import VerifyOtpPage from "./pages/verify-otp";
 import ResetPasswordPage from "./pages/reset-password";
 import DashboardChoicePage from "./pages/DashboardChoicePage";
 import { ProtectedRoutes } from "@/ProtectedRoutes/ProtectedRoutes";
+import DoctorPendingApprovalPage from "./pages/DoctorPendingApprovalPage";
 
 
 const AuthRouter = [
@@ -34,6 +35,10 @@ const AuthRouter = [
   {
     path: "/forgot-password",
     element: <ForgotPasswordPage />,
+  },
+  {
+    path: "/doctor-pending-verification", // 👈 Register route
+    element: <DoctorPendingApprovalPage />,
   },
   {
     path: "/verify-otp",

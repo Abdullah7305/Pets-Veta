@@ -2,10 +2,12 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import Button from "../../../shared/components/Button/Button";
 import BackButton from "../../../shared/components/Button";
 import { useOtp } from "../hooks/useOtp";
 import { useResendOtp } from "../hooks/useResendOtp";
+import { useAuth } from "../hooks/authhook";
 import {
   verifyOtpSchema,
   type VerifyOtpFormData,
@@ -13,16 +15,15 @@ import {
 
 export default function VerifyOtpForm() {
   const navigate = useNavigate();
-
+  const { user } = useAuth();
   const [timer, setTimer] = useState(360);
+  const [formError, setFormError] = useState<string>("");
 
   useEffect(() => {
     if (timer <= 0) return;
-
     const interval = setInterval(() => {
       setTimer((prev) => prev - 1);
     }, 1000);
-
     return () => clearInterval(interval);
   }, [timer]);
 
@@ -33,17 +34,38 @@ export default function VerifyOtpForm() {
     formState: { errors },
   } = useForm<VerifyOtpFormData>({
     resolver: zodResolver(verifyOtpSchema),
-    defaultValues: {
-      otp: "",
-    },
+    defaultValues: { otp: "" },
   });
 
   const { mutate: verifyOtp, isPending: isVerifying } = useOtp({
-    onSuccess: () => {
-      navigate("/");
+    onSuccess: (data) => {
+      // Check if user is a Doctor
+      const role = ('role' in data.data ? data.data.role : '') || user?.data?.role || '';
+      if (role.toLowerCase() === 'doctor') {
+        navigate("/doctor-pending-verification", { replace: true });
+      } else {
+        navigate("/");
+      }
     },
     onError: (error) => {
-      console.log("==========>>", error);
+      let errorMessage = "";
+      if (axios.isAxiosError(error)) {
+        errorMessage = error.response?.data?.message || "";
+      }
+
+      // If backend throws the pending verification error, redirect to the pending page
+      if (
+        errorMessage.toLowerCase().includes("doctor is not allowed") ||
+        errorMessage.toLowerCase().includes("unverified") ||
+        errorMessage.toLowerCase().includes("not allowed yet") ||
+        errorMessage.toLowerCase().includes("pending") ||
+        user?.data?.role?.toLowerCase() === 'doctor'
+      ) {
+        navigate("/doctor-pending-verification", { replace: true });
+        return;
+      }
+
+      setFormError(errorMessage || "Invalid OTP code. Please try again.");
     },
   });
 
@@ -51,18 +73,16 @@ export default function VerifyOtpForm() {
     onSuccess: () => {
       setTimer(360);
       setValue("otp", "");
+      setFormError("");
     },
     onError: (error) => {
-      console.log("==========>>", error);
+      console.log("Resend OTP error", error);
     },
   });
 
   const onSubmit = (data: VerifyOtpFormData) => {
+    setFormError("");
     verifyOtp(data);
-  };
-
-  const handleResendOtp = () => {
-    resendOtp();
   };
 
   const minutes = Math.floor(timer / 60);
@@ -71,29 +91,25 @@ export default function VerifyOtpForm() {
   return (
     <div className="w-full">
       <div className="mb-6 text-center">
-        <h1 className="text-3xl font-bold text-blue-900">
-          Verify OTP
-        </h1>
-        <p className="mt-2 text-gray-500">
-          Enter the 6-digit code
-        </p>
+        <h1 className="text-3xl font-bold text-blue-900">Verify OTP</h1>
+        <p className="mt-2 text-gray-500">Enter the 6-digit code sent to your email</p>
       </div>
+
+      {formError && (
+        <p className="mb-4 rounded-xl bg-red-50 px-4 py-2.5 text-center text-sm font-semibold text-red-600">
+          {formError}
+        </p>
+      )}
 
       <p className="mb-6 text-center text-sm font-medium text-red-500">
         {timer > 0 ? (
-          <>
-            OTP expires in: {minutes}:
-            {seconds < 10 ? `0${seconds}` : seconds}
-          </>
+          <>OTP expires in: {minutes}:{seconds < 10 ? `0${seconds}` : seconds}</>
         ) : (
           "OTP Expired"
         )}
       </p>
 
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="space-y-6"
-      >
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="flex flex-col items-center justify-center gap-2">
           <input
             type="text"
@@ -104,36 +120,22 @@ export default function VerifyOtpForm() {
                 e.target.value = e.target.value.replace(/\D/g, "");
               },
             })}
-            className="
-              h-14 w-full max-w-62.5 rounded-xl
-              border border-gray-300
-              text-center text-2xl
-              font-semibold tracking-[0.75em] outline-none
-              focus:border-blue-900
-            "
+            className="h-14 w-full max-w-62.5 rounded-xl border border-gray-300 text-center text-2xl font-semibold tracking-[0.75em] outline-none focus:border-blue-900"
           />
 
           {errors.otp && (
-            <p className="text-center text-sm text-red-500">
-              {errors.otp.message}
-            </p>
+            <p className="text-center text-sm text-red-500">{errors.otp.message}</p>
           )}
         </div>
 
         <div className="text-center">
           <button
             type="button"
-            onClick={handleResendOtp}
+            onClick={() => resendOtp()}
             disabled={isResending}
-            className="
-              cursor-pointer text-sm
-              font-medium text-blue-900
-              hover:underline
-              disabled:cursor-not-allowed
-              disabled:opacity-60
-            "
+            className="cursor-pointer text-sm font-medium text-blue-900 hover:underline disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Resend OTP
+            {isResending ? "Resending..." : "Resend OTP"}
           </button>
         </div>
 
@@ -141,10 +143,7 @@ export default function VerifyOtpForm() {
           Verify OTP
         </Button>
 
-        <BackButton
-          href="/forgot-password"
-          text="Back"
-        />
+        <BackButton href="/forgot-password" text="Back" />
       </form>
     </div>
   );

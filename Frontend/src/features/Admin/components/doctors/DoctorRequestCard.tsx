@@ -12,16 +12,27 @@ import {
 import doctorLogo from "../../../../assets/icons/doctor.png";
 import { InfoPill } from "./InfoPill";
 import { ContactRow } from "./ContactRow";
-import type { DoctorRequestCardProps } from "../../types/admin.types";
+import type { DoctorData } from "../../apis/doctorquery.api";
+
+interface DoctorRequestCardProps {
+  doctor: DoctorData;
+  onApprove: (doctorId: string) => void;
+  onReject: (doctorId: string) => void;
+  isApproving?: boolean;
+  isRejecting?: boolean;
+}
 
 const DoctorRequestCard = ({
   doctor,
   onApprove,
   onReject,
-  doctorRequestProceed,
+  isApproving = false,
+  isRejecting = false,
 }: DoctorRequestCardProps) => {
   const isPending = doctor.isVerified === "PENDING";
+  const isProcessing = isApproving || isRejecting;
   const certificateUrl = doctor.degreeLicenseUrl;
+
   const certificateButtonClass =
     "items-center gap-2 rounded-xl border border-slate-300 bg-white text-sm font-black text-[#078b91] transition hover:border-[#078b91] hover:bg-[#eefaf8]";
   const disabledCertificateButtonClass =
@@ -142,31 +153,31 @@ const DoctorRequestCard = ({
         {isPending ? (
           <div className="mt-5 grid grid-cols-2 gap-3">
             <button
-              disabled={doctorRequestProceed}
+              disabled={isProcessing}
               type="button"
               onClick={() => onReject(doctor.id)}
               className={`flex h-11 items-center justify-center gap-2 rounded-xl border border-red-200 bg-white font-black transition ${
-                doctorRequestProceed
+                isProcessing
                   ? "cursor-not-allowed text-red-300"
                   : "cursor-pointer text-red-500 hover:bg-red-50"
               }`}
             >
               <X size={19} />
-              {doctorRequestProceed ? "Rejecting..." : "Reject"}
+              {isRejecting ? "Rejecting..." : "Reject"}
             </button>
 
             <button
               type="button"
-              disabled={doctorRequestProceed}
+              disabled={isProcessing}
               onClick={() => onApprove(doctor.id)}
               className={`flex h-11 items-center justify-center gap-2 rounded-xl font-black text-white shadow-lg shadow-cyan-100 transition ${
-                doctorRequestProceed
+                isProcessing
                   ? "cursor-not-allowed bg-[#0aa082]/70"
                   : "cursor-pointer bg-[#078b91] hover:bg-[#06777d]"
               }`}
             >
               <Check size={19} />
-              {doctorRequestProceed ? "Approving..." : "Approve"}
+              {isApproving ? "Approving..." : "Approve"}
             </button>
           </div>
         ) : (

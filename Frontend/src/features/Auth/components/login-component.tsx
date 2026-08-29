@@ -71,12 +71,26 @@ export default function LoginComponent() {
 
     },
     onError: (error) => {
-      const message =
-        axios.isAxiosError(error) && typeof error.response?.data?.message === "string"
-          ? error.response.data.message
-          : "Login failed. Please check your email and password.";
-      setForbiddenError(message);
-      console.log("Login Error", error)
+      if (axios.isAxiosError(error)) {
+        const message = String(error.response?.data?.message || "");
+        const status = error.response?.status;
+
+        // If the doctor account is pending verification, navigate to the pending page
+        if (
+          status === 403 ||
+          message.toLowerCase().includes("unverified") ||
+          message.toLowerCase().includes("not allowed yet") ||
+          message.toLowerCase().includes("doctor is not allowed") ||
+          message.toLowerCase().includes("admin")
+        ) {
+          navigate("/doctor-pending-verification", { replace: true });
+          return;
+        }
+
+        setForbiddenError(message || "Login failed. Please check your email and password.");
+      } else {
+        setForbiddenError("Login failed. Please check your email and password.");
+      }
     }
   })
 

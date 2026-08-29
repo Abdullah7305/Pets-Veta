@@ -13,64 +13,65 @@ const createRedisStore = (prefix) => {
     });
 }
 
-
 const authLimiter = rateLimit({
     store: createRedisStore('rl:auth:'),
-    windowMs: 5 * 60 * 1000,
+    windowMs: 1 * 60 * 1000, // Reduced from 5 min to 1 min
     limit: 10,
     standardHeaders: 'draft-8',
     legacyHeaders: false,
     message: {
         status: 429,
-        error: "To many Auth attempts"
+        error: "Too many Auth attempts. Please try again in a minute."
     }
 });
 
 const adminLimiter = rateLimit({
     store: createRedisStore('rl:admin:'),
-    windowMs: 10 * 60 * 1000,
-    limit: 50,
-    standardHeaders: false,
-    message: {
-        status: 429,
-        error: "Admin resource limit reaached try again after some minutes"
-    }
-})
-
-const petOwnerLimiter = rateLimit({
-    store: createRedisStore('rl:petOwner:'),
-    windowMs: 10 * 60 * 1000,
+    windowMs: 1 * 60 * 1000, // Reduced from 10 min to 1 min
     limit: 50,
     standardHeaders: 'draft-8',
     legacyHeaders: false,
     message: {
         status: 429,
-        error: "Resource limite Reach Wait for few second"
+        error: "Admin resource limit reached. Try again after a minute."
+    }
+});
+
+const petOwnerLimiter = rateLimit({
+    store: createRedisStore('rl:petOwner:'),
+    windowMs: 1 * 60 * 1000, // Reduced from 10 min to 1 min
+    limit: 50,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    message: {
+        status: 429,
+        error: "Resource limit reached. Please wait a minute."
     }
 });
 
 const globalUserLimiter = rateLimit({
     store: createRedisStore('rl:global:'),
-    windowMs: 10 * 60 * 1000,
+    windowMs: 1 * 60 * 1000, // Reduced from 10 min to 1 min
     limit: 150,
     legacyHeaders: false,
     standardHeaders: 'draft-8',
     message: {
         status: 429,
-        error: "Too many request from this device Please slow down"
+        error: "Too many requests from this device. Please slow down."
     }
 });
 
 const doctorLimiter = rateLimit({
+    store: createRedisStore('rl:doctor:'), // Added missing Redis store
+    windowMs: 1 * 60 * 1000, // Reduced from 10 min to 1 min
     limit: 100,
-    windowMs: 10 * 60 * 1000,
     standardHeaders: 'draft-8',
     legacyHeaders: false,
     message: {
         status: 429,
-        error: "Too many requests Please wait a minute only then proceed"
+        error: "Too many requests. Please wait a minute before proceeding."
     }
-})
+});
 
 module.exports = {
     adminLimiter,

@@ -20,6 +20,7 @@
     "generate:embeddings": "node scripts/generate-embeddings.js",
     "start": "node app/server.js",
     "db:start": "docker compose up -d postgres",
+    "reset:appointments": "node prisma/resetAppointments.js",
     "db:stop": "docker compose down",
     "db:logs": "docker compose logs -f postgres",
     "db:shell": "docker compose exec postgres psql -U postgres -d pets_veta",

@@ -13,25 +13,51 @@ const otpGenerator = () => {
 
   return otp.toString();
 }
-const sendAppointmentConfirmationEmail = async (email, appointmentDetails) => {
-  const { doctorName, checkupTime, appointmentCode } = appointmentDetails;
+// Backend/app/utils/auth.utils.js
 
-  const formattedTime = new Date(checkupTime).toLocaleString("en-US", {
+const sendAppointmentConfirmationEmail = async (email, appointmentDetails) => {
+  const { doctorName, checkupTime, startTime, endTime, date, appointmentCode } = appointmentDetails;
+
+  const refDate = date || checkupTime;
+  const refStart = startTime || checkupTime;
+
+  // Format Date in UTC to match the user's booking selection
+  const formattedDate = new Date(refDate).toLocaleDateString("en-US", {
     weekday: "long",
     year: "numeric",
     month: "long",
     day: "numeric",
+    timeZone: "UTC",
+  });
+
+  // Format Start Time in UTC
+  const formattedStartTime = new Date(refStart).toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
     hour12: true,
+    timeZone: "UTC",
   });
+
+  // Format End Time in UTC (if available)
+  const formattedEndTime = endTime
+    ? new Date(endTime).toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+        timeZone: "UTC",
+      })
+    : null;
+
+  const formattedTimeSlot = formattedEndTime
+    ? `${formattedStartTime} - ${formattedEndTime}`
+    : formattedStartTime;
 
   try {
     const info = await transporter.sendMail({
-      from: 'abdullahsuleman755@gmail.com',
+      from: process.env.GMAIL_USER || 'abdullahsuleman755@gmail.com',
       to: email,
       subject: "🐾 Pets Veta Appointment Confirmation!",
-      text: `Your appointment with Dr. ${doctorName} on ${formattedTime} is confirmed. Present Verification Code: ${appointmentCode} during your visit.`,
+      text: `Your appointment with Dr. ${doctorName} on ${formattedDate} (${formattedTimeSlot}) is confirmed. Present Verification Code: ${appointmentCode} during your visit.`,
       html: `
       <body style="margin: 0; padding: 0; background-color: #eaf1ed; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #eaf1ed; padding: 40px 20px;">
@@ -70,8 +96,11 @@ const sendAppointmentConfirmationEmail = async (email, appointmentDetails) => {
                 <tr>
                   <td style="padding: 10px 40px;">
                     <div style="background-color: #f7fbfb; border: 1px solid #d4e2e0; border-radius: 16px; padding: 20px; text-align: left;">
-                      <p style="margin: 0 0 10px 0; color: #334155; font-size: 14px; font-family: sans-serif;"><strong>Consultation Date & Time:</strong></p>
-                      <p style="margin: 0; color: #078b91; font-size: 16px; font-weight: bold;">${formattedTime}</p>
+                      <p style="margin: 0 0 4px 0; color: #334155; font-size: 13px; font-family: sans-serif;"><strong>Consultation Date:</strong></p>
+                      <p style="margin: 0 0 14px 0; color: #078b91; font-size: 16px; font-weight: bold;">${formattedDate}</p>
+
+                      <p style="margin: 0 0 4px 0; color: #334155; font-size: 13px; font-family: sans-serif;"><strong>Consultation Time Slot:</strong></p>
+                      <p style="margin: 0; color: #078b91; font-size: 16px; font-weight: bold;">${formattedTimeSlot}</p>
                     </div>
                   </td>
                 </tr>
@@ -99,7 +128,7 @@ const sendAppointmentConfirmationEmail = async (email, appointmentDetails) => {
       `,
     });
 
-    console.log("Appointment confirmation email sent: %s", info.messageId);
+    console.log("Appointment confirmation email sent successfully: %s", info.messageId);
     return info;
   } catch (err) {
     console.error("Failed to send appointment confirmation email:", err);

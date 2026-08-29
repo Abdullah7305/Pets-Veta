@@ -8,6 +8,8 @@ const {
   ScheduleStatus,
 } = require("@prisma/client");
 
+// Backend/app/services/stripe.service.js
+
 const createAppointmentPaymentIntent = async ({ appointmentId, petOwnerId }) => {
   if (!appointmentId || !petOwnerId) {
     throw new AppError("Appointment ID or user ID is missing", 400);
@@ -37,15 +39,15 @@ const createAppointmentPaymentIntent = async ({ appointmentId, petOwnerId }) => 
     throw new AppError("Appointment not found", 404);
   }
 
+  if (appointment.status === AppointmentStatus.CONFIRMED || appointment.paymentStatus === PaymentStatus.SUCCEEDED) {
+    throw new AppError("Payment is already completed for this appointment", 400);
+  }
+
   if (appointment.status !== AppointmentStatus.PENDING_PAYMENT) {
     throw new AppError(
       `Appointment is not ready for payment. Current status is ${appointment.status}`,
       400
     );
-  }
-
-  if (appointment.paymentStatus === PaymentStatus.SUCCEEDED) {
-    throw new AppError("Payment is already completed for this appointment", 400);
   }
 
   if (appointment.expiresAt && appointment.expiresAt < new Date()) {
@@ -73,31 +75,49 @@ const createAppointmentPaymentIntent = async ({ appointmentId, petOwnerId }) => 
   const stripeAmount = appointment.fees * 100;
   const currency = appointment.currency || "pkr";
 
-
+  // 1. Verify if existing PaymentIntent is still alive and not in terminal state
   if (
     appointment.payment &&
     appointment.payment.stripePaymentIntentId &&
-    appointment.payment.stripeClientSecret &&
-    [
-      PaymentStatus.PENDING,
-      PaymentStatus.REQUIRES_PAYMENT_METHOD,
-      PaymentStatus.REQUIRES_ACTION,
-      PaymentStatus.PROCESSING,
-    ].includes(appointment.payment.status)
+    appointment.payment.stripeClientSecret
   ) {
-    return {
-      appointmentId: appointment.id,
-      paymentId: appointment.payment.id,
-      clientSecret: appointment.payment.stripeClientSecret,
-      amount: appointment.payment.amount,
-      currency: appointment.payment.currency,
-      reused: true,
-    };
+    try {
+      const existingIntent = await stripe.paymentIntents.retrieve(
+        appointment.payment.stripePaymentIntentId
+      );
+
+      // If it's in a terminal state (canceled or succeeded), DO NOT reuse it
+      if (existingIntent.status === "succeeded") {
+        throw new AppError("Payment is already completed for this appointment", 400);
+      }
+
+      if (
+        !["canceled", "succeeded"].includes(existingIntent.status) &&
+        [
+          PaymentStatus.PENDING,
+          PaymentStatus.REQUIRES_PAYMENT_METHOD,
+          PaymentStatus.REQUIRES_ACTION,
+          PaymentStatus.PROCESSING,
+        ].includes(appointment.payment.status)
+      ) {
+        return {
+          appointmentId: appointment.id,
+          paymentId: appointment.payment.id,
+          clientSecret: appointment.payment.stripeClientSecret,
+          amount: appointment.payment.amount,
+          currency: appointment.payment.currency,
+          reused: true,
+        };
+      }
+    } catch (stripeErr) {
+      if (stripeErr instanceof AppError) throw stripeErr;
+      console.warn("Could not reuse existing PaymentIntent, creating fresh intent:", stripeErr.message);
+    }
   }
 
   const metadata = {
     appointmentId: appointment.id,
-    appointmentCode: appointment.appointmentCode || "", 
+    appointmentCode: appointment.appointmentCode || "",
     doctorId: appointment.doctorId,
     petOwnerId: appointment.petOwnerId,
     petId: appointment.petId,
@@ -105,6 +125,7 @@ const createAppointmentPaymentIntent = async ({ appointmentId, petOwnerId }) => 
     scheduleId: appointment.scheduleId,
   };
 
+  // 2. Create a FRESH PaymentIntent with dynamic timestamp to bypass cached canceled idempotency key
   const paymentIntent = await stripe.paymentIntents.create(
     {
       amount: stripeAmount,
@@ -112,12 +133,13 @@ const createAppointmentPaymentIntent = async ({ appointmentId, petOwnerId }) => 
       automatic_payment_methods: {
         enabled: true,
       },
-      description: `Veterinary appointment with Dr. ${appointment.doctor?.user?.fullName || "Doctor"
-        }`,
+      description: `Veterinary appointment with Dr. ${
+        appointment.doctor?.user?.fullName || "Doctor"
+      }`,
       metadata,
     },
     {
-      idempotencyKey: `appointment-payment-${appointment.id}`,
+      idempotencyKey: `appointment-payment-${appointment.id}-${Date.now()}`,
     }
   );
 

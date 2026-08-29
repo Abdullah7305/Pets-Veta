@@ -8,7 +8,7 @@ import {
   Search,
   Stethoscope,
 } from "lucide-react";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import DoctorFilter from "./DoctorFilter";
 import { PaginationButton } from "../PaginationButton";
 import DoctorRequestCard from "./DoctorRequestCard";
@@ -25,13 +25,22 @@ import {
 } from '../../apis/doctorquery.api';
 import StatCard from "../cards/StatsCard";
 import DoctorNotFound from "./DoctorNotFound";
+import { showToast } from "@/shared/utils/toast";
 
 const DoctorRequests = () => {
   const [doctorStatus, setDoctorStatus] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState("");
   const [totalDoctors, setTotalDoctors] = useState<number>(0);
-  const [doctorRequestProceed, setDoctorRequestProceed] = useState<boolean>(false);
+  
+  // Track specific doctor and action being processed
+  const [processingDoctor, setProcessingDoctor] = useState<{
+    id: string;
+    action: 'approve' | 'reject';
+  } | null>(null);
+
   const [doctorList, setDoctorList] = useState<ApiPayload | undefined>(undefined);
+  const [adminDoctorStats, setAdminDoctorStats] = useState<DoctorStats | undefined>(undefined);
+  const [page, setPage] = useState<number>(1);
 
   const debouncedSearchQuery = useDebounce(searchQuery, 400);
 
@@ -46,86 +55,127 @@ const DoctorRequests = () => {
       const phoneMatch = doctor.user?.phone?.toLowerCase().includes(query);
       const specMatch = doctor.specialization?.toLowerCase().includes(query);
 
-      return nameMatch || emailMatch || phoneMatch || specMatch;
+      return Boolean(nameMatch || emailMatch || phoneMatch || specMatch);
     });
   }, [doctorList?.doctors, debouncedSearchQuery]);
 
-  const [adminDoctorStats, setAdminDoctorStats] = useState<DoctorStats | undefined>(undefined);
-  const [page, setPage] = useState<number>(1);
-
   const pageTitle = 'Admin Dashboard';
   const limit: number = 6;
-  const totalPages = Math.ceil(totalDoctors / limit);
+  const totalPages = Math.max(1, Math.ceil(totalDoctors / limit));
   const pageDescription = 'Here Admin can approve and reject the doctors based on attestation process';
 
-  const doctorStats = async () => {
-    const response = await fetchDoctorStats();
-    if (response.success) {
-      setAdminDoctorStats(response.data);
+  const fetchDoctorStatsData = useCallback(async () => {
+    try {
+      const response = await fetchDoctorStats();
+      if (response.success) {
+        setAdminDoctorStats(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching stats:", error);
     }
-  };
+  }, []);
+
+  const fetchDoctors = useCallback(async (status: string, currentPage: number) => {
+    try {
+      let response;
+      if (status === 'all') {
+        response = await AllDoctors(currentPage, limit);
+      } else if (status === 'pending') {
+        response = await PendingDoctors(currentPage, limit);
+      } else if (status === 'approved') {
+        response = await ApprovedDoctors(currentPage, limit);
+      }
+
+      if (response?.success) {
+        setDoctorList(response.data);
+        setTotalDoctors(response.data.totalCount);
+      }
+    } catch (error) {
+      console.error("Error fetching doctors:", error);
+    }
+  }, [limit]);
 
   const onApprove = async (doctorId: string): Promise<void> => {
-    setDoctorRequestProceed(true);
-    const response = await approveDoctorRequest(doctorId);
-    if (response.success) {
-      await doctorStats();
+    try {
+      setProcessingDoctor({ id: doctorId, action: 'approve' });
+      const response = await approveDoctorRequest(doctorId);
+
+      if (response.success) {
+        showToast.success("Doctor approved successfully");
+
+        // 1. Optimistically update local UI state immediately
+        setDoctorList((prev) => {
+          if (!prev) return prev;
+          if (doctorStatus === 'pending') {
+            // Remove from pending tab view
+            return {
+              ...prev,
+              doctors: prev.doctors.filter((d) => d.id !== doctorId),
+              totalCount: Math.max(0, prev.totalCount - 1),
+            };
+          }
+          // Update status in 'all' tab view
+          return {
+            ...prev,
+            doctors: prev.doctors.map((d) =>
+              d.id === doctorId ? { ...d, isVerified: 'APPROVED' as const } : d
+            ),
+          };
+        });
+
+        // 2. Refresh stats and re-sync list with backend
+        await Promise.all([
+          fetchDoctorStatsData(),
+          fetchDoctors(doctorStatus, page),
+        ]);
+      }
+    } catch (error) {
+      console.error("Failed to approve doctor:", error);
+      showToast.error("Failed to approve doctor");
+    } finally {
+      setProcessingDoctor(null);
     }
-    setDoctorRequestProceed(false);
   };
 
   const onReject = async (doctorId: string): Promise<void> => {
-    setDoctorRequestProceed(true);
-    const response = await rejectDoctorRequest(doctorId);
-    if (response.success) {
-      await doctorStats();
+    try {
+      setProcessingDoctor({ id: doctorId, action: 'reject' });
+      const response = await rejectDoctorRequest(doctorId);
+
+      if (response.success) {
+        showToast.success("Doctor rejected successfully");
+
+        // 1. Remove doctor from list in local state immediately
+        setDoctorList((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            doctors: prev.doctors.filter((d) => d.id !== doctorId),
+            totalCount: Math.max(0, prev.totalCount - 1),
+          };
+        });
+
+        // 2. Refresh stats and re-sync list with backend
+        await Promise.all([
+          fetchDoctorStatsData(),
+          fetchDoctors(doctorStatus, page),
+        ]);
+      }
+    } catch (error) {
+      console.error("Failed to reject doctor:", error);
+      showToast.error("Failed to reject doctor");
+    } finally {
+      setProcessingDoctor(null);
     }
-    setDoctorRequestProceed(false);
   };
 
+  useEffect(() => {
+    void fetchDoctorStatsData();
+  }, [fetchDoctorStatsData]);
 
   useEffect(() => {
-    let isMounted = true;
-
-    const loadDoctorStats = async () => {
-      const response = await fetchDoctorStats();
-      if (isMounted && response.success) {
-        setAdminDoctorStats(response.data);
-      }
-    };
-
-    void loadDoctorStats();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    const doctorQuery = async (status: string, currentPage: number) => {
-      if (status === 'all') {
-        const response = await AllDoctors(currentPage, limit);
-
-        if (response.success) {
-          setDoctorList(response.data);
-          setTotalDoctors(response.data.totalCount);
-        }
-      } else if (status === 'pending') {
-        const response = await PendingDoctors(currentPage, limit);
-        if (response.success) {
-          setDoctorList(response.data);
-          setTotalDoctors(response.data.totalCount);
-        }
-      } else if (status === 'approved') {
-        const response = await ApprovedDoctors(currentPage, limit);
-        if (response.success) {
-          setDoctorList(response.data);
-          setTotalDoctors(response.data.totalCount);
-        }
-      }
-    };
-    doctorQuery(doctorStatus, page);
-  }, [doctorStatus, page]);
+    void fetchDoctors(doctorStatus, page);
+  }, [doctorStatus, page, fetchDoctors]);
 
   return (
     <main className="min-h-screen bg-[#f8fbfb] text-[#12213a]">
@@ -147,7 +197,6 @@ const DoctorRequests = () => {
             </div>
 
             <div className="relative z-10 mt-8 grid gap-0 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-[0_14px_35px_rgba(15,23,42,0.08)] sm:mt-10 md:grid-cols-2 xl:mt-14 xl:grid-cols-3">
-              {/* 💡 3. Tied values directly to the live backend data properties with string parsing safety */}
               <StatCard
                 title="Pending Requests"
                 value={String(adminDoctorStats?.pending ?? 0)}
@@ -195,28 +244,35 @@ const DoctorRequests = () => {
             </div>
           </div>
 
-          <DoctorFilter doctorStatus={doctorStatus} setDoctorStatus={setDoctorStatus} />
+          <DoctorFilter doctorStatus={doctorStatus} setDoctorStatus={(status) => {
+            setDoctorStatus(status);
+            setPage(1);
+          }} />
 
-          {doctorList?.doctors && doctorList.doctors.length > 0 ? (
-            doctorList.doctors.map((doctor) => (
-              < DoctorRequestCard
-                key={doctor.id}
-                doctor={doctor}
-                doctorRequestProceed={doctorRequestProceed}
-                onApprove={onApprove}
-                onReject={onReject}
-              />
-            ))
+          {/* Render filteredDoctors instead of doctorList.doctors */}
+          {filteredDoctors && filteredDoctors.length > 0 ? (
+            <div className="mt-6 grid grid-cols-1 gap-6">
+              {filteredDoctors.map((doctor) => (
+                <DoctorRequestCard
+                  key={doctor.id}
+                  doctor={doctor}
+                  isApproving={processingDoctor?.id === doctor.id && processingDoctor.action === 'approve'}
+                  isRejecting={processingDoctor?.id === doctor.id && processingDoctor.action === 'reject'}
+                  onApprove={onApprove}
+                  onReject={onReject}
+                />
+              ))}
+            </div>
           ) : (
             <DoctorNotFound />
           )}
 
-          {doctorList?.doctors && doctorList.doctors.length > 0 && (
+          {filteredDoctors && filteredDoctors.length > 0 && totalPages > 1 && (
             <div className="mt-7 flex flex-col gap-4 text-sm text-[#405169] md:flex-row md:items-center md:justify-between">
               <div className="flex items-center gap-4">
                 <PaginationButton
                   ariaLabel="Previous page"
-                  onClick={() => setPage((p) => p - 1)}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
                 >
                   <ChevronLeft size={18} />
